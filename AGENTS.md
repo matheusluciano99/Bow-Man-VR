@@ -14,7 +14,8 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Game modes
 
-- 1v1 PvP: duel against another player.
+- 1v1 PvP: online duels against another player over the internet, including
+  players in different locations and on different networks.
 - PvE: duel against an AI-controlled archer.
 
 ## Project scope
@@ -23,9 +24,8 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Target hardware
 
-- Use the classroom-provided VR headset for development and testing.
-- Its exact model and whether the game will run standalone or through a PC are
-  still to be confirmed.
+- Use the classroom-provided Meta Quest 2 for development and testing.
+- Run the game on a PC with the Quest 2 connected as the VR headset.
 
 ## Bow interaction
 
@@ -34,7 +34,7 @@ Use GitHub's Assignees field to record task responsibility.
   provisional maximum draw of 0.70 m (70 cm).
 - Use 70 cm as a temporary adult-arm-length placeholder; calibrate comfortable
   draw distance when the classroom headset is available.
-- Exact controller button mappings remain dependent on the headset model.
+- Exact controller button mappings remain to be defined and tested on Quest 2.
 
 ## Combat realism and injury feedback
 
@@ -89,6 +89,18 @@ Use GitHub's Assignees field to record task responsibility.
 - Split work into small, individually reviewable tasks with completion criteria
   and dependency links. Give each body-region injury sequence its own card once
   the region and its reaction are defined.
+
+## Pull request workflow
+
+- Start each task on a dedicated branch based on the current `origin/main`.
+  Commit and push task changes to that branch; do not commit or push directly
+  to `main`.
+- Open a pull request targeting `main` and link the related issue.
+- Move the task to Review / Test when the pull request is ready for review.
+  Mark it Done and close its issue only after the pull request is merged and
+  the relevant checks have passed.
+- Keep the responsible developer assigned through review. Do not merge a pull
+  request without explicit authorization.
 
 ## Unity editor connection
 
