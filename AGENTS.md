@@ -90,6 +90,18 @@ Use GitHub's Assignees field to record task responsibility.
   and dependency links. Give each body-region injury sequence its own card once
   the region and its reaction are defined.
 
+## Pull request workflow
+
+- Start each task on a dedicated branch based on the current `origin/main`.
+  Commit and push task changes to that branch; do not commit or push directly
+  to `main`.
+- Open a pull request targeting `main` and link the related issue.
+- Move the task to Review / Test when the pull request is ready for review.
+  Mark it Done and close its issue only after the pull request is merged and
+  the relevant checks have passed.
+- Keep the responsible developer assigned through review. Do not merge a pull
+  request without explicit authorization.
+
 ## Unity editor connection
 
 - MCP for Unity is pinned to v10.3.0 in `Packages/manifest.json`, matching the
