@@ -26,6 +26,21 @@ Use GitHub's Assignees field to record task responsibility.
 
 - Use the classroom-provided Meta Quest 2 for development and testing.
 - Run the game on a PC with the Quest 2 connected as the VR headset.
+- Use Unity OpenXR 1.16.1 for PC VR with the Oculus Touch controller profile.
+
+## Running the VR tracking scene
+
+- Open `Assets/Scenes/VRTrackingTest.unity` in Unity 6000.3.25f1.
+- On the Windows test PC, configure [Meta Quest Link](https://developers.meta.com/vr/documentation/unity/unity-link/)
+  as the active OpenXR runtime, connect the Quest 2, and launch its Link session.
+- Enter Play mode and verify head movement plus both controller markers: blue
+  for left and orange for right. The rig requests floor-level tracking; check
+  floor alignment and comfortable reach on the headset.
+- Run the `BowMan.VR.EditorTests` EditMode tests in Test Runner before a PR.
+- Build the enabled tracking scene for Windows x86_64 through Build Profiles.
+  Put generated builds under `Builds/PCVR/`, which is excluded from Git.
+- Both developers must verify head and controller tracking on the target headset
+  before the hardware acceptance criterion in task #2 is marked complete.
 
 ## Bow interaction
 
@@ -101,6 +116,7 @@ Use GitHub's Assignees field to record task responsibility.
   the relevant checks have passed.
 - Keep the responsible developer assigned through review. Do not merge a pull
   request without explicit authorization.
+- Use regular merge commits. Use squash only when explicitly requested.
 
 ## Unity editor connection
 
