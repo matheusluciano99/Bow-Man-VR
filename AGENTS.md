@@ -2,13 +2,15 @@
 
 This is the primary source of project context and instructions for coding agents.
 Keep the project brief in this file; `CLAUDE.md` references it.
+Record design decisions directly, without personal narrative attribution.
+Use GitHub's Assignees field to record task responsibility.
 
 ## Game concept
 
 - A Unity bow-and-arrow game for virtual reality (VR).
 - Inspired by the classic Bow Man: two archers take turns shooting arrows at
   each other, with aiming and shot strength determining the arrow's trajectory.
-- Adapt that archery duel to VR. Specific VR controls have not been decided yet.
+- Adapt that archery duel to VR using the bow interaction described below.
 
 ## Game modes
 
@@ -18,6 +20,21 @@ Keep the project brief in this file; `CLAUDE.md` references it.
 ## Project scope
 
 - A two-week project developed by two people.
+
+## Target hardware
+
+- Use the classroom-provided VR headset for development and testing.
+- Its exact model and whether the game will run standalone or through a PC are
+  still to be confirmed.
+
+## Bow interaction
+
+- Hold the bow with one hand; pull and release the string with the other.
+- Shot strength increases with draw distance, reaching full strength at a
+  provisional maximum draw of 0.70 m (70 cm).
+- Use 70 cm as a temporary adult-arm-length placeholder; calibrate comfortable
+  draw distance when the classroom headset is available.
+- Exact controller button mappings remain dependent on the headset model.
 
 ## Combat realism and injury feedback
 
@@ -65,6 +82,10 @@ Keep the project brief in this file; `CLAUDE.md` references it.
 - GitHub Kanban: https://github.com/users/matheusluciano99/projects/1, linked to
   the Bow-Man-VR repository.
 - Columns: To Do, In Progress, Review / Test, Done. Do not add a separate Backlog.
+- Assign each issue to the developer responsible before moving it to In Progress.
+  Keep active tasks assigned and verify the Assignees field when starting work.
+  Each developer must assign the tasks they take responsibility for; preserve
+  existing assignees unless responsibility changes explicitly.
 - Split work into small, individually reviewable tasks with completion criteria
   and dependency links. Give each body-region injury sequence its own card once
   the region and its reaction are defined.
