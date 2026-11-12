@@ -41,8 +41,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Run the `BowMan.VR.EditorTests` EditMode tests in Test Runner before a PR.
 - Build the enabled tracking scene for Windows x86_64 through Build Profiles.
   Put generated builds under `Builds/PCVR/`, which is excluded from Git.
-- Both developers must verify head and controller tracking on the target headset
-  before the hardware acceptance criterion in task #2 is marked complete.
+- A successful Quest 2 test in both the Editor and Windows player satisfies
+  the hardware acceptance criterion in task #2.
 
 ## Bow interaction
 
