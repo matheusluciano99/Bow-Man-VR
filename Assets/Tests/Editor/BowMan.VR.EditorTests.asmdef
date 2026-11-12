@@ -1,0 +1,13 @@
+{
+  "name": "BowMan.VR.EditorTests",
+  "references": [
+    "Unity.InputSystem",
+    "Unity.XR.CoreUtils",
+    "Unity.XR.Management",
+    "Unity.XR.Management.Editor",
+    "Unity.XR.OpenXR"
+  ],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}
