@@ -27,6 +27,21 @@ Use GitHub's Assignees field to record task responsibility.
 - Use the classroom-provided Meta Quest 2 for development and testing.
 - Run the game on a PC with the Quest 2 connected as the VR headset.
 
+## Running the duel arena test scene
+
+- Open `Assets/Scenes/DuelArena.unity` in Unity 6000.3.25f1 and enter Play
+  mode to view the layout through the desktop overview camera.
+- `Archer1Spawn` is at `(0, 0, -10)` and faces +Z; `Archer2Spawn` is at
+  `(0, 0, 10)` and faces -Z. Both origins sit on the floor at Y=0.
+- Blue and orange capsule placeholders mark the opposing positions. Each
+  spawn has a floor marker and a short strip pointing toward its opponent.
+- The floor is 12 by 28 metres with a clear firing lane between the archers.
+  The 20-metre separation is a provisional test distance; validate final scale
+  and comfort on Quest 2.
+- Capsule colliders provide simple targets for shot tests. Character design,
+  body-region hit detection, bow interaction, and VR rig integration have their
+  own tasks. Remove the placeholders when integrating actual archers.
+
 ## Bow interaction
 
 - Hold the bow with one hand; pull and release the string with the other.
