@@ -33,6 +33,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Open `Assets/Scenes/VRTrackingTest.unity` in Unity 6000.3.25f1.
 - On the Windows test PC, configure [Meta Quest Link](https://developers.meta.com/vr/documentation/unity/unity-link/)
   as the active OpenXR runtime, connect the Quest 2, and launch its Link session.
+- In the Meta Link desktop app, enable Settings > General > Unknown Sources
+  to allow the Unity Editor and local development builds to run.
 - Enter Play mode and verify head movement plus both controller markers: blue
   for left and orange for right. The rig requests floor-level tracking; check
   floor alignment and comfortable reach on the headset.
