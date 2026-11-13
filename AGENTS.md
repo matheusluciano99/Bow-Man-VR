@@ -10,6 +10,9 @@ Use GitHub's Assignees field to record task responsibility.
 - Follow the folder roles in [README.md](README.md). Keep `Builds/` for generated
   players, `Artifacts/` for local review output, and `SourceAssets/Downloads/`
   for local source archives. The latter two are excluded from Git.
+- Keep project-owned scenes, scripts, prefabs, materials, input, render settings,
+  and tests under `Assets/_Game/`. Keep package-managed XR assets at `Assets/XR/`,
+  the path expected by OpenXR.
 - Group imported character models, textures, and attribution under
   `Assets/ThirdParty/<asset>/`. Keep original filenames when importing source files.
 - Preserve existing asset GUIDs and `.meta` files when moving Unity assets.
@@ -42,7 +45,7 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Running the VR tracking scene
 
-- Open `Assets/Scenes/VRTrackingTest.unity` in Unity 6000.3.25f1.
+- Open `Assets/_Game/Scenes/VRTrackingTest.unity` in Unity 6000.3.25f1.
 - On the Windows test PC, configure [Meta Quest Link](https://developers.meta.com/vr/documentation/unity/unity-link/)
   as the active OpenXR runtime, connect the Quest 2, and launch its Link session.
 - In the Meta Link desktop app, enable Settings > General > Unknown Sources
@@ -58,7 +61,7 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Running the duel arena test scene
 
-- Open `Assets/Scenes/DuelArena.unity` in Unity 6000.3.25f1 and enter Play
+- Open `Assets/_Game/Scenes/DuelArena.unity` in Unity 6000.3.25f1 and enter Play
   mode to view the layout through the desktop overview camera.
 - `Archer1Spawn` is at `(0, 0, -10)` and faces +Z; `Archer2Spawn` is at
   `(0, 0, 10)` and faces -Z. Both origins sit on the floor at Y=0.
@@ -74,7 +77,7 @@ Use GitHub's Assignees field to record task responsibility.
   press Space, or click **Fire test arrow**, to repeat it. The panel reports
   shots, hits, and the most recent impact point. The default shot hits the
   opposing orange capsule; no headset is required for this test.
-- `Assets/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
+- `Assets/_Game/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
   as forward. Instantiate it and call `ArrowFlight.Launch(velocity, owner)`;
   subscribe to `Hit` before launching to receive the first solid impact.
   Pass the firing archer's root to ignore its colliders. Trigger colliders are

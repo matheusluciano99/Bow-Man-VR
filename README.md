@@ -8,12 +8,14 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 
 | Location | Purpose |
 | --- | --- |
-| `Assets/Scripts/` | Game code and its runtime assembly. |
-| `Assets/Scenes/` | Game and test scenes. |
-| `Assets/Prefabs/`, `Assets/Materials/` | Project-authored reusable assets. |
+| `Assets/_Game/Scripts/` | Game code and its runtime assembly. |
+| `Assets/_Game/Scenes/` | Game and test scenes. |
+| `Assets/_Game/Prefabs/`, `Assets/_Game/Materials/` | Project-authored reusable assets. |
+| `Assets/_Game/Input/` | Game input actions. |
 | `Assets/ThirdParty/<asset>/` | Imported models, textures, and attribution grouped by asset. |
-| `Assets/Tests/Editor/`, `Assets/Tests/PlayMode/` | Unity EditMode and PlayMode tests. |
-| `Assets/Settings/`, `Assets/XR/` | Render-pipeline and XR configuration. |
+| `Assets/_Game/Tests/Editor/`, `Assets/_Game/Tests/PlayMode/` | Unity EditMode and PlayMode tests. |
+| `Assets/_Game/Settings/` | Game render-pipeline configuration. |
+| `Assets/XR/` | Package-managed XR configuration; OpenXR expects this location. |
 | `Assets/TutorialInfo/` | Unity template help content. |
 | `Packages/`, `ProjectSettings/` | Shared dependencies and Unity project settings. |
 | `Docs/Art/` | Character candidates, sources, and preparation status. |
@@ -22,6 +24,9 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `Artifacts/` | Local screenshots and validation reports; ignored by Git. |
 | `Builds/PCVR/` | Generated Windows players; ignored by Git. |
 
+Keep project-owned Unity assets under `Assets/_Game` and imported assets under
+`Assets/ThirdParty`. Package-managed XR configuration stays at `Assets/XR`;
+Unity template help remains under `Assets/TutorialInfo`.
 Keep download ZIPs and review files out of `Assets` and `Builds`. Create feature
 folders as they become useful; keep each imported character's files together.
 
