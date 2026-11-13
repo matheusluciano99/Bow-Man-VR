@@ -5,6 +5,16 @@ Keep the project brief in this file; `CLAUDE.md` references it.
 Record design decisions directly, without personal narrative attribution.
 Use GitHub's Assignees field to record task responsibility.
 
+## Maintaining development decisions
+
+- Read and follow [.agents/rules/development.md](.agents/rules/development.md).
+- Record settled choices and their reasons in [Docs/Decisions.md](Docs/Decisions.md)
+  and update the affected project requirements. Keep provisional choices explicit.
+- Use the shared [decision-documentation skill](.agents/skills/document-development-decisions/SKILL.md)
+  for decision updates. The `.claude/` rules and skill reference the same guidance.
+- Put a short purpose comment above each function, describing current behavior
+  in one or two lines. Keep change history in Git and pull requests.
+
 ## Repository organization
 
 - Follow the folder roles in [README.md](README.md). Keep `Builds/` for generated
@@ -26,6 +36,15 @@ Use GitHub's Assignees field to record task responsibility.
 - Inspired by the classic Bow Man: two archers take turns shooting arrows at
   each other, with aiming and shot strength determining the arrow's trajectory.
 - Adapt that archery duel to VR using the bow interaction described below.
+
+## Character art
+
+- Use free realistic medieval human archers in the visual style of For Honor
+  and Conqueror's Blade, with light clothing or armor. Different archer models
+  are allowed; a final model and first-person body presentation remain unselected.
+- Keep the retained heavy Templar Knight separate from the player archer selection.
+  Record sources, licenses and actual preparation status in
+  [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
 
 ## Game modes
 
