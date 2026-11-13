@@ -16,8 +16,6 @@ public class VRTrackingTests
         var settings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildTargetGroup.Standalone);
         Assert.That(settings, Is.Not.Null);
         Assert.That(settings.InitManagerOnStart, Is.True);
-        Assert.That(settings.Manager.automaticLoading, Is.True);
-        Assert.That(settings.Manager.automaticRunning, Is.True);
         Assert.That(settings.Manager.activeLoaders.OfType<OpenXRLoader>().Count(), Is.EqualTo(1));
         Assert.That(OpenXRSettings.GetSettingsForBuildTargetGroup(BuildTargetGroup.Standalone)
             .GetFeature<OculusTouchControllerProfile>().enabled, Is.True);

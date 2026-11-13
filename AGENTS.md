@@ -58,6 +58,20 @@ Use GitHub's Assignees field to record task responsibility.
 - Capsule colliders provide simple targets for shot tests. Character design,
   body-region hit detection, bow interaction, and VR rig integration have their
   own tasks. Remove the placeholders when integrating actual archers.
+- A desktop test arrow fires automatically on Play. Focus the Game view and
+  press Space, or click **Fire test arrow**, to repeat it. The panel reports
+  shots, hits, and the most recent impact point. The default shot hits the
+  opposing orange capsule; no headset is required for this test.
+- `Assets/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
+  as forward. Instantiate it and call `ArrowFlight.Launch(velocity, owner)`;
+  subscribe to `Hit` before launching to receive the first solid impact.
+  Pass the firing archer's root to ignore its colliders. Trigger colliders are
+  ignored. Flight uses gravity and a swept tip ray each fixed step. The arrow
+  stops at impact; moving-body attachment belongs to task #20.
+- Test speeds and appearance are provisional. Missed arrows expire after
+  8 seconds; impacted arrows expire after 3 seconds or the remaining flight
+  lifetime, whichever comes first. Run `BowMan.Gameplay.PlayTests` in PlayMode
+  and `BowMan.VR.EditorTests` in EditMode before reviewing arrow changes.
 
 ## Bow interaction
 
