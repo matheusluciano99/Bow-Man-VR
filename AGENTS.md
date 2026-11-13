@@ -5,6 +5,18 @@ Keep the project brief in this file; `CLAUDE.md` references it.
 Record design decisions directly, without personal narrative attribution.
 Use GitHub's Assignees field to record task responsibility.
 
+## Repository organization
+
+- Follow the folder roles in [README.md](README.md). Keep `Builds/` for generated
+  players, `Artifacts/` for local review output, and `SourceAssets/Downloads/`
+  for local source archives. The latter two are excluded from Git.
+- Group imported character models, textures, and attribution under
+  `Assets/ThirdParty/<asset>/`. Keep original filenames when importing source files.
+- Preserve existing asset GUIDs and `.meta` files when moving Unity assets.
+  Models and textures use regular Git binary storage; do not add LFS pointers
+  while the repository has no available LFS budget.
+- Keep Unity asset files and project folders visible in VS Code.
+
 ## Game concept
 
 - A Unity bow-and-arrow game for virtual reality (VR).
