@@ -1,0 +1,4 @@
+{
+  "name": "BowMan.Gameplay",
+  "references": ["Unity.InputSystem"]
+}
