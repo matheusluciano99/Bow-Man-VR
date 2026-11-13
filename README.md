@@ -24,7 +24,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `SourceAssets/` | Authoring originals such as Blender scenes or layered texture files. |
 | `SourceAssets/Downloads/` | Local download archives; ignored by Git and never imported by Unity. |
 | `Artifacts/` | Local screenshots and validation reports; ignored by Git. |
-| `Builds/PCVR/` | Generated Windows players; ignored by Git. |
+| `Builds/PCVR/`, `Builds/PCVRCharacterReview/` | Generated Windows tracking and character-review players; ignored by Git. |
 
 Keep project-owned Unity assets under `Assets/_Game` and imported assets under
 `Assets/ThirdParty`. Package-managed XR configuration stays at `Assets/XR`;
