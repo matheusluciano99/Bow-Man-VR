@@ -26,7 +26,7 @@ public class VRTrackingTests
     [Test]
     public void RigBindingsResolveHeadAndIndependentControllerDevices()
     {
-        var rig = PrefabUtility.LoadPrefabContents("Assets/Prefabs/XRPlayer.prefab");
+        var rig = PrefabUtility.LoadPrefabContents("Assets/_Game/Prefabs/XRPlayer.prefab");
         var devices = new InputDevice[3];
         var drivers = rig.GetComponentsInChildren<TrackedPoseDriver>();
         try
