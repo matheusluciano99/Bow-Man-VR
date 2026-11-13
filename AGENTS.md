@@ -41,7 +41,12 @@ Use GitHub's Assignees field to record task responsibility.
 
 - Use free realistic medieval human archers in the visual style of For Honor
   and Conqueror's Blade, with light clothing or armor. Different archer models
-  are allowed; a final model and first-person body presentation remain unselected.
+  are allowed. English Archer and Erika Archer are the prototype visual choices.
+- The local headset player sees tracked hands/controllers only for now; the
+  opponent appears as a full archer. Injury effects on the local VR viewpoint
+  remain a separate decision under task #17.
+- Front/side/back references, bow/hit-region design review and preparation
+  boundaries are in [Docs/Art/ArcherDesign.md](Docs/Art/ArcherDesign.md).
 - Keep the retained heavy Templar Knight separate from the player archer selection.
   Record sources, licenses and actual preparation status in
   [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
