@@ -78,20 +78,31 @@ Use GitHub's Assignees field to record task responsibility.
 - A successful Quest 2 test in both the Editor and Windows player satisfies
   the hardware acceptance criterion in task #2.
 
+## Reviewing archer appearance on Quest 2
+
+- Open `Assets/_Game/Scenes/VRCharacterReview.unity`, start Quest Link on the
+  headset, then enter Play. Restart Play if Link was not active when XR initialized.
+- Medieval Archer is on the left and Erika Archer on the right, 3.5 metres from
+  the rig origin. Inspect textures, face/hair transparency, floor contact and scale.
+- The 1.75-metre height and relaxed-arm pose are provisional review settings.
+  These characters do not yet have archery or injury animations.
+- Source files, licenses and preparation status are in
+  [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
+
 ## Running the duel arena test scene
 
 - Open `Assets/_Game/Scenes/DuelArena.unity` in Unity 6000.3.25f1 and enter Play
   mode to view the layout through the desktop overview camera.
 - `Archer1Spawn` is at `(0, 0, -10)` and faces +Z; `Archer2Spawn` is at
   `(0, 0, 10)` and faces -Z. Both origins sit on the floor at Y=0.
-- Blue and orange capsule placeholders mark the opposing positions. Each
+- Medieval Archer and Erika Archer mark the blue and orange positions. Each
   spawn has a floor marker and a short strip pointing toward its opponent.
 - The floor is 12 by 28 metres with a clear firing lane between the archers.
   The 20-metre separation is a provisional test distance; validate final scale
   and comfort on Quest 2.
-- Capsule colliders provide simple targets for shot tests. Character design,
-  body-region hit detection, bow interaction, and VR rig integration have their
-  own tasks. Remove the placeholders when integrating actual archers.
+- Hidden capsule visuals retain their colliders as simple shot-test targets;
+  these are not body-region hitboxes. Final character design, body-region hit
+  detection, bow interaction and gameplay VR integration have their own tasks.
 - A desktop test arrow fires automatically on Play. Focus the Game view and
   press Space, or click **Fire test arrow**, to repeat it. The panel reports
   shots, hits, and the most recent impact point. The default shot hits the
