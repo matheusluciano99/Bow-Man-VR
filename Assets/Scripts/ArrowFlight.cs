@@ -16,6 +16,7 @@ namespace BowMan
 
         public event Action<RaycastHit> Hit;
 
+        // Starts a single flight with the given velocity, ignores the firing archer, and schedules cleanup.
         // The root is the arrow tip; visual geometry extends behind it along local -Z.
         public void Launch(Vector3 initialVelocity, Transform firingArcher = null)
         {
@@ -32,6 +33,7 @@ namespace BowMan
             Destroy(gameObject, lifetime);
         }
 
+        // Applies gravity each physics step, sweeps the tip's path, and stops at the first valid hit.
         private void FixedUpdate()
         {
             if (!flying) return;

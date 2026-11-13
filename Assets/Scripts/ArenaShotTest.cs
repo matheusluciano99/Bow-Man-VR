@@ -13,13 +13,16 @@ namespace BowMan
         private int hits;
         private string lastHit = "Waiting for impact";
 
+        // Fires the initial test arrow when the scene starts.
         private void Start() => Fire();
 
+        // Checks once per frame whether Space was pressed to fire another test arrow.
         private void Update()
         {
             if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) Fire();
         }
 
+        // Creates an arrow, listens for its impact, and launches it in the launcher's local direction.
         public void Fire()
         {
             if (arrowPrefab == null) return;
@@ -29,6 +32,7 @@ namespace BowMan
             shots++;
         }
 
+        // Counts the impact and records the struck object and position for the panel and Console.
         private void OnHit(RaycastHit hit)
         {
             hits++;
@@ -36,6 +40,7 @@ namespace BowMan
             Debug.Log($"Test arrow hit {lastHit}", hit.collider);
         }
 
+        // Draws the desktop test panel with shot counts, the last impact, and a fire button.
         private void OnGUI()
         {
             GUILayout.BeginArea(new Rect(16, 16, 340, 110), GUI.skin.box);

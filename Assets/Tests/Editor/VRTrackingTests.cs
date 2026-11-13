@@ -10,6 +10,7 @@ using UnityEngine.XR.OpenXR.Features.Interactions;
 
 public class VRTrackingTests
 {
+    // Checks that PC builds start XR automatically with OpenXR and the Oculus Touch controller profile.
     [Test]
     public void PcBuildStartsOpenXRWithTouchControllers()
     {
@@ -21,6 +22,7 @@ public class VRTrackingTests
             .GetFeature<OculusTouchControllerProfile>().enabled, Is.True);
     }
 
+    // Checks that the rig tracks the head and each controller through separate, correct device bindings.
     [Test]
     public void RigBindingsResolveHeadAndIndependentControllerDevices()
     {

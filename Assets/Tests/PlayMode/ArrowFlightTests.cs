@@ -12,6 +12,7 @@ public class ArrowFlightTests
     private readonly List<GameObject> objects = new List<GameObject>();
     private static readonly Vector3 Origin = new Vector3(1000f, 1000f, 1000f);
 
+    // Creates an object away from the arena and tracks it for cleanup after the test.
     private GameObject Create(string name)
     {
         var obj = new GameObject(name);
@@ -20,6 +21,7 @@ public class ArrowFlightTests
         return obj;
     }
 
+    // Places a thin solid target at the given forward distance from the test origin.
     private BoxCollider Target(float z)
     {
         var target = Create("Target");
@@ -29,6 +31,7 @@ public class ArrowFlightTests
         return collider;
     }
 
+    // Removes all test objects and waits one frame for Unity to finish destroying them.
     [UnityTearDown]
     public IEnumerator CleanUp()
     {
@@ -37,6 +40,7 @@ public class ArrowFlightTests
         yield return null;
     }
 
+    // Checks that position follows a gravity-driven arc and the arrow faces its current velocity.
     [UnityTest]
     public IEnumerator FlightFollowsGravityAndFacesVelocity()
     {
@@ -52,6 +56,7 @@ public class ArrowFlightTests
             (initialVelocity + Physics.gravity * elapsed).normalized), Is.GreaterThan(0.999f));
     }
 
+    // Checks that a fast arrow stops at the nearest thin target, reports once, and expires after impact.
     [UnityTest]
     public IEnumerator FastArrowHitsNearestThinColliderExactlyOnceAndCleansUp()
     {
@@ -75,6 +80,7 @@ public class ArrowFlightTests
         Assert.That(arrow == null, Is.True);
     }
 
+    // Checks that the arrow passes through the shooter's colliders and triggers to hit a solid target.
     [UnityTest]
     public IEnumerator IgnoresShooterHierarchyAndTriggers()
     {
@@ -91,6 +97,7 @@ public class ArrowFlightTests
         Assert.That(actual, Is.EqualTo(target));
     }
 
+    // Checks that an arrow missing every target expires without reporting an impact.
     [UnityTest]
     public IEnumerator MissedArrowExpiresWithoutReportingHit()
     {
@@ -103,6 +110,7 @@ public class ArrowFlightTests
         Assert.That(count, Is.Zero);
     }
 
+    // Checks that zero or nonfinite launch velocities and a second launch are rejected.
     [Test]
     public void RejectsInvalidVelocityAndRelaunch()
     {
