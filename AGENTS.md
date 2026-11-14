@@ -43,8 +43,8 @@ Use GitHub's Assignees field to record task responsibility.
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
 - The local headset player sees tracked hands/controllers only for now; the
-  opponent appears as a full archer. Injury effects on the local VR viewpoint
-  remain a separate decision under task #17.
+  opponent appears as a full archer. During injury, the local viewpoint follows
+  the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
 - Front/side/back references, bow/hit-region design review and preparation
   boundaries are in [Docs/Art/ArcherDesign.md](Docs/Art/ArcherDesign.md).
 - Keep the retained heavy Templar Knight separate from the player archer selection.
