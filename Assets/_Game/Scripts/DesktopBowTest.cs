@@ -35,6 +35,12 @@ namespace BowMan
             if (desktopControls) UseDesktopControls(false);
         }
 
+        // Discards a desktop draw when the application loses focus.
+        private void OnApplicationFocus(bool focused)
+        {
+            if (!focused && bow != null) bow.CancelDraw();
+        }
+
         // Aims with arrow keys and simulates a hand pulling backward while Space is held.
         private void Update()
         {
@@ -86,8 +92,11 @@ namespace BowMan
         private void OnGUI()
         {
             if (bow == null) return;
-            GUILayout.BeginArea(new Rect(16, 16, 390, 165), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(16, 16, 390, 195), GUI.skin.box);
             GUILayout.Label("Bow interaction test");
+            if (vrInput != null && GUILayout.Button(vrInput.BowInLeftHand
+                ? "Bow hand: Left (switch to right)" : "Bow hand: Right (switch to left)"))
+                vrInput.SetBowHand(!vrInput.BowInLeftHand);
             if (GUILayout.Button(desktopControls ? "Use VR controls" : "Use desktop controls"))
                 UseDesktopControls(!desktopControls);
             GUILayout.Label(desktopControls ? "Hold Space to draw; release to shoot. Arrow keys aim."

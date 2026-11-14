@@ -451,7 +451,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7741270113072431188, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
       propertyPath: firingArcher
-      value: 
+      value:
       objectReference: {fileID: 1096483163}
     - target: {fileID: 7912497509924983781, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
       propertyPath: m_Name
@@ -471,7 +471,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ee707ea22a1d96459e10e5230ddde0c, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: BowMan.Gameplay::BowMan.Bow
 --- !u!1 &1575299851
 GameObject:
@@ -557,7 +557,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -774,7 +774,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: caf2abc99309f0149abe03149c64d19f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: BowMan.Gameplay::BowMan.DesktopBowTest
   bow: {fileID: 1354515711}
   vrInput: {fileID: 1980008421}
@@ -788,7 +788,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df5fb4453f35f6c4789ed665a84647c9, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: BowMan.Gameplay::BowMan.VRBowInput
   bow: {fileID: 1354515711}
   leftController: {fileID: 1096483165}

@@ -23,10 +23,12 @@ namespace BowMan
 
         private Transform BowHand => bowInLeftHand ? leftController : rightController;
         private Transform DrawHand => bowInLeftHand ? rightController : leftController;
+        public bool BowInLeftHand => bowInLeftHand;
 
         // Creates handed controller bindings and remembers where the unequipped bow rests.
         private void OnEnable()
         {
+            focused = Application.isFocused;
             if (bow != null)
             {
                 parkedPosition = bow.transform.position;
@@ -35,7 +37,7 @@ namespace BowMan
             var holdingHand = bowInLeftHand ? "LeftHand" : "RightHand";
             var drawingHand = bowInLeftHand ? "RightHand" : "LeftHand";
             holdAction = Button("Hold bow", holdingHand, "gripPressed");
-            drawAction = Button("Draw string", drawingHand, "triggerPressed");
+            drawAction = Button("Draw string", drawingHand, "triggerPressed", false);
             bowTracked = Button("Bow hand tracked", holdingHand, "isTracked");
             drawTracked = Button("Draw hand tracked", drawingHand, "isTracked");
             Application.onBeforeRender += UpdatePose;
@@ -50,6 +52,20 @@ namespace BowMan
             drawAction?.Dispose();
             bowTracked?.Dispose();
             drawTracked?.Dispose();
+        }
+
+        // Switches controller roles, cancelling a tracked draw and rebuilding handed bindings.
+        public void SetBowHand(bool left)
+        {
+            if (bowInLeftHand == left) return;
+            var active = isActiveAndEnabled;
+            if (active)
+            {
+                enabled = false;
+                UpdatePose();
+            }
+            bowInLeftHand = left;
+            if (active) enabled = true;
         }
 
         // Converts grip and trigger transitions into a held bow, draw, and release.
@@ -99,10 +115,11 @@ namespace BowMan
         }
 
         // Creates and enables a button action scoped to one tracked controller hand.
-        private static InputAction Button(string name, string hand, string control)
+        private static InputAction Button(string name, string hand, string control, bool checkInitialState = true)
         {
             var action = new InputAction(name, InputActionType.Button,
                 $"<XRController>{{{hand}}}/{control}");
+            action.wantsInitialStateCheck = checkInitialState;
             action.Enable();
             return action;
         }

@@ -321,7 +321,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ee707ea22a1d96459e10e5230ddde0c, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: BowMan.Gameplay::BowMan.Bow
   arrowPrefab: {fileID: 7838939950186234352, guid: 58dd95bcc9cb81c4388189dfa3343d77, type: 3}
   stringTop: {fileID: 1420497104061006431}
