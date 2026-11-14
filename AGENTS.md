@@ -43,10 +43,13 @@ Use GitHub's Assignees field to record task responsibility.
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
 - The local headset player sees tracked hands/controllers only for now; the
-  opponent appears as a full archer. Injury effects on the local VR viewpoint
-  remain a separate decision under task #17.
+  opponent appears as a full archer. The injury viewpoint follows the character's
+  animated eyes as agreed in task #17; physical validation remains task #35.
 - Front/side/back references, bow/hit-region design review and preparation
   boundaries are in [Docs/Art/ArcherDesign.md](Docs/Art/ArcherDesign.md).
+- Both active prefabs use prepared Humanoid derivatives with complete body,
+  finger and eye mappings. Rig sources, import settings and validation are in
+  [Docs/Art/RigPreparation.md](Docs/Art/RigPreparation.md).
 - Keep the retained heavy Templar Knight separate from the player archer selection.
   Record sources, licenses and actual preparation status in
   [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
@@ -89,14 +92,30 @@ Use GitHub's Assignees field to record task responsibility.
   headset, then enter Play. Restart Play if Link was not active when XR initialized.
 - English Archer is on the left and Erika Archer on the right, 3.5 metres from
   the rig origin. Inspect textures, face/hair transparency, floor contact and scale.
-- The 1.75-metre body height is a provisional review setting. English Archer
-  is a static visual model; Erika has a rig with a static relaxed-arm pose.
-  Neither character has gameplay archery or injury animations yet.
+- The 1.75-metre body height is a provisional review setting. Both characters
+  have valid Humanoid rigs and neutral relaxed-arm poses. Their normal prefabs
+  do not play the rig-test loop; gameplay archery and injury clips remain separate.
 - Source files, licenses and preparation status are in
   [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
 - The Windows review player is generated at
   `Builds/PCVRCharacterReview/BowManVR-Characters.exe`. It starts this review
   scene directly; the tracking scene's default build settings stay unchanged.
+
+## Running the archer rig test
+
+- Open `Assets/_Game/Scenes/ArcherRigTest.unity` and enter Play without a headset.
+  The outside camera shows both archers playing the same 12-second Humanoid clip.
+  Inspect head/torso motion at 2 s, shoulders/arms at 4 s, fingers at 6 s and
+  left/right steps at 8/10 s. Pause to inspect skin and support contacts.
+- Each character's Head has an `EyeAnchor` at the eye-bone midpoint. It follows
+  the animated head for later first-person injury-camera integration; it does
+  not move the current XR camera or establish headset comfort acceptance.
+- Preserve original FBXs, prefab GUIDs and the derived models' `.meta` mappings.
+  Blender sources/rebuild scripts live in `SourceAssets/EnglishArcher/` and
+  `SourceAssets/ErikaArcher/`; runtime derivatives live under each ThirdParty asset.
+- Run `BowMan.Characters.EditorTests` and `BowMan.VR.EditorTests` before a rig PR.
+  Detailed preparation and review boundaries are in
+  [Docs/Art/RigPreparation.md](Docs/Art/RigPreparation.md).
 
 ## Running the duel arena test scene
 
@@ -163,9 +182,9 @@ Use GitHub's Assignees field to record task responsibility.
   knockdown followed by recovery for a dead archer.
 - Hit markers, arrow placement, organ damage, bone fractures, and blood effects
   must correspond to the actual impact location, not a random or generic injury.
-- Define the complete inventory of hittable regions and their reactions before
-  implementation. Reactions for regions beyond the examples above are not yet
-  specified and must not be invented as settled design decisions.
+- Follow the complete fifteen-region inventory and reactions agreed in
+  [task #17](https://github.com/matheusluciano99/Bow-Man-VR/issues/17).
+  Additional regions and reactions require a design decision.
 
 ## Combat details still to decide
 
@@ -174,8 +193,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Damage values and the gameplay effects of organ injuries and broken bones.
 - How to present internal injuries in VR, including whether to use an overlay,
   an X-ray view, or another approach.
-- How player knockdown and recovery affect the VR viewpoint; this needs a design
-  decision and testing on the target headset.
+- Calibration and comfort of the agreed first-person animated-eye viewpoint
+  during knockdown and recovery on the target headset.
 
 ## Task tracking
 
