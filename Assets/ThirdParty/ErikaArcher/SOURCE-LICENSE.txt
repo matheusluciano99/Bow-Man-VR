@@ -1,0 +1,6 @@
+Erika Archer
+Provider: Adobe Mixamo
+Source: https://www.mixamo.com/#/?page=1&query=Erika%20Archer&type=Character
+Usage terms: https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html
+Official FBX Binary character export in T-pose, preserved without modification.
+Mixamo assets are royalty-free for games under Adobe terms; do not treat this as a CC BY license.
