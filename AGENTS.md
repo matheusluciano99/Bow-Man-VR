@@ -164,6 +164,9 @@ Use GitHub's Assignees field to record task responsibility.
 - Run `BowMan.Gameplay.PlayTests` and `BowMan.VR.EditorTests` before a bow PR.
   Physical grip alignment, handedness, reach and release comfort still require
   Quest 2 testing; automated/desktop checks do not establish hardware acceptance.
+- For a standalone test, build this scene for Windows x86_64 to
+  `Builds/PCVR/BowInteraction/BowManVR-Bow.exe`. The tracking scene remains the
+  default in shared build settings.
 
 ## Combat realism and injury feedback
 
