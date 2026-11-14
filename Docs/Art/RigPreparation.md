@@ -96,7 +96,8 @@ floor/eye alignment, localized finger deformation, and the shared clip's body,
 hand and alternating-foot movement. The planted foot must remain stationary;
 the visible supporting sole stays within 4 mm of the floor during this check.
 
-Per-region animations, precise hitboxes, extreme-pose contact/deformation review
+Provisional bone-bound volumes are documented in [body hit detection](../BodyHits.md).
+Per-region animations, extreme-pose volume/contact/deformation review
 and Quest 2 injury-viewpoint testing remain the corresponding implementation
 cards. Passing this movement check does not implement those sequences or prove
 headset comfort. Sources/licenses remain in [CharacterAssets.md](CharacterAssets.md).

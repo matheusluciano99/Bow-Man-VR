@@ -99,6 +99,20 @@ support-foot contact, and preserve the animation-only armature hierarchy when
 copying its Avatar. Per-region injury animations and headset acceptance remain
 separate reviews. See the [rig procedure](Art/RigPreparation.md).
 
+## D011 — Bone-bound anatomical hit volumes
+
+Use project-owned solid volumes on the prepared skeletons for the fifteen
+agreed regions. Limb capsules follow both joint segments; central boxes divide
+the torso, neck and head. This makes region detection follow animation while
+keeping original art intact and avoiding a skinned-mesh collider rebuild each
+physics step. Geometry fit remains provisional and needs pose-specific review.
+
+Report the first swept impact once, preserving its point and travel direction.
+Keep the generic impact event for scenery and add an anatomical event for body
+consumers. A consumer uses one event to resolve its outcome. Disable the old
+arena capsule targets so they cannot mask the new regions. See
+[body hit detection](BodyHits.md) for event ordering, authoring and checks.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current
