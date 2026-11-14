@@ -43,6 +43,12 @@ or armor, matching the visual direction of For Honor and Conqueror's Blade.
 Multiple different archer models are allowed. The retained heavy Templar Knight
 is a separate asset, not the selected player archer.
 
+The prototype visual choices are English Archer and Erika Archer. The local
+headset view shows tracked hands/controllers only for now; the opponent is a
+full archer. The current rig uses controller markers. Reference views and
+body-region/bow design constraints are in [ArcherDesign.md](Art/ArcherDesign.md).
+English still needs rigging; this choice does not establish animation readiness.
+
 Record each source, license, attribution and modification with imported assets.
 Verify skeletons, skin weights and animation compatibility in actual files;
 a model title or a creator's rig claim does not establish Unity readiness.
@@ -78,8 +84,9 @@ following contradictory copies of a rule.
 
 ## Open questions and provisional values
 
-- Specific archer selection, final clothing, VR body visibility and rig preparation
-  are not settled. Permission to download candidates does not select a final model.
+- Additional archer variants and later visual refinements remain open. The current
+  prototype uses English Archer and Erika; local full-body rendering is outside
+  the agreed hands/controllers presentation.
 - Arena distance, bow draw distance and combat tuning remain provisional as
   described in AGENTS.md and the relevant task cards.
 - Injury reactions beyond the defined examples, injury timing and the VR viewpoint

@@ -49,3 +49,6 @@ folders as they become useful; keep each imported character's files together.
 The retained Templar Knight and the archer candidates are documented in
 [character assets](Docs/Art/CharacterAssets.md). The knight is not the selected
 player archer.
+
+Prototype character choices, front/side/back references and the first-person
+presentation are in [archer design](Docs/Art/ArcherDesign.md).
