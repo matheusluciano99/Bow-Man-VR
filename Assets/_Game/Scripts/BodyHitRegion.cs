@@ -14,8 +14,8 @@ namespace BowMan
     public readonly struct BodyImpact
     {
         public BodyHitRegion Volume { get; }
-        public BodyRegion Region => Volume.Region;
-        public BodySide Side => Volume.Side;
+        public BodyRegion Region { get; }
+        public BodySide Side { get; }
         public Vector3 Point { get; }
         public Vector3 Direction { get; }
         public Collider Collider { get; }
@@ -24,6 +24,8 @@ namespace BowMan
         public BodyImpact(BodyHitRegion region, RaycastHit hit, Vector3 direction)
         {
             Volume = region;
+            Region = region.Region;
+            Side = region.Side;
             Point = hit.point;
             Direction = direction.normalized;
             Collider = hit.collider;
