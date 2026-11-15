@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1871779712282031512}
   - component: {fileID: 6683659069293700851}
+  - component: {fileID: 5779343156440001501}
   m_Layer: 0
   m_Name: EnglishArcher
   m_TagString: Untagged
@@ -60,6 +61,50 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5779343156440001501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667351378350635231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f207d6928c83624e8b8ee4508b966b0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherReactionAnimation
+  entries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 66c8a354d4f21da44afeca079116fa2e, type: 2}
+  - {fileID: 0}
+  recoveries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 540a9df8288c7d44a8c2434be169c0e0, type: 2}
+  - {fileID: 0}
 --- !u!1 &1136747416280315170
 GameObject:
   m_ObjectHideFlags: 0
@@ -1396,6 +1441,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1871779712282031512}
     m_Modifications:
+    - target: {fileID: -8970916819270578898, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.46207422
+      objectReference: {fileID: 0}
+    - target: {fileID: -8970916819270578898, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.0014892874
+      objectReference: {fileID: 0}
+    - target: {fileID: -8970916819270578898, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0023522824
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.0000002
@@ -1468,25 +1525,81 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnglishArcher_Rigged
       objectReference: {fileID: 0}
+    - target: {fileID: 1035210478555946297, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.0014406757
+      objectReference: {fileID: 0}
+    - target: {fileID: 1035210478555946297, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.0021364873
+      objectReference: {fileID: 0}
     - target: {fileID: 1797639774291958193, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8731153
+      value: 0.87311536
       objectReference: {fileID: 0}
     - target: {fileID: 1797639774291958193, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.47735348
+      value: 0.4773535
       objectReference: {fileID: 0}
     - target: {fileID: 1797639774291958193, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.042638946
+      value: -0.04263895
       objectReference: {fileID: 0}
     - target: {fileID: 1797639774291958193, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.08935972
+      value: -0.08935973
+      objectReference: {fileID: 0}
+    - target: {fileID: 1800068066288947511, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.008341811
+      objectReference: {fileID: 0}
+    - target: {fileID: 2997592162511238044, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.04602598
+      objectReference: {fileID: 0}
+    - target: {fileID: 2997592162511238044, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00000017300249
+      objectReference: {fileID: 0}
+    - target: {fileID: 2997592162511238044, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000007576734
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511859054510426080, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.000000042956
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511859054510426080, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.000000087688996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511859054510426080, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.008632661
+      objectReference: {fileID: 0}
+    - target: {fileID: 5784687904133389035, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.047173116
+      objectReference: {fileID: 0}
+    - target: {fileID: 5784687904133389035, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00000018125837
+      objectReference: {fileID: 0}
+    - target: {fileID: 5784687904133389035, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.000000009994314
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7710238092018486136, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.03497239
+      objectReference: {fileID: 0}
+    - target: {fileID: 7710238092018486136, guid: 8da2072f1df49a44d912320cdbb2a8a8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.9553695
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

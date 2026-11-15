@@ -280,6 +280,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1158410821472227283}
   - component: {fileID: 2485440425683305889}
+  - component: {fileID: 956488499937504348}
   m_Layer: 0
   m_Name: ErikaArcher
   m_TagString: Untagged
@@ -330,6 +331,50 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &956488499937504348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5125899312878103343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f207d6928c83624e8b8ee4508b966b0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherReactionAnimation
+  entries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: c03f20bbb864ab940838e9fa2532ce1b, type: 2}
+  - {fileID: 0}
+  recoveries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 7845623d666421247ad0cb9d26e5b1c1, type: 2}
+  - {fileID: 0}
 --- !u!1 &5164774457985036464
 GameObject:
   m_ObjectHideFlags: 0
@@ -1464,9 +1509,53 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.09008348
       objectReference: {fileID: 0}
+    - target: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.047308024
+      objectReference: {fileID: 0}
+    - target: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00000012873099
+      objectReference: {fileID: 0}
+    - target: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0000000012840825
+      objectReference: {fileID: 0}
+    - target: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.0022432392
+      objectReference: {fileID: 0}
+    - target: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 104.25363
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8867274
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.4622843
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.0014898528
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0023519008
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_Name
       value: ErikaArcher_Rigged
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330094614076497766, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.0014437648
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330094614076497766, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.0021344852
       objectReference: {fileID: 0}
     - target: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1487,6 +1576,26 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.048067678
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.0000001392869
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -9.672772e-11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.0037480472
+      objectReference: {fileID: 0}
+    - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.014414827
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
