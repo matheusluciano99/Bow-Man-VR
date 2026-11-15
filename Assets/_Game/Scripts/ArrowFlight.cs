@@ -13,10 +13,14 @@ namespace BowMan
         private Transform owner;
         private bool launched;
         private bool flying;
+        private float remainingLifetime;
 
         public event Action<RaycastHit> Hit;
+        public event Action<BodyImpact> BodyHit;
+        public event Action Expired;
+        public bool IsFlying => flying;
 
-        // Starts a single flight with the given velocity, ignores the firing archer, and schedules cleanup.
+        // Starts one timed flight with the given velocity, ignoring the firing archer.
         // The root is the arrow tip; visual geometry extends behind it along local -Z.
         public void Launch(Vector3 initialVelocity, Transform firingArcher = null)
         {
@@ -30,13 +34,24 @@ namespace BowMan
             velocity = initialVelocity;
             launched = flying = true;
             transform.rotation = Quaternion.LookRotation(velocity);
-            Destroy(gameObject, lifetime);
+            remainingLifetime = lifetime;
         }
 
         // Applies gravity each physics step, sweeps the tip's path, and stops at the first valid hit.
         private void FixedUpdate()
         {
             if (!flying) return;
+
+            remainingLifetime -= Time.fixedDeltaTime;
+            if (remainingLifetime <= 0f)
+            {
+                flying = false;
+                Expired?.Invoke();
+                Destroy(gameObject);
+                return;
+            }
+
+            Physics.SyncTransforms();
 
             var dt = Time.fixedDeltaTime;
             var displacement = velocity * dt + Physics.gravity * (0.5f * dt * dt);
@@ -48,9 +63,11 @@ namespace BowMan
                 foreach (var hit in Physics.RaycastAll(transform.position, displacement / distance,
                     distance, hitLayers, QueryTriggerInteraction.Ignore))
                 {
-                    if (owner != null && hit.transform.IsChildOf(owner)) continue;
-                    if (hit.transform.IsChildOf(transform)) continue;
-                    if (hit.distance < nearest.distance) nearest = hit;
+                    if (owner != null && hit.collider.transform.IsChildOf(owner)) continue;
+                    if (hit.collider.transform.IsChildOf(transform)) continue;
+                    if (hit.distance < nearest.distance ||
+                        hit.distance == nearest.distance && hit.collider.GetInstanceID() < nearest.collider.GetInstanceID())
+                        nearest = hit;
                 }
             }
 
@@ -59,7 +76,12 @@ namespace BowMan
                 flying = false;
                 transform.position = nearest.point;
                 transform.rotation = Quaternion.LookRotation(displacement);
-                Destroy(gameObject, impactLifetime);
+                if (nearest.collider.TryGetComponent<BodyHitRegion>(out var region))
+                {
+                    transform.SetParent(nearest.collider.transform, true);
+                    BodyHit?.Invoke(new BodyImpact(region, nearest, displacement));
+                }
+                else Destroy(gameObject, Mathf.Min(impactLifetime, remainingLifetime));
                 Hit?.Invoke(nearest);
                 return;
             }
