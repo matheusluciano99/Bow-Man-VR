@@ -61,3 +61,6 @@ work are documented in [rig preparation](Docs/Art/RigPreparation.md).
 
 Anatomical hit volumes, the arena test controls and impact events are documented
 in [body-region hit detection](Docs/BodyHits.md).
+
+Shot ownership, defeat and injury/recovery handoff are documented in
+[duel turn flow](Docs/TurnFlow.md).
