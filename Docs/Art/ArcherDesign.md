@@ -20,6 +20,7 @@ view follows the character's eyes with live headset tracking, as agreed in
 [task #17](https://github.com/matheusluciano99/Bow-Man-VR/issues/17). The prepared
 rigs supply an animated `EyeAnchor`; physical camera calibration and comfort
 still need headset testing.
+The confirmed rules are in [injury reactions](../InjuryReactions.md).
 
 ## Model reference sheet
 

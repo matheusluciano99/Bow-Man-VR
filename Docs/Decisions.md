@@ -84,6 +84,33 @@ that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
 
+## D009 — Distinct injury regions with a first-person eye viewpoint
+
+Use fifteen hit regions: head, neck, chest, abdomen, pelvis and separate left/right
+shoulders, arms, hands, legs and feet. The newly separated extremities and joints
+have their own reactions so a foot hit cannot select the leg-kneeling animation,
+or a shoulder/hand hit the supported-arm animation. Back hits are excluded from
+the facing-archer bow duel; sword combat remains a conditional future idea.
+
+The full motions and implementation cards are in the
+[injury reaction table](InjuryReactions.md). Head and neck hits always kill.
+Surviving hits hold the injured pose for three seconds, then complete recovery
+before the injured archer receives the next turn. This keeps turn ownership
+consistent with the visible recovery. Death ends the match immediately; misses
+resolve at scenery impact or flight expiry, with one outcome per shot.
+
+During local knockdown, kneeling and recovery, move the VR viewpoint with the
+character's animated eyes so the player sees the injury sequence in first
+person. Keep live headset tracking for looking around and calibrate the eye
+reference against the player's neutral pose to avoid adding standing height
+twice. The local visible-body choice remains hands/controllers for the prototype.
+
+This preserves the first-person experience through injury. Camera-height changes
+are artificial locomotion with comfort implications, as described in Meta's
+[locomotion comfort guidance](https://developers.meta.com/vr/design/locomotion-comfort-usability/).
+Physical acceptance requires Quest 2 testing under task #35; the design choice
+does not establish that the moving viewpoint is comfortable.
+
 ## D010 — Preserve source art and import prepared Humanoid derivatives
 
 Keep downloaded FBXs intact and use separately named rigged derivatives in the
@@ -129,5 +156,6 @@ must remove the old character hierarchy or clear its embedded arrows.
   the agreed hands/controllers presentation.
 - Arena distance, bow draw distance and combat tuning remain provisional as
   described in AGENTS.md and the relevant task cards.
-- Injury reactions beyond the defined examples, injury timing and the VR viewpoint
-  during knockdown require design decisions and hardware validation.
+- Per-model hitbox dimensions, damage values, organ/fracture effects and internal
+  injury presentation remain implementation/tuning work. The chosen eye
+  viewpoint and injury motion need hardware validation.
