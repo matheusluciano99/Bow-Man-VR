@@ -219,5 +219,18 @@ public class InjuryAnimationTests
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
+
+    // Keeps right-arm impact identity distinct while its own supported recovery completes automatically.
+    [UnityTest]
+    public IEnumerator RightArmRecoveryUsesItsOwnAnatomicalSequence()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightArm);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightArm));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
 }
 #endif

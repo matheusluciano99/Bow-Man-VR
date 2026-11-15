@@ -352,7 +352,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: 44465cdabd7d72040a0d7c7ac1c25281, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: dee6b90032efbc846853908e09250f4e, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -368,7 +368,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: ee1295bb6d80f8c44aee9a33504ce30c, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: b3014b211022511418cd2a9c7ac5d093, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -1647,11 +1647,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0037480476
+      value: 0.0037480479
       objectReference: {fileID: 0}
     - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.014414829
+      value: 0.01441483
       objectReference: {fileID: 0}
     - target: {fileID: 6734931530170869177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.x

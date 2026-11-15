@@ -82,7 +82,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: 88014be79504a6c47a9fe5ab4ef94bc8, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 31eabd6b165fadc4fb688baf78a46a25, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -98,7 +98,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: 4f3367e6892299a4d98a2677cc61c562, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: aad59b44f9e8bc94ca5a03f6dc5235f4, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
