@@ -190,11 +190,20 @@ Use GitHub's Assignees field to record task responsibility.
   knockdown and recovery behavior.
 - Show where the arrow hit the body and the internal damage it caused, including
   organs struck and bones broken when applicable.
+- Present internal injury as a brief X-ray view inside the struck archer.
+  Highlight the actual arrow path and affected anatomy; duration and rendering
+  treatment remain provisional until VR review.
 - Show blood spilling from arrow wounds as part of the impact and injury effects.
 - Sniper Elite is the reference for anatomical hit visualization and damage
   feedback. These are requested features, not implemented systems.
 
 ## Body-specific injury sequences
+
+- Authored clip availability and model/contact checks are in
+  [Docs/Art/InjuryAnimations.md](Docs/Art/InjuryAnimations.md). The close desktop
+  review is `Assets/_Game/Scenes/InjuryAnimationTest.unity`; implemented regions
+  drive their own entry/hold/recovery callbacks automatically. Unsupported
+  regions remain explicitly manual in review tools and are not completed motion.
 
 - Bow-duel archers face each other. Current hit regions are head, neck, chest,
   abdomen, pelvis, left/right shoulders, left/right arms, left/right hands,

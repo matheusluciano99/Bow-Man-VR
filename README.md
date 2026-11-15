@@ -64,3 +64,6 @@ in [body-region hit detection](Docs/BodyHits.md).
 
 Shot ownership, defeat and injury/recovery handoff are documented in
 [duel turn flow](Docs/TurnFlow.md).
+
+Prepared injury clips, rebuild commands and contact checks are documented in
+[injury animations](Docs/Art/InjuryAnimations.md).

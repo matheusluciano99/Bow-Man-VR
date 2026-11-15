@@ -167,6 +167,23 @@ recovery or defeat. Keep provisional difficulty values separate from the rules.
 The AI test host supplies explicit animation callbacks until the visual sequences
 are integrated; this does not complete the full PvE mode's anatomy/blood scope.
 
+## D015 — Model-specific authored injury clips drive recovery callbacks
+
+Bake explicit transform clips against each prepared skeleton and keep their
+entry/recovery references on the character prefab. Fit supported contacts using
+the model's measured bone lengths. Rebuild with the editor authoring tool;
+preserve existing clip GUIDs. Runtime playback signals pose arrival and complete
+recovery to the duel controller. Unsupported regions receive no generic fallback
+and stay visibly pending in the review tools until their own clips exist.
+
+## D016 — Brief in-body X-ray injury presentation
+
+Show internal injury briefly inside the struck archer, using the actual arrow
+path and affected anatomy rather than a generic anatomical panel. The X-ray
+presentation must agree with the impact and subsequent body motion. Duration,
+rendering treatment and headset readability remain tuning/physical review;
+this decision does not claim implemented organs, fractures or visual acceptance.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current
