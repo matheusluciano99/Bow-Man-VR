@@ -43,10 +43,14 @@ Use GitHub's Assignees field to record task responsibility.
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
 - The local headset player sees tracked hands/controllers only for now; the
-  opponent appears as a full archer. Injury effects on the local VR viewpoint
-  remain a separate decision under task #17.
+  opponent appears as a full archer. During injury, the local viewpoint follows
+  the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
+  Physical viewpoint validation remains task #35.
 - Front/side/back references, bow/hit-region design review and preparation
   boundaries are in [Docs/Art/ArcherDesign.md](Docs/Art/ArcherDesign.md).
+- Both active prefabs use prepared Humanoid derivatives with complete body,
+  finger and eye mappings. Rig sources, import settings and validation are in
+  [Docs/Art/RigPreparation.md](Docs/Art/RigPreparation.md).
 - Keep the retained heavy Templar Knight separate from the player archer selection.
   Record sources, licenses and actual preparation status in
   [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
@@ -89,14 +93,30 @@ Use GitHub's Assignees field to record task responsibility.
   headset, then enter Play. Restart Play if Link was not active when XR initialized.
 - English Archer is on the left and Erika Archer on the right, 3.5 metres from
   the rig origin. Inspect textures, face/hair transparency, floor contact and scale.
-- The 1.75-metre body height is a provisional review setting. English Archer
-  is a static visual model; Erika has a rig with a static relaxed-arm pose.
-  Neither character has gameplay archery or injury animations yet.
+- The 1.75-metre body height is a provisional review setting. Both characters
+  have valid Humanoid rigs and neutral relaxed-arm poses. Their normal prefabs
+  do not play the rig-test loop; gameplay archery and injury clips remain separate.
 - Source files, licenses and preparation status are in
   [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
 - The Windows review player is generated at
   `Builds/PCVRCharacterReview/BowManVR-Characters.exe`. It starts this review
   scene directly; the tracking scene's default build settings stay unchanged.
+
+## Running the archer rig test
+
+- Open `Assets/_Game/Scenes/ArcherRigTest.unity` and enter Play without a headset.
+  The outside camera shows both archers playing the same 12-second Humanoid clip.
+  Inspect head/torso motion at 2 s, shoulders/arms at 4 s, fingers at 6 s and
+  left/right steps at 8/10 s. Pause to inspect skin and support contacts.
+- Each character's Head has an `EyeAnchor` at the eye-bone midpoint. It follows
+  the animated head for later first-person injury-camera integration; it does
+  not move the current XR camera or establish headset comfort acceptance.
+- Preserve original FBXs, prefab GUIDs and the derived models' `.meta` mappings.
+  Blender sources/rebuild scripts live in `SourceAssets/EnglishArcher/` and
+  `SourceAssets/ErikaArcher/`; runtime derivatives live under each ThirdParty asset.
+- Run `BowMan.Characters.EditorTests` and `BowMan.VR.EditorTests` before a rig PR.
+  Detailed preparation and review boundaries are in
+  [Docs/Art/RigPreparation.md](Docs/Art/RigPreparation.md).
 
 ## Running the duel arena test scene
 
@@ -109,25 +129,51 @@ Use GitHub's Assignees field to record task responsibility.
 - The floor is 12 by 28 metres with a clear firing lane between the archers.
   The 20-metre separation is a provisional test distance; validate final scale
   and comfort on Quest 2.
-- Hidden capsule visuals retain their colliders as simple shot-test targets;
-  these are not body-region hitboxes. Final character design, body-region hit
-  detection, bow interaction and gameplay VR integration have their own tasks.
+- Each character now has solid, bone-bound volumes for all fifteen body regions.
+  Hidden placeholder capsule colliders are disabled. Review provisional volume
+  fit when adding new poses; bow interaction and gameplay VR integration remain
+  separate tasks.
 - A desktop test arrow fires automatically on Play. Focus the Game view and
-  press Space, or click **Fire test arrow**, to repeat it. The panel reports
-  shots, hits, and the most recent impact point. The default shot hits the
-  opposing orange capsule; no headset is required for this test.
+  press Space, or click **Fire test arrow**, to repeat it. Choose a body-region
+  button to aim at that volume. The panel reports the actual region, anatomical
+  side, impact point and direction. The default shot targets Erika's chest;
+  no headset is required for this test.
 - `Assets/_Game/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
   as forward. Instantiate it and call `ArrowFlight.Launch(velocity, owner)`;
   subscribe to `Hit` before launching to receive the first solid impact.
   Pass the firing archer's root to ignore its colliders. Trigger colliders are
   ignored. Flight uses gravity and a swept tip ray each fixed step. The arrow
-  stops at impact; moving-body attachment belongs to task #20.
+  stops at impact. Body arrows retain their world pose and become children of
+  the struck volume, following its animated bone until the character is removed.
+- `ArrowFlight.BodyHit` reports one anatomical `BodyImpact` before the existing
+  generic `Hit` event. Use only one event to apply a shot outcome. Details,
+  authoring instructions and validation are in [Docs/BodyHits.md](Docs/BodyHits.md).
 - Test speeds and appearance are provisional. Missed arrows expire after
-  8 seconds; impacted arrows expire after 3 seconds or the remaining flight
-  lifetime, whichever comes first. Run `BowMan.Gameplay.PlayTests` in PlayMode
+  8 seconds; scenery impacts expire after 3 seconds or the remaining flight
+  lifetime, whichever comes first. Body arrows persist through injury/recovery;
+  remove the character hierarchy to clean them up. Run `BowMan.Gameplay.PlayTests` in PlayMode
   and `BowMan.VR.EditorTests` in EditMode before reviewing arrow changes.
+- Both spawn roots have `ArcherHealth`. The test panel shows the orange
+  target's current health, Alive/Defeated state, and defeat event count.
+  Maximum health is 100 and each test-arrow hit deals 25 damage; these are
+  provisional test values, not final combat balance. Including the automatic
+  first shot, four hits reach zero. Further hits keep health at zero and the
+  defeat event count at one. Restart Play mode to reset the test.
+- `ArcherHealth.TakeDamage(amount)` requires positive integer damage, clamps
+  health at zero, and emits `Defeated` once. The desktop launcher applies its
+  test damage to health on the struck collider or its parent. Floor impacts
+  have no health target. Body-region damage, death animations, turn handoff,
+  and match outcomes belong to later tasks.
 
 ## Bow interaction
+
+- `Assets/_Game/Scenes/DuelTurnTest.unity` reviews the two-archer turn contract
+  without a headset. It explicitly exposes manual animation-completion buttons;
+  those controls do not claim completed injury animations. Runtime gates and
+  callback ownership are documented in [Docs/TurnFlow.md](Docs/TurnFlow.md).
+- `Assets/_Game/Scenes/AIArcherTest.unity` adds the AI as archer 2, using the same
+  arrow and turn authority. Animation callbacks remain explicitly manual in this
+  review scene. Provisional aim error, thinking delay and speed need play tuning.
 
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
@@ -144,12 +190,25 @@ Use GitHub's Assignees field to record task responsibility.
   knockdown and recovery behavior.
 - Show where the arrow hit the body and the internal damage it caused, including
   organs struck and bones broken when applicable.
+- Present internal injury as a brief X-ray view inside the struck archer.
+  Highlight the actual arrow path and affected anatomy; duration and rendering
+  treatment remain provisional until VR review.
 - Show blood spilling from arrow wounds as part of the impact and injury effects.
 - Sniper Elite is the reference for anatomical hit visualization and damage
   feedback. These are requested features, not implemented systems.
 
 ## Body-specific injury sequences
 
+- Authored clip availability and model/contact checks are in
+  [Docs/Art/InjuryAnimations.md](Docs/Art/InjuryAnimations.md). The close desktop
+  review is `Assets/_Game/Scenes/InjuryAnimationTest.unity`; implemented regions
+  drive their own entry/hold/recovery callbacks automatically. Unsupported
+  regions remain explicitly manual in review tools and are not completed motion.
+
+- Bow-duel archers face each other. Current hit regions are head, neck, chest,
+  abdomen, pelvis, left/right shoulders, left/right arms, left/right hands,
+  left/right legs and left/right feet. Each needs its own reaction. Back hits
+  are outside the bow-duel scope; sword duels are only a future idea.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
@@ -159,23 +218,53 @@ Use GitHub's Assignees field to record task responsibility.
   for support, then recover and get up if still alive.
 - Right-leg hit: kneel on the injured right leg, place the right hand on the ground
   for support, then recover and get up if still alive.
-- Headshot: instant kill regardless of remaining health. Do not play a temporary
-  knockdown followed by recovery for a dead archer.
+- Headshot: instant kill regardless of remaining health, with immediate collapse
+  and loss of posture. A dead archer never recovers or resumes shooting.
+- Neck hit: also an instant kill regardless of health. Reach toward the actual
+  neck wound, let the knees buckle, then collapse without recovery.
+- Left-arm hit: recoil on the left side, cradle the injured left arm with the
+  right hand while standing, then recover if alive. Mirror the sides for a
+  right-arm hit.
+- Abdomen hit: fold forward, hold the actual wound, drop to both knees, then
+  stand if alive.
+- Shoulder hit: recoil on the injured side, turn the torso away and cup that
+  shoulder with the opposite hand while standing; use separate left/right motion.
+- Hand hit: jerk the injured hand back, open its fingers and support its wrist
+  with the opposite hand; use separate left/right motion.
+- Pelvis hit: hips buckle into a seated fall with both hands supporting the body
+  from behind; stand if alive.
+- Foot hit: lift the injured foot, balance on the other leg, then lower the foot
+  and regain stance if alive; use separate left/right motion.
 - Hit markers, arrow placement, organ damage, bone fractures, and blood effects
   must correspond to the actual impact location, not a random or generic injury.
-- Define the complete inventory of hittable regions and their reactions before
-  implementation. Reactions for regions beyond the examples above are not yet
-  specified and must not be invented as settled design decisions.
+- Follow the complete fifteen-region inventory and reactions agreed in
+  [task #17](https://github.com/matheusluciano99/Bow-Man-VR/issues/17).
+  Additional regions and reactions require a design decision.
+- The local injury viewpoint follows the character's eyes through falling,
+  kneeling and getting up, with live headset tracking so the player can look
+  around. Calibrate against the tracked neutral pose and validate the moving
+  viewpoint on Quest 2 before claiming comfort acceptance.
+- The region inventory, reaction table and review cases are in
+  [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
+- For surviving hits, hold the injured resting pose for three seconds, excluding
+  the initial reaction and recovery animation. Block shooting until recovery
+  finishes, then give the injured archer the next turn. A lethal hit ends the
+  match immediately. A miss passes the turn after scenery impact or flight expiry.
+- Resolve each shot outcome once; arrow cleanup must not advance the turn again.
+- Keep local controller tracking live during injury. Cancel any nocked arrow
+  and block drawing/firing until recovery is complete and the archer has the turn.
+- Head and neck hits always kill. Other regions kill when applied damage reaches
+  zero health; damage values and organ/fracture effects remain separate tuning.
 
 ## Combat details still to decide
 
-- Reactions for the remaining body regions, exact recovery durations, and how
-  recovery interacts with turns and lethal damage other than headshots.
+- Exact per-model hitbox dimensions, calibrated from the region boundaries in
+  the injury table and reviewed on the rigged archers.
 - Damage values and the gameplay effects of organ injuries and broken bones.
 - How to present internal injuries in VR, including whether to use an overlay,
   an X-ray view, or another approach.
-- How player knockdown and recovery affect the VR viewpoint; this needs a design
-  decision and testing on the target headset.
+- Calibration and comfort of the agreed first-person animated-eye viewpoint
+  during knockdown and recovery on the target headset.
 
 ## Task tracking
 
