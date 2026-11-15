@@ -465,6 +465,67 @@ public class InjuryAnimationTests
         Assert.That(Vector3.Distance(head.position, stopped), Is.LessThan(0.001f));
     }
 
+    // Requires a dedicated rapid collapse with a relaxed head, visible ground contact and no recovery asset.
+    [Test]
+    public void HeadCollapseLosesPostureOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var a = root.GetComponentInChildren<Animator>();
+            var head = a.GetBoneTransform(HumanBodyBones.Head);
+            var standing = head.position;
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var clip = actor.Entry(BodyRegion.Head);
+            Assert.That(actor.Supports(BodyRegion.Head), Is.True);
+            Assert.That(actor.Recovery(BodyRegion.Head), Is.Null);
+            Assert.That(clip, Is.Not.SameAs(actor.Entry(BodyRegion.Chest)));
+            Assert.That(clip.length, Is.LessThan(1.1f));
+            clip.SampleAnimation(root, 0.2f);
+            Assert.That(head.position.y, Is.LessThan(standing.y - 0.05f));
+            for (var frame = 0; frame <= 30; frame++)
+            {
+                clip.SampleAnimation(root, clip.length * frame / 30f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + frame);
+            }
+            Assert.That(head.position.y, Is.LessThan(0.4f));
+            Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Ends the result once at impact while the dead archer finishes collapsing and never recovers.
+    [UnityTest]
+    public IEnumerator HeadshotEndsTheMatchBeforeItsCollapseCompletes()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.Head);
+        var results = 0;
+        var defeats = 0;
+        var recoveries = 0;
+        flow.MatchFinished += _ => results++;
+        flow.RecoveryRequested += (_, __) => recoveries++;
+        target.Defeated += () => defeats++;
+        var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
+        var standing = head.position.y;
+        yield return new WaitForSeconds(0.2f);
+        Assert.That(target.CurrentHealth, Is.Zero);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+        Assert.That(flow.Winner, Is.Zero);
+        Assert.That(head.position.y, Is.LessThan(standing - 0.02f));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Head));
+        yield return new WaitForSeconds(1f);
+        Assert.That(head.position.y - target.transform.position.y, Is.LessThan(0.4f));
+        var fallen = head.position;
+        target.TakeDamage(100);
+        yield return new WaitForSeconds(3.2f);
+        Assert.That(Vector3.Distance(head.position, fallen), Is.LessThan(0.001f));
+        Assert.That(flow.CanShoot(0), Is.False);
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(results, Is.EqualTo(1));
+        Assert.That(defeats, Is.EqualTo(1));
+        Assert.That(recoveries, Is.Zero);
+    }
+
     // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
     [UnityTest]
     public IEnumerator RightHandUsesItsOwnSupportedRecovery()

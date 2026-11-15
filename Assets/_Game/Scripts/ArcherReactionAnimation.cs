@@ -15,9 +15,11 @@ namespace BowMan
         private AnimationClip playing;
         private float elapsed;
         private bool recovering;
+        private bool fatalPlayback;
 
-        // Reports only regions with their own authored entry and recovery, without a generic fallback.
-        public bool Supports(BodyRegion value) => Entry(value) != null && Recovery(value) != null;
+        // Requires an exact entry and, for surviving regions, an authored recovery.
+        public bool Supports(BodyRegion value) => Entry(value) != null &&
+            (value is BodyRegion.Head or BodyRegion.Neck || Recovery(value) != null);
 
         // Returns the model-specific reaction clip for animation review and runtime playback.
         public AnimationClip Entry(BodyRegion value) => entries[(int)value];
@@ -50,10 +52,12 @@ namespace BowMan
         // Plays this exact region's entry; unsupported regions remain pending for their own implementations.
         private void OnReaction(int target, BodyImpact hit, bool lethal, int shotId)
         {
-            if (target != archerIndex || lethal || Entry(hit.Region) == null) return;
+            if (target != archerIndex || Entry(hit.Region) == null) return;
+            if (lethal && hit.Region != BodyRegion.Head && hit.Region != BodyRegion.Neck) return;
             region = hit.Region;
             token = shotId;
             recovering = false;
+            fatalPlayback = lethal;
             elapsed = 0f;
             playing = Entry(region);
             playing.SampleAnimation(gameObject, 0f);
@@ -71,11 +75,12 @@ namespace BowMan
         // Advances the authored bones and reports completion only after sampling the final frame.
         private void LateUpdate()
         {
-            if (playing == null || health == null || health.IsDefeated) return;
+            if (playing == null || health == null || (health.IsDefeated && !fatalPlayback)) return;
             elapsed = Mathf.Min(elapsed + Time.deltaTime, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
             if (elapsed < playing.length) return;
             playing = null;
+            if (fatalPlayback) { fatalPlayback = false; return; }
             if (recovering) flow.CompleteRecovery(token);
             else flow.MarkInjuredPose(token);
         }
@@ -83,7 +88,7 @@ namespace BowMan
         // Stops surviving recovery immediately when either defeat finishes the match.
         private void OnFlowChanged()
         {
-            if (flow.Phase == DuelPhase.Finished) playing = null;
+            if (flow.Phase == DuelPhase.Finished && !fatalPlayback) playing = null;
         }
 
         // Removes the old match's listeners before reconnecting or destroying the character.
@@ -94,6 +99,7 @@ namespace BowMan
             flow.RecoveryRequested -= OnRecovery;
             flow.Changed -= OnFlowChanged;
             playing = null;
+            fatalPlayback = false;
         }
 
         // Prevents late match callbacks from sampling a destroyed character.

@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherReactionAnimation
   entries:
-  - {fileID: 0}
+  - {fileID: 7400000, guid: e74b07ff8bf52df41ab554d7c24a48f4, type: 2}
   - {fileID: 0}
   - {fileID: 7400000, guid: a219964728a566946bb6967a1140f422, type: 2}
   - {fileID: 0}

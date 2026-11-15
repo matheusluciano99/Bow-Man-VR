@@ -78,7 +78,14 @@ public static class MotionInjuryBuilder
 
     // Retargets the chest fall onto each owned skeleton and preserves its other injury clips.
     [MenuItem("Bow Man VR/Injuries/Rebuild Chest Fall")]
-    public static void RebuildChestFall()
+    public static void RebuildChestFall() => RebuildFall(BodyRegion.Chest, 0.5f, 2.7f, 1f);
+
+    // Authors a rapid loss of posture and relaxed head separately from the surviving chest sequence.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Head Collapse")]
+    public static void RebuildHeadCollapse() => RebuildFall(BodyRegion.Head, 0.8f, 1f, 2.5f);
+
+    // Bakes the region's own fall timing and head posture onto each target skeleton.
+    private static void RebuildFall(BodyRegion region, float sourceStart, float duration, float speed)
     {
         var source = ImportMotion("Dying Backwards");
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
@@ -95,37 +102,39 @@ public static class MotionInjuryBuilder
                 var modelRotation = animator.transform.localRotation;
                 var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
                 var neutralHips = hips.position;
-                Sample(animator, source, 0.5f, modelPosition, modelRotation);
+                Sample(animator, source, sourceStart, modelPosition, modelRotation);
                 var offset = Vector3.ProjectOnPlane(neutralHips - hips.position, Vector3.up);
                 Restore(bones, positions, rotations);
                 var mesh = new Mesh();
                 AnimationClip clip;
                 try
                 {
-                    clip = Record(root, bones, 2.7f, time =>
+                    clip = Record(root, bones, duration, time =>
                     {
                         Restore(bones, positions, rotations);
-                        Sample(animator, source, time + 0.5f, modelPosition, modelRotation);
+                        Sample(animator, source, sourceStart + time * speed, modelPosition, modelRotation);
                         hips.position += offset;
-                        var blend = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.18f));
+                        var blend = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / (region == BodyRegion.Head ? 0.06f : 0.18f)));
                         for (var i = 0; i < bones.Length; i++)
                         {
                             bones[i].localPosition = Vector3.Lerp(positions[i], bones[i].localPosition, blend);
                             bones[i].localRotation = Quaternion.Slerp(rotations[i], bones[i].localRotation, blend);
                         }
+                        if (region == BodyRegion.Head)
+                            animator.GetBoneTransform(HumanBodyBones.Head).localRotation *= Quaternion.Euler(12f * blend, 0f, 35f * blend);
                         Ground(root, hips, mesh);
                     });
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
-                clip.name = "Chest Entry";
+                clip.name = region + " Entry";
                 var folder = $"Assets/_Game/Animations/Injuries/{name}";
-                clip = InjuryAnimationBuilder.SaveClip(clip, $"{folder}/Chest_Entry.anim");
+                clip = InjuryAnimationBuilder.SaveClip(clip, $"{folder}/{region}_Entry.anim");
                 Restore(bones, positions, rotations);
                 var prefab = PrefabUtility.LoadPrefabContents(path);
                 try
                 {
                     var player = prefab.GetComponent<ArcherReactionAnimation>();
-                    player.SetSequence(BodyRegion.Chest, clip, player.Recovery(BodyRegion.Chest));
+                    player.SetSequence(region, clip, player.Recovery(region));
                     PrefabUtility.SaveAsPrefabAsset(prefab, path);
                 }
                 finally { PrefabUtility.UnloadPrefabContents(prefab); }

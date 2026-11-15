@@ -4,6 +4,7 @@ Implemented sequences have distinct model-specific entry and recovery clips, sto
 
 | Region | Prepared motion | Review status |
 | --- | --- | --- |
+| Head | Immediate loss of posture with a fast collapse and relaxed head. | Dedicated fatal clips on both models; instant match result, no hold/recovery. Headset review pending. |
 | Chest | Recoil and fall backward onto the back. | Separate retargeted fall/get-up clips on both models; full hold and recovery callbacks checked. Headset review pending. |
 | Left hand | Jerk the left hand back, keep its fingers open and support the wrist with the right hand. | Separate hand/wrist clips and contact checks on both models; headset review pending. |
 | Right hand | Jerk the right hand back, keep its fingers open and support the wrist with the left hand. | Independent hand/wrist clips and contact checks on both models; headset review pending. |
@@ -16,7 +17,7 @@ Implemented sequences have distinct model-specific entry and recovery clips, sto
 
 The editor authoring tool uses the skeleton’s measured segment lengths and two-bone IK to keep the healthy foot planted. Both entry and return last a provisional 0.9 seconds; the agreed three-second injured hold is additional time owned by DuelTurnFlow. A foot hit therefore cannot hand over at entry or while returning to stance.
 
-ArcherReactionAnimation plays only the exact configured region. It reports the final entry frame to MarkInjuredPose and the final recovery frame to CompleteRecovery, using the current shot token. Death cancels surviving recovery. Embedded arrows remain children of the moving hit volume throughout. Lethal collapse/death sequences remain their own animation cards.
+ArcherReactionAnimation plays only the exact configured region. It reports the final entry frame to MarkInjuredPose and the final recovery frame to CompleteRecovery, using the current shot token. Death cancels surviving recovery; authored fatal head/neck entries can finish visually after the immediate match result. Embedded arrows remain children of the moving hit volume throughout. Other lethal collapse/death sequences remain their own animation cards.
 
 Open Assets/_Game/Scenes/InjuryAnimationTest.unity for the close desktop review. It defaults to the left foot. Select the region and fire; an implemented reaction progresses automatically through its entry, hold and recovery. Unsupported regions retain explicit manual callback buttons in the review panel. Those buttons do not claim completed motion.
 
@@ -35,3 +36,5 @@ Use Bow Man VR > Injuries > Rebuild Left Hand or Rebuild Right Hand for the inde
 Use Bow Man VR > Injuries > Rebuild Chest Fall for the Mixamo-backed chest entry. It trims source time 0.5–3.2 seconds, blends the first 0.18 seconds from neutral, bakes sampled root motion into the hips and raises penetrating samples using actual visible skin vertices. The 2.7-second entry ends face-up with ground contact before the three-second hold begins. It never substitutes the rejected face-down motion. An entry can run before its recovery is authored; the review panel keeps separate manual callbacks for whichever half is missing. See [motion provenance](CharacterAssets.md#injury-motion-sources).
 
 Use Bow Man VR > Injuries > Rebuild Chest Recovery after building the fall. It trims the get-up source to 2.0–6.8 seconds, blends the first 0.35 seconds from the exact landed bone pose and adds 0.6 seconds to regain the prefab’s neutral ready stance. The planar motion is fitted between the fallen pelvis and the standing origin; this may need further foot-slide polish during visual review. Per-sample visible-skin ground correction prevents penetration. The complete recovery lasts 5.4 seconds; it begins only after the full three-second hold and grants the next turn only on its final frame. Defeat cancels it.
+
+Use Bow Man VR > Injuries > Rebuild Head Collapse for the separate one-second fatal head motion. It adapts the recorded fall source at a faster rate with a distinct relaxed head tilt and a 0.06-second pose transition. Match defeat is immediate at impact; the remaining collapse is visual only and never sends hold/recovery/handoff callbacks. Fatal neck motion remains independent.
