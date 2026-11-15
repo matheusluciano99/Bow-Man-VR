@@ -24,6 +24,18 @@ public static class InjuryAnimationBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Right Arm")]
     public static void RebuildRightArm() => RebuildArm(BodyRegion.RightArm);
 
+    // Rebuilds a left-shoulder recoil with the right palm cupping the shoulder cap.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Left Shoulder")]
+    public static void RebuildLeftShoulder() => RebuildShoulder(BodyRegion.LeftShoulder);
+
+    // Authors shoulder support independently of the lower arm and wrist reactions.
+    public static void RebuildShoulder(BodyRegion region)
+    {
+        if (region != BodyRegion.LeftShoulder && region != BodyRegion.RightShoulder)
+            throw new ArgumentException("A shoulder region is required.");
+        Rebuild(region);
+    }
+
     // Authors an arm-specific recoil and cradle while preserving independent shoulders and hands.
     public static void RebuildArm(BodyRegion region)
     {
@@ -157,6 +169,9 @@ public static class InjuryAnimationBuilder
             case BodyRegion.LeftArm: case BodyRegion.RightArm:
                 ArmPose(root, region == BodyRegion.LeftArm, progress);
                 break;
+            case BodyRegion.LeftShoulder: case BodyRegion.RightShoulder:
+                ShoulderPose(root, region == BodyRegion.LeftShoulder, progress);
+                break;
             default: throw new ArgumentException("This region has no authored motion.");
         }
     }
@@ -195,6 +210,32 @@ public static class InjuryAnimationBuilder
         var finger = animator.GetBoneTransform(left ? HumanBodyBones.LeftMiddleDistal : HumanBodyBones.RightMiddleDistal);
         var rotation = Quaternion.FromToRotation(finger.position - hand.position, direction) * hand.rotation;
         hand.rotation = Quaternion.Slerp(hand.rotation, rotation, progress);
+    }
+
+    // Turns away from the injured shoulder and places the opposite palm over its cap while the injured arm recoils.
+    private static void ShoulderPose(GameObject root, bool left, float progress)
+    {
+        var a = root.GetComponentInChildren<Animator>();
+        var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+        var chest = a.GetBoneTransform(HumanBodyBones.UpperChest);
+        chest.rotation = Quaternion.AngleAxis((left ? 20f : -20f) * progress, root.transform.up) * chest.rotation;
+        var healthyShoulder = a.GetBoneTransform(left ? HumanBodyBones.RightShoulder : HumanBodyBones.LeftShoulder);
+        healthyShoulder.rotation = Quaternion.AngleAxis((left ? -40f : 40f) * progress, root.transform.up) * healthyShoulder.rotation;
+        var injuredHand = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+        var healthyHand = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+        var injuredTarget = hips.position + root.transform.up * 0.12f + root.transform.forward * 0.13f
+            + root.transform.right * (left ? -0.18f : 0.18f);
+        Solve(a, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+            left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
+            left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
+            Vector3.Lerp(injuredHand.position, injuredTarget, progress), root.transform.right * (left ? -1f : 1f));
+        var shoulder = a.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+        var support = shoulder.position + root.transform.up * 0.10f + root.transform.forward * 0.11f;
+        Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
+            left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
+            left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
+            Vector3.Lerp(healthyHand.position, support, progress), root.transform.forward - root.transform.up * 0.5f);
+        PointHand(a, !left, shoulder.position + root.transform.forward * 0.055f - healthyHand.position, progress);
     }
 
     // Places a two-bone chain using its measured lengths and a projected bend hint, without changing bone lengths.
