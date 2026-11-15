@@ -76,7 +76,7 @@ MonoBehaviour:
   entries:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: a219964728a566946bb6967a1140f422, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: f8757dfe9258d3c4fb5d58f4f9d0e5f5, type: 2}

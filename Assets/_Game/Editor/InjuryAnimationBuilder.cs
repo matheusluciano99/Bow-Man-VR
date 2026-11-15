@@ -307,7 +307,7 @@ public static class InjuryAnimationBuilder
     }
 
     // Replaces clip contents without changing existing asset GUIDs when authoring is rerun.
-    private static AnimationClip SaveClip(AnimationClip clip, string path)
+    internal static AnimationClip SaveClip(AnimationClip clip, string path)
     {
         var existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
         if (existing == null) { AssetDatabase.CreateAsset(clip, path); return clip; }

@@ -25,10 +25,10 @@ namespace BowMan
         // Returns the matching recovery from that region's injured resting pose.
         public AnimationClip Recovery(BodyRegion value) => recoveries[(int)value];
 
-        // Stores a complete pair of authoring clips for one anatomical region.
+        // Stores an authored entry and its optional, separately prepared recovery.
         public void SetSequence(BodyRegion value, AnimationClip entry, AnimationClip recovery)
         {
-            if (entry == null || recovery == null) throw new ArgumentException("Both injury clips are required.");
+            if (entry == null) throw new ArgumentException("An injury entry is required.");
             entries[(int)value] = entry;
             recoveries[(int)value] = recovery;
         }
@@ -50,7 +50,7 @@ namespace BowMan
         // Plays this exact region's entry; unsupported regions remain pending for their own implementations.
         private void OnReaction(int target, BodyImpact hit, bool lethal, int shotId)
         {
-            if (target != archerIndex || lethal || !Supports(hit.Region)) return;
+            if (target != archerIndex || lethal || Entry(hit.Region) == null) return;
             region = hit.Region;
             token = shotId;
             recovering = false;

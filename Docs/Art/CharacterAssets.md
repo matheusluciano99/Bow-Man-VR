@@ -24,7 +24,7 @@ review uses English Archer and Erika Archer. Design is tracked in
 
 | Candidate | Source and license | Remaining checks |
 | --- | --- | --- |
-| English archer, count_zero | [Sketchfab](https://sketchfab.com/3d-models/english-archer-8571c31e9c934458be2e434de71f94f5), CC BY 4.0 | Static source retained: 32,466 triangles, three materials, nine 4K textures. Active rigged derivative: 30,761 body/equipment triangles, 54 deform bones, valid Humanoid. Full injury animation remains separate. Original DAE uninspected. |
+| English archer, count_zero | [Sketchfab](https://sketchfab.com/3d-models/english-archer-8571c31e9c934458be2e434de71f94f5), CC BY 4.0 | Static source retained: 32,466 triangles, three materials, nine 4K textures. Active rigged derivative: 30,409 body/equipment triangles, 54 deform bones, valid Humanoid. Full injury animation remains separate. Original DAE uninspected. |
 | Medieval man, Chenuka Wijesundara | [Sketchfab](https://sketchfab.com/3d-models/game-ready-pirate-hunter-viking-medieval-man-9f51d396733b451bab550b406b067805), CC BY 4.0 | Actual Pirate.fbx has 65 bones, 15,658 weighted vertices and 24,577 triangles; Unity Humanoid Avatar is valid. Credit Chenuka Wijesundara and Leon Steiner for the [gambeson](https://sketchfab.com/3d-models/gambeson-0fc44d2876ed449ca9473e78c83a8d39), also CC BY 4.0. Bow equipment and animation remain separate. |
 | Viking/Medieval Game Character, CGenesis | [Sketchfab](https://sketchfab.com/3d-models/vikingmedieval-game-character-a9e99a47d2a24957ab6c08c9e57ad48c), CC BY 4.0 | Original nested archive contains static Viking.obj, not a rig: 137,230 source triangles and no material file. Official GLB also saved with 10 materials and 30 images, no skin. Needs rigging and archery equipment; not imported into gameplay. |
 | Erika Archer | [Adobe Mixamo](https://www.mixamo.com/#/?page=1&query=Erika%20Archer&type=Character), [free game use with Adobe ID](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) | Official T-pose FBX retained: 67 bones, 10,754 source vertices, 20,526 triangles. Active derivative repairs right-hand weights and explicitly maps all body/finger/eye bones. Valid Humanoid; full gameplay animation remains separate. |
@@ -80,3 +80,9 @@ Blender authoring/rebuild files live under `SourceAssets/EnglishArcher/` and
 eye references and checks are documented in [RigPreparation.md](RigPreparation.md).
 This preparation enables individual animation work; each injury sequence still
 requires its own implementation and review.
+
+## Injury motion sources
+
+Chest fall uses Adobe Mixamo **Dying Backwards**, catalog description “Shot To The Chest Falling Backwards”, downloaded on Erika Archer through the official catalog. Export: FBX Binary, Without Skin, 30 fps, no key reduction. The unchanged source is `Assets/ThirdParty/MixamoAnimations/Motions/Dying Backwards.fbx` (678,592 bytes; SHA-256 `612a2981bf1c2382d78085f79d89bd4670649e6f1dd3871ba52b8e01211cb2e8`). [Mixamo terms/FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) permit use in games with an Adobe ID; the source belongs to this game project, not a standalone asset pack.
+
+The source is retargeted using the original Erika T-pose in metres; the prepared derivative uses centimetre bone coordinates and cannot supply this motion importer’s reference skeleton unchanged. Per-model native clips preserve prefab roots and correct visible floor penetration. The earlier “Standing Death Backward 01” candidate ended face-down and was rejected for chest hits.

@@ -15,7 +15,7 @@ output.mkdir(parents=True,exist_ok=True)
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.fbx(filepath=str(project/'Assets/ThirdParty/EnglishArcher/Models/EnglishArcher.fbx'))
-props={'defaultMaterial.'+str(n).zfill(3) for n in range(3,13)}
+props={'defaultMaterial.'+str(n).zfill(3) for n in range(3,14)}
 meshes=[]
 for obj in list(bpy.context.scene.objects):
     if obj.type!='MESH':continue

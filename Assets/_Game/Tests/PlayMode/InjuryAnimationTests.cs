@@ -338,6 +338,56 @@ public class InjuryAnimationTests
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
 
+    // Checks the visible retargeted fall lands face-up behind the stance without moving the model root.
+    [Test]
+    public void ChestFallLandsOnTheBackOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var a = root.GetComponentInChildren<Animator>();
+            var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+            var initial = hips.position;
+            var rotation = hips.rotation;
+            var modelPosition = a.transform.localPosition;
+            var modelRotation = a.transform.localRotation;
+            var entry = actor.Entry(BodyRegion.Chest);
+            Assert.That(entry, Is.Not.Null);
+            for (var sample = 0; sample <= 81; sample++)
+            {
+                entry.SampleAnimation(root, entry.length * sample / 81f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + sample);
+                Assert.That(Vector3.Distance(a.transform.localPosition, modelPosition), Is.LessThan(0.0001f));
+                Assert.That(Quaternion.Angle(a.transform.localRotation, modelRotation), Is.LessThan(0.01f));
+            }
+            Assert.That(hips.position.z - initial.z, Is.LessThan(-0.6f));
+            Assert.That((hips.rotation * Quaternion.Inverse(rotation) * Vector3.forward).y, Is.GreaterThan(0.75f));
+            Assert.That(a.GetBoneTransform(HumanBodyBones.Head).position.y, Is.LessThan(0.35f));
+            Assert.That(Floor(root), Is.LessThan(0.006f));
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Keeps entry-only playback automatic while an unauthored recovery remains explicitly pending.
+    [UnityTest]
+    public IEnumerator ChestFallStartsItsHoldOnlyAfterLanding()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
+        var player = target.GetComponent<ArcherReactionAnimation>();
+        player.SetSequence(BodyRegion.Chest, player.Entry(BodyRegion.Chest), null);
+        yield return new WaitForSeconds(0.4f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Reacting));
+        Assert.That(flow.CanShoot(1), Is.False);
+        yield return new WaitForSeconds(2.5f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
+        yield return new WaitForSeconds(3.2f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
     // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
     [UnityTest]
     public IEnumerator RightHandUsesItsOwnSupportedRecovery()

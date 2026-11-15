@@ -11,7 +11,8 @@ namespace BowMan
         [SerializeField] private bool useAI;
         [SerializeField] private BodyRegion selectedRegion = BodyRegion.Chest;
         private string lastReaction = "No reaction requested";
-        private bool manualCallbacks = true;
+        private bool manualEntry = true;
+        private bool manualRecovery = true;
 
         // Starts the desktop state review after both health components have initialized.
         private void Start()
@@ -30,7 +31,8 @@ namespace BowMan
         {
             lastReaction = $"Archer {target + 1}: {hit.Region}, {(lethal ? "fatal" : "survived")}";
             var actor = (target == 0 ? first : second).GetComponentInChildren<ArcherReactionAnimation>();
-            manualCallbacks = actor == null || !actor.Supports(hit.Region);
+            manualEntry = actor == null || actor.Entry(hit.Region) == null;
+            manualRecovery = actor == null || actor.Recovery(hit.Region) == null;
         }
 
         // Launches a real shot for the active archer and lets the match own its one outcome.
@@ -64,9 +66,9 @@ namespace BowMan
                 System.Enum.GetNames(typeof(BodyRegion)), 3);
             GUI.enabled = flow.CanShoot(flow.ActiveArcher) && (!useAI || flow.ActiveArcher == 0);
             if (GUILayout.Button("Fire active archer")) Fire();
-            GUI.enabled = manualCallbacks && flow.Phase == DuelPhase.Reacting;
+            GUI.enabled = manualEntry && flow.Phase == DuelPhase.Reacting;
             if (GUILayout.Button("Animation reached injured pose")) flow.MarkInjuredPose(flow.ShotId);
-            GUI.enabled = manualCallbacks && flow.Phase == DuelPhase.Recovering;
+            GUI.enabled = manualRecovery && flow.Phase == DuelPhase.Recovering;
             if (GUILayout.Button("Recovery animation finished")) flow.CompleteRecovery(flow.ShotId);
             GUI.enabled = true;
             if (flow.Phase == DuelPhase.Finished) GUILayout.Label($"Winner: archer {flow.Winner + 1}");
