@@ -590,6 +590,90 @@ public class InjuryAnimationTests
         }
     }
 
+    // Measures visible contact near a supported joint rather than treating its bone origin as the skin surface.
+    private static float ContactFloor(GameObject root, Vector3 joint)
+    {
+        var floor = float.PositiveInfinity;
+        var mesh = new Mesh();
+        try
+        {
+            foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                skin.BakeMesh(mesh, true);
+                foreach (var vertex in mesh.vertices)
+                {
+                    var point = skin.transform.TransformPoint(vertex);
+                    if (Vector3.Distance(point, joint) < 0.18f) floor = Mathf.Min(floor, point.y);
+                }
+                mesh.Clear();
+            }
+            return floor;
+        }
+        finally { Object.DestroyImmediate(mesh); }
+    }
+
+    // Requires the injured knee and same-side glove on the ground while the healthy foot remains planted.
+    [Test]
+    public void LegClipsSupportTheCorrectKneeAndHandOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var a = root.GetComponentInChildren<Animator>();
+            Assert.That(actor.Supports(BodyRegion.LeftLeg), Is.True);
+            foreach (var region in new[] { BodyRegion.LeftLeg, BodyRegion.RightLeg }.Where(actor.Supports))
+            {
+                var left = region == BodyRegion.LeftLeg;
+                var support = a.GetBoneTransform(left ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot);
+                var knee = a.GetBoneTransform(left ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg);
+                var otherKnee = a.GetBoneTransform(left ? HumanBodyBones.RightLowerLeg : HumanBodyBones.LeftLowerLeg);
+                var hand = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var head = a.GetBoneTransform(HumanBodyBones.Head);
+                var standingHead = head.position;
+                var planted = support.position;
+                var entry = actor.Entry(region);
+                for (var frame = 0; frame <= 81; frame++)
+                {
+                    entry.SampleAnimation(root, entry.length * frame / 81f);
+                    Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f), name + " " + region);
+                    Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " " + region + " frame " + frame);
+                }
+                Assert.That(knee.position.y, Is.LessThan(otherKnee.position.y - 0.12f));
+                Assert.That(otherKnee.position.y, Is.GreaterThan(0.18f));
+                Assert.That(hand.position.y, Is.LessThan(0.1f));
+                Assert.That(ContactFloor(root, hand.position), Is.InRange(-0.006f, 0.01f));
+                Assert.That(ContactFloor(root, knee.position), Is.LessThan(0.03f));
+                var restingHand = hand.position;
+                var recovery = actor.Recovery(region);
+                recovery.SampleAnimation(root, 0f);
+                Assert.That(Vector3.Distance(hand.position, restingHand), Is.LessThan(0.001f));
+                for (var frame = 0; frame <= 81; frame++)
+                {
+                    recovery.SampleAnimation(root, recovery.length * frame / 81f);
+                    Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f));
+                    Assert.That(Floor(root), Is.GreaterThan(-0.006f));
+                }
+                Assert.That(Vector3.Distance(head.position, standingHead), Is.LessThan(0.001f));
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Uses a real left-leg impact through kneeling, the full hold and the complete standing recovery.
+    [UnityTest]
+    public IEnumerator LeftLegHitWaitsForItsSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.LeftLeg);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.LeftLeg));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
     // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
     [UnityTest]
     public IEnumerator RightHandUsesItsOwnSupportedRecovery()
