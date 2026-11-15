@@ -4,6 +4,7 @@ Implemented sequences have distinct model-specific entry and recovery clips, sto
 
 | Region | Prepared motion | Review status |
 | --- | --- | --- |
+| Right leg | Kneel on the right knee, plant the right palm, hold, then regain standing. | Independent side-fitted clips with the healthy left foot planted; headset review pending. |
 | Left leg | Kneel on the left knee, plant the left palm, hold, then regain standing. | Own kneeling clips, distinct from lifted-foot reactions; headset review pending. |
 | Neck | Reach the actual neck wound, buckle the knees, then collapse without recovery. | Separate fatal clips on both models with runtime contact fitting; headset review pending. |
 | Head | Immediate loss of posture with a fast collapse and relaxed head. | Dedicated fatal clips on both models; instant match result, no hold/recovery. Headset review pending. |
@@ -44,3 +45,5 @@ Use Bow Man VR > Injuries > Rebuild Head Collapse for the separate one-second fa
 Use Bow Man VR > Injuries > Rebuild Neck Collapse for the separate 2.4-second neck sequence. The archer first reaches the neck, then the knees buckle into a fatal collapse and the hand releases before landing. Runtime IK fits the right palm to the actual bone-local impact point and approach direction, including off-centre wounds; it does not replace arrow placement with a generic socket. The shared measured-length arm solver is also used by the existing editor-authored limb contacts. Defeat remains immediate, independent of the visual timing, with no recovery or turn callback.
 
 Use Bow Man VR > Injuries > Rebuild Left Leg for the left-knee and same-side ground-support sequence. The authoring tool fits the pelvis height from measured thigh/shin lengths and the visible kneepad surface, gives the moving foot clearance, bends at the hips and spine so the left palm can reach the floor, and keeps the healthy foot planted. Both clips remain separate from the foot-lift reactions. The three-second injured hold is owned by the shared turn controller; survival recovery must finish before handoff.
+
+Use Bow Man VR > Injuries > Rebuild Right Leg for the independent right-knee sequence. It fits the right kneepad and right glove to the ground on each actual model while preserving the planted left foot. It does not reuse the left clip or substitute the right-foot lift.

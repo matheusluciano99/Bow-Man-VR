@@ -674,6 +674,20 @@ public class InjuryAnimationTests
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
 
+    // Keeps a right-leg impact distinct through its own same-side supported kneeling and standing recovery.
+    [UnityTest]
+    public IEnumerator RightLegHitUsesItsOwnSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightLeg);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightLeg));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
     // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
     [UnityTest]
     public IEnumerator RightHandUsesItsOwnSupportedRecovery()

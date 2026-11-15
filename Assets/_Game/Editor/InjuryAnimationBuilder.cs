@@ -13,6 +13,10 @@ public static class InjuryAnimationBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Left Leg")]
     public static void RebuildLeftLeg() => RebuildLeg(BodyRegion.LeftLeg);
 
+    // Rebuilds the independent right-knee reaction with right-palm support and the left foot planted.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Right Leg")]
+    public static void RebuildRightLeg() => RebuildLeg(BodyRegion.RightLeg);
+
     // Fits the injured knee and same-side support hand independently of the foot-lift reactions.
     public static void RebuildLeg(BodyRegion region)
     {
@@ -273,6 +277,8 @@ public static class InjuryAnimationBuilder
             left ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot, healthyStart, root.transform.forward);
         injured.rotation = Quaternion.AngleAxis(45f * progress, root.transform.right) * injuredRotation;
         healthy.rotation = healthyRotation;
+        if (!left)
+            healthy.rotation = Quaternion.AngleAxis(-4f * progress, root.transform.right) * healthyRotation;
         var hand = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
         var shoulder = a.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
         var support = shoulder.position + root.transform.right * (left ? -0.06f : 0.06f) + root.transform.forward * 0.08f;
