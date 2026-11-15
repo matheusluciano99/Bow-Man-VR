@@ -4,6 +4,25 @@ namespace BowMan
 {
     public static class ArcherLimbIK
     {
+        // Braces the actual abdominal wound with both hands while retaining the character's measured arm lengths.
+        public static void ReachAbdomen(Animator animator, Vector3 point, Vector3 outward, float weight)
+        {
+            if (weight <= 0f) return;
+            var spine = animator.GetBoneTransform(HumanBodyBones.Spine);
+            for (var handIndex = 0; handIndex < 2; handIndex++)
+            {
+                var left = handIndex == 1;
+                var wrist = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var target = point + spine.right * (left ? -0.05f : 0.05f) + outward * 0.03f;
+                if (left) target -= spine.up * 0.04f;
+                Solve(animator, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+                    left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
+                    left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
+                    Vector3.Lerp(wrist.position, target, weight), spine.right * (left ? -1f : 1f) + outward * 0.3f);
+                PointHand(animator, left, spine.right * (left ? 1f : -1f), weight);
+            }
+        }
+
         // Holds the wound early in the neck sequence and releases the arm before landing.
         public static float NeckReachWeight(float time) => Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.45f)) *
             (1f - Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((time - 1.1f) / 0.7f)));

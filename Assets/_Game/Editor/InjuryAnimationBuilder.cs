@@ -9,6 +9,10 @@ using static BowMan.ArcherLimbIK;
 
 public static class InjuryAnimationBuilder
 {
+    // Rebuilds the abdomen-specific wound brace, both-knee descent and standing recovery.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Abdomen")]
+    public static void RebuildAbdomen() => Rebuild(BodyRegion.Abdomen);
+
     // Rebuilds a left-knee injury with left-palm ground support and a standing recovery.
     [MenuItem("Bow Man VR/Injuries/Rebuild Left Leg")]
     public static void RebuildLeftLeg() => RebuildLeg(BodyRegion.LeftLeg);
@@ -105,19 +109,30 @@ public static class InjuryAnimationBuilder
                 var rotations = bones.Select(t => t.localRotation).ToArray();
                 var folder = $"Assets/_Game/Animations/Injuries/{name}";
                 System.IO.Directory.CreateDirectory(folder);
-                var kneeHeight = 0.08f;
+                var kneeHeights = Vector2.one * 0.08f;
                 if (region is BodyRegion.LeftLeg or BodyRegion.RightLeg)
+                {
+                    var side = region == BodyRegion.LeftLeg ? 0 : 1;
+                    for (var fit = 0; fit < 3; fit++)
+                    {
+                        Restore(bones, positions, rotations);
+                        LegPose(root, region == BodyRegion.LeftLeg, 1f, kneeHeights[side]);
+                        var knee = animator.GetBoneTransform(region == BodyRegion.LeftLeg ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg);
+                        kneeHeights[side] -= NearbyFloor(root, knee.position) - root.transform.position.y;
+                    }
+                }
+                if (region == BodyRegion.Abdomen)
                 {
                     for (var fit = 0; fit < 3; fit++)
                     {
                         Restore(bones, positions, rotations);
-                        LegPose(root, region == BodyRegion.LeftLeg, 1f, kneeHeight);
-                        var knee = animator.GetBoneTransform(region == BodyRegion.LeftLeg ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg);
-                        kneeHeight -= NearbyFloor(root, knee.position) - root.transform.position.y;
+                        AbdomenPose(root, 1f, kneeHeights);
+                        kneeHeights.x -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position) - root.transform.position.y;
+                        kneeHeights.y -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position) - root.transform.position.y;
                     }
                 }
-                var entry = BuildClip(root, bones, positions, rotations, region, false, kneeHeight);
-                var recovery = BuildClip(root, bones, positions, rotations, region, true, kneeHeight);
+                var entry = BuildClip(root, bones, positions, rotations, region, false, kneeHeights);
+                var recovery = BuildClip(root, bones, positions, rotations, region, true, kneeHeights);
                 entry = SaveClip(entry, $"{folder}/{region}_Entry.anim");
                 recovery = SaveClip(recovery, $"{folder}/{region}_Recovery.anim");
                 Restore(bones, positions, rotations);
@@ -138,7 +153,7 @@ public static class InjuryAnimationBuilder
 
     // Records eased entry or return curves for changed bone channels at thirty samples per second.
     private static AnimationClip BuildClip(GameObject root, Transform[] bones, Vector3[] positions,
-        Quaternion[] rotations, BodyRegion region, bool recovery, float kneeHeight)
+        Quaternion[] rotations, BodyRegion region, bool recovery, Vector2 kneeHeights)
     {
         var clip = new AnimationClip { name = region + (recovery ? " Recovery" : " Entry"), frameRate = 30f };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
@@ -147,7 +162,7 @@ public static class InjuryAnimationBuilder
         {
             Restore(bones, positions, rotations);
             var progress = Mathf.SmoothStep(0f, 1f, sample / 27f);
-            ApplyPose(root, region, recovery ? 1f - progress : progress, kneeHeight);
+            ApplyPose(root, region, recovery ? 1f - progress : progress, kneeHeights);
             for (var i = 0; i < bones.Length; i++)
             {
                 var p = bones[i].localPosition;
@@ -214,12 +229,15 @@ public static class InjuryAnimationBuilder
     }
 
     // Dispatches to the exact region's authoring motion instead of substituting a generic body reaction.
-    private static void ApplyPose(GameObject root, BodyRegion region, float progress, float kneeHeight)
+    private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights)
     {
         switch (region)
         {
+            case BodyRegion.Abdomen:
+                AbdomenPose(root, progress, kneeHeights);
+                break;
             case BodyRegion.LeftLeg: case BodyRegion.RightLeg:
-                LegPose(root, region == BodyRegion.LeftLeg, progress, kneeHeight);
+                LegPose(root, region == BodyRegion.LeftLeg, progress, kneeHeights[region == BodyRegion.LeftLeg ? 0 : 1]);
                 break;
             case BodyRegion.LeftFoot: case BodyRegion.RightFoot:
                 FootPose(root, region == BodyRegion.LeftFoot, progress);
@@ -235,6 +253,52 @@ public static class InjuryAnimationBuilder
                 break;
             default: throw new ArgumentException("This region has no authored motion.");
         }
+    }
+
+    // Folds over the abdominal wound while placing both visible knees on their fitted support surfaces.
+    private static void AbdomenPose(GameObject root, float progress, Vector2 kneeHeights)
+    {
+        var a = root.GetComponentInChildren<Animator>();
+        var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+        var hipStart = hips.position;
+        var thighs = new[] { a.GetBoneTransform(HumanBodyBones.LeftUpperLeg), a.GetBoneTransform(HumanBodyBones.RightUpperLeg) };
+        var knees = new[] { a.GetBoneTransform(HumanBodyBones.LeftLowerLeg), a.GetBoneTransform(HumanBodyBones.RightLowerLeg) };
+        var feet = new[] { a.GetBoneTransform(HumanBodyBones.LeftFoot), a.GetBoneTransform(HumanBodyBones.RightFoot) };
+        var starts = feet.Select(t => t.position).ToArray();
+        var rotations = feet.Select(t => t.rotation).ToArray();
+        var upperLengths = Enumerable.Range(0, 2).Select(i => Vector3.Distance(thighs[i].position, knees[i].position)).ToArray();
+        var lowerLengths = Enumerable.Range(0, 2).Select(i => Vector3.Distance(knees[i].position, feet[i].position)).ToArray();
+        var finalHip = hipStart;
+        finalHip.y = root.transform.position.y + upperLengths.Min() * 0.8f + 0.02f;
+        var targets = new Vector3[2];
+        var kneeTargets = new Vector3[2];
+        for (var i = 0; i < 2; i++)
+        {
+            var thigh = finalHip + Quaternion.AngleAxis(20f, root.transform.right) * (thighs[i].position - hipStart);
+            var kneeY = root.transform.position.y + kneeHeights[i];
+            var kneeX = root.transform.position.x + (i == 0 ? -1f : 1f) * Mathf.Max(0.07f, Mathf.Abs(thigh.x - root.transform.position.x) - 0.04f);
+            var kneeZ = thigh.z + Mathf.Sqrt(Mathf.Max(0f, upperLengths[i] * upperLengths[i] -
+                Mathf.Pow(thigh.y - kneeY, 2f) - Mathf.Pow(thigh.x - kneeX, 2f)));
+            kneeTargets[i] = new Vector3(kneeX, kneeY, kneeZ);
+            targets[i] = new Vector3(kneeX, root.transform.position.y + 0.22f,
+                kneeZ - Mathf.Sqrt(Mathf.Max(0f, lowerLengths[i] * lowerLengths[i] - Mathf.Pow(0.22f - kneeHeights[i], 2f))));
+        }
+        hips.position = Vector3.Lerp(hipStart, finalHip, progress);
+        hips.rotation = Quaternion.AngleAxis(20f * progress, root.transform.right) * hips.rotation;
+        var spine = a.GetBoneTransform(HumanBodyBones.Spine);
+        spine.rotation = Quaternion.AngleAxis(25f * progress, root.transform.right) * spine.rotation;
+        for (var i = 0; i < 2; i++)
+        {
+            Solve(a, i == 0 ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg,
+                i == 0 ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg,
+                i == 0 ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot,
+                Vector3.Lerp(starts[i], targets[i], progress) + root.transform.up * (0.03f * Mathf.Sin(progress * Mathf.PI)),
+                kneeTargets[i] - thighs[i].position);
+            feet[i].rotation = Quaternion.AngleAxis(45f * progress, root.transform.right) * rotations[i];
+        }
+        var volume = root.GetComponentsInChildren<BodyHitRegion>().Single(r => r.Region == BodyRegion.Abdomen).GetComponent<BoxCollider>();
+        var point = volume.transform.TransformPoint(volume.center + Vector3.forward * (volume.size.z * 0.5f));
+        ArcherLimbIK.ReachAbdomen(a, point, volume.transform.forward, progress);
     }
 
     // Lowers the injured knee while the other foot stays planted and the same-side palm supports the bent torso.

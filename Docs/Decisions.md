@@ -176,6 +176,10 @@ preserve existing clip GUIDs. Runtime playback signals pose arrival and complete
 recovery to the duel controller. Unsupported regions receive no generic fallback
 and stay visibly pending in the review tools until their own clips exist. Retarget imported motion against its source T-pose and unit scale, bake it to each owned skeleton, and record the source/export terms in the asset document. Keep motion sampling on disposable instances so baking cannot serialize animated bone overrides into a neutral prefab.
 
+Wound-reaching motions retain the actual impact and approach direction in the
+struck volume’s bone-local space. Fit their hands after sampling the authored
+pose so the contact follows the moving wound rather than a fixed world point.
+
 ## D016 — Brief in-body X-ray injury presentation
 
 Show internal injury briefly inside the struck archer, using the actual arrow

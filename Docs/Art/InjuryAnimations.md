@@ -4,6 +4,7 @@ Implemented sequences have distinct model-specific entry and recovery clips, sto
 
 | Region | Prepared motion | Review status |
 | --- | --- | --- |
+| Abdomen | Fold forward, hold the actual wound with both hands and kneel on both knees before recovering. | Own clips and runtime wound fitting; headset review pending. |
 | Right leg | Kneel on the right knee, plant the right palm, hold, then regain standing. | Independent side-fitted clips with the healthy left foot planted; headset review pending. |
 | Left leg | Kneel on the left knee, plant the left palm, hold, then regain standing. | Own kneeling clips, distinct from lifted-foot reactions; headset review pending. |
 | Neck | Reach the actual neck wound, buckle the knees, then collapse without recovery. | Separate fatal clips on both models with runtime contact fitting; headset review pending. |
@@ -47,3 +48,5 @@ Use Bow Man VR > Injuries > Rebuild Neck Collapse for the separate 2.4-second ne
 Use Bow Man VR > Injuries > Rebuild Left Leg for the left-knee and same-side ground-support sequence. The authoring tool fits the pelvis height from measured thigh/shin lengths and the visible kneepad surface, gives the moving foot clearance, bends at the hips and spine so the left palm can reach the floor, and keeps the healthy foot planted. Both clips remain separate from the foot-lift reactions. The three-second injured hold is owned by the shared turn controller; survival recovery must finish before handoff.
 
 Use Bow Man VR > Injuries > Rebuild Right Leg for the independent right-knee sequence. It fits the right kneepad and right glove to the ground on each actual model while preserving the planted left foot. It does not reuse the left clip or substitute the right-foot lift.
+
+Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. It fits each visible kneepad separately, folds the torso and braces the front abdominal surface. Runtime fitting moves both hands to the actual bone-local wound/arrow approach, retaining that pose through the three-second hold and releasing it during recovery. The pelvis keeps a separate seated-fall reaction.
