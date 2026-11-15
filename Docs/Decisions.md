@@ -208,6 +208,27 @@ match result immediately; the visual sequence does not delay the result or run
 a surviving hold, recovery or turn handoff. Death during an existing reaction
 or recovery interrupts getting up and finishes the collapse from the current
 pose. Preserve the independent head and neck fatal sequences.
+## D019 — Reuse arrow flight for an independently testable bow interaction
+
+Keep draw/nock/release state in `Bow`, tracked controller bindings in `VRBowInput`,
+and desktop simulation in `DesktopBowTest`. Both input paths drive the same bow
+and existing `ArrowFlight`; no additional interaction package is required.
+Backward draw controls launch speed, and the line from the drawn string to its
+resting nock controls aim. Ignore short, forward-only and sideways-only pulls.
+Cancel rather than fire when grip, tracking or application focus is lost.
+
+Use the English Archer's existing textured bow parts and a moving string in the
+project-owned bow prefab. Preserve its original model and attribution. A dedicated
+test scene keeps this work independent of later turn/match integration and makes
+draw strength testable without the classroom headset.
+
+Grip/trigger mappings, default left bow hand, grip offsets, 12 cm string grab
+radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
+prototype settings. Validate handedness, grip alignment and comfortable draw on
+Quest 2 before treating them as final controls or calibration.
+Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
+panel switches hands without an Inspector edit and cancels a tracked draw before
+rebinding. Final game-menu presentation remains part of menu integration.
 
 ## Open questions and provisional values
 
