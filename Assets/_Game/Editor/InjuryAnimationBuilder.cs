@@ -5,6 +5,7 @@ using BowMan;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using static BowMan.ArcherLimbIK;
 
 public static class InjuryAnimationBuilder
 {
@@ -228,15 +229,6 @@ public static class InjuryAnimationBuilder
         PointHand(a, !left, elbow.position - healthyHand.position, progress);
     }
 
-    // Aims the open fingers toward the contact direction without translating the supported wrist.
-    private static void PointHand(Animator animator, bool left, Vector3 direction, float progress)
-    {
-        var hand = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
-        var finger = animator.GetBoneTransform(left ? HumanBodyBones.LeftMiddleDistal : HumanBodyBones.RightMiddleDistal);
-        var rotation = Quaternion.FromToRotation(finger.position - hand.position, direction) * hand.rotation;
-        hand.rotation = Quaternion.Slerp(hand.rotation, rotation, progress);
-    }
-
     // Turns away from the injured shoulder and places the opposite palm over its cap while the injured arm recoils.
     private static void ShoulderPose(GameObject root, bool left, float progress)
     {
@@ -286,24 +278,6 @@ public static class InjuryAnimationBuilder
             Vector3.Lerp(healthy.position, support, progress), root.transform.forward - root.transform.up * 0.4f);
         var elbow = a.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
         PointHand(a, !left, elbow.position - healthy.position, progress);
-    }
-
-    // Places a two-bone chain using its measured lengths and a projected bend hint, without changing bone lengths.
-    private static void Solve(Animator animator, HumanBodyBones upperId, HumanBodyBones lowerId,
-        HumanBodyBones endId, Vector3 target, Vector3 hint)
-    {
-        var upper = animator.GetBoneTransform(upperId);
-        var lower = animator.GetBoneTransform(lowerId);
-        var end = animator.GetBoneTransform(endId);
-        var a = Vector3.Distance(upper.position, lower.position);
-        var b = Vector3.Distance(lower.position, end.position);
-        var direction = (target - upper.position).normalized;
-        var distance = Mathf.Clamp(Vector3.Distance(upper.position, target), Mathf.Abs(a - b) + 0.00001f, a + b - 0.00001f);
-        var along = (a * a - b * b + distance * distance) / (2f * distance);
-        var bend = Vector3.ProjectOnPlane(hint, direction).normalized;
-        var joint = upper.position + direction * along + bend * Mathf.Sqrt(Mathf.Max(0f, a * a - along * along));
-        upper.rotation = Quaternion.FromToRotation(lower.position - upper.position, joint - upper.position) * upper.rotation;
-        lower.rotation = Quaternion.FromToRotation(end.position - lower.position, target - lower.position) * lower.rotation;
     }
 
     // Replaces clip contents without changing existing asset GUIDs when authoring is rerun.

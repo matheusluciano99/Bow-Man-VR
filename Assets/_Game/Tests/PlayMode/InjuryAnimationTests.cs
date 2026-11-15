@@ -526,6 +526,70 @@ public class InjuryAnimationTests
         Assert.That(recoveries, Is.Zero);
     }
 
+    // Checks the neck's own wound reach, buckling knees and ground-contact collapse on both actual skins.
+    [Test]
+    public void NeckEntryReachesThenBucklesAndCollapsesOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var a = root.GetComponentInChildren<Animator>();
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var clip = actor.Entry(BodyRegion.Neck);
+            Assert.That(actor.Supports(BodyRegion.Neck), Is.True);
+            Assert.That(actor.Recovery(BodyRegion.Neck), Is.Null);
+            Assert.That(clip, Is.Not.SameAs(actor.Entry(BodyRegion.Head)));
+            var knee = a.GetBoneTransform(HumanBodyBones.RightLowerLeg);
+            var thigh = a.GetBoneTransform(HumanBodyBones.RightUpperLeg);
+            var foot = a.GetBoneTransform(HumanBodyBones.RightFoot);
+            clip.SampleAnimation(root, 0.65f);
+            var hand = a.GetBoneTransform(HumanBodyBones.RightHand);
+            var finger = a.GetBoneTransform(HumanBodyBones.RightMiddleProximal);
+            var neck = a.GetBoneTransform(HumanBodyBones.Neck);
+            Assert.That(Vector3.Distance(Vector3.Lerp(hand.position, finger.position, 0.5f), neck.position), Is.LessThan(0.14f));
+            clip.SampleAnimation(root, 1.1f);
+            Assert.That(Vector3.Angle(thigh.position - knee.position, foot.position - knee.position), Is.LessThan(120f));
+            for (var frame = 0; frame <= 72; frame++)
+            {
+                clip.SampleAnimation(root, clip.length * frame / 72f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + frame);
+            }
+            Assert.That(a.GetBoneTransform(HumanBodyBones.Head).position.y, Is.LessThan(0.35f));
+            Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Tracks two actual off-centre wounds instead of reaching toward one generic neck socket.
+    [UnityTest]
+    public IEnumerator FatalNeckReachFollowsTheActualImpactOnEitherSide()
+    {
+        foreach (var offset in new[] { -0.035f, 0.035f })
+        {
+            var flow = BodyShot(out var target, out var arrow, BodyRegion.Neck);
+            arrow.transform.position += Vector3.right * offset;
+            var results = 0;
+            var recoveries = 0;
+            flow.MatchFinished += _ => results++;
+            flow.RecoveryRequested += (_, __) => recoveries++;
+            yield return new WaitForSeconds(0.65f);
+            Assert.That(target.CurrentHealth, Is.Zero);
+            Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+            Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Neck));
+            var a = target.GetComponentInChildren<Animator>();
+            var neck = a.GetBoneTransform(HumanBodyBones.Neck);
+            var wrist = a.GetBoneTransform(HumanBodyBones.RightHand);
+            var expected = arrow.transform.position - neck.up * 0.045f - arrow.transform.forward * 0.025f;
+            Assert.That(Vector3.Distance(wrist.position, expected), Is.LessThan(0.008f), "Actual wound side " + offset);
+            yield return new WaitForSeconds(2f);
+            Assert.That(a.GetBoneTransform(HumanBodyBones.Head).position.y - target.transform.position.y, Is.LessThan(0.35f));
+            Assert.That(flow.CanShoot(1), Is.False);
+            Assert.That(results, Is.EqualTo(1));
+            Assert.That(recoveries, Is.Zero);
+            yield return CleanUp();
+        }
+    }
+
     // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
     [UnityTest]
     public IEnumerator RightHandUsesItsOwnSupportedRecovery()

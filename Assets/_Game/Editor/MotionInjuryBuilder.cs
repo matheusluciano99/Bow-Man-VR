@@ -84,6 +84,10 @@ public static class MotionInjuryBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Head Collapse")]
     public static void RebuildHeadCollapse() => RebuildFall(BodyRegion.Head, 0.8f, 1f, 2.5f);
 
+    // Authors a wound reach followed by buckling knees and a fatal collapse, without a recovery clip.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Neck Collapse")]
+    public static void RebuildNeckCollapse() => RebuildFall(BodyRegion.Neck, 0.8f, 2.4f, 1.3f);
+
     // Bakes the region's own fall timing and head posture onto each target skeleton.
     private static void RebuildFall(BodyRegion region, float sourceStart, float duration, float speed)
     {
@@ -112,7 +116,8 @@ public static class MotionInjuryBuilder
                     clip = Record(root, bones, duration, time =>
                     {
                         Restore(bones, positions, rotations);
-                        Sample(animator, source, sourceStart + time * speed, modelPosition, modelRotation);
+                        var motionTime = region == BodyRegion.Neck ? Mathf.Max(0f, time - 0.55f) : time;
+                        Sample(animator, source, sourceStart + motionTime * speed, modelPosition, modelRotation);
                         hips.position += offset;
                         var blend = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / (region == BodyRegion.Head ? 0.06f : 0.18f)));
                         for (var i = 0; i < bones.Length; i++)
@@ -122,6 +127,12 @@ public static class MotionInjuryBuilder
                         }
                         if (region == BodyRegion.Head)
                             animator.GetBoneTransform(HumanBodyBones.Head).localRotation *= Quaternion.Euler(12f * blend, 0f, 35f * blend);
+                        if (region == BodyRegion.Neck)
+                        {
+                            var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
+                            ArcherLimbIK.ReachNeck(animator, neck.position + root.transform.forward * 0.08f,
+                                root.transform.forward, ArcherLimbIK.NeckReachWeight(time));
+                        }
                         Ground(root, hips, mesh);
                     });
                 }

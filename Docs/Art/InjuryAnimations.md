@@ -4,6 +4,7 @@ Implemented sequences have distinct model-specific entry and recovery clips, sto
 
 | Region | Prepared motion | Review status |
 | --- | --- | --- |
+| Neck | Reach the actual neck wound, buckle the knees, then collapse without recovery. | Separate fatal clips on both models with runtime contact fitting; headset review pending. |
 | Head | Immediate loss of posture with a fast collapse and relaxed head. | Dedicated fatal clips on both models; instant match result, no hold/recovery. Headset review pending. |
 | Chest | Recoil and fall backward onto the back. | Separate retargeted fall/get-up clips on both models; full hold and recovery callbacks checked. Headset review pending. |
 | Left hand | Jerk the left hand back, keep its fingers open and support the wrist with the right hand. | Separate hand/wrist clips and contact checks on both models; headset review pending. |
@@ -37,4 +38,6 @@ Use Bow Man VR > Injuries > Rebuild Chest Fall for the Mixamo-backed chest entry
 
 Use Bow Man VR > Injuries > Rebuild Chest Recovery after building the fall. It trims the get-up source to 2.0–6.8 seconds, blends the first 0.35 seconds from the exact landed bone pose and adds 0.6 seconds to regain the prefab’s neutral ready stance. The planar motion is fitted between the fallen pelvis and the standing origin; this may need further foot-slide polish during visual review. Per-sample visible-skin ground correction prevents penetration. The complete recovery lasts 5.4 seconds; it begins only after the full three-second hold and grants the next turn only on its final frame. Defeat cancels it.
 
-Use Bow Man VR > Injuries > Rebuild Head Collapse for the separate one-second fatal head motion. It adapts the recorded fall source at a faster rate with a distinct relaxed head tilt and a 0.06-second pose transition. Match defeat is immediate at impact; the remaining collapse is visual only and never sends hold/recovery/handoff callbacks. Fatal neck motion remains independent.
+Use Bow Man VR > Injuries > Rebuild Head Collapse for the separate one-second fatal head motion. It adapts the recorded fall source at a faster rate with a distinct relaxed head tilt and a 0.06-second pose transition. Match defeat is immediate at impact; the remaining collapse is visual only and never sends hold/recovery/handoff callbacks. Fatal neck motion uses its own reach, knee-buckle and collapse timing.
+
+Use Bow Man VR > Injuries > Rebuild Neck Collapse for the separate 2.4-second neck sequence. The archer first reaches the neck, then the knees buckle into a fatal collapse and the hand releases before landing. Runtime IK fits the right palm to the actual bone-local impact point and approach direction, including off-centre wounds; it does not replace arrow placement with a generic socket. The shared measured-length arm solver is also used by the existing editor-authored limb contacts. Defeat remains immediate, independent of the visual timing, with no recovery or turn callback.

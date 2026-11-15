@@ -16,6 +16,10 @@ namespace BowMan
         private float elapsed;
         private bool recovering;
         private bool fatalPlayback;
+        private Animator poseAnimator;
+        private Transform neckAnchor;
+        private Vector3 neckPoint;
+        private Vector3 neckOutward;
 
         // Requires an exact entry and, for surviving regions, an authored recovery.
         public bool Supports(BodyRegion value) => Entry(value) != null &&
@@ -60,6 +64,13 @@ namespace BowMan
             fatalPlayback = lethal;
             elapsed = 0f;
             playing = Entry(region);
+            if (region == BodyRegion.Neck)
+            {
+                poseAnimator = GetComponentInChildren<Animator>();
+                neckAnchor = hit.Collider.transform;
+                neckPoint = neckAnchor.InverseTransformPoint(hit.Point);
+                neckOutward = neckAnchor.InverseTransformDirection(-hit.Direction);
+            }
             playing.SampleAnimation(gameObject, 0f);
         }
 
@@ -78,6 +89,9 @@ namespace BowMan
             if (playing == null || health == null || (health.IsDefeated && !fatalPlayback)) return;
             elapsed = Mathf.Min(elapsed + Time.deltaTime, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
+            if (fatalPlayback && region == BodyRegion.Neck && neckAnchor != null)
+                ArcherLimbIK.ReachNeck(poseAnimator, neckAnchor.TransformPoint(neckPoint),
+                    neckAnchor.TransformDirection(neckOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
             if (elapsed < playing.length) return;
             playing = null;
             if (fatalPlayback) { fatalPlayback = false; return; }
