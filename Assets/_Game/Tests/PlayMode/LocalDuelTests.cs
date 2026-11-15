@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using BowMan;
 using NUnit.Framework;
 using UnityEditor.SceneManagement;
@@ -73,7 +74,10 @@ public class LocalDuelTests
     {
         var duel = Find<LocalDuel>();
         var bow = Find<Bow>();
-        Assert.That(duel.Flow.CanShoot(0), Is.True);
+        // Isolates flow/recovery from random aim; imperfect aiming has its own AI tests.
+        typeof(AIArcher).GetField("aimError", BindingFlags.Instance | BindingFlags.NonPublic)
+            .SetValue(duel.Opponent.GetComponent<AIArcher>(), 0f);
+        Assert.That(duel.Flow.CanShoot(0), Is.True, $"{duel.Flow.Phase}: local health {duel.LocalArcher.CurrentHealth}");
         Assert.That(duel.LocalArcher.GetComponentsInChildren<Renderer>().All(r => !r.enabled), Is.True);
         Assert.That(duel.Opponent.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r => r.enabled), Is.True);
         var arrow = Shoot(duel, BodyRegion.Chest);
@@ -100,6 +104,8 @@ public class LocalDuelTests
         Assert.That(duel.Flow.Winner, Is.Zero);
         Assert.That(results, Is.EqualTo(1));
         Assert.That(bow.ShotAllowed, Is.False);
+        var wounds = duel.Opponent.GetComponentsInChildren<ParticleSystem>();
+        Assert.That(wounds.Length, Is.GreaterThan(0));
         var old = duel.Opponent;
         var rig = Find<Camera>().transform.root;
         var oldRig = rig.GetInstanceID();
@@ -107,6 +113,7 @@ public class LocalDuelTests
         duel.RestartMatch();
         yield return null;
         Assert.That(old == null, Is.True);
+        Assert.That(wounds.All(w => w == null), Is.True, "Restart must remove wounds still emitting on the old actor");
         Assert.That(duel.LocalArcher.CurrentHealth, Is.EqualTo(100));
         Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(100));
         Assert.That(duel.Flow.CanShoot(0), Is.True);

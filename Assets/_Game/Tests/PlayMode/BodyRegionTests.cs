@@ -46,6 +46,7 @@ public class BodyRegionTests
         Assert.That(body.Region, Is.EqualTo(expected));
         Assert.That(body.Collider, Is.EqualTo(hit.collider));
         Assert.That(body.Point, Is.EqualTo(hit.point));
+        Assert.That(body.Normal, Is.EqualTo(hit.normal));
         Assert.That(Vector3.Distance(arrow.transform.position, body.Point), Is.LessThan(0.0001f));
         Assert.That(Vector3.Dot(body.Direction, arrow.transform.forward), Is.GreaterThan(0.9999f));
         Assert.That(body.Direction.magnitude, Is.EqualTo(1f).Within(0.0001f));

@@ -17,6 +17,7 @@ collision response moving the archer.
 - `Region` and `Side`: anatomical identity.
 - `Point`: the actual swept-tip impact in world coordinates.
 - `Direction`: the normalized world-space travel direction at impact.
+- `Normal`: the actual world-space collision surface normal, retained for wound emission.
 - `Collider` and `Volume`: the struck collider and its bone-bound marker.
 
 The existing `Hit` event still reports every solid impact, including scenery.

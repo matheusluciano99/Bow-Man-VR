@@ -70,3 +70,6 @@ Prepared injury clips, rebuild commands and contact checks are documented in
 
 The integrated VR duel and the pending headset checks are described in
 [the lab test plan](Docs/LabTestPlan.md).
+
+Actual-entry blood emission, bone alignment and effect cleanup are documented in
+[wound blood](Docs/BloodEffects.md).

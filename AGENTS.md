@@ -250,8 +250,12 @@ Use GitHub's Assignees field to record task responsibility.
   Highlight the actual arrow path and affected anatomy; duration and rendering
   treatment remain provisional until VR review.
 - Show blood spilling from arrow wounds as part of the impact and injury effects.
+  The shared arrow's emitter uses the actual entry point and follows its hit
+  volume; spilled droplets move in world space and finish independently.
+  Rebuild controls and provisional visual settings are in
+  [Docs/BloodEffects.md](Docs/BloodEffects.md).
 - Sniper Elite is the reference for anatomical hit visualization and damage
-  feedback. These are requested features, not implemented systems.
+  feedback. Organ/bone analysis and X-ray rendering retain their separate tasks.
 
 ## Body-specific injury sequences
 
