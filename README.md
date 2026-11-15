@@ -27,7 +27,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `SourceAssets/` | Authoring originals such as Blender scenes or layered texture files. |
 | `SourceAssets/Downloads/` | Local download archives; ignored by Git and never imported by Unity. |
 | `Artifacts/` | Local screenshots and validation reports; ignored by Git. |
-| `Builds/PCVR/`, `Builds/PCVRCharacterReview/` | Generated Windows tracking and character-review players; ignored by Git. |
+| `Builds/PCVR/`, `Builds/PCVRCharacterReview/`, `Builds/PCVRDuel/` | Generated Windows tracking, character review and duel players; ignored by Git. |
 
 Keep project-owned Unity assets under `Assets/_Game` and imported assets under
 `Assets/ThirdParty`. Package-managed XR configuration stays at `Assets/XR`;
@@ -67,3 +67,6 @@ Shot ownership, defeat and injury/recovery handoff are documented in
 
 Prepared injury clips, rebuild commands and contact checks are documented in
 [injury animations](Docs/Art/InjuryAnimations.md).
+
+The integrated VR duel and the pending headset checks are described in
+[the lab test plan](Docs/LabTestPlan.md).

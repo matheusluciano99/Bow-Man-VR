@@ -22,6 +22,7 @@ namespace BowMan
 
         public bool IsHeld { get; private set; }
         public bool IsDrawing { get; private set; }
+        public bool ShotAllowed { get; private set; } = true;
         public float MaximumDrawDistance => maximumDrawDistance;
         public Vector3 RestPosition => stringRest.position;
         public float DrawDistance => IsDrawing
@@ -34,6 +35,16 @@ namespace BowMan
 
         public event Action<ArrowFlight> Fired;
 
+        // Assigns the living local actor whose colliders this bow's arrows ignore.
+        public void SetOwner(Transform owner) => firingArcher = owner;
+
+        // Locks all input paths during another turn, injury, flight or defeat and discards any pending draw.
+        public void SetShotAllowed(bool allowed)
+        {
+            ShotAllowed = allowed;
+            if (!allowed) SetHeld(false);
+        }
+
         // Refreshes the string and nocked arrow after the hand poses have moved.
         private void LateUpdate() => RefreshVisuals();
 
@@ -43,14 +54,14 @@ namespace BowMan
         // Equips or releases the bow; releasing the bow hand cancels a nocked shot.
         public void SetHeld(bool held)
         {
-            IsHeld = held;
-            if (!held) CancelDraw();
+            IsHeld = held && ShotAllowed;
+            if (!IsHeld) CancelDraw();
         }
 
         // Nocks an arrow only when the held bow's resting string is within reach.
         public bool TryBeginDraw(Vector3 position)
         {
-            if (!IsHeld || IsDrawing || arrowPrefab == null || stringRest == null ||
+            if (!ShotAllowed || !IsHeld || IsDrawing || arrowPrefab == null || stringRest == null ||
                 !IsFinite(position) || !IsFinite(stringRest.position) ||
                 !IsPositiveFinite(maximumDrawDistance) || !IsPositiveFinite(maximumLaunchSpeed) ||
                 Vector3.Distance(position, stringRest.position) > stringGrabRadius)
@@ -87,7 +98,7 @@ namespace BowMan
             IsDrawing = false;
             RefreshVisuals();
 
-            if (!IsHeld || arrow == null || distance < minimumDrawDistance ||
+            if (!ShotAllowed || !IsHeld || arrow == null || distance < minimumDrawDistance ||
                 !IsFinite(direction) || direction.sqrMagnitude <= 0f)
             {
                 if (arrow != null) Destroy(arrow.gameObject);

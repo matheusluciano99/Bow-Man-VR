@@ -230,6 +230,21 @@ Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
 panel switches hands without an Inspector edit and cancels a tracked draw before
 rebinding. Final game-menu presentation remains part of menu integration.
 
+## D020 — Keep one XR session and one shot authority for the local duel
+
+Use the existing tracked bow and AI with DuelTurnFlow; every released arrow
+registers there before physics, and the bow rejects nocking/release outside the
+local aiming turn. Rebuild match-owned actors and arrows on restart while keeping
+the XR rig, live Link session and handedness. Keep the local body's renderers
+hidden while its bone-bound volumes and injury clips remain active.
+
+Apply the animated eyes' change from their standing reference to the tracking
+origin after animation. Preserve each tracked head/controller's local position
+and rotation, including live movement during a fall; do not add eye height to
+floor-level tracking. Restore the origin on restart. This implements the chosen
+eye-following presentation; physical height alignment and motion comfort still
+require the Quest 2 checklist.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current

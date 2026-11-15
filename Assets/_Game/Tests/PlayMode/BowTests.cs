@@ -77,6 +77,25 @@ public class BowTests
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.False);
     }
 
+    // Cancels a pending draw and prevents either input path from nocking during a locked turn.
+    [Test]
+    public void MatchGateCancelsDrawAndRejectsFurtherShots()
+    {
+        var bow = CreateBow();
+        bow.SetHeld(true);
+        Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
+        bow.PullTo(bow.RestPosition + Vector3.back * 0.7f);
+        bow.SetShotAllowed(false);
+        bow.SetHeld(true);
+        Assert.That(bow.IsHeld, Is.False);
+        Assert.That(bow.IsDrawing, Is.False);
+        Assert.That(bow.Release(), Is.Null);
+        Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.False);
+        bow.SetShotAllowed(true);
+        bow.SetHeld(true);
+        Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
+    }
+
     // Zero, forward and sideways hand movement cannot produce a powered shot.
     [Test]
     public void OnlyBackwardDrawCanFire()

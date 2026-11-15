@@ -28,6 +28,8 @@ namespace BowMan
         private Vector3 woundPoint;
         private Vector3 woundOutward;
 
+        public bool IsInjured => injured;
+
         // Requires an exact entry and, for surviving regions, an authored recovery.
         public bool Supports(BodyRegion value) => Entry(value) != null &&
             (value is BodyRegion.Head or BodyRegion.Neck || Recovery(value) != null);
