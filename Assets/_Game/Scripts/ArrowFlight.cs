@@ -17,6 +17,8 @@ namespace BowMan
 
         public event Action<RaycastHit> Hit;
         public event Action<BodyImpact> BodyHit;
+        public event Action Expired;
+        public bool IsFlying => flying;
 
         // Starts one timed flight with the given velocity, ignoring the firing archer.
         // The root is the arrow tip; visual geometry extends behind it along local -Z.
@@ -44,6 +46,7 @@ namespace BowMan
             if (remainingLifetime <= 0f)
             {
                 flying = false;
+                Expired?.Invoke();
                 Destroy(gameObject);
                 return;
             }
