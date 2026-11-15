@@ -85,6 +85,9 @@ public class ArrowFlightTests
     public IEnumerator IgnoresShooterHierarchyAndTriggers()
     {
         var shooter = Create("Shooter");
+        var compoundRoot = Create("Compound physics root");
+        compoundRoot.AddComponent<Rigidbody>().isKinematic = true;
+        shooter.transform.SetParent(compoundRoot.transform, true);
         Target(0.5f).transform.SetParent(shooter.transform, true);
         Target(0.8f).isTrigger = true;
         var target = Target(1.2f);
