@@ -1,0 +1,153 @@
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using BowMan;
+using NUnit.Framework;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
+
+public class InjuryAnimationTests
+{
+    private readonly List<GameObject> objects = new List<GameObject>();
+
+    // Instantiates the actual prepared character with its authored clip references.
+    private GameObject Character(string name)
+    {
+        var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+            $"Assets/_Game/Prefabs/Characters/{name}.prefab"));
+        objects.Add(root);
+        return root;
+    }
+
+    // Measures the posed visible body's lowest world-space vertex without cached skin bounds.
+    private static float Floor(GameObject root)
+    {
+        var minimum = float.PositiveInfinity;
+        var mesh = new Mesh();
+        try
+        {
+            foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                skin.BakeMesh(mesh, true);
+                foreach (var v in mesh.vertices) minimum = Mathf.Min(minimum, skin.transform.TransformPoint(v).y);
+                mesh.Clear();
+            }
+            return minimum;
+        }
+        finally { Object.DestroyImmediate(mesh); }
+    }
+
+    // Removes every temporary actor/arrow after each animation scenario.
+    [UnityTearDown]
+    public IEnumerator CleanUp()
+    {
+        foreach (var obj in objects) if (obj != null) Object.Destroy(obj);
+        objects.Clear();
+        yield return null;
+    }
+
+    // Checks actual foot lift, planted support and continuous floor contact across entry and recovery on both skins.
+    [Test]
+    public void FootClipsPreserveTheCorrectSupportAndReturnToNeutral()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            Assert.That(actor.Supports(BodyRegion.LeftFoot), Is.True);
+            foreach (var region in new[] { BodyRegion.LeftFoot, BodyRegion.RightFoot }.Where(actor.Supports))
+            {
+                var animator = root.GetComponentInChildren<Animator>();
+                var injured = animator.GetBoneTransform(region == BodyRegion.LeftFoot ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot);
+                var support = animator.GetBoneTransform(region == BodyRegion.LeftFoot ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot);
+                var initial = injured.position;
+                var planted = support.position;
+                var entry = actor.Entry(region);
+                for (var frame = 0; frame <= 30; frame++)
+                {
+                    entry.SampleAnimation(root, entry.length * frame / 30f);
+                    Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f));
+                    Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+                }
+                Assert.That(injured.position.y - initial.y, Is.GreaterThan(0.13f));
+                var rest = injured.position;
+                var recovery = actor.Recovery(region);
+                recovery.SampleAnimation(root, 0f);
+                Assert.That(Vector3.Distance(injured.position, rest), Is.LessThan(0.001f));
+                for (var frame = 0; frame <= 30; frame++)
+                {
+                    recovery.SampleAnimation(root, recovery.length * frame / 30f);
+                    Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f));
+                    Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+                }
+                Assert.That(Vector3.Distance(injured.position, initial), Is.LessThan(0.001f));
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Creates a real registered foot shot with playback connected to the existing match callbacks.
+    private DuelTurnFlow FootShot(out ArcherHealth target, out ArrowFlight arrow)
+    {
+        var firstObject = new GameObject("First");
+        objects.Add(firstObject);
+        firstObject.transform.position = new Vector3(1000f, 1000f, 1000f);
+        var first = firstObject.AddComponent<ArcherHealth>();
+        var root = Character("ErikaArcher");
+        root.transform.position = firstObject.transform.position + Vector3.forward * 4f;
+        target = root.AddComponent<ArcherHealth>();
+        var matchObject = new GameObject("Match");
+        objects.Add(matchObject);
+        var flow = matchObject.AddComponent<DuelTurnFlow>();
+        flow.Initialize(first, target);
+        root.GetComponent<ArcherReactionAnimation>().Connect(flow, 1, target);
+        Physics.SyncTransforms();
+        var volume = root.GetComponentsInChildren<BodyHitRegion>().Single(r => r.Region == BodyRegion.LeftFoot);
+        var obj = new GameObject("Foot arrow");
+        objects.Add(obj);
+        obj.transform.position = volume.GetComponent<Collider>().bounds.center + Vector3.forward * 3f;
+        arrow = obj.AddComponent<ArrowFlight>();
+        arrow.Launch(Vector3.back * 1000f, first.transform);
+        Assert.That(flow.TryTrackShot(0, arrow), Is.True);
+        return flow;
+    }
+
+    // Runs the authored entry, full hold and recovery automatically while the embedded tip remains attached.
+    [UnityTest]
+    public IEnumerator FootAnimationCompletesOnlyAfterEntryHoldAndRecovery()
+    {
+        var flow = FootShot(out var target, out var arrow);
+        yield return new WaitForFixedUpdate();
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Reacting));
+        var parent = arrow.transform.parent;
+        var localTip = arrow.transform.localPosition;
+        yield return new WaitForSeconds(1.05f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(Vector3.Distance(arrow.transform.position, parent.TransformPoint(localTip)), Is.LessThan(0.0001f));
+        yield return new WaitForSeconds(2.5f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        yield return new WaitForSeconds(0.6f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
+        yield return new WaitForSeconds(1f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Death cancels the active surviving sequence and prevents its delayed get-up from granting another turn.
+    [UnityTest]
+    public IEnumerator DeathCancelsAutomaticFootRecovery()
+    {
+        var flow = FootShot(out var target, out _);
+        yield return new WaitForSeconds(1.1f);
+        target.TakeDamage(int.MaxValue);
+        yield return new WaitForSeconds(4.2f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+        Assert.That(flow.CanShoot(0) || flow.CanShoot(1), Is.False);
+        Assert.That(flow.ActiveArcher, Is.Zero);
+    }
+}
+#endif
