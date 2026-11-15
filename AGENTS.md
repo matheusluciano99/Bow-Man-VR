@@ -152,6 +152,17 @@ Use GitHub's Assignees field to record task responsibility.
   lifetime, whichever comes first. Body arrows persist through injury/recovery;
   remove the character hierarchy to clean them up. Run `BowMan.Gameplay.PlayTests` in PlayMode
   and `BowMan.VR.EditorTests` in EditMode before reviewing arrow changes.
+- Both spawn roots have `ArcherHealth`. The test panel shows the orange
+  target's current health, Alive/Defeated state, and defeat event count.
+  Maximum health is 100 and each test-arrow hit deals 25 damage; these are
+  provisional test values, not final combat balance. Including the automatic
+  first shot, four hits reach zero. Further hits keep health at zero and the
+  defeat event count at one. Restart Play mode to reset the test.
+- `ArcherHealth.TakeDamage(amount)` requires positive integer damage, clamps
+  health at zero, and emits `Defeated` once. The desktop launcher applies its
+  test damage to health on the struck collider or its parent. Floor impacts
+  have no health target. Body-region damage, death animations, turn handoff,
+  and match outcomes belong to later tasks.
 
 ## Bow interaction
 
