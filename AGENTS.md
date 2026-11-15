@@ -171,6 +171,9 @@ Use GitHub's Assignees field to record task responsibility.
   without a headset. It explicitly exposes manual animation-completion buttons;
   those controls do not claim completed injury animations. Runtime gates and
   callback ownership are documented in [Docs/TurnFlow.md](Docs/TurnFlow.md).
+- `Assets/_Game/Scenes/AIArcherTest.unity` adds the AI as archer 2, using the same
+  arrow and turn authority. Animation callbacks remain explicitly manual in this
+  review scene. Provisional aim error, thinking delay and speed need play tuning.
 
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
