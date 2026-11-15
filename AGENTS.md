@@ -257,6 +257,9 @@ Use GitHub's Assignees field to record task responsibility.
   and block drawing/firing until recovery is complete and the archer has the turn.
 - Head and neck hits always kill. Other regions kill when applied damage reaches
   zero health; damage values and organ/fracture effects remain separate tuning.
+- A fatal hit outside the head or neck plays the struck region’s reaction, then
+  collapses fully and remains down. The match result is immediate; do not run a
+  surviving hold or recovery. Head and neck retain their own fatal sequences.
 
 ## Combat details still to decide
 

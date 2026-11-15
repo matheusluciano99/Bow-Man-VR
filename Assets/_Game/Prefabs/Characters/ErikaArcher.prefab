@@ -375,6 +375,22 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 4d60aed8e2cece3449b93c7b15fc238e, type: 2}
   - {fileID: 7400000, guid: 7845623d666421247ad0cb9d26e5b1c1, type: 2}
   - {fileID: 7400000, guid: 16001e97ac981c04283b0788d9462a35, type: 2}
+  deathFinishers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 6681b1cca9aa4a94bb932714a6b035d5, type: 2}
+  - {fileID: 7400000, guid: 898ff810751009b46b6de5f9266608ee, type: 2}
+  - {fileID: 7400000, guid: 8cc50d5fe8abf204d955f1c807c57536, type: 2}
+  - {fileID: 7400000, guid: 44f59a5ff17c62c4a99951b90cc1bb86, type: 2}
+  - {fileID: 7400000, guid: 69954e208cebed14a910d2c9666cdb32, type: 2}
+  - {fileID: 7400000, guid: db58648167229674f9717434c375cf9e, type: 2}
+  - {fileID: 7400000, guid: 1da42c9871452ec44bf578e82604dbca, type: 2}
+  - {fileID: 7400000, guid: 78baf08254466b6488a018420fa2d941, type: 2}
+  - {fileID: 7400000, guid: 525f1201ad0d83f409071a36885a537e, type: 2}
+  - {fileID: 7400000, guid: e355cb42b2feaa941b824878785e19de, type: 2}
+  - {fileID: 7400000, guid: 1ca676c204e1fc841ad4d37b2519f314, type: 2}
+  - {fileID: 7400000, guid: 14890c2eb38dce247bcce17da7454ede, type: 2}
+  - {fileID: 7400000, guid: d4f1bfdb7b353e74980f613c8a3841b8, type: 2}
 --- !u!1 &5164774457985036464
 GameObject:
   m_ObjectHideFlags: 0

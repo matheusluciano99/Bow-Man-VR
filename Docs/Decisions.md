@@ -200,6 +200,15 @@ strong draws. A prototype threshold may be tuned during testing; this choice
 does not specify a clinically accurate material/energy simulation or final
 balance. Organ/fracture gameplay effects remain separate tuning decisions.
 
+## D018 — Fatal body hits finish with a full collapse
+
+A fatal hit outside the head or neck first plays the reaction for the actual
+struck region, then collapses fully and remains down. Resolve defeat and the
+match result immediately; the visual sequence does not delay the result or run
+a surviving hold, recovery or turn handoff. Death during an existing reaction
+or recovery interrupts getting up and finishes the collapse from the current
+pose. Preserve the independent head and neck fatal sequences.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current

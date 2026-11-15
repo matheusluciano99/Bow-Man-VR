@@ -176,7 +176,8 @@ public static class InjuryAnimationBuilder
         {
             Restore(bones, positions, rotations);
             var progress = Mathf.SmoothStep(0f, 1f, sample / 27f);
-            ApplyPose(root, region, recovery ? 1f - progress : progress, kneeHeights, seatHeight);
+            var amount = recovery ? 1f - progress : progress;
+            if (amount > 0f) ApplyPose(root, region, amount, kneeHeights, seatHeight);
             for (var i = 0; i < bones.Length; i++)
             {
                 var p = bones[i].localPosition;

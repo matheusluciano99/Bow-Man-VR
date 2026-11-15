@@ -8,6 +8,86 @@ public static class MotionInjuryBuilder
 {
     private const string MotionFolder = "Assets/ThirdParty/MixamoAnimations/Motions/";
 
+    // Bakes each body region's own transition from its injured pose into a complete fatal collapse.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Body Death Finishers")]
+    public static void RebuildDeathFinishers()
+    {
+        var prone = ImportMotion("Standing Death Backward 01");
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            var mesh = new Mesh();
+            try
+            {
+                var animator = root.GetComponentInChildren<Animator>();
+                var bones = animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var neutralPositions = bones.Select(t => t.localPosition).ToArray();
+                var neutralRotations = bones.Select(t => t.localRotation).ToArray();
+                var modelPosition = animator.transform.localPosition;
+                var modelRotation = animator.transform.localRotation;
+                var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var player = root.GetComponent<ArcherReactionAnimation>();
+                var clips = new AnimationClip[15];
+                foreach (BodyRegion region in Enum.GetValues(typeof(BodyRegion)))
+                {
+                    if (region is BodyRegion.Head or BodyRegion.Neck) continue;
+                    Restore(bones, neutralPositions, neutralRotations);
+                    var entry = player.Entry(region);
+                    if (entry == null) throw new InvalidOperationException("Missing injury entry for " + region);
+                    entry.SampleAnimation(root, entry.length);
+                    var positions = bones.Select(t => t.localPosition).ToArray();
+                    var rotations = bones.Select(t => t.localRotation).ToArray();
+                    var start = hips.position;
+                    if (region is BodyRegion.Chest or BodyRegion.Pelvis)
+                    {
+                        var death = player.Entry(BodyRegion.Head);
+                        death.SampleAnimation(root, death.length);
+                        hips.position = new Vector3(start.x, hips.position.y, start.z) -
+                            root.transform.forward * (region == BodyRegion.Chest ? 0f : 0.2f);
+                    }
+                    else
+                    {
+                        Sample(animator, prone, prone.length, modelPosition, modelRotation);
+                        hips.rotation = Quaternion.AngleAxis(180f, root.transform.up) * hips.rotation;
+                        hips.position = new Vector3(start.x, hips.position.y, start.z) + root.transform.forward * 0.2f;
+                    }
+                    Ground(root, hips, mesh);
+                    var targetPositions = bones.Select(t => t.localPosition).ToArray();
+                    var targetRotations = bones.Select(t => t.localRotation).ToArray();
+                    var clip = Record(root, bones, 0.8f, time =>
+                    {
+                        var progress = Mathf.SmoothStep(0f, 1f, time / 0.8f);
+                        for (var i = 0; i < bones.Length; i++)
+                        {
+                            bones[i].localPosition = Vector3.Lerp(positions[i], targetPositions[i], progress);
+                            bones[i].localRotation = Quaternion.Slerp(rotations[i], targetRotations[i], progress);
+                        }
+                        if (time > 0f) Ground(root, hips, mesh);
+                    });
+                    clip.name = region + " Death";
+                    clips[(int)region] = InjuryAnimationBuilder.SaveClip(clip,
+                        $"Assets/_Game/Animations/Injuries/{name}/{region}_Death.anim");
+                }
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    player = prefab.GetComponent<ArcherReactionAnimation>();
+                    foreach (BodyRegion region in Enum.GetValues(typeof(BodyRegion)))
+                        if (clips[(int)region] != null) player.SetDeathFinisher(region, clips[(int)region]);
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(mesh);
+                UnityEngine.Object.DestroyImmediate(root);
+            }
+        }
+        AssetDatabase.SaveAssets();
+    }
+
     // Fits a back-to-standing motion from the exact landing pose before restoring the archer's ready stance.
     [MenuItem("Bow Man VR/Injuries/Rebuild Chest Recovery")]
     public static void RebuildChestRecovery()

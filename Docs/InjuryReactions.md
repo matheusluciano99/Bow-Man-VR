@@ -72,7 +72,9 @@ validate the complete sequence on the rigged models and target headset.
    of health. Other regions kill when applied damage exhausts remaining health.
 3. Death ends the match immediately, cancels pending recovery and prevents any new
    turn or shot by the dead archer. Death animation can finish visually without
-   delaying the result; there is no three-second surviving hold or get-up.
+   delaying the result; there is no three-second surviving hold or get-up. A fatal
+   hit outside the head/neck plays its own region/side reaction, then collapses
+   fully and remains down. Head and neck retain their separate fatal sequences.
 4. If B survives a hit, play B's region/side reaction, hold the injured pose for
    three seconds, then complete the recovery animation. Give B the next turn only
    after recovery finishes. Standing reactions recover from their supported pose;

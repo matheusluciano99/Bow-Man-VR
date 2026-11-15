@@ -105,6 +105,22 @@ MonoBehaviour:
   - {fileID: 7400000, guid: c0251c0b307cedd4193bb91aca287b84, type: 2}
   - {fileID: 7400000, guid: 540a9df8288c7d44a8c2434be169c0e0, type: 2}
   - {fileID: 7400000, guid: a06d57c870cbea3479318ca9eab9f80e, type: 2}
+  deathFinishers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: dbf90732ee4d9bf40a9dc003a2e7820c, type: 2}
+  - {fileID: 7400000, guid: f2fb5f4449dca0844a9a3f6e077b75d7, type: 2}
+  - {fileID: 7400000, guid: c480659cb9a99af4783ac38a63c818bc, type: 2}
+  - {fileID: 7400000, guid: ec162581da3c00e4b9b0d33f4ababf66, type: 2}
+  - {fileID: 7400000, guid: c4b1cdeb9b8c515498e11edf3200af3b, type: 2}
+  - {fileID: 7400000, guid: b9f2e1ab190e03d409df93841dab4a4f, type: 2}
+  - {fileID: 7400000, guid: 6c999e36cdade6e419bc402ad952fd65, type: 2}
+  - {fileID: 7400000, guid: 7aedb0948039b2a43b74aea3991674a5, type: 2}
+  - {fileID: 7400000, guid: 04f48f8e53fab304d87c2e30765ca468, type: 2}
+  - {fileID: 7400000, guid: 83d2f141dfe94f545b7ed52a17c0af0c, type: 2}
+  - {fileID: 7400000, guid: 4ce73ea63e443624fb9c1f659f0fbe0e, type: 2}
+  - {fileID: 7400000, guid: b6ebae3f48b968a42bbb7febf8484dab, type: 2}
+  - {fileID: 7400000, guid: 2a073f4836be5574289c24b0bfcc5f90, type: 2}
 --- !u!1 &1136747416280315170
 GameObject:
   m_ObjectHideFlags: 0
