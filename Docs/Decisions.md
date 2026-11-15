@@ -47,7 +47,9 @@ The prototype visual choices are English Archer and Erika Archer. The local
 headset view shows tracked hands/controllers only for now; the opponent is a
 full archer. The current rig uses controller markers. Reference views and
 body-region/bow design constraints are in [ArcherDesign.md](Art/ArcherDesign.md).
-English still needs rigging; this choice does not establish animation readiness.
+Both characters now have prepared Humanoid derivatives and a shared movement
+check. Rig readiness and remaining per-animation review are documented in
+[RigPreparation.md](Art/RigPreparation.md).
 
 Record each source, license, attribution and modification with imported assets.
 Verify skeletons, skin weights and animation compatibility in actual files;
@@ -81,6 +83,35 @@ Maintain shared rules and skills under `.agents/`, with `.claude/` entry points
 that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
+
+## D010 — Preserve source art and import prepared Humanoid derivatives
+
+Keep downloaded FBXs intact and use separately named rigged derivatives in the
+existing character prefabs. This preserves provenance and original prop-mesh
+references while allowing fitted skinning and source-weight repairs. Store
+Blender authoring/rebuild work in SourceAssets and import FBXs into Unity so
+opening the game does not require a Blender import process.
+
+Store explicit body, eye and finger mappings in the derived `.meta` files;
+automatic Humanoid validity alone does not prove optional fingers are mapped or
+weighted. Check both characters with one baked Humanoid movement clip, including
+support-foot contact, and preserve the animation-only armature hierarchy when
+copying its Avatar. Per-region injury animations and headset acceptance remain
+separate reviews. See the [rig procedure](Art/RigPreparation.md).
+
+## D011 — Bone-bound anatomical hit volumes
+
+Use project-owned solid volumes on the prepared skeletons for the fifteen
+agreed regions. Limb capsules follow both joint segments; central boxes divide
+the torso, neck and head. This makes region detection follow animation while
+keeping original art intact and avoiding a skinned-mesh collider rebuild each
+physics step. Geometry fit remains provisional and needs pose-specific review.
+
+Report the first swept impact once, preserving its point and travel direction.
+Keep the generic impact event for scenery and add an anatomical event for body
+consumers. A consumer uses one event to resolve its outcome. Disable the old
+arena capsule targets so they cannot mask the new regions. See
+[body hit detection](BodyHits.md) for event ordering, authoring and checks.
 
 ## Open questions and provisional values
 

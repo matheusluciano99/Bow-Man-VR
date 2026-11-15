@@ -9,9 +9,11 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | Location | Purpose |
 | --- | --- |
 | `Assets/_Game/Scripts/` | Game code and its runtime assembly. |
+| `Assets/_Game/Editor/` | Project-owned Unity authoring tools, excluded from players. |
 | `Assets/_Game/Scenes/` | Game and test scenes. |
 | `Assets/_Game/Prefabs/`, `Assets/_Game/Materials/` | Project-authored reusable assets. |
 | `Assets/_Game/Input/` | Game input actions. |
+| `Assets/_Game/Animations/` | Project-owned clips, animation imports and controllers. |
 | `Assets/ThirdParty/<asset>/` | Imported models, textures, and attribution grouped by asset. |
 | `Assets/_Game/Tests/Editor/`, `Assets/_Game/Tests/PlayMode/` | Unity EditMode and PlayMode tests. |
 | `Assets/_Game/Settings/` | Game render-pipeline configuration. |
@@ -52,3 +54,9 @@ player archer.
 
 Prototype character choices, front/side/back references and the first-person
 presentation are in [archer design](Docs/Art/ArcherDesign.md).
+
+Prepared Humanoid models, the desktop movement check and reproducible Blender
+work are documented in [rig preparation](Docs/Art/RigPreparation.md).
+
+Anatomical hit volumes, the arena test controls and impact events are documented
+in [body-region hit detection](Docs/BodyHits.md).

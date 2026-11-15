@@ -312,6 +312,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArenaShotTest
   arrowPrefab: {fileID: 7838939950186234352, guid: 58dd95bcc9cb81c4388189dfa3343d77, type: 3}
   firingArcher: {fileID: 1622566257}
+  targetArcher: {fileID: 93934441}
   launchVelocity: {x: 0, y: 3.8, z: 25}
 --- !u!4 &255871224
 Transform:
@@ -428,7 +429,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
@@ -542,7 +543,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
