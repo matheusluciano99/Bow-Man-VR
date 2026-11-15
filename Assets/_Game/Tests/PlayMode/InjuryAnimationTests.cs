@@ -281,5 +281,18 @@ public class InjuryAnimationTests
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
+
+    // Keeps a right-shoulder impact distinct through its own supported hold and complete recovery.
+    [UnityTest]
+    public IEnumerator RightShoulderUsesItsOwnRecoveryAndImpactIdentity()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightShoulder);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightShoulder));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
 }
 #endif

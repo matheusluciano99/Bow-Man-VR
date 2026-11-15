@@ -28,6 +28,10 @@ public static class InjuryAnimationBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Left Shoulder")]
     public static void RebuildLeftShoulder() => RebuildShoulder(BodyRegion.LeftShoulder);
 
+    // Rebuilds the right-shoulder recoil with left-palm support in front of the chest.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Right Shoulder")]
+    public static void RebuildRightShoulder() => RebuildShoulder(BodyRegion.RightShoulder);
+
     // Authors shoulder support independently of the lower arm and wrist reactions.
     public static void RebuildShoulder(BodyRegion region)
     {
@@ -220,7 +224,7 @@ public static class InjuryAnimationBuilder
         var chest = a.GetBoneTransform(HumanBodyBones.UpperChest);
         chest.rotation = Quaternion.AngleAxis((left ? 20f : -20f) * progress, root.transform.up) * chest.rotation;
         var healthyShoulder = a.GetBoneTransform(left ? HumanBodyBones.RightShoulder : HumanBodyBones.LeftShoulder);
-        healthyShoulder.rotation = Quaternion.AngleAxis((left ? -40f : 40f) * progress, root.transform.up) * healthyShoulder.rotation;
+        healthyShoulder.rotation = Quaternion.AngleAxis((left ? -40f : 42f) * progress, root.transform.up) * healthyShoulder.rotation;
         var injuredHand = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
         var healthyHand = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
         var injuredTarget = hips.position + root.transform.up * 0.12f + root.transform.forward * 0.13f

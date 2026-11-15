@@ -261,8 +261,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Exact per-model hitbox dimensions, calibrated from the region boundaries in
   the injury table and reviewed on the rigged archers.
 - Damage values and the gameplay effects of organ injuries and broken bones.
-- How to present internal injuries in VR, including whether to use an overlay,
-  an X-ray view, or another approach.
+- Duration, rendering treatment and headset readability of the agreed brief
+  in-body X-ray presentation.
 - Calibration and comfort of the agreed first-person animated-eye viewpoint
   during knockdown and recovery on the target headset.
 

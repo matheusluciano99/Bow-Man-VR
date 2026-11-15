@@ -191,6 +191,6 @@ this decision does not claim implemented organs, fractures or visual acceptance.
   the agreed hands/controllers presentation.
 - Arena distance, bow draw distance and combat tuning remain provisional as
   described in AGENTS.md and the relevant task cards.
-- Per-model hitbox dimensions, damage values, organ/fracture effects and internal
-  injury presentation remain implementation/tuning work. The chosen eye
+- Per-model hitbox dimensions, damage values, organ/fracture effects and the
+  accepted brief X-ray's duration/rendering remain implementation/tuning work. The chosen eye
   viewpoint and injury motion need hardware validation.
