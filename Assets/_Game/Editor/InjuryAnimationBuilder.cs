@@ -36,6 +36,10 @@ public static class InjuryAnimationBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Left Hand")]
     public static void RebuildLeftHand() => RebuildHand(BodyRegion.LeftHand);
 
+    // Rebuilds the independent right-hand recoil with open fingers and left-hand wrist support.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Right Hand")]
+    public static void RebuildRightHand() => RebuildHand(BodyRegion.RightHand);
+
     // Authors hand-specific clips independently of arm and shoulder motions.
     public static void RebuildHand(BodyRegion region)
     {

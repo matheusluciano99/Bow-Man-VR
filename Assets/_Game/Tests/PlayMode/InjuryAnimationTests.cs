@@ -337,5 +337,18 @@ public class InjuryAnimationTests
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
+
+    // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
+    [UnityTest]
+    public IEnumerator RightHandUsesItsOwnSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightHand);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightHand));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
 }
 #endif
