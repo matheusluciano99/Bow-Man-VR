@@ -113,6 +113,15 @@ consumers. A consumer uses one event to resolve its outcome. Disable the old
 arena capsule targets so they cannot mask the new regions. See
 [body hit detection](BodyHits.md) for event ordering, authoring and checks.
 
+## D012 — Embedded arrows follow their actual bone-bound impact
+
+Parent a stopped body arrow to its struck volume with its world pose preserved.
+This carries the exact tip and impact orientation through animation without a
+generic wound socket or a per-frame follow script. Keep embedded arrows until
+their character is removed so a flight/scenery timer cannot erase them midway
+through injury recovery. Flight and scenery keep bounded cleanup. Match reset
+must remove the old character hierarchy or clear its embedded arrows.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current

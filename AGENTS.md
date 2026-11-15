@@ -142,13 +142,15 @@ Use GitHub's Assignees field to record task responsibility.
   subscribe to `Hit` before launching to receive the first solid impact.
   Pass the firing archer's root to ignore its colliders. Trigger colliders are
   ignored. Flight uses gravity and a swept tip ray each fixed step. The arrow
-  stops at impact; moving-body attachment belongs to task #20.
+  stops at impact. Body arrows retain their world pose and become children of
+  the struck volume, following its animated bone until the character is removed.
 - `ArrowFlight.BodyHit` reports one anatomical `BodyImpact` before the existing
   generic `Hit` event. Use only one event to apply a shot outcome. Details,
   authoring instructions and validation are in [Docs/BodyHits.md](Docs/BodyHits.md).
 - Test speeds and appearance are provisional. Missed arrows expire after
-  8 seconds; impacted arrows expire after 3 seconds or the remaining flight
-  lifetime, whichever comes first. Run `BowMan.Gameplay.PlayTests` in PlayMode
+  8 seconds; scenery impacts expire after 3 seconds or the remaining flight
+  lifetime, whichever comes first. Body arrows persist through injury/recovery;
+  remove the character hierarchy to clean them up. Run `BowMan.Gameplay.PlayTests` in PlayMode
   and `BowMan.VR.EditorTests` in EditMode before reviewing arrow changes.
 
 ## Bow interaction
