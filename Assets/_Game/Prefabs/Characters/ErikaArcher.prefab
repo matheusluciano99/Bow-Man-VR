@@ -1,5 +1,275 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &192871537219490986
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8553499966747210931}
+  - component: {fileID: 3112949456240353217}
+  - component: {fileID: 6415166474279265684}
+  m_Layer: 0
+  m_Name: Hit_RightLeg
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8553499966747210931
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 192871537219490986}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000000757987, y: -0.9999897, z: 0.004540197, w: -0.000003253114}
+  m_LocalPosition: {x: 0.0000007195724, y: 19.959545, z: -0.18124545}
+  m_LocalScale: {x: 102.887726, y: 102.887695, z: 102.88771}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3679527940220377298}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3112949456240353217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 192871537219490986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 12
+--- !u!136 &6415166474279265684
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 192871537219490986}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.054
+  m_Height: 0.4960029
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &429731564395946045
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7334376498570261637}
+  - component: {fileID: 5058315131074066492}
+  - component: {fileID: 7478539889611126984}
+  m_Layer: 0
+  m_Name: Hit_Head
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7334376498570261637
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429731564395946045}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.013409855, y: 2.0085234e-11, z: 1.6742881e-11, w: 0.9999101}
+  m_LocalPosition: {x: -4.1779913e-10, y: 9.641538, z: 4.890268}
+  m_LocalScale: {x: 102.887726, y: 102.88773, z: 102.88773}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 118576844655913816}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5058315131074066492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429731564395946045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 0
+--- !u!65 &7478539889611126984
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429731564395946045}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.18, y: 0.18990076, z: 0.2}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2302005852505827469
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 988047948033617506}
+  - component: {fileID: 4473945179164384416}
+  - component: {fileID: 225470059026186794}
+  m_Layer: 0
+  m_Name: Hit_Pelvis
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &988047948033617506
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302005852505827469}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000003775082, y: 0.0000010519857, z: -0.000034628327, w: 1}
+  m_LocalPosition: {x: -0.00025141006, y: -3.7082596, z: 2.5721927}
+  m_LocalScale: {x: 102.887726, y: 102.887726, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6117284098877489476}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4473945179164384416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302005852505827469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 4
+--- !u!65 &225470059026186794
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2302005852505827469}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.27, y: 0.18, z: 0.19}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &4993146299308150359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1609174136196271907}
+  - component: {fileID: 9020411977670359586}
+  - component: {fileID: 8730063274458624731}
+  m_Layer: 0
+  m_Name: Hit_Neck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1609174136196271907
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4993146299308150359}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.008940347, y: 2.0159872e-11, z: 1.665294e-11, w: 0.9999601}
+  m_LocalPosition: {x: -5.2340443e-10, y: 3.4777648, z: 2.634798}
+  m_LocalScale: {x: 102.887726, y: 102.88774, z: 102.88776}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1978508333213617050}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9020411977670359586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4993146299308150359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 1
+--- !u!65 &8730063274458624731
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4993146299308150359}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.095, y: 0.1185081, z: 0.11}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5125899312878103343
 GameObject:
   m_ObjectHideFlags: 0
@@ -9,6 +279,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1158410821472227283}
+  - component: {fileID: 2485440425683305889}
+  - component: {fileID: 956488499937504348}
   m_Layer: 0
   m_Name: ErikaArcher
   m_TagString: Untagged
@@ -29,10 +301,1139 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 947445488443672190}
+  - {fileID: 7072656525183879544}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &769193989173027221
+--- !u!54 &2485440425683305889
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5125899312878103343}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &956488499937504348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5125899312878103343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f207d6928c83624e8b8ee4508b966b0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherReactionAnimation
+  entries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 136b86d226b372c4e86995a50029ff3c, type: 2}
+  - {fileID: 7400000, guid: e2924894db682114b99f56a74fb84e86, type: 2}
+  - {fileID: 7400000, guid: 44465cdabd7d72040a0d7c7ac1c25281, type: 2}
+  - {fileID: 7400000, guid: dee6b90032efbc846853908e09250f4e, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: c03f20bbb864ab940838e9fa2532ce1b, type: 2}
+  - {fileID: 7400000, guid: 23462a725eccb034f9f3bed8721d8fbc, type: 2}
+  recoveries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: e3560ab7d91bd954390ba6c49e3861dc, type: 2}
+  - {fileID: 7400000, guid: e58790f5d23be4e48bf4ac1ce2957cc7, type: 2}
+  - {fileID: 7400000, guid: ee1295bb6d80f8c44aee9a33504ce30c, type: 2}
+  - {fileID: 7400000, guid: b3014b211022511418cd2a9c7ac5d093, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 7845623d666421247ad0cb9d26e5b1c1, type: 2}
+  - {fileID: 7400000, guid: 16001e97ac981c04283b0788d9462a35, type: 2}
+--- !u!1 &5164774457985036464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1625222187804191137}
+  - component: {fileID: 3571917984818025993}
+  - component: {fileID: 147336476433509311}
+  m_Layer: 0
+  m_Name: Hit_LeftArm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1625222187804191137
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5164774457985036464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000017881392, y: -0.702943, z: 0.00000008940696, w: -0.7112462}
+  m_LocalPosition: {x: -0.0000010728837, y: 16.425524, z: -0.0000038146986}
+  m_LocalScale: {x: 102.887794, y: 102.88774, z: 102.88774}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8446956357161585504}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3571917984818025993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5164774457985036464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 7
+--- !u!136 &147336476433509311
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5164774457985036464}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.051
+  m_Height: 0.32387954
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5230440535568924054
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1432046034135116058}
+  - component: {fileID: 2648691467705224408}
+  - component: {fileID: 3039638946961338978}
+  m_Layer: 0
+  m_Name: Hit_LeftHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1432046034135116058
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5230440535568924054}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00742911, y: -0.7028587, z: -0.012921909, w: -0.71117336}
+  m_LocalPosition: {x: -0.2707634, y: 9.389623, z: 0.07136993}
+  m_LocalScale: {x: 102.887764, y: 102.88774, z: 102.88776}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4096848861048064810}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2648691467705224408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5230440535568924054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 9
+--- !u!136 &3039638946961338978
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5230440535568924054}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.037
+  m_Height: 0.25660232
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5454698666202887531
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4512250869751056465}
+  - component: {fileID: 596550983212964155}
+  - component: {fileID: 3451522373649037282}
+  m_Layer: 0
+  m_Name: Hit_LeftArm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4512250869751056465
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5454698666202887531}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000025742372, y: -0.7027067, z: 0.00000019943715, w: -0.7114796}
+  m_LocalPosition: {x: -0.0000040369023, y: 14.1675625, z: 0.0000011391892}
+  m_LocalScale: {x: 102.88779, y: 102.88774, z: 102.887764}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6998479009992222194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &596550983212964155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5454698666202887531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 7
+--- !u!136 &3451522373649037282
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5454698666202887531}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.043
+  m_Height: 0.36139798
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5752569315902581095
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7347339804739560922}
+  - component: {fileID: 540235155589855450}
+  - component: {fileID: 5966280222895696886}
+  m_Layer: 0
+  m_Name: Hit_Chest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7347339804739560922
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5752569315902581095}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.07526705, y: 1.903594e-11, z: 1.8183769e-11, w: 0.9971635}
+  m_LocalPosition: {x: -3.938112e-10, y: -0.56780314, z: 3.5561306}
+  m_LocalScale: {x: 102.887726, y: 102.887695, z: 102.88772}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4984857326531063386}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &540235155589855450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5752569315902581095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 2
+--- !u!65 &5966280222895696886
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5752569315902581095}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.29, y: 0.2745676, z: 0.21}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6068107852416119087
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4187015474729924196}
+  - component: {fileID: 2124387479566340513}
+  - component: {fileID: 6669463828921273319}
+  m_Layer: 0
+  m_Name: Hit_LeftFoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4187015474729924196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068107852416119087}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.001397409, y: -0.42754397, z: -0.9039903, w: 0.0024080165}
+  m_LocalPosition: {x: -0.03878669, y: 6.7770925, z: 2.530277}
+  m_LocalScale: {x: 102.88774, y: 102.88773, z: 102.887794}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2083091243576152203}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2124387479566340513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068107852416119087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 13
+--- !u!65 &6669463828921273319
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068107852416119087}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.105, y: 0.1355559, z: 0.24303803}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6370820463724619446
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8649324942711729560}
+  - component: {fileID: 10650277378469178}
+  - component: {fileID: 6037808437841122244}
+  m_Layer: 0
+  m_Name: Hit_RightShoulder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8649324942711729560
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6370820463724619446}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000023841852, y: 0.7048785, z: -0.00000017881389, w: -0.709328}
+  m_LocalPosition: {x: 0.0000012516977, y: 2.5057411, z: 0.0000019073474}
+  m_LocalScale: {x: 102.88769, y: 102.8878, z: 102.88776}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6501546540679411844}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &10650277378469178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6370820463724619446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 6
+--- !u!136 &6037808437841122244
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6370820463724619446}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.061
+  m_Height: 0.17070806
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6498304473897567296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8775407674788121188}
+  - component: {fileID: 1193521741216216805}
+  - component: {fileID: 362229685835065236}
+  m_Layer: 0
+  m_Name: Hit_LeftLeg
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8775407674788121188
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6498304473897567296}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.000000008132048, y: -0.99999, z: 0.0044927374, w: -0.0000037284929}
+  m_LocalPosition: {x: 0.0000005970105, y: 19.969383, z: -0.17943706}
+  m_LocalScale: {x: 102.8877, y: 102.88772, z: 102.887695}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5653993746937184954}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1193521741216216805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6498304473897567296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 11
+--- !u!136 &362229685835065236
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6498304473897567296}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.054
+  m_Height: 0.4961933
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6551266799120069628
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8874206218419991967}
+  - component: {fileID: 5488193251520897925}
+  - component: {fileID: 8675503211942434346}
+  m_Layer: 0
+  m_Name: Hit_RightArm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8874206218419991967
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6551266799120069628}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.00000022165293, y: 0.7048201, z: -0.000000034030105, w: -0.70938617}
+  m_LocalPosition: {x: -0.000000114551995, y: 14.158358, z: 0.000020295762}
+  m_LocalScale: {x: 102.88772, y: 102.887726, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4813885228841966086}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5488193251520897925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6551266799120069628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 8
+--- !u!136 &8675503211942434346
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6551266799120069628}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.043
+  m_Height: 0.36121932
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6610741229701151181
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7088420832042985593}
+  - component: {fileID: 8891080384114535408}
+  - component: {fileID: 529964552555235841}
+  m_Layer: 0
+  m_Name: Hit_RightFoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7088420832042985593
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610741229701151181}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.0013591364, y: -0.4267397, z: -0.9043709, w: -0.00218931}
+  m_LocalPosition: {x: 0.03613694, y: 6.765739, z: 2.5366294}
+  m_LocalScale: {x: 102.88768, y: 102.887665, z: 102.887695}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6465533826781082101}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8891080384114535408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610741229701151181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 14
+--- !u!65 &529964552555235841
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6610741229701151181}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.105, y: 0.13555686, z: 0.2428648}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6839087002660063729
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1710264196004163839}
+  - component: {fileID: 437888986331526212}
+  - component: {fileID: 9093441142588920315}
+  m_Layer: 0
+  m_Name: Hit_RightHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1710264196004163839
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6839087002660063729}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.0022692028, y: 0.70444614, z: -0.0017392959, w: -0.7097518}
+  m_LocalPosition: {x: 0.0068210997, y: 9.3687935, z: -0.053122513}
+  m_LocalScale: {x: 102.8877, y: 102.88774, z: 102.887695}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4959607943619781307}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &437888986331526212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6839087002660063729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 10
+--- !u!136 &9093441142588920315
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6839087002660063729}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.037
+  m_Height: 0.25611997
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6939411464946905398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7626803326659657834}
+  m_Layer: 0
+  m_Name: EyeAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7626803326659657834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6939411464946905398}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.013409855, y: 2.0085234e-11, z: 1.6742881e-11, w: 0.9999101}
+  m_LocalPosition: {x: -0.0065781428, y: 6.258919, z: 9.399743}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 118576844655913816}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7323875632483661787
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1189538553366639638}
+  - component: {fileID: 8126547651504668900}
+  - component: {fileID: 7098440126329605549}
+  m_Layer: 0
+  m_Name: Hit_LeftShoulder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1189538553366639638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7323875632483661787}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000038743013, y: -0.7029431, z: 0.0000002980232, w: -0.71124613}
+  m_LocalPosition: {x: -0.0000016093256, y: 2.5056064, z: 0.00000905991}
+  m_LocalScale: {x: 102.8878, y: 102.88774, z: 102.88774}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8446956357161585504}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8126547651504668900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7323875632483661787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 5
+--- !u!136 &7098440126329605549
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7323875632483661787}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.061
+  m_Height: 0.17070521
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7652291912735257059
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1744407540908929661}
+  - component: {fileID: 8259417120600366405}
+  - component: {fileID: 6207964403086769752}
+  m_Layer: 0
+  m_Name: Hit_RightLeg
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1744407540908929661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7652291912735257059}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.00000001681559, y: -1, z: 0.000000007494624, w: 0.000017381186}
+  m_LocalPosition: {x: 0.00000021466985, y: 22.189894, z: -0.0000003874301}
+  m_LocalScale: {x: 102.887726, y: 102.88767, z: 102.887695}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6193447689712027199}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8259417120600366405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7652291912735257059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 12
+--- !u!136 &6207964403086769752
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7652291912735257059}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.071
+  m_Height: 0.5733419
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8511842241980248468
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6016441278274641099}
+  - component: {fileID: 2612886761212689063}
+  - component: {fileID: 5671381948232855052}
+  m_Layer: 0
+  m_Name: Hit_LeftLeg
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6016441278274641099
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8511842241980248468}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.00000001711177, y: -1, z: -8.8737423e-10, w: 0.000018154657}
+  m_LocalPosition: {x: -0.00000017136335, y: 22.181099, z: -0.00000014901161}
+  m_LocalScale: {x: 102.887726, y: 102.88773, z: 102.88773}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4155969263643037166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2612886761212689063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8511842241980248468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 11
+--- !u!136 &5671381948232855052
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8511842241980248468}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.071
+  m_Height: 0.57317084
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8775467440800908399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3129585085045581517}
+  - component: {fileID: 341474641467627300}
+  - component: {fileID: 5720397034279243556}
+  m_Layer: 0
+  m_Name: Hit_Abdomen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3129585085045581517
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8775467440800908399}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: 2.7284841e-11, y: -0.009074523, z: 2.5806704}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &341474641467627300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8775467440800908399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 3
+--- !u!65 &5720397034279243556
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8775467440800908399}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.27, y: 0.0940665, z: 0.19}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8780321971813586092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2925746904705916906}
+  - component: {fileID: 5448409371725490783}
+  - component: {fileID: 1315455872020558600}
+  m_Layer: 0
+  m_Name: Hit_RightArm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2925746904705916906
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8780321971813586092}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.000000029802319, y: 0.70487857, z: -0, w: -0.7093281}
+  m_LocalPosition: {x: 0.0000017881396, y: 16.426493, z: 0.000008583063}
+  m_LocalScale: {x: 102.88765, y: 102.88779, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6501546540679411844}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5448409371725490783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8780321971813586092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa919145371e139418c71246a37d13c9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.BodyHitRegion
+  region: 8
+--- !u!136 &1315455872020558600
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8780321971813586092}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.051
+  m_Height: 0.32389244
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1001 &7326695642948071059
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -40,105 +1441,406 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1158410821472227283}
     m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8884984920518210719, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99999994
+      objectReference: {fileID: 0}
+    - target: {fileID: -8884984920518210719, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000051034906
+      objectReference: {fileID: 0}
+    - target: {fileID: -8884984920518210719, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.00033097973
+      objectReference: {fileID: 0}
+    - target: {fileID: -8884984920518210719, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.00000031475352
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.9120418
+      value: 0.9719333
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.9120418
+      value: 0.9719333
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.9120418
+      value: 0.9719333
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.000028073788
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.10870606
+      value: 0.0057229996
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.039536417
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -3432401550182100168, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.77585983
+      value: 0.8741697
       objectReference: {fileID: 0}
-    - target: {fileID: -3432401550182100168, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.61412954
+      value: 0.47533247
       objectReference: {fileID: 0}
-    - target: {fileID: -3432401550182100168, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.05826147
+      value: -0.042087633
       objectReference: {fileID: 0}
-    - target: {fileID: -3432401550182100168, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.13225763
+      value: -0.09008348
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.0019277362
+      objectReference: {fileID: 0}
+    - target: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1.8295926e-19
+      objectReference: {fileID: 0}
+    - target: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 1.6263061e-19
+      objectReference: {fileID: 0}
+    - target: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.047308024
+      objectReference: {fileID: 0}
+    - target: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00000012873099
+      objectReference: {fileID: 0}
+    - target: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0000000012840825
+      objectReference: {fileID: 0}
+    - target: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.0022432392
+      objectReference: {fileID: 0}
+    - target: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 104.25363
+      objectReference: {fileID: 0}
+    - target: {fileID: -5538751756592888872, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.39353925
+      objectReference: {fileID: 0}
+    - target: {fileID: -5538751756592888872, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.49176496
+      objectReference: {fileID: 0}
+    - target: {fileID: -3302972225415322985, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.39977813
+      objectReference: {fileID: 0}
+    - target: {fileID: -3302972225415322985, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.48925397
+      objectReference: {fileID: 0}
+    - target: {fileID: -3302972225415322985, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.5748948
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8867274
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.4622843
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.0014898528
+      objectReference: {fileID: 0}
+    - target: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0023519008
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_Name
-      value: Model
+      value: ErikaArcher_Rigged
       objectReference: {fileID: 0}
-    - target: {fileID: 5866666021909216657, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: 2412161367050800168, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.0028369515
+      objectReference: {fileID: 0}
+    - target: {fileID: 2412161367050800168, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00053309405
+      objectReference: {fileID: 0}
+    - target: {fileID: 2412161367050800168, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.00036299106
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838391200542782613, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838391200542782613, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.000002198286
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838391200542782613, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00008239843
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838391200542782613, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0000001315623
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330094614076497766, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.0014437648
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330094614076497766, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.0021344852
+      objectReference: {fileID: 0}
+    - target: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8739287
+      objectReference: {fileID: 0}
+    - target: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.4759423
+      objectReference: {fileID: 0}
+    - target: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.050177317
+      objectReference: {fileID: 0}
+    - target: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.08491079
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6000407479487422213, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.77600473
-      objectReference: {fileID: 0}
-    - target: {fileID: 6000407479487422213, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.6140087
+      value: -0.048067678
       objectReference: {fileID: 0}
-    - target: {fileID: 6000407479487422213, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.066514194
+      value: -0.0000001392869
       objectReference: {fileID: 0}
-    - target: {fileID: 6000407479487422213, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
+    - target: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.12800723
+      value: -9.672772e-11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.003748049
+      objectReference: {fileID: 0}
+    - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.014414835
+      objectReference: {fileID: 0}
+    - target: {fileID: 6734931530170869177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99988884
+      objectReference: {fileID: 0}
+    - target: {fileID: 6734931530170869177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.0038008012
+      objectReference: {fileID: 0}
+    - target: {fileID: 6734931530170869177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.00033329194
+      objectReference: {fileID: 0}
+    - target: {fileID: 6734931530170869177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.014416936
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 988047948033617506}
+    - targetCorrespondingSourceObject: {fileID: -2593687625098271875, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6016441278274641099}
+    - targetCorrespondingSourceObject: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8775407674788121188}
+    - targetCorrespondingSourceObject: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4187015474729924196}
+    - targetCorrespondingSourceObject: {fileID: -5738099386740791124, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1744407540908929661}
+    - targetCorrespondingSourceObject: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8553499966747210931}
+    - targetCorrespondingSourceObject: {fileID: 4330094614076497766, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7088420832042985593}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3129585085045581517}
+    - targetCorrespondingSourceObject: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7347339804739560922}
+    - targetCorrespondingSourceObject: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1189538553366639638}
+    - targetCorrespondingSourceObject: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1625222187804191137}
+    - targetCorrespondingSourceObject: {fileID: -8884984920518210719, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4512250869751056465}
+    - targetCorrespondingSourceObject: {fileID: 6734931530170869177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1432046034135116058}
+    - targetCorrespondingSourceObject: {fileID: 9140253385185518857, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1609174136196271907}
+    - targetCorrespondingSourceObject: {fileID: 7208261743932278219, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7626803326659657834}
+    - targetCorrespondingSourceObject: {fileID: 7208261743932278219, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7334376498570261637}
+    - targetCorrespondingSourceObject: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8649324942711729560}
+    - targetCorrespondingSourceObject: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2925746904705916906}
+    - targetCorrespondingSourceObject: {fileID: 2838391200542782613, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8874206218419991967}
+    - targetCorrespondingSourceObject: {fileID: 2412161367050800168, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1710264196004163839}
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
---- !u!4 &947445488443672190 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+--- !u!4 &118576844655913816 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 511d0cf13ab953b40b15e9c7f143d5e6, type: 3}
-  m_PrefabInstance: {fileID: 769193989173027221}
+  m_CorrespondingSourceObject: {fileID: 7208261743932278219, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1978508333213617050 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9140253385185518857, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2083091243576152203 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -484974042906411496, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3679527940220377298 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6250409095508506177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4096848861048064810 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6734931530170869177, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4155969263643037166 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -2593687625098271875, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4813885228841966086 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2838391200542782613, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4959607943619781307 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2412161367050800168, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4984857326531063386 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5653993746937184954 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6063354155749413847, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6117284098877489476 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6193447689712027199 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5738099386740791124, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6465533826781082101 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4330094614076497766, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6501546540679411844 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6998479009992222194 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8884984920518210719, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7072656525183879544 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8446956357161585504 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8478219101643442396 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+  m_PrefabInstance: {fileID: 7326695642948071059}
   m_PrefabAsset: {fileID: 0}
