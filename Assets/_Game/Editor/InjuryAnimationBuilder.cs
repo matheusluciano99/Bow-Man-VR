@@ -12,6 +12,10 @@ public static class InjuryAnimationBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Left Foot")]
     public static void RebuildLeftFoot() => RebuildFoot(BodyRegion.LeftFoot);
 
+    // Rebuilds the independent right-foot entry/recovery with the left leg providing support.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Right Foot")]
+    public static void RebuildRightFoot() => RebuildFoot(BodyRegion.RightFoot);
+
     // Authors separate foot clips using each model's own limb lengths and planted support foot.
     public static void RebuildFoot(BodyRegion region)
     {

@@ -358,7 +358,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: c03f20bbb864ab940838e9fa2532ce1b, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 23462a725eccb034f9f3bed8721d8fbc, type: 2}
   recoveries:
   - {fileID: 0}
   - {fileID: 0}
@@ -374,7 +374,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: 7845623d666421247ad0cb9d26e5b1c1, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 16001e97ac981c04283b0788d9462a35, type: 2}
 --- !u!1 &5164774457985036464
 GameObject:
   m_ObjectHideFlags: 0
@@ -1591,11 +1591,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.0037480472
+      value: 0.0037480474
       objectReference: {fileID: 0}
     - target: {fileID: 6552740704638146547, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.014414827
+      value: 0.014414828
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

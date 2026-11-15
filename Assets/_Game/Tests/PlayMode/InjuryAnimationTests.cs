@@ -90,7 +90,7 @@ public class InjuryAnimationTests
     }
 
     // Creates a real registered foot shot with playback connected to the existing match callbacks.
-    private DuelTurnFlow FootShot(out ArcherHealth target, out ArrowFlight arrow)
+    private DuelTurnFlow FootShot(out ArcherHealth target, out ArrowFlight arrow, BodyRegion region = BodyRegion.LeftFoot)
     {
         var firstObject = new GameObject("First");
         objects.Add(firstObject);
@@ -105,7 +105,7 @@ public class InjuryAnimationTests
         flow.Initialize(first, target);
         root.GetComponent<ArcherReactionAnimation>().Connect(flow, 1, target);
         Physics.SyncTransforms();
-        var volume = root.GetComponentsInChildren<BodyHitRegion>().Single(r => r.Region == BodyRegion.LeftFoot);
+        var volume = root.GetComponentsInChildren<BodyHitRegion>().Single(r => r.Region == region);
         var obj = new GameObject("Foot arrow");
         objects.Add(obj);
         obj.transform.position = volume.GetComponent<Collider>().bounds.center + Vector3.forward * 3f;
@@ -148,6 +148,25 @@ public class InjuryAnimationTests
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
         Assert.That(flow.CanShoot(0) || flow.CanShoot(1), Is.False);
         Assert.That(flow.ActiveArcher, Is.Zero);
+    }
+
+    // Verifies the right-foot hit lifts the right side while the left foot supports its complete automatic recovery.
+    [UnityTest]
+    public IEnumerator RightFootHasItsOwnLiftSupportAndAutomaticReturn()
+    {
+        var flow = FootShot(out var target, out _, BodyRegion.RightFoot);
+        var animator = target.GetComponentInChildren<Animator>();
+        var injured = animator.GetBoneTransform(HumanBodyBones.RightFoot);
+        var support = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+        var initial = injured.position;
+        var planted = support.position;
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(injured.position.y - initial.y, Is.GreaterThan(0.13f));
+        Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(Vector3.Distance(injured.position, initial), Is.LessThan(0.002f));
     }
 }
 #endif
