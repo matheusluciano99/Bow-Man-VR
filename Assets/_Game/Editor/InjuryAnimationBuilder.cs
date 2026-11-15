@@ -9,6 +9,10 @@ using static BowMan.ArcherLimbIK;
 
 public static class InjuryAnimationBuilder
 {
+    // Rebuilds the pelvis-specific seated fall with both palms supporting the body from behind.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Pelvis")]
+    public static void RebuildPelvis() => Rebuild(BodyRegion.Pelvis);
+
     // Rebuilds the abdomen-specific wound brace, both-knee descent and standing recovery.
     [MenuItem("Bow Man VR/Injuries/Rebuild Abdomen")]
     public static void RebuildAbdomen() => Rebuild(BodyRegion.Abdomen);
@@ -110,6 +114,7 @@ public static class InjuryAnimationBuilder
                 var folder = $"Assets/_Game/Animations/Injuries/{name}";
                 System.IO.Directory.CreateDirectory(folder);
                 var kneeHeights = Vector2.one * 0.08f;
+                var seatHeight = 0.18f;
                 if (region is BodyRegion.LeftLeg or BodyRegion.RightLeg)
                 {
                     var side = region == BodyRegion.LeftLeg ? 0 : 1;
@@ -131,8 +136,17 @@ public static class InjuryAnimationBuilder
                         kneeHeights.y -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position) - root.transform.position.y;
                     }
                 }
-                var entry = BuildClip(root, bones, positions, rotations, region, false, kneeHeights);
-                var recovery = BuildClip(root, bones, positions, rotations, region, true, kneeHeights);
+                if (region == BodyRegion.Pelvis)
+                {
+                    for (var fit = 0; fit < 3; fit++)
+                    {
+                        Restore(bones, positions, rotations);
+                        PelvisPose(root, 1f, seatHeight);
+                        seatHeight -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.Hips).position, true) - root.transform.position.y;
+                    }
+                }
+                var entry = BuildClip(root, bones, positions, rotations, region, false, kneeHeights, seatHeight);
+                var recovery = BuildClip(root, bones, positions, rotations, region, true, kneeHeights, seatHeight);
                 entry = SaveClip(entry, $"{folder}/{region}_Entry.anim");
                 recovery = SaveClip(recovery, $"{folder}/{region}_Recovery.anim");
                 Restore(bones, positions, rotations);
@@ -153,7 +167,7 @@ public static class InjuryAnimationBuilder
 
     // Records eased entry or return curves for changed bone channels at thirty samples per second.
     private static AnimationClip BuildClip(GameObject root, Transform[] bones, Vector3[] positions,
-        Quaternion[] rotations, BodyRegion region, bool recovery, Vector2 kneeHeights)
+        Quaternion[] rotations, BodyRegion region, bool recovery, Vector2 kneeHeights, float seatHeight)
     {
         var clip = new AnimationClip { name = region + (recovery ? " Recovery" : " Entry"), frameRate = 30f };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
@@ -162,7 +176,7 @@ public static class InjuryAnimationBuilder
         {
             Restore(bones, positions, rotations);
             var progress = Mathf.SmoothStep(0f, 1f, sample / 27f);
-            ApplyPose(root, region, recovery ? 1f - progress : progress, kneeHeights);
+            ApplyPose(root, region, recovery ? 1f - progress : progress, kneeHeights, seatHeight);
             for (var i = 0; i < bones.Length; i++)
             {
                 var p = bones[i].localPosition;
@@ -229,10 +243,13 @@ public static class InjuryAnimationBuilder
     }
 
     // Dispatches to the exact region's authoring motion instead of substituting a generic body reaction.
-    private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights)
+    private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights, float seatHeight)
     {
         switch (region)
         {
+            case BodyRegion.Pelvis:
+                PelvisPose(root, progress, seatHeight);
+                break;
             case BodyRegion.Abdomen:
                 AbdomenPose(root, progress, kneeHeights);
                 break;
@@ -253,6 +270,30 @@ public static class InjuryAnimationBuilder
                 break;
             default: throw new ArgumentException("This region has no authored motion.");
         }
+    }
+
+    // Buckles into a reclined seated pose with raised knees and palms planted behind the hips.
+    private static void PelvisPose(GameObject root, float progress, float seatHeight)
+    {
+        var a = root.GetComponentInChildren<Animator>();
+        var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+        var feet = new[] { a.GetBoneTransform(HumanBodyBones.LeftFoot), a.GetBoneTransform(HumanBodyBones.RightFoot) };
+        var positions = feet.Select(t => t.position).ToArray();
+        var rotations = feet.Select(t => t.rotation).ToArray();
+        hips.position += root.transform.up * ((root.transform.position.y + seatHeight - hips.position.y) * progress)
+            - root.transform.forward * (0.15f * progress);
+        hips.rotation = Quaternion.AngleAxis(-45f * progress, root.transform.right) * hips.rotation;
+        for (var i = 0; i < 2; i++)
+        {
+            var target = positions[i] + root.transform.forward * (0.45f * progress) +
+                root.transform.up * (0.012f * progress + 0.08f * Mathf.Sin(progress * Mathf.PI));
+            Solve(a, i == 0 ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg,
+                i == 0 ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg,
+                i == 0 ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot, target, root.transform.forward);
+            feet[i].rotation = Quaternion.AngleAxis(-8f * progress, root.transform.right) * rotations[i];
+        }
+        GroundPalm(root, a, true, progress, -0.08f);
+        GroundPalm(root, a, false, progress, -0.08f);
     }
 
     // Folds over the abdominal wound while placing both visible knees on their fitted support surfaces.
@@ -343,9 +384,22 @@ public static class InjuryAnimationBuilder
         healthy.rotation = healthyRotation;
         if (!left)
             healthy.rotation = Quaternion.AngleAxis(-4f * progress, root.transform.right) * healthyRotation;
+        GroundPalm(root, a, left, progress, 0.08f);
+        var other = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+        var rest = a.GetBoneTransform(left ? HumanBodyBones.RightLowerLeg : HumanBodyBones.LeftLowerLeg).position +
+            root.transform.up * 0.08f + root.transform.forward * 0.025f;
+        Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
+            left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
+            left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
+            Vector3.Lerp(other.position, rest, progress), root.transform.right * (left ? 1f : -1f));
+    }
+
+    // Places a fitted support palm on the floor in front of or behind its shoulder.
+    private static void GroundPalm(GameObject root, Animator a, bool left, float progress, float forwardOffset)
+    {
         var hand = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
         var shoulder = a.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
-        var support = shoulder.position + root.transform.right * (left ? -0.06f : 0.06f) + root.transform.forward * 0.08f;
+        var support = shoulder.position + root.transform.right * (left ? -0.06f : 0.06f) + root.transform.forward * forwardOffset;
         support.y = root.transform.position.y + 0.03f;
         Solve(a, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
             left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
@@ -356,39 +410,37 @@ public static class InjuryAnimationBuilder
         var little = a.GetBoneTransform(left ? HumanBodyBones.LeftLittleProximal : HumanBodyBones.RightLittleProximal);
         var fingers = middle.position - hand.position;
         var normal = Vector3.Cross(fingers, index.position - little.position).normalized;
-        if (Vector3.Dot(normal, root.transform.up) < 0f) normal = -normal;
+        // Anatomical handedness keeps the support palm from flipping as the arm bends.
+        if (!left) normal = -normal;
         var palmRotation = Quaternion.LookRotation(root.transform.forward, root.transform.up) *
             Quaternion.Inverse(Quaternion.LookRotation(fingers, normal)) * hand.rotation;
         hand.rotation = Quaternion.Slerp(hand.rotation, palmRotation, progress);
         RaiseSupportHand(root, a, left);
-        var other = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
-        var rest = a.GetBoneTransform(left ? HumanBodyBones.RightLowerLeg : HumanBodyBones.LeftLowerLeg).position +
-            root.transform.up * 0.08f + root.transform.forward * 0.025f;
-        Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
-            left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
-            left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
-            Vector3.Lerp(other.position, rest, progress), root.transform.right * (left ? 1f : -1f));
     }
 
     // Fits the visible glove and fingertips above the support plane without stretching the arm or lifting the planted foot.
     private static void RaiseSupportHand(GameObject root, Animator animator, bool left)
     {
         var hand = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
-        var floor = NearbyFloor(root, hand.position);
-        if (floor >= root.transform.position.y) return;
-        var rotation = hand.rotation;
-        Solve(animator, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
-            left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
-            left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
-            hand.position + root.transform.up * (root.transform.position.y - floor + 0.001f),
-            root.transform.right * (left ? -1f : 1f));
-        hand.rotation = rotation;
+        for (var fit = 0; fit < 2; fit++)
+        {
+            var floor = NearbyFloor(root, hand.position);
+            if (floor >= root.transform.position.y) return;
+            var rotation = hand.rotation;
+            Solve(animator, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+                left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
+                left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
+                hand.position + root.transform.up * (root.transform.position.y - floor + 0.001f),
+                root.transform.right * (left ? -1f : 1f));
+            hand.rotation = rotation;
+        }
     }
 
     // Measures the visible support surface near a joint, including clothing and fingers.
-    private static float NearbyFloor(GameObject root, Vector3 joint)
+    private static float NearbyFloor(GameObject root, Vector3 joint, bool seat = false)
     {
         var floor = float.PositiveInfinity;
+        var radius = seat ? 0.25f : 0.18f;
         var mesh = new Mesh();
         try
         {
@@ -398,12 +450,14 @@ public static class InjuryAnimationBuilder
                 foreach (var vertex in mesh.vertices)
                 {
                     var point = skin.transform.TransformPoint(vertex);
-                    if (Vector3.Distance(point, joint) < 0.18f) floor = Mathf.Min(floor, point.y);
+                    var delta = seat ? Vector3.ProjectOnPlane(point - joint, root.transform.up) : point - joint;
+                    if (delta.sqrMagnitude < radius * radius) floor = Mathf.Min(floor, point.y);
                 }
                 mesh.Clear();
             }
         }
         finally { Object.DestroyImmediate(mesh); }
+        if (float.IsInfinity(floor)) throw new InvalidOperationException("No visible skin near the support joint.");
         return floor;
     }
 
