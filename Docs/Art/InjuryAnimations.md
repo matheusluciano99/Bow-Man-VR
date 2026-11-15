@@ -4,7 +4,7 @@ Implemented sequences have distinct model-specific entry and recovery clips, sto
 
 | Region | Prepared motion | Review status |
 | --- | --- | --- |
-| Chest | Recoil and fall backward onto the back. | Separate retargeted entries on both models; recovery belongs to its own card. Headset review pending. |
+| Chest | Recoil and fall backward onto the back. | Separate retargeted fall/get-up clips on both models; full hold and recovery callbacks checked. Headset review pending. |
 | Left hand | Jerk the left hand back, keep its fingers open and support the wrist with the right hand. | Separate hand/wrist clips and contact checks on both models; headset review pending. |
 | Right hand | Jerk the right hand back, keep its fingers open and support the wrist with the left hand. | Independent hand/wrist clips and contact checks on both models; headset review pending. |
 | Left shoulder | Turn away and cup the left shoulder with the right palm while the injured arm recoils. | Separate shoulder clips/contact checks on both models; headset review pending. |
@@ -33,3 +33,5 @@ Use Bow Man VR > Injuries > Rebuild Left Shoulder or Rebuild Right Shoulder for 
 Use Bow Man VR > Injuries > Rebuild Left Hand or Rebuild Right Hand for the independent hand/wrist sequences. Its clip explicitly binds the injured fingers to their open pose so another animation cannot leave them clenched. It is independent of shoulder cupping and arm cradling.
 
 Use Bow Man VR > Injuries > Rebuild Chest Fall for the Mixamo-backed chest entry. It trims source time 0.5–3.2 seconds, blends the first 0.18 seconds from neutral, bakes sampled root motion into the hips and raises penetrating samples using actual visible skin vertices. The 2.7-second entry ends face-up with ground contact before the three-second hold begins. It never substitutes the rejected face-down motion. An entry can run before its recovery is authored; the review panel keeps separate manual callbacks for whichever half is missing. See [motion provenance](CharacterAssets.md#injury-motion-sources).
+
+Use Bow Man VR > Injuries > Rebuild Chest Recovery after building the fall. It trims the get-up source to 2.0–6.8 seconds, blends the first 0.35 seconds from the exact landed bone pose and adds 0.6 seconds to regain the prefab’s neutral ready stance. The planar motion is fitted between the fallen pelvis and the standing origin; this may need further foot-slide polish during visual review. Per-sample visible-skin ground correction prevents penetration. The complete recovery lasts 5.4 seconds; it begins only after the full three-second hold and grants the next turn only on its final frame. Defeat cancels it.

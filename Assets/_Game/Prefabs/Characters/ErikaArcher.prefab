@@ -362,7 +362,7 @@ MonoBehaviour:
   recoveries:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: da8b8a931cd2878429d2c9ee5fcd0535, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: e3560ab7d91bd954390ba6c49e3861dc, type: 2}

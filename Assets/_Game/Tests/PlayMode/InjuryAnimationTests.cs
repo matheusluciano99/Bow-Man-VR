@@ -388,6 +388,83 @@ public class InjuryAnimationTests
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
 
+    // Samples the real back-to-standing motion for continuity, floor contact and a complete neutral finish.
+    [Test]
+    public void ChestRecoveryStartsAtLandingAndEndsStandingOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var a = root.GetComponentInChildren<Animator>();
+            var bones = a.GetComponentsInChildren<Transform>().Where(t => t != a.transform).ToArray();
+            var neutral = bones.Select(t => t.position).ToArray();
+            var neutralRotations = bones.Select(t => t.rotation).ToArray();
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            Assert.That(actor.Supports(BodyRegion.Chest), Is.True);
+            var entry = actor.Entry(BodyRegion.Chest);
+            entry.SampleAnimation(root, entry.length);
+            var landing = bones.Select(t => t.position).ToArray();
+            var rotations = bones.Select(t => t.rotation).ToArray();
+            var recovery = actor.Recovery(BodyRegion.Chest);
+            recovery.SampleAnimation(root, 0f);
+            for (var i = 0; i < bones.Length; i++)
+            {
+                Assert.That(Vector3.Distance(bones[i].position, landing[i]), Is.LessThan(0.001f), name + " " + bones[i].name);
+                Assert.That(Quaternion.Angle(bones[i].rotation, rotations[i]), Is.LessThan(0.1f));
+            }
+            for (var frame = 0; frame <= 162; frame++)
+            {
+                recovery.SampleAnimation(root, recovery.length * frame / 162f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + frame);
+            }
+            for (var i = 0; i < bones.Length; i++)
+            {
+                Assert.That(Vector3.Distance(bones[i].position, neutral[i]), Is.LessThan(0.001f), name + " " + bones[i].name);
+                Assert.That(Quaternion.Angle(bones[i].rotation, neutralRotations[i]), Is.LessThan(0.1f));
+            }
+            Assert.That(a.GetBoneTransform(HumanBodyBones.Head).position.y, Is.GreaterThan(1.5f));
+            Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Grants the surviving archer a turn only after landing, three seconds down and the complete get-up.
+    [UnityTest]
+    public IEnumerator ChestRecoveryFinishesBeforeGrantingTheNextTurn()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
+        yield return new WaitForSeconds(3f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        yield return new WaitForSeconds(2.4f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        yield return new WaitForSeconds(0.7f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
+        Assert.That(flow.CanShoot(1), Is.False);
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
+        Assert.That(flow.CanShoot(1), Is.False);
+        yield return new WaitForSeconds(1.5f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
+    }
+
+    // Cancels an active chest get-up when defeat ends the match without a late animation handoff.
+    [UnityTest]
+    public IEnumerator DeathDuringChestRecoveryStopsTheGetUp()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
+        yield return new WaitForSeconds(6.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
+        target.TakeDamage(100);
+        var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
+        var stopped = head.position;
+        yield return new WaitForSeconds(1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(Vector3.Distance(head.position, stopped), Is.LessThan(0.001f));
+    }
+
     // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
     [UnityTest]
     public IEnumerator RightHandUsesItsOwnSupportedRecovery()

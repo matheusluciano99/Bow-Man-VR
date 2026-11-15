@@ -8,6 +8,74 @@ public static class MotionInjuryBuilder
 {
     private const string MotionFolder = "Assets/ThirdParty/MixamoAnimations/Motions/";
 
+    // Fits a back-to-standing motion from the exact landing pose before restoring the archer's ready stance.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Chest Recovery")]
+    public static void RebuildChestRecovery()
+    {
+        var source = ImportMotion("Getting Up");
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            try
+            {
+                var animator = root.GetComponentInChildren<Animator>();
+                var bones = animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var neutralPositions = bones.Select(t => t.localPosition).ToArray();
+                var neutralRotations = bones.Select(t => t.localRotation).ToArray();
+                var modelPosition = animator.transform.localPosition;
+                var modelRotation = animator.transform.localRotation;
+                var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var neutralHips = hips.position;
+                var player = root.GetComponent<ArcherReactionAnimation>();
+                var entry = player.Entry(BodyRegion.Chest);
+                if (entry == null) throw new InvalidOperationException("Build the chest fall before its recovery.");
+                entry.SampleAnimation(root, entry.length);
+                var fallenPositions = bones.Select(t => t.localPosition).ToArray();
+                var fallenRotations = bones.Select(t => t.localRotation).ToArray();
+                var fallenHips = hips.position;
+                Sample(animator, source, 2f, modelPosition, modelRotation);
+                var startOffset = Vector3.ProjectOnPlane(fallenHips - hips.position, Vector3.up);
+                Sample(animator, source, 6.8f, modelPosition, modelRotation);
+                var endOffset = Vector3.ProjectOnPlane(neutralHips - hips.position, Vector3.up);
+                var mesh = new Mesh();
+                AnimationClip clip;
+                try
+                {
+                    clip = Record(root, bones, 5.4f, time =>
+                    {
+                        Restore(bones, neutralPositions, neutralRotations);
+                        Sample(animator, source, Mathf.Min(time + 2f, 6.8f), modelPosition, modelRotation);
+                        hips.position += Vector3.Lerp(startOffset, endOffset, Mathf.SmoothStep(0f, 1f, time / 4.8f));
+                        var arrival = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.35f));
+                        var ready = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((time - 4.8f) / 0.6f));
+                        for (var i = 0; i < bones.Length; i++)
+                        {
+                            bones[i].localPosition = Vector3.Lerp(fallenPositions[i], bones[i].localPosition, arrival);
+                            bones[i].localRotation = Quaternion.Slerp(fallenRotations[i], bones[i].localRotation, arrival);
+                            bones[i].localPosition = Vector3.Lerp(bones[i].localPosition, neutralPositions[i], ready);
+                            bones[i].localRotation = Quaternion.Slerp(bones[i].localRotation, neutralRotations[i], ready);
+                        }
+                        Ground(root, hips, mesh);
+                    });
+                }
+                finally { UnityEngine.Object.DestroyImmediate(mesh); }
+                clip.name = "Chest Recovery";
+                clip = InjuryAnimationBuilder.SaveClip(clip, $"Assets/_Game/Animations/Injuries/{name}/Chest_Recovery.anim");
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    player = prefab.GetComponent<ArcherReactionAnimation>();
+                    player.SetSequence(BodyRegion.Chest, player.Entry(BodyRegion.Chest), clip);
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+        AssetDatabase.SaveAssets();
+    }
+
     // Retargets the chest fall onto each owned skeleton and preserves its other injury clips.
     [MenuItem("Bow Man VR/Injuries/Rebuild Chest Fall")]
     public static void RebuildChestFall()

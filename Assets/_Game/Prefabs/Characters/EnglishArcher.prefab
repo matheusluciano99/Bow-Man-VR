@@ -92,7 +92,7 @@ MonoBehaviour:
   recoveries:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: a877b8e0bd2146a40ab2b78191b890ff, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 7400000, guid: e7f8a8b016e03fb48a183914592ec69e, type: 2}
