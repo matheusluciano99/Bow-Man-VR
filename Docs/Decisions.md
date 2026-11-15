@@ -184,6 +184,14 @@ presentation must agree with the impact and subsequent body motion. Duration,
 rendering treatment and headset readability remain tuning/physical review;
 this decision does not claim implemented organs, fractures or visual acceptance.
 
+## D017 — Bone fracture depends on shot strength
+
+Distinguish intersecting a bone from fracturing it. The fracture decision depends
+on the shot's strength, preserving a meaningful difference between weak and
+strong draws. A prototype threshold may be tuned during testing; this choice
+does not specify a clinically accurate material/energy simulation or final
+balance. Organ/fracture gameplay effects remain separate tuning decisions.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current

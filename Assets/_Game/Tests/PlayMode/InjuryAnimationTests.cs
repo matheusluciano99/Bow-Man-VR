@@ -294,5 +294,48 @@ public class InjuryAnimationTests
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
+
+    // Checks the injured open hand is raised and supported at its wrist on both character skeletons.
+    [Test]
+    public void HandClipsOpenTheCorrectFingersAndSupportItsWrist()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var player = root.GetComponent<ArcherReactionAnimation>();
+            Assert.That(player.Supports(BodyRegion.LeftHand), Is.True);
+            var a = root.GetComponentInChildren<Animator>();
+            foreach (var region in new[] { BodyRegion.LeftHand, BodyRegion.RightHand }.Where(player.Supports))
+            {
+                var left = region == BodyRegion.LeftHand;
+                var feet = new[] { a.GetBoneTransform(HumanBodyBones.LeftFoot), a.GetBoneTransform(HumanBodyBones.RightFoot) };
+                var planted = feet.Select(t => t.position).ToArray();
+                player.Entry(region).SampleAnimation(root, player.Entry(region).length);
+                var wrist = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var support = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var fingertip = a.GetBoneTransform(left ? HumanBodyBones.LeftMiddleDistal : HumanBodyBones.RightMiddleDistal);
+                Assert.That(Vector3.Distance(support.position, wrist.position), Is.LessThan(0.09f), name + " " + region);
+                Assert.That(Vector3.Distance(fingertip.position, wrist.position), Is.GreaterThan(0.12f));
+                Assert.That(fingertip.position.y - wrist.position.y, Is.GreaterThan(0.12f));
+                for (var i = 0; i < feet.Length; i++) Assert.That(Vector3.Distance(feet[i].position, planted[i]), Is.LessThan(0.002f));
+                Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+                player.Recovery(region).SampleAnimation(root, player.Recovery(region).length);
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Verifies left-hand hit identity, attached arrow and automatic completion without borrowing the arm sequence.
+    [UnityTest]
+    public IEnumerator LeftHandUsesItsOwnSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.LeftHand);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.LeftHand));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
 }
 #endif

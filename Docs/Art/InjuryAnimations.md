@@ -4,6 +4,7 @@ Implemented sequences have distinct model-specific entry and recovery clips, sto
 
 | Region | Prepared motion | Review status |
 | --- | --- | --- |
+| Left hand | Jerk the left hand back, keep its fingers open and support the wrist with the right hand. | Separate hand/wrist clips and contact checks on both models; headset review pending. |
 | Left shoulder | Turn away and cup the left shoulder with the right palm while the injured arm recoils. | Separate shoulder clips/contact checks on both models; headset review pending. |
 | Right shoulder | Turn away and cup the right shoulder with the left palm while the injured arm recoils. | Independent shoulder clips/contact checks on both models; headset review pending. |
 | Left arm | Recoil/turn away, bend the left arm and cradle its forearm with the right hand while standing. | Dedicated clips and support-contact review on both models; headset review pending. |
@@ -26,3 +27,5 @@ The pose/skin/contact checks establish desktop prototype readiness, not final an
 Use Bow Man VR > Injuries > Rebuild Left Arm or Rebuild Right Arm for the independent arm sequences. Its opposite-hand wrist support is fitted to the injured forearm; both feet remain in their neutral planted positions. The arm reaction is independent of shoulder and hand reactions.
 
 Use Bow Man VR > Injuries > Rebuild Left Shoulder or Rebuild Right Shoulder for the independent shoulder sequences. The opposite palm reaches the shoulder cap; it does not reuse the forearm cradle or the hand/wrist reaction.
+
+Use Bow Man VR > Injuries > Rebuild Left Hand for the hand/wrist sequence. Its clip explicitly binds the injured fingers to their open pose so another animation cannot leave them clenched. It is independent of shoulder cupping and arm cradling.

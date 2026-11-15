@@ -32,6 +32,18 @@ public static class InjuryAnimationBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Right Shoulder")]
     public static void RebuildRightShoulder() => RebuildShoulder(BodyRegion.RightShoulder);
 
+    // Rebuilds the left-hand recoil with open fingers and right-hand wrist support.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Left Hand")]
+    public static void RebuildLeftHand() => RebuildHand(BodyRegion.LeftHand);
+
+    // Authors hand-specific clips independently of arm and shoulder motions.
+    public static void RebuildHand(BodyRegion region)
+    {
+        if (region != BodyRegion.LeftHand && region != BodyRegion.RightHand)
+            throw new ArgumentException("A hand region is required.");
+        Rebuild(region);
+    }
+
     // Authors shoulder support independently of the lower arm and wrist reactions.
     public static void RebuildShoulder(BodyRegion region)
     {
@@ -116,7 +128,9 @@ public static class InjuryAnimationBuilder
             var count = group == 0 ? 3 : 4;
             var changed = Enumerable.Range(start, count).Any(c => curves[i][c].keys.Any(k =>
                 Mathf.Abs(k.value - curves[i][c].keys[0].value) >= 0.000001f));
-            if (!changed) continue;
+            var openFingers = group == 1 && (region == BodyRegion.LeftHand || region == BodyRegion.RightHand) &&
+                bones[i].name.Contains(region == BodyRegion.LeftHand ? "LeftHand" : "RightHand");
+            if (!changed && !openFingers) continue;
             for (var c = start; c < start + count; c++)
                 clip.SetCurve(AnimationUtility.CalculateTransformPath(bones[i], root.transform), typeof(Transform), properties[c], curves[i][c]);
         }
@@ -175,6 +189,9 @@ public static class InjuryAnimationBuilder
                 break;
             case BodyRegion.LeftShoulder: case BodyRegion.RightShoulder:
                 ShoulderPose(root, region == BodyRegion.LeftShoulder, progress);
+                break;
+            case BodyRegion.LeftHand: case BodyRegion.RightHand:
+                HandPose(root, region == BodyRegion.LeftHand, progress);
                 break;
             default: throw new ArgumentException("This region has no authored motion.");
         }
@@ -240,6 +257,31 @@ public static class InjuryAnimationBuilder
             left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
             Vector3.Lerp(healthyHand.position, support, progress), root.transform.forward - root.transform.up * 0.5f);
         PointHand(a, !left, shoulder.position + root.transform.forward * 0.055f - healthyHand.position, progress);
+    }
+
+    // Jerks the injured hand back with open fingers while the opposite palm supports its wrist.
+    private static void HandPose(GameObject root, bool left, float progress)
+    {
+        var a = root.GetComponentInChildren<Animator>();
+        var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+        var chest = a.GetBoneTransform(HumanBodyBones.UpperChest);
+        chest.rotation = Quaternion.AngleAxis((left ? 8f : -8f) * progress, root.transform.up) * chest.rotation;
+        var injured = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+        var healthy = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+        var target = hips.position + root.transform.up * 0.38f + root.transform.forward * 0.20f
+            + root.transform.right * (left ? -0.08f : 0.08f);
+        Solve(a, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+            left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
+            left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
+            Vector3.Lerp(injured.position, target, progress), root.transform.right * (left ? -1f : 1f) + root.transform.forward * 0.3f);
+        PointHand(a, left, root.transform.up + root.transform.forward * 0.1f, progress);
+        var support = injured.position - root.transform.up * 0.06f - root.transform.forward * 0.015f;
+        Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
+            left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
+            left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
+            Vector3.Lerp(healthy.position, support, progress), root.transform.forward - root.transform.up * 0.4f);
+        var elbow = a.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
+        PointHand(a, !left, elbow.position - healthy.position, progress);
     }
 
     // Places a two-bone chain using its measured lengths and a projected bend hint, without changing bone lengths.

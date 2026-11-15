@@ -190,6 +190,8 @@ Use GitHub's Assignees field to record task responsibility.
   knockdown and recovery behavior.
 - Show where the arrow hit the body and the internal damage it caused, including
   organs struck and bones broken when applicable.
+- A bone intersection fractures it only when the shot-strength rule is met.
+  Keep the prototype fracture threshold provisional and calibrate it in testing.
 - Present internal injury as a brief X-ray view inside the struck archer.
   Highlight the actual arrow path and affected anatomy; duration and rendering
   treatment remain provisional until VR review.
