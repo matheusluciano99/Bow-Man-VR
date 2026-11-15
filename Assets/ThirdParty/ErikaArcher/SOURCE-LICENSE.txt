@@ -4,3 +4,4 @@ Source: https://www.mixamo.com/#/?page=1&query=Erika%20Archer&type=Character
 Usage terms: https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html
 Official FBX Binary character export in T-pose, preserved without modification.
 Mixamo assets are royalty-free for games under Adobe terms; do not treat this as a CC BY license.
+ErikaArcher_Rigged.fbx is a separate prepared derivative with corrected right-hand skin weights. Geometry, UVs and materials are retained; the downloaded source FBX is unchanged. Rebuild source: SourceAssets/ErikaArcher/BuildSkin.py.
