@@ -12,6 +12,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `Assets/_Game/Editor/` | Project-owned Unity authoring tools, excluded from players. |
 | `Assets/_Game/Scenes/` | Game and test scenes. |
 | `Assets/_Game/Prefabs/`, `Assets/_Game/Materials/` | Project-authored reusable assets. |
+| `Assets/_Game/Models/` | Project-generated native geometry, including fitted anatomy. |
 | `Assets/_Game/Input/` | Game input actions. |
 | `Assets/_Game/Animations/` | Project-owned clips, animation imports and controllers. |
 | `Assets/ThirdParty/<asset>/` | Imported models, textures, and attribution grouped by asset. |

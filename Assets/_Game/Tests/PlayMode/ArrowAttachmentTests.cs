@@ -19,7 +19,7 @@ public class ArrowAttachmentTests
         yield return null;
     }
 
-    // Verifies attachment preserves the actual tip and rotation through falling, kneeling and recovery transforms.
+    // Preserves the entry anchor, penetrated geometry and rotation through fall, kneel and recovery transforms.
     [UnityTest]
     public IEnumerator BodyArrowFollowsTheExactLocalImpactThroughPoseChanges()
     {
@@ -33,6 +33,10 @@ public class ArrowAttachmentTests
         arrowObject = new GameObject("Arrow");
         arrowObject.transform.position = bone.transform.position + new Vector3(0.07f, 0.08f, -1f);
         var arrow = arrowObject.AddComponent<ArrowFlight>();
+        var tip = new GameObject("Visible tip").transform;
+        tip.SetParent(arrowObject.transform, false);
+        BodyImpact anatomy = default;
+        arrow.BodyHit += hit => anatomy = hit;
         var count = 0;
         Vector3 actualImpact = default;
         arrow.Hit += hit => { actualImpact = hit.point; count++; };
@@ -41,7 +45,10 @@ public class ArrowAttachmentTests
         Assert.That(count, Is.EqualTo(1));
         Assert.That(arrow.transform.parent, Is.EqualTo(bone.transform));
         Assert.That(arrow.transform.position, Is.EqualTo(actualImpact));
+        Assert.That(anatomy.PenetrationDepth, Is.GreaterThan(0f));
+        Assert.That(Vector3.Distance(tip.position, anatomy.PathEnd), Is.LessThan(0.0001f));
         var localPoint = bone.transform.InverseTransformPoint(actualImpact);
+        var localTip = bone.transform.InverseTransformPoint(tip.position);
         var localRotation = Quaternion.Inverse(bone.transform.rotation) * arrow.transform.rotation;
         foreach (var pose in new[] { 1f, 0.4f, 0.7f, 1f })
         {
@@ -50,6 +57,7 @@ public class ArrowAttachmentTests
             bone.transform.localRotation = Quaternion.Euler(40f * pose, 15f, 30f * (1f - pose));
             yield return new WaitForFixedUpdate();
             Assert.That(Vector3.Distance(arrow.transform.position, bone.transform.TransformPoint(localPoint)), Is.LessThan(0.0001f));
+            Assert.That(Vector3.Distance(tip.position, bone.transform.TransformPoint(localTip)), Is.LessThan(0.0001f));
             Assert.That(Quaternion.Angle(arrow.transform.rotation, bone.transform.rotation * localRotation), Is.LessThan(0.01f));
             Assert.That(count, Is.EqualTo(1));
         }

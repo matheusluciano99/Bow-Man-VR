@@ -7,8 +7,9 @@ OpenXR runtime. Use a clear standing play area and both Touch controllers.
 Open `Assets/_Game/Scenes/LocalDuel.unity`, or launch
 `Builds/PCVRDuel/BowManVR.exe`. This cut combines the tracked bow, real anatomical
 body hits, attached arrows, turn flow, AI, all fifteen regional injury entries,
-surviving recovery, fatal collapse and actual-wound blood. Anatomical organ/bone
-visualization has its own tasks and must be verified in a cut containing it.
+surviving recovery, fatal collapse, actual-wound blood and finite-path organ
+analysis. Organ analysis currently produces data; the finishing X-ray and bone
+visualization have their own tasks and must be verified in a cut containing them.
 Confirm the generated player's source revision in `Artifacts/LabBuild/manifest.json`.
 
 ## Controls
@@ -72,6 +73,9 @@ standing height; physical alignment and forced-motion comfort remain unaccepted
 until this headset session. Test head/neck at full and low health separately.
 
 When the anatomy tasks are integrated, also verify organ and bone marks,
-strength-dependent fractures, the brief in-body X-ray and wound blood stay at the
+strength-dependent fractures, the fatal-hit-only in-body X-ray and wound blood stay at the
 actual struck side/location during every motion. Record these results on #35;
 keep #15/#16 hardware acceptance open until their own criteria are met.
+
+Once the finishing view is implemented, verify a surviving hit never starts it;
+head/neck kills and other regions that reduce health to zero may request it once.
