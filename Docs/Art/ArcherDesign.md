@@ -15,16 +15,20 @@ controller markers; final hand meshes and bow interaction are separate work.
 The opponent appears as a full archer. No local full-body mesh or forced
 third-person camera is part of this prototype decision.
 
-Body-specific knockdown may animate the opponent's full character. How an injury
-affects the local VR viewpoint remains a separate decision under
-[task #17](https://github.com/matheusluciano99/Bow-Man-VR/issues/17), requiring
-headset testing. It must not be inferred from the opponent's animation.
+Body-specific knockdown animates the opponent's full character. The local injury
+view follows the character's eyes with live headset tracking, as agreed in
+[task #17](https://github.com/matheusluciano99/Bow-Man-VR/issues/17). The prepared
+rigs supply an animated `EyeAnchor`; physical camera calibration and comfort
+still need headset testing.
+The confirmed rules are in [injury reactions](../InjuryReactions.md).
 
 ## Model reference sheet
 
-These views were rendered from the prepared Unity prefabs with the actual
-textures and source geometry. English's separate bow/arrow are reference props,
-not an implemented held bow. Views show front, anatomical right side and back.
+These appearance-review views record the models before rig preparation, with
+their actual textures and source geometry. English's separate bow/arrow are
+reference props. Current derivatives and movement checks are documented in
+[rig preparation](RigPreparation.md). Views show front, anatomical right side
+and back.
 
 | Model | Front | Side | Back |
 | --- | --- | --- | --- |
@@ -34,23 +38,29 @@ not an implemented held bow. Views show front, anatomical right side and back.
 ## Bow and hit-region design review
 
 Both outfits leave hands, shoulders and left/right limb silhouettes identifiable.
-Erika has a Humanoid rig and finger bones; English is static and must be rigged
-before draw/release or injury deformation can be validated. Source poses and
-separate bow props do not demonstrate a working bow interaction.
+Both now have prepared Humanoid derivatives with body, eye and finger mappings.
+The shared movement check verifies skinning and support-foot contact. Per-region
+injury clips and their full contact/deformation review remain separate tasks.
 
 | Required region | Design check and preparation consequence |
 | --- | --- |
 | Head | Head silhouette is distinct. English's helmet and Erika's hood must map to the actual head region rather than hide it from hit detection. |
-| Chest | Tunic/chest silhouette is visible; align a future chest hitbox to the body rather than the broad test capsule. |
+| Neck | Its own region and fatal animation, separate from the head. The prepared neck/head bones also carry the eye reference. |
+| Chest | Tunic/chest silhouette is visible; the bone-bound chest volume replaces the broad test capsule. |
 | Abdomen | Waist belts and pouches are equipment, not a replacement for locating the underlying body impact. |
-| Back | Quivers, straps and English's shield obscure some surfaces. Separate equipment and body detection so anatomical feedback uses the actual body hit and side. |
-| Left/right arms | Limbs and hands are distinct; sleeves/bracers must follow the matching side during bow and injury animation. |
-| Left/right legs | Separate leg silhouettes support side-specific reactions; skirt/tunic sections need skinning checks when kneeling or falling. |
+| Pelvis | Its own region and supported seated fall; clothing needs contact/deformation review. |
+| Left/right shoulders | Separate shoulder-cap regions and reactions; validate opposite-hand contact. |
+| Left/right arms | Upper arm, elbow and forearm use supported-arm reactions, excluding shoulders and hands. |
+| Left/right hands | Separate wrist/hand regions and finger motions, including the opposite hand's support contact. |
+| Left/right legs | Separate kneeling reactions; validate injured-side knee and same-side supporting hand contacts. |
+| Left/right feet | Separate lifted-foot reactions; the movement check verifies alternating-foot support. |
 
-This checks visual identification and preparation requirements. It does not claim
-implemented body hitboxes, damage values, draw deformation or injury reactions.
-The complete reaction inventory remains in task #17; no additional reactions are
-settled here. Validate the provisional 0.70 m draw, hand contacts, quiver clearance
+This checks visual identification and preparation requirements. Provisional
+body volumes and impact reporting are now implemented in [body hit detection](../BodyHits.md).
+Damage values, draw deformation and injury reactions remain separate work.
+The fifteen-region inventory and reactions are agreed in task #17. Back hits are
+outside the facing-archer bow duel; the back views remain useful art references.
+Validate the provisional 0.70 m draw, hand contacts, quiver clearance
 and recovery poses in [task #18](https://github.com/matheusluciano99/Bow-Man-VR/issues/18)
 and the bow/hardware tasks.
 
@@ -59,6 +69,7 @@ and the bow/hardware tasks.
 Sources, licenses, attribution and measured rig status are maintained in
 [CharacterAssets.md](CharacterAssets.md). Use the official sources recorded there;
 keep original archives local and commit prepared runtime files with metadata.
-English's static mesh needs rigging. Erika's rig still needs gameplay animation
-and deformation checks. The prototype currently uses static visual poses and
-simple capsule shot targets; this design does not complete those later systems.
+The source English mesh stays static; the active prefab uses its prepared skinned
+derivative. Erika's derivative repairs source hand weights. The normal prefabs
+keep neutral poses; the duel uses bone-bound anatomical shot volumes. Gameplay
+animations and pose-specific volume/contact refinements remain later work.

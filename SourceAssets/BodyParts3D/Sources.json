@@ -1,0 +1,1464 @@
+{
+  "repository": "olivercase/body_parts_3d_api",
+  "revision": "fd527e6f4daf732fd814314d9257df5877b844bc",
+  "organs": [
+    {
+      "kind": "Brain",
+      "side": "Center",
+      "region": "Head",
+      "bone": "Head",
+      "fma": "FMA50801",
+      "ids": [
+        "FJ1732",
+        "FJ1733",
+        "FJ1744",
+        "FJ1745",
+        "FJ1746",
+        "FJ1747",
+        "FJ1748",
+        "FJ1749",
+        "FJ1758",
+        "FJ1759",
+        "FJ1760",
+        "FJ1769",
+        "FJ1770",
+        "FJ1775",
+        "FJ1781",
+        "FJ1787",
+        "FJ1788",
+        "FJ1789",
+        "FJ1790",
+        "FJ1797",
+        "FJ1798",
+        "FJ1800",
+        "FJ1801",
+        "FJ1806",
+        "FJ1807",
+        "FJ1808",
+        "FJ1817",
+        "FJ1822",
+        "FJ1830",
+        "FJ1831",
+        "FJ1833",
+        "FJ1834",
+        "FJ1841",
+        "FJ1842",
+        "FJ7465",
+        "FJ7465M",
+        "FJ7466",
+        "FJ7466M",
+        "FJ7467",
+        "FJ7467M",
+        "FJ7468",
+        "FJ7468M",
+        "FJ7469",
+        "FJ7469M",
+        "FJ7470",
+        "FJ7470M",
+        "FJ7472",
+        "FJ7472M",
+        "FJ7473",
+        "FJ7473M",
+        "FJ7474",
+        "FJ7474M",
+        "FJ7475",
+        "FJ7475M",
+        "FJ7476",
+        "FJ7476M",
+        "FJ7478",
+        "FJ7478M",
+        "FJ7479",
+        "FJ7479M",
+        "FJ7481",
+        "FJ7481M",
+        "FJ7500",
+        "FJ7500M",
+        "FJ7504",
+        "FJ7504M"
+      ]
+    },
+    {
+      "kind": "Heart",
+      "side": "Center",
+      "region": "Chest",
+      "bone": "UpperChest",
+      "fma": "FMA7088",
+      "ids": [
+        "FJ2428",
+        "FJ2438",
+        "FJ2439"
+      ]
+    },
+    {
+      "kind": "Lung",
+      "side": "Left",
+      "region": "Chest",
+      "bone": "UpperChest",
+      "fma": "FMA7310",
+      "ids": [
+        "FJ6595",
+        "FJ6596",
+        "FJ6597",
+        "FJ6598",
+        "FJ6599",
+        "FJ6600",
+        "FJ6601",
+        "FJ6602",
+        "FJ6603"
+      ]
+    },
+    {
+      "kind": "Lung",
+      "side": "Right",
+      "region": "Chest",
+      "bone": "UpperChest",
+      "fma": "FMA7309",
+      "ids": [
+        "FJ6604",
+        "FJ6605",
+        "FJ6606",
+        "FJ6607",
+        "FJ6608",
+        "FJ6609",
+        "FJ6610",
+        "FJ6611",
+        "FJ6612"
+      ]
+    },
+    {
+      "kind": "Liver",
+      "side": "Center",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7197",
+      "ids": [
+        "FJ2409",
+        "FJ2816",
+        "FJ2818",
+        "FJ2819",
+        "FJ2820",
+        "FJ2821",
+        "FJ2822",
+        "FJ2823",
+        "FJ2824"
+      ]
+    },
+    {
+      "kind": "Stomach",
+      "side": "Center",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7148",
+      "ids": [
+        "FJ2564"
+      ]
+    },
+    {
+      "kind": "Pancreas",
+      "side": "Center",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7198",
+      "ids": [
+        "FJ1895"
+      ]
+    },
+    {
+      "kind": "Spleen",
+      "side": "Center",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7196",
+      "ids": [
+        "FJ2561"
+      ]
+    },
+    {
+      "kind": "Kidney",
+      "side": "Left",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7205",
+      "ids": [
+        "FJ3145"
+      ]
+    },
+    {
+      "kind": "Kidney",
+      "side": "Right",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7204",
+      "ids": [
+        "FJ3147"
+      ]
+    },
+    {
+      "kind": "SmallIntestine",
+      "side": "Center",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7200",
+      "ids": [
+        "FJ2573",
+        "FJ2574",
+        "FJ2575",
+        "FJ2576",
+        "FJ2577",
+        "FJ2578",
+        "FJ2579",
+        "FJ2580",
+        "FJ2581",
+        "FJ2582",
+        "FJ2583",
+        "FJ2584",
+        "FJ2585",
+        "FJ2586",
+        "FJ2587",
+        "FJ2588",
+        "FJ2589",
+        "FJ2590",
+        "FJ2591",
+        "FJ2592",
+        "FJ2593",
+        "FJ2594",
+        "FJ2595",
+        "FJ2596",
+        "FJ2597",
+        "FJ2598",
+        "FJ2599",
+        "FJ2600",
+        "FJ2601",
+        "FJ2602",
+        "FJ2603",
+        "FJ2604",
+        "FJ2605",
+        "FJ2606",
+        "FJ2607",
+        "FJ2608",
+        "FJ2609",
+        "FJ2610",
+        "FJ2611",
+        "FJ2612",
+        "FJ2613",
+        "FJ2614",
+        "FJ2615",
+        "FJ2616",
+        "FJ2617",
+        "FJ2618",
+        "FJ2619",
+        "FJ2620",
+        "FJ2621",
+        "FJ2622",
+        "FJ2623",
+        "FJ2624",
+        "FJ2625",
+        "FJ2626",
+        "FJ2627",
+        "FJ2628"
+      ]
+    },
+    {
+      "kind": "LargeIntestine",
+      "side": "Center",
+      "region": "Abdomen",
+      "bone": "Spine",
+      "fma": "FMA7201",
+      "ids": [
+        "FJ2566",
+        "FJ2567",
+        "FJ2572"
+      ]
+    },
+    {
+      "kind": "LargeIntestine",
+      "side": "Center",
+      "region": "Pelvis",
+      "bone": "Hips",
+      "fma": "FMA7201",
+      "ids": [
+        "FJ2571"
+      ]
+    },
+    {
+      "kind": "Bladder",
+      "side": "Center",
+      "region": "Pelvis",
+      "bone": "Hips",
+      "fma": "FMA15900",
+      "ids": [
+        "FJ3149"
+      ]
+    }
+  ],
+  "guides": [
+    "FJ1331",
+    "FJ1382",
+    "FJ3365",
+    "FJ3259"
+  ],
+  "files": [
+    {
+      "id": "FJ1331",
+      "filename": "FJ1331_BP21457_FMA58829_Left vitreous body.obj",
+      "sha256": "10735cfa0d1a55efbfa56ea29b010270f5e72b9329540017fd9a733edc38d7ac",
+      "bytes": 344465,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1331_BP21457_FMA58829_Left%20vitreous%20body.obj"
+    },
+    {
+      "id": "FJ1382",
+      "filename": "FJ1382_BP23293_FMA58828_Right vitreous body.obj",
+      "sha256": "62577a3cd74f3429fa0d8c920499e28bf2da41dc949b5dae45a0e41ae6368a56",
+      "bytes": 347379,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1382_BP23293_FMA58828_Right%20vitreous%20body.obj"
+    },
+    {
+      "id": "FJ1732",
+      "filename": "FJ1732_BP21657_FMA72670_Left angular gyrus.obj",
+      "sha256": "b4091377b4dfd33f33a84a9a66f12f47fa534f6535429b2b0c0d4594a5b166cd",
+      "bytes": 236426,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1732_BP21657_FMA72670_Left%20angular%20gyrus.obj"
+    },
+    {
+      "id": "FJ1733",
+      "filename": "FJ1733_BP23987_FMA72669_Right angular gyrus.obj",
+      "sha256": "c8dd20ce18616ea43c4935733899a96ebf092de1eb65fe97f5dc6fec866cac68",
+      "bytes": 239168,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1733_BP23987_FMA72669_Right%20angular%20gyrus.obj"
+    },
+    {
+      "id": "FJ1744",
+      "filename": "FJ1744_BP22402_FMA72658_Left inferior frontal gyrus.obj",
+      "sha256": "52fbd7c171a48cc746e221e2caf7285dd3236d1997471a83a1d871be477e410a",
+      "bytes": 218285,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1744_BP22402_FMA72658_Left%20inferior%20frontal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1745",
+      "filename": "FJ1745_BP22397_FMA72657_Right inferior frontal gyrus.obj",
+      "sha256": "b4d47e04b64092abc56e522a3e1e49f74bed6afebaf1061a6567d842b724c464",
+      "bytes": 219872,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1745_BP22397_FMA72657_Right%20inferior%20frontal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1746",
+      "filename": "FJ1746_BP22696_FMA72688_Left inferior temporal gyrus.obj",
+      "sha256": "b64deed124f4d5e4fe3909620e282fb84d32e7fa7258f9b7536a645668a213d0",
+      "bytes": 177415,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1746_BP22696_FMA72688_Left%20inferior%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1747",
+      "filename": "FJ1747_BP22176_FMA72687_Right inferior temporal gyrus.obj",
+      "sha256": "a738fe90d9b984cb1f173179e40dd5544861fee3d5dfc23935891514414bae47",
+      "bytes": 182559,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1747_BP22176_FMA72687_Right%20inferior%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1748",
+      "filename": "FJ1748_BP23978_FMA72978_Left insula.obj",
+      "sha256": "941d824f461433d486be6291a55e5b9aad880f759e16b616a04fecae3d2d3a38",
+      "bytes": 147665,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1748_BP23978_FMA72978_Left%20insula.obj"
+    },
+    {
+      "id": "FJ1749",
+      "filename": "FJ1749_BP21973_FMA72977_Right insula.obj",
+      "sha256": "c724379de905744b0a6ffea5a20376af1a521bd577e9abdca9665dfd3daf39e0",
+      "bytes": 150125,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1749_BP21973_FMA72977_Right%20insula.obj"
+    },
+    {
+      "id": "FJ1758",
+      "filename": "FJ1758_BP23298_FMA261085_White matter of left temporal lobe.obj",
+      "sha256": "34cbb9c15d4cd0d023db83531f5ba8ded57a1c0eb8d837856b5fde0575b14777",
+      "bytes": 1837459,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1758_BP23298_FMA261085_White%20matter%20of%20left%20temporal%20lobe.obj"
+    },
+    {
+      "id": "FJ1759",
+      "filename": "FJ1759_BP24047_FMA72714_Left hippocampus proper.obj",
+      "sha256": "40a18c0e3266a029629e1faa19a81b88b6623428a33362fc87596234f4ac9986",
+      "bytes": 56983,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1759_BP24047_FMA72714_Left%20hippocampus%20proper.obj"
+    },
+    {
+      "id": "FJ1760",
+      "filename": "FJ1760_BP21294_FMA62008_Hypothalamus.obj",
+      "sha256": "c905d57330e86bcbc62f1494346fe25d77579bd3c10faa38c6cde4216288028c",
+      "bytes": 131767,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1760_BP21294_FMA62008_Hypothalamus.obj"
+    },
+    {
+      "id": "FJ1769",
+      "filename": "FJ1769_BP23201_FMA62004_Medulla oblongata.obj",
+      "sha256": "6d898f913df68a12422df564f54ddf6ee4d73c6a412808b456f23f1b2c9330eb",
+      "bytes": 391855,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1769_BP23201_FMA62004_Medulla%20oblongata.obj"
+    },
+    {
+      "id": "FJ1770",
+      "filename": "FJ1770_BP19692_FMA242162_Left cerebral crus.obj",
+      "sha256": "4e7f9246c039cdca2cc46b6fb638e5dce34140c460e8c35848228a98359a3a87",
+      "bytes": 467655,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1770_BP19692_FMA242162_Left%20cerebral%20crus.obj"
+    },
+    {
+      "id": "FJ1775",
+      "filename": "FJ1775_BP22028_FMA67943_Pons.obj",
+      "sha256": "755d10a5b4f471ed02b3188e2d70254a02152b89c803913afeec39cfac2131ec",
+      "bytes": 696774,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1775_BP22028_FMA67943_Pons.obj"
+    },
+    {
+      "id": "FJ1781",
+      "filename": "FJ1781_BP22033_FMA67944_Cerebellum.obj",
+      "sha256": "58a6513be18c30875ae3bc124a0c7658ad1dbb060391fb4b48a5c43bac91d03e",
+      "bytes": 1579285,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1781_BP22033_FMA67944_Cerebellum.obj"
+    },
+    {
+      "id": "FJ1787",
+      "filename": "FJ1787_BP22367_FMA72656_Left middle frontal gyrus.obj",
+      "sha256": "e6ca6e379b91d5f203c15f9f064e3958e390f91f819458f5fc4f37a4ce52344a",
+      "bytes": 225724,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1787_BP22367_FMA72656_Left%20middle%20frontal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1788",
+      "filename": "FJ1788_BP20959_FMA72655_Right middle frontal gyrus.obj",
+      "sha256": "6a615bb30f034dfea5e954aef0f6a182e7aa32cf19e2bfd307c2a9a091ed3461",
+      "bytes": 223730,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1788_BP20959_FMA72655_Right%20middle%20frontal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1789",
+      "filename": "FJ1789_BP22697_FMA72686_Left middle temporal gyrus.obj",
+      "sha256": "6c7165ea255b5d2da30ce1102b0f041e50a047e73c085e8a853e45b05ce5d6bb",
+      "bytes": 174266,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1789_BP22697_FMA72686_Left%20middle%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1790",
+      "filename": "FJ1790_BP22182_FMA72685_Right middle temporal gyrus.obj",
+      "sha256": "6c77777a0abb4171da95d9f37edfdf7ba3f53d828b9df6a73e77e6c976592397",
+      "bytes": 178995,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1790_BP22182_FMA72685_Right%20middle%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1797",
+      "filename": "FJ1797_BP22179_FMA72666_Left postcentral gyrus.obj",
+      "sha256": "b15debc6839323f9465abd0ffbdb3e589c567110c77000a25de09ef85d086a9c",
+      "bytes": 235820,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1797_BP22179_FMA72666_Left%20postcentral%20gyrus.obj"
+    },
+    {
+      "id": "FJ1798",
+      "filename": "FJ1798_BP22140_FMA72665_Right postcentral gyrus.obj",
+      "sha256": "654bfc5d371b721596ef891e528905caa810031541de3da6d53045be2a119484",
+      "bytes": 238631,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1798_BP22140_FMA72665_Right%20postcentral%20gyrus.obj"
+    },
+    {
+      "id": "FJ1800",
+      "filename": "FJ1800_BP22183_FMA72662_Left precentral gyrus.obj",
+      "sha256": "8d2f96c138a533222e1f70ea80c07ba0699e0985fa46e6f394bc64326c168d9c",
+      "bytes": 269813,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1800_BP22183_FMA72662_Left%20precentral%20gyrus.obj"
+    },
+    {
+      "id": "FJ1801",
+      "filename": "FJ1801_BP22215_FMA72661_Right precentral gyrus.obj",
+      "sha256": "9520c6260fdad81f12bb0a7d3ff4288a9ca82e894c612cb2ce2856a8a204dece",
+      "bytes": 274379,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1801_BP22215_FMA72661_Right%20precentral%20gyrus.obj"
+    },
+    {
+      "id": "FJ1806",
+      "filename": "FJ1806_BP23323_FMA261083_White matter of right temporal lobe.obj",
+      "sha256": "e1aeb475a81097237604103c7570f1fb18f4e4dd3433c3f355ff5a18b7ac4551",
+      "bytes": 1922609,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1806_BP23323_FMA261083_White%20matter%20of%20right%20temporal%20lobe.obj"
+    },
+    {
+      "id": "FJ1807",
+      "filename": "FJ1807_BP24044_FMA72713_Right hippocampus proper.obj",
+      "sha256": "08882d712afe4782a89fa92d7290398938f1c2d099fa49c418f91b452d8e2f4a",
+      "bytes": 60120,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1807_BP24044_FMA72713_Right%20hippocampus%20proper.obj"
+    },
+    {
+      "id": "FJ1808",
+      "filename": "FJ1808_BP21294_FMA62008_Hypothalamus.obj",
+      "sha256": "677133923905d836da89e3641e006e35565412a6e8f8b22966ad1c807164dcd0",
+      "bytes": 131625,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1808_BP21294_FMA62008_Hypothalamus.obj"
+    },
+    {
+      "id": "FJ1817",
+      "filename": "FJ1817_BP19691_FMA242160_Right cerebral crus.obj",
+      "sha256": "0fc89fa6d21b627912df8618c18d95846459660f65cb4b26da6dac8499f0379b",
+      "bytes": 460753,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1817_BP19691_FMA242160_Right%20cerebral%20crus.obj"
+    },
+    {
+      "id": "FJ1822",
+      "filename": "FJ1822_BP22028_FMA67943_Pons.obj",
+      "sha256": "850dd4aa348b95a47c3e79cfcd0c745266f1254155e5af7ce2c3258bb9ea5cbf",
+      "bytes": 727437,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1822_BP22028_FMA67943_Pons.obj"
+    },
+    {
+      "id": "FJ1830",
+      "filename": "FJ1830_BP22033_FMA67944_Cerebellum.obj",
+      "sha256": "cf82a264696bdef138dd0f22e8a4d2fff4df4b04229410cc9212809a0ce16514",
+      "bytes": 1598298,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1830_BP22033_FMA67944_Cerebellum.obj"
+    },
+    {
+      "id": "FJ1831",
+      "filename": "FJ1831_BP23201_FMA62004_Medulla oblongata.obj",
+      "sha256": "eab7e3bcb83eea47987673233d3965ea29a9b9e3d00bab9393c5ed12823f286e",
+      "bytes": 400940,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1831_BP23201_FMA62004_Medulla%20oblongata.obj"
+    },
+    {
+      "id": "FJ1833",
+      "filename": "FJ1833_BP22376_FMA72654_Left superior frontal gyrus.obj",
+      "sha256": "2e2abf960f62ffa0ae8c26656778be0764bdc2b612c238bdace447a40e8b03dd",
+      "bytes": 431914,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1833_BP22376_FMA72654_Left%20superior%20frontal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1834",
+      "filename": "FJ1834_BP23996_FMA72653_Right superior frontal gyrus.obj",
+      "sha256": "aa9948bdcefc28f079768397361f2ea640d81dac7dcf9ede83fb30ead3b964e7",
+      "bytes": 437288,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1834_BP23996_FMA72653_Right%20superior%20frontal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1841",
+      "filename": "FJ1841_BP22180_FMA72668_Left supramarginal gyrus.obj",
+      "sha256": "2217ead15bb83b7556f1efca934afa2f308f1d9d606ba86cfd72b40a3ea7b7e6",
+      "bytes": 149523,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1841_BP22180_FMA72668_Left%20supramarginal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1842",
+      "filename": "FJ1842_BP22255_FMA72667_Right supramarginal gyrus.obj",
+      "sha256": "f341ba331d13d72ecbe311e73f681b122bedb4d896263958327e236e50c06999",
+      "bytes": 152058,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1842_BP22255_FMA72667_Right%20supramarginal%20gyrus.obj"
+    },
+    {
+      "id": "FJ1895",
+      "filename": "FJ1895_BP22966_FMA63120_Parenchyma of pancreas.obj",
+      "sha256": "bf9a56c2b1012be4b95c33a9b2acafeda92db56a1515ea7f37677449f8bb4793",
+      "bytes": 307546,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ1895_BP22966_FMA63120_Parenchyma%20of%20pancreas.obj"
+    },
+    {
+      "id": "FJ2409",
+      "filename": "FJ2409_BP19699_FMA15744_Hepatovenous segment VI.obj",
+      "sha256": "21d591429685a739ba87304e385139bc3955e314cf84869ec0457cf492c10708",
+      "bytes": 596582,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2409_BP19699_FMA15744_Hepatovenous%20segment%20VI.obj"
+    },
+    {
+      "id": "FJ2428",
+      "filename": "FJ2428_BP21837_FMA13884_Wall of ventricle.obj",
+      "sha256": "db5d6415f07c42b7b1af03f66190679595f8b6c4ff659b8d571ba8694afed75f",
+      "bytes": 2660566,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2428_BP21837_FMA13884_Wall%20of%20ventricle.obj"
+    },
+    {
+      "id": "FJ2438",
+      "filename": "FJ2438_BP22747_FMA9531_Wall of left atrium.obj",
+      "sha256": "17544b1214ea0626f9564aeb42b5bb9d52a126f22237a499f8de0eca6073d8a7",
+      "bytes": 509716,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2438_BP22747_FMA9531_Wall%20of%20left%20atrium.obj"
+    },
+    {
+      "id": "FJ2439",
+      "filename": "FJ2439_BP21422_FMA9457_Wall of right atrium.obj",
+      "sha256": "85fddffea47ac61de11d29219fc4f32dfc857d17b3082929a3f048c57522c887",
+      "bytes": 1211319,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2439_BP21422_FMA9457_Wall%20of%20right%20atrium.obj"
+    },
+    {
+      "id": "FJ2561",
+      "filename": "FJ2561_BP21570_FMA7196_Spleen.obj",
+      "sha256": "1c23d098fb67b5175b81aa899e46d7ef5721a511dc60efd64f194fce591db38b",
+      "bytes": 79066,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2561_BP21570_FMA7196_Spleen.obj"
+    },
+    {
+      "id": "FJ2564",
+      "filename": "FJ2564_BP22633_FMA7148_Stomach.obj",
+      "sha256": "7dbab763e256f4cbbbb38417cf0a306eb62a46ae177fa728a613476dd77a063b",
+      "bytes": 106610,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2564_BP22633_FMA7148_Stomach.obj"
+    },
+    {
+      "id": "FJ2566",
+      "filename": "FJ2566_BP22851_FMA14545_Ascending colon.obj",
+      "sha256": "0724a484ff53f644d5c0104edcf23823ac723fd9d03ef7cea08678ff7e53c605",
+      "bytes": 214014,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2566_BP22851_FMA14545_Ascending%20colon.obj"
+    },
+    {
+      "id": "FJ2567",
+      "filename": "FJ2567_BP22849_FMA14547_Descending colon.obj",
+      "sha256": "c0fc65886d1e215e2b123c27d42fca1f49ef31605368bc38edde5d499169ce53",
+      "bytes": 365225,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2567_BP22849_FMA14547_Descending%20colon.obj"
+    },
+    {
+      "id": "FJ2571",
+      "filename": "FJ2571_BP21902_FMA14544_Rectum.obj",
+      "sha256": "a2b702d4603176010fc1a6201b9f1910ca7d68ec8db76e33bcbc9c55edb5782b",
+      "bytes": 129351,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2571_BP21902_FMA14544_Rectum.obj"
+    },
+    {
+      "id": "FJ2572",
+      "filename": "FJ2572_BP23966_FMA14546_Transverse colon.obj",
+      "sha256": "20d64fe3057546ef1ab86149455b93cae3740424798962ae99fc44211a604922",
+      "bytes": 225187,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2572_BP23966_FMA14546_Transverse%20colon.obj"
+    },
+    {
+      "id": "FJ2573",
+      "filename": "FJ2573_BP24104_FMA7206_Duodenum.obj",
+      "sha256": "4e864f74d938eca6d74a185539429c1d4bbb80a8b2add7f3662b34e406c85440",
+      "bytes": 112313,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2573_BP24104_FMA7206_Duodenum.obj"
+    },
+    {
+      "id": "FJ2574",
+      "filename": "FJ2574_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "bd0866f49702a9701248bb239f548b0f57c8e0756dc801c76c12cee0ce992165",
+      "bytes": 22149,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2574_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2575",
+      "filename": "FJ2575_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "0b8f9d20cb8db1361f3ca18ac2fda58e14f933dab61ac6218d48f2ecf18aeec3",
+      "bytes": 15734,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2575_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2576",
+      "filename": "FJ2576_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "2ce78308407ac9793d1f0a681711d3ff1802253ab60867beb39eb3a480875b5b",
+      "bytes": 9791,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2576_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2577",
+      "filename": "FJ2577_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "c236c4293685fa579d3600ecdf54888443d74c00618567123469a9f741166e8f",
+      "bytes": 18646,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2577_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2578",
+      "filename": "FJ2578_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "2edf3b911e1f315b7d9deb645c1a0db606de3a4db78aafca1d6eaac68b6c5263",
+      "bytes": 17272,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2578_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2579",
+      "filename": "FJ2579_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "588739bd8f3719586d0f4c9b36031af990cf260441bd1c1ca045d6fd20cfc4de",
+      "bytes": 16287,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2579_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2580",
+      "filename": "FJ2580_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "aecae1f3ef51f5dcd867eb3cb8650bf09d48bf07d020fe10715ffecb1c80c75c",
+      "bytes": 19774,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2580_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2581",
+      "filename": "FJ2581_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "01810189074546a871fbe937eece5801d443cc5b07355a6cfd265354ff1d2435",
+      "bytes": 12055,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2581_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2582",
+      "filename": "FJ2582_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "5c813771f64e9f867d715b124f7ef145e79ff70ce6df22d678401d5f681edb16",
+      "bytes": 12156,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2582_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2583",
+      "filename": "FJ2583_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "9823b269382c1fb1d3cce568ca83e4e1a9e734219cc7673ad5226c2b214cd33a",
+      "bytes": 11013,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2583_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2584",
+      "filename": "FJ2584_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "15b0d0f7cad4d9f15ec3c9983e3f053f27706bc91614f5804e3c2c671819d358",
+      "bytes": 12745,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2584_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2585",
+      "filename": "FJ2585_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "4c6d5bbc1696335b3d9370b526ecf45d9ae7913d9cfdbf56eda5431c020033d1",
+      "bytes": 17082,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2585_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2586",
+      "filename": "FJ2586_BP22937_FMA14965_Middle part of ileum.obj",
+      "sha256": "876fb01167eb6603452d7235d9ed79e7f78c6a374f7ddd190188e3dce2be2603",
+      "bytes": 15370,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2586_BP22937_FMA14965_Middle%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2587",
+      "filename": "FJ2587_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "b206d71913e488fb807c6e038f8ec2fd2d15119a8a1a7268b0e3471b66ba2802",
+      "bytes": 12701,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2587_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2588",
+      "filename": "FJ2588_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "96a4017bfdcb97dcbee9c3bd894ad41d2f7fcf3ad02a9fb46edf7c42e907e0c4",
+      "bytes": 15324,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2588_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2589",
+      "filename": "FJ2589_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "81e62be6a3e5ae267d61f06e840d9c12a69cfeea707b76e353114d28ee28b663",
+      "bytes": 18602,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2589_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2590",
+      "filename": "FJ2590_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "7442195288c12d56c4ad52b032be2c89a439f43c5914b7365b95e8fd2099635a",
+      "bytes": 10287,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2590_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2591",
+      "filename": "FJ2591_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "f3826032301d2cb0d8fc57b02d7ad445d0e4ab798313b85b3688d50a767a1d5f",
+      "bytes": 12797,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2591_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2592",
+      "filename": "FJ2592_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "bf9717fbc26bd87e1017f9f854a09751fdcd137c54a695ea2088e23e600a1b1d",
+      "bytes": 13786,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2592_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2593",
+      "filename": "FJ2593_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "53c1cf29192a3d552550519b616982aab9e4c8c34e5fb64f5e98b60d2b210cac",
+      "bytes": 14802,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2593_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2594",
+      "filename": "FJ2594_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "f6dd6d4909eb4a14c62c6312bf5a363842aa574c3c65e52526f5f43607347dd1",
+      "bytes": 12328,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2594_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2595",
+      "filename": "FJ2595_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "939bc15f7c7f0cba4fea081bd23568aaa3b8ceafeca5249e440b1ec0c041bbfe",
+      "bytes": 15008,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2595_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2596",
+      "filename": "FJ2596_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "b5c57d9d2a80e91425875e5354ba9527962a733dba6913767408451d2162acc5",
+      "bytes": 13800,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2596_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2597",
+      "filename": "FJ2597_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "59b946e20d6d89ddc48712aa005fb826321594fe4b0b02227ca35768185b81a1",
+      "bytes": 11387,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2597_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2598",
+      "filename": "FJ2598_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "111d0e770cdfc8bdac58535b8ce55689c9e14f2d2784818643f7bd869d6d1261",
+      "bytes": 14073,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2598_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2599",
+      "filename": "FJ2599_BP23004_FMA14966_Distal part of ileum.obj",
+      "sha256": "0a9c1759c7ec6d82593ec8180191517781fd6613084a4207eda82e58a5ff8275",
+      "bytes": 16969,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2599_BP23004_FMA14966_Distal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2600",
+      "filename": "FJ2600_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "7ea3bc2f95c0473711656b30754f370dc2648adb01713f8ec633567fbe011ecc",
+      "bytes": 14765,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2600_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2601",
+      "filename": "FJ2601_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "58f472b01fefe43958bbc5fdd3f0adab6b799a4ff4e4e703cb4b7451716d4c73",
+      "bytes": 12681,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2601_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2602",
+      "filename": "FJ2602_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "5d4a012758ae1762b04a3eb565092e8f76d4982718f0db2e958fb263e4ad0615",
+      "bytes": 15205,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2602_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2603",
+      "filename": "FJ2603_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "f457755fccfa3f979400e74d9ff5d4a060adeaf6a1eaf9303385f9acf9e85132",
+      "bytes": 16848,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2603_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2604",
+      "filename": "FJ2604_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "c31d9e4795f0376d3ca8421d4d864550e103be8537caa9c9d7db1ae076445cac",
+      "bytes": 11693,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2604_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2605",
+      "filename": "FJ2605_BP21558_FMA14964_Proximal part of ileum.obj",
+      "sha256": "b43b6e6a1bcec8963dde479c6813fa5b964b68707a380d66ab95c2b918544bc3",
+      "bytes": 19339,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2605_BP21558_FMA14964_Proximal%20part%20of%20ileum.obj"
+    },
+    {
+      "id": "FJ2606",
+      "filename": "FJ2606_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "2b2372aacf3c014c1a8c2120740867b8424e8458328673069cd3eb3c4d06b554",
+      "bytes": 20813,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2606_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2607",
+      "filename": "FJ2607_BP23049_FMA16982_Middle part of jejunum.obj",
+      "sha256": "5c07bdc43e1cc1772007a0a8e9f3d0ce042fb909f8ca6436aecb2a7c7f5df91a",
+      "bytes": 13644,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2607_BP23049_FMA16982_Middle%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2608",
+      "filename": "FJ2608_BP23049_FMA16982_Middle part of jejunum.obj",
+      "sha256": "01b45af97d3383bea3e64c0bac1815f052855b7ca974a72b7b61543cb9381631",
+      "bytes": 14643,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2608_BP23049_FMA16982_Middle%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2609",
+      "filename": "FJ2609_BP23049_FMA16982_Middle part of jejunum.obj",
+      "sha256": "4c9a66684b9e2da4acedbb2d98c7ed240aeaf9fd88d86354fb9acad9ca7cda66",
+      "bytes": 10517,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2609_BP23049_FMA16982_Middle%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2610",
+      "filename": "FJ2610_BP23049_FMA16982_Middle part of jejunum.obj",
+      "sha256": "26a820bd7906534046cd7421a2f6d7369856a731af1e941efc024dfd46f3677c",
+      "bytes": 17024,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2610_BP23049_FMA16982_Middle%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2611",
+      "filename": "FJ2611_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "15949bc539dfdc9bf1fd38f7e0519c03c74b9b75bc7f6e695bf7ec351ea8979a",
+      "bytes": 13046,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2611_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2612",
+      "filename": "FJ2612_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "922dd4d23ed89fc5492fb69b172fdd6f4cde300b967403b52451dabb32437610",
+      "bytes": 14404,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2612_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2613",
+      "filename": "FJ2613_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "e9bf245e0c63947da66c6a78714eec707876c43769d744cbad2b0136986a6456",
+      "bytes": 9768,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2613_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2614",
+      "filename": "FJ2614_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "69b4901dd5865bfefa09c9878821c109db319e2df265eb7399feccfc04bc0506",
+      "bytes": 13066,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2614_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2615",
+      "filename": "FJ2615_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "e54fd310cfbeac54fead199c7d42d0e21bf7ad01f9b622bde8d5537e237619de",
+      "bytes": 15657,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2615_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2616",
+      "filename": "FJ2616_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "64051d49f38ff0dce48f555378dd617cab5394a2e3788b2918ec4494d7ca6656",
+      "bytes": 26182,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2616_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2617",
+      "filename": "FJ2617_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "d14b76f6be59f07acbd7c6baeae3bda5c97da2b3ffdd8ba28ed900e0660026f3",
+      "bytes": 13925,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2617_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2618",
+      "filename": "FJ2618_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "d4e50f4527ebac26058caeb725e246c3a07b9257bfe96c97731cab30cf8f1eef",
+      "bytes": 12658,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2618_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2619",
+      "filename": "FJ2619_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "fdc132c33a055fc208f0bedcd846750e4ae6ea51ac3b7fb9564b08586d2ff43e",
+      "bytes": 15305,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2619_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2620",
+      "filename": "FJ2620_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "2114715611081e19fc9705e10deee123295db90523afc96f343f604e3b3f4cf3",
+      "bytes": 16704,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2620_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2621",
+      "filename": "FJ2621_BP21888_FMA16983_Distal part of jejunum.obj",
+      "sha256": "34e64adbae1116ee1d056b94673a92912c9d0e109ecce0a9c16abbdd6e8256bc",
+      "bytes": 30507,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2621_BP21888_FMA16983_Distal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2622",
+      "filename": "FJ2622_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "72477f1944682e009d7a777a72d65047be37f41acca1294a19a24295b8230b16",
+      "bytes": 9833,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2622_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2623",
+      "filename": "FJ2623_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "11fe9e0e17d22f15ac8a0860130b8603ac2e965145452a9c012d928a75d470ac",
+      "bytes": 22596,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2623_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2624",
+      "filename": "FJ2624_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "ef749dfe6ab533d66cda0102aaebcdcda0ff2c70f2239f315c52e5e481ad2cae",
+      "bytes": 9826,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2624_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2625",
+      "filename": "FJ2625_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "9b3ad112afc3e5b0bd9a773cfbc202583c34214bcbc054e7b454b2d1f1d868fc",
+      "bytes": 8452,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2625_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2626",
+      "filename": "FJ2626_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "ae6743e0348d2e9c9797aece90fc10f54b5b925417a050f57dbb0b3f51b66b29",
+      "bytes": 19886,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2626_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2627",
+      "filename": "FJ2627_BP23892_FMA16981_Proximal part of jejunum.obj",
+      "sha256": "db316abd2922a3c22747a1e38b026879e7643ecfa5917f41658a820068f13efe",
+      "bytes": 10519,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2627_BP23892_FMA16981_Proximal%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2628",
+      "filename": "FJ2628_BP23049_FMA16982_Middle part of jejunum.obj",
+      "sha256": "2c3387559b666f0c6672cb39e81e6095130c1256fd56f390596393a4437bd9de",
+      "bytes": 13550,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2628_BP23049_FMA16982_Middle%20part%20of%20jejunum.obj"
+    },
+    {
+      "id": "FJ2816",
+      "filename": "FJ2816_BP23891_FMA13365_Caudate lobe of liver.obj",
+      "sha256": "40d49b0509bcc639a2f494da3b8570d4d240453208f12e7c05b7294e97ac5726",
+      "bytes": 316916,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2816_BP23891_FMA13365_Caudate%20lobe%20of%20liver.obj"
+    },
+    {
+      "id": "FJ2818",
+      "filename": "FJ2818_BP22945_FMA15739_Hepatovenous segment II.obj",
+      "sha256": "2e6eb4656aa3a3e1e1bfde1e259da6afd5b2797b5767d1bcf5616e538853d967",
+      "bytes": 936031,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2818_BP22945_FMA15739_Hepatovenous%20segment%20II.obj"
+    },
+    {
+      "id": "FJ2819",
+      "filename": "FJ2819_BP23896_FMA15741_Hepatovenous segment III.obj",
+      "sha256": "82ec45f966de3fdb2de31c7f19b9fb96ecaf52627e64429c8d17ff0d597771fc",
+      "bytes": 677401,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2819_BP23896_FMA15741_Hepatovenous%20segment%20III.obj"
+    },
+    {
+      "id": "FJ2820",
+      "filename": "FJ2820_BP22976_FMA15742_Hepatovenous segment IV.obj",
+      "sha256": "6e3ff56f2a6538a7964eb0a0764f45df2ef425a4921c11c93d399e33390e8d1b",
+      "bytes": 1295681,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2820_BP22976_FMA15742_Hepatovenous%20segment%20IV.obj"
+    },
+    {
+      "id": "FJ2821",
+      "filename": "FJ2821_BP22003_FMA15743_Hepatovenous segment V.obj",
+      "sha256": "db56694472aa9bb6171b1655dff06c1500d5630531f90a69d7afb4512871fd83",
+      "bytes": 793426,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2821_BP22003_FMA15743_Hepatovenous%20segment%20V.obj"
+    },
+    {
+      "id": "FJ2822",
+      "filename": "FJ2822_BP19699_FMA15744_Hepatovenous segment VI.obj",
+      "sha256": "56ef3fa5c1cf92e6e214a7023983036c7b3f4ad873d67734735ebc44a501dc4b",
+      "bytes": 1281742,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2822_BP19699_FMA15744_Hepatovenous%20segment%20VI.obj"
+    },
+    {
+      "id": "FJ2823",
+      "filename": "FJ2823_BP23025_FMA15746_Hepatovenous segment VIII.obj",
+      "sha256": "0766bcc9d81de542c375481d670304269b69f9fde5b9f5af13b4a65051bf3108",
+      "bytes": 1284336,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2823_BP23025_FMA15746_Hepatovenous%20segment%20VIII.obj"
+    },
+    {
+      "id": "FJ2824",
+      "filename": "FJ2824_BP23025_FMA15746_Hepatovenous segment VIII.obj",
+      "sha256": "66a2c62871e57a187e156b3616fc8218ab0fc4205b1f9ed3ea51d6d6068921e5",
+      "bytes": 1455956,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ2824_BP23025_FMA15746_Hepatovenous%20segment%20VIII.obj"
+    },
+    {
+      "id": "FJ3145",
+      "filename": "FJ3145_BP21596_FMA7205_Left kidney.obj",
+      "sha256": "6284a5129713c3456d2d29ac4eaa450d68ea879a005d4abd84307cfd73541dcd",
+      "bytes": 181911,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ3145_BP21596_FMA7205_Left%20kidney.obj"
+    },
+    {
+      "id": "FJ3147",
+      "filename": "FJ3147_BP23801_FMA7204_Right kidney.obj",
+      "sha256": "df2a928327de5d6ec21987274d6af704d49d12306786c9a75469c5ee89070b2b",
+      "bytes": 139034,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ3147_BP23801_FMA7204_Right%20kidney.obj"
+    },
+    {
+      "id": "FJ3149",
+      "filename": "FJ3149_BP22630_FMA15900_Urinary bladder.obj",
+      "sha256": "d47502a715addeec165a69270c1b94bc1d079609877cf0463882b9a4375ca4e4",
+      "bytes": 13333,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ3149_BP22630_FMA15900_Urinary%20bladder.obj"
+    },
+    {
+      "id": "FJ3259",
+      "filename": "FJ3259_BP23820_FMA24475_Left femur.obj",
+      "sha256": "caaeea4b7fd4ff7b5065b03a991c47e35a57f2aa7bac793f52b06a704c7eca53",
+      "bytes": 196814,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ3259_BP23820_FMA24475_Left%20femur.obj"
+    },
+    {
+      "id": "FJ3365",
+      "filename": "FJ3365_BP23346_FMA24474_Right femur.obj",
+      "sha256": "4ecf1a20a04bcf7963c23fde40e41bef9842c4a584337ea131c6a090bd53e9cb",
+      "bytes": 191750,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ3365_BP23346_FMA24474_Right%20femur.obj"
+    },
+    {
+      "id": "FJ6595",
+      "filename": "FJ6595_BP29727_FMA27368_Parenchyma of apicoposterior bronchopulmonary segment.obj",
+      "sha256": "7ea4893b69f3939ab0759329314e82e08b8843cdd5284f495e72c152ba99c501",
+      "bytes": 356573,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6595_BP29727_FMA27368_Parenchyma%20of%20apicoposterior%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6596",
+      "filename": "FJ6596_BP29748_FMA27394_Parenchyma of left posterior basal bronchopulmonary segment.obj",
+      "sha256": "9118fad4b7ec3961f631e9c823bb2e26c3d0d4f22b7e4b84ca7a527ce3097bb2",
+      "bytes": 607043,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6596_BP29748_FMA27394_Parenchyma%20of%20left%20posterior%20basal%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6597",
+      "filename": "FJ6597_BP29727_FMA27368_Parenchyma of apicoposterior bronchopulmonary segment.obj",
+      "sha256": "cdb94282a4b2eff1f5382f3807413e277323b242878f77e81de8defba87aa6e0",
+      "bytes": 403728,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6597_BP29727_FMA27368_Parenchyma%20of%20apicoposterior%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6598",
+      "filename": "FJ6598_BP29733_FMA27374_Parenchyma of left anterior bronchopulmonary segment.obj",
+      "sha256": "bd5397777af624b53aec390f917b1943e993ca05523ccd052c3e2c0406a75523",
+      "bytes": 650344,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6598_BP29733_FMA27374_Parenchyma%20of%20left%20anterior%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6599",
+      "filename": "FJ6599_BP29752_FMA27375_Parenchyma of superior lingular bronchopulmonary segment.obj",
+      "sha256": "29ed36210a5c1c838f75392b1613a1be7cabf6a652f67cdc0885237ca8375a3a",
+      "bytes": 591004,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6599_BP29752_FMA27375_Parenchyma%20of%20superior%20lingular%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6600",
+      "filename": "FJ6600_BP29730_FMA27376_Parenchyma of inferior lingular bronchopulmonary segment.obj",
+      "sha256": "75e86567fbaa11cc44a2b8762805634483ed65b2cce989f86cab4d6c5aa91daf",
+      "bytes": 476848,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6600_BP29730_FMA27376_Parenchyma%20of%20inferior%20lingular%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6601",
+      "filename": "FJ6601_BP29750_FMA27386_Parenchyma of left superior bronchopulmonary segment.obj",
+      "sha256": "c8b7c7829ce551fe05164dd3ec36219683ae835c4d2d5d208d80d5d7056cce4c",
+      "bytes": 498779,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6601_BP29750_FMA27386_Parenchyma%20of%20left%20superior%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6602",
+      "filename": "FJ6602_BP29736_FMA27392_Parenchyma of left anterior basal bronchopulmonary segment.obj",
+      "sha256": "1e566045c052a67b15451bc8b19418c2002e0edd5a13d9888e508ce3e76306ef",
+      "bytes": 862700,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6602_BP29736_FMA27392_Parenchyma%20of%20left%20anterior%20basal%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6603",
+      "filename": "FJ6603_BP29740_FMA27390_Parenchyma of left lateral basal bronchopulmonary segment.obj",
+      "sha256": "31cb5ac0e564a3fc261454cc6bbf92f9209af0a4c8dc6a8ffd5f66aee7cdadf6",
+      "bytes": 567473,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6603_BP29740_FMA27390_Parenchyma%20of%20left%20lateral%20basal%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6604",
+      "filename": "FJ6604_BP29747_FMA27369_Parenchyma of right apical bronchopulmonary segment.obj",
+      "sha256": "1c7ce21579d68bfe40b634afe28fc1879119563b49f810a3f8be3487743c24ac",
+      "bytes": 569291,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6604_BP29747_FMA27369_Parenchyma%20of%20right%20apical%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6605",
+      "filename": "FJ6605_BP29757_FMA27393_Parenchyma of right posterior basal bronchopulmonary segment.obj",
+      "sha256": "34e470e53185584a1426de78f5acc10010d15613ef4bd1b6f621f0c3b847b14d",
+      "bytes": 468247,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6605_BP29757_FMA27393_Parenchyma%20of%20right%20posterior%20basal%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6606",
+      "filename": "FJ6606_BP29759_FMA27371_Parenchyma of right posterior bronchopulmonary segment.obj",
+      "sha256": "93aed0947f6b07097b8ffa5919add13a43ac2ee28057fd71d1c33608dfe947db",
+      "bytes": 648179,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6606_BP29759_FMA27371_Parenchyma%20of%20right%20posterior%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6607",
+      "filename": "FJ6607_BP29754_FMA27373_Parenchyma of right anterior bronchopulmonary segment.obj",
+      "sha256": "6974afbef91d64cd79f72ce4610817d410070d1c3dbefbf45e4534618de0eb9e",
+      "bytes": 759853,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6607_BP29754_FMA27373_Parenchyma%20of%20right%20anterior%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6608",
+      "filename": "FJ6608_BP29731_FMA27452_Parenchyma of lateral bronchopulmonary segment.obj",
+      "sha256": "27532577854c67efca554e397a377f78028788f26b0f9a918ef2df5bc5279622",
+      "bytes": 658350,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6608_BP29731_FMA27452_Parenchyma%20of%20lateral%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6609",
+      "filename": "FJ6609_BP29735_FMA27448_Parenchyma of medial bronchopulmonary segment.obj",
+      "sha256": "03b2794808796e8370c11263c7a9a599779b7bac72e58387414c3c60d7a3a7c3",
+      "bytes": 572844,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6609_BP29735_FMA27448_Parenchyma%20of%20medial%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6610",
+      "filename": "FJ6610_BP29745_FMA27385_Parenchyma of right superior bronchopulmonary segment.obj",
+      "sha256": "15d635ce8fd7c4ead1c9fe7d4c38ec33ce3187857c52fd83eea4b1d735a4b3c8",
+      "bytes": 558865,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6610_BP29745_FMA27385_Parenchyma%20of%20right%20superior%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6611",
+      "filename": "FJ6611_BP29753_FMA27391_Parenchyma of right anterior basal bronchopulmonary segment.obj",
+      "sha256": "f07524ff4d25a2473e6137f1153255be9e1f0b5793467a65aa08f8325a6c4547",
+      "bytes": 700326,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6611_BP29753_FMA27391_Parenchyma%20of%20right%20anterior%20basal%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ6612",
+      "filename": "FJ6612_BP29741_FMA27389_Parenchyma of right lateral basal bronchopulmonary segment.obj",
+      "sha256": "c92b62bcd36076479b00ae78cb094289cd68f54202f48389450f36db12500256",
+      "bytes": 727304,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ6612_BP29741_FMA27389_Parenchyma%20of%20right%20lateral%20basal%20bronchopulmonary%20segment.obj"
+    },
+    {
+      "id": "FJ7465",
+      "filename": "FJ7465_BP29911_FMA256200_Left anterior orbital gyrus.obj",
+      "sha256": "002e84a975f6c26b5a68094a1576a3aee80f55a11ab645d3adeee091d68962ac",
+      "bytes": 686711,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7465_BP29911_FMA256200_Left%20anterior%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7465M",
+      "filename": "FJ7465M_BP29916_FMA256198_Right anterior orbital gyrus.obj",
+      "sha256": "09576da7e67c3a3d4d75e95d155138fd45f14b22fd595703f9a51e41c32b935a",
+      "bytes": 692893,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7465M_BP29916_FMA256198_Right%20anterior%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7466",
+      "filename": "FJ7466_BP29925_FMA72757_Left lateral orbital gyrus.obj",
+      "sha256": "a1a988a7f55e0901bebbf8bf17c9cf897a850bd4a75362023b0dbef5548c9d8b",
+      "bytes": 589848,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7466_BP29925_FMA72757_Left%20lateral%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7466M",
+      "filename": "FJ7466M_BP29920_FMA72756_Right lateral orbital gyrus.obj",
+      "sha256": "a25229cc5a70693fa5e3436df878850c0feac6863a2132dd8f68a44e198c8639",
+      "bytes": 593697,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7466M_BP29920_FMA72756_Right%20lateral%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7467",
+      "filename": "FJ7467_BP29924_FMA72759_Left medial orbital gyrus.obj",
+      "sha256": "77f98495380b4ef0293021e404c1d55f86b03f4ae64e4f4babf092499e03b509",
+      "bytes": 646024,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7467_BP29924_FMA72759_Left%20medial%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7467M",
+      "filename": "FJ7467M_BP29929_FMA72758_Right medial orbital gyrus.obj",
+      "sha256": "65dd56dc8726f7cddfb5cd788a8eca68ec70a448265d5303d5e7149a78adebdb",
+      "bytes": 651211,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7467M_BP29929_FMA72758_Right%20medial%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7468",
+      "filename": "FJ7468_BP29931_FMA80188_Left posterior orbital gyrus.obj",
+      "sha256": "9e8457534de9697799e7b1f9fa8d1db4edd651278b2961e93037d9f4fb32a174",
+      "bytes": 586013,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7468_BP29931_FMA80188_Left%20posterior%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7468M",
+      "filename": "FJ7468M_BP29918_FMA80187_Right posterior orbital gyrus.obj",
+      "sha256": "3cf80e55f9b44de75dd78128068576b0e2625e7217056359f42ca3e5c1c47af4",
+      "bytes": 589596,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7468M_BP29918_FMA80187_Right%20posterior%20orbital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7469",
+      "filename": "FJ7469_BP29922_FMA72660_Left straight gyrus.obj",
+      "sha256": "3e4c6f8fcd00333350c77861486cdd84c8eed6c4a9f120c0fff742e6c8211948",
+      "bytes": 875541,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7469_BP29922_FMA72660_Left%20straight%20gyrus.obj"
+    },
+    {
+      "id": "FJ7469M",
+      "filename": "FJ7469M_BP29910_FMA72659_Right straight gyrus.obj",
+      "sha256": "e8815236b093437b264412a5c6776def2e62f022f9eab6f19bf853f84d629045",
+      "bytes": 881817,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7469M_BP29910_FMA72659_Right%20straight%20gyrus.obj"
+    },
+    {
+      "id": "FJ7470",
+      "filename": "FJ7470_BP20829_FMA72718_Left cingulate gyrus.obj",
+      "sha256": "fc45f2b5c6086d04bce56e6201c967121822b2999291ce92fdc88ef5a863b915",
+      "bytes": 2784791,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7470_BP20829_FMA72718_Left%20cingulate%20gyrus.obj"
+    },
+    {
+      "id": "FJ7470M",
+      "filename": "FJ7470M_BP23974_FMA72717_Right cingulate gyrus.obj",
+      "sha256": "f253cd14553fded9c8e468eeb7338f0b9d3fd83654c9ee1d75ff000dad809e9f",
+      "bytes": 2803378,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7470M_BP23974_FMA72717_Right%20cingulate%20gyrus.obj"
+    },
+    {
+      "id": "FJ7472",
+      "filename": "FJ7472_BP20995_FMA72690_Left fusiform gyrus.obj",
+      "sha256": "b7010be8c87e1e9080258028c9a223408c02b7f1bcbf61bdfaa0d48715e53ad6",
+      "bytes": 1855199,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7472_BP20995_FMA72690_Left%20fusiform%20gyrus.obj"
+    },
+    {
+      "id": "FJ7472M",
+      "filename": "FJ7472M_BP24018_FMA72689_Right fusiform gyrus.obj",
+      "sha256": "b9c10f3eee2fb2df89c7bc44aa2fc9ed8f83f357e79657e79ad754d0a3bdffcd",
+      "bytes": 1866312,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7472M_BP24018_FMA72689_Right%20fusiform%20gyrus.obj"
+    },
+    {
+      "id": "FJ7473",
+      "filename": "FJ7473_BP22696_FMA72688_Left inferior temporal gyrus.obj",
+      "sha256": "5c9dc83eb8bef81115e6699f105d2679a2fa980d07d142d9c0028a78861d194f",
+      "bytes": 2078459,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7473_BP22696_FMA72688_Left%20inferior%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ7473M",
+      "filename": "FJ7473M_BP22176_FMA72687_Right inferior temporal gyrus.obj",
+      "sha256": "c6883a1604ad987b6d0254ee9699c3162c2f27151877610dcbd7d2c80f97c96d",
+      "bytes": 2084625,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7473M_BP22176_FMA72687_Right%20inferior%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ7474",
+      "filename": "FJ7474_BP29927_FMA72678_Left lateral occipital gyrus.obj",
+      "sha256": "c70d6edd2319f537e027e6a476af2d0d377d9f22e07a547174fae19d5b0a6108",
+      "bytes": 1272061,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7474_BP29927_FMA72678_Left%20lateral%20occipital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7474M",
+      "filename": "FJ7474M_BP29928_FMA72677_Right lateral occipital gyrus.obj",
+      "sha256": "e482b0fce22285a46de2242ca3ec6ebfb40a8000d9ad3f8f3d5c9590deb26266",
+      "bytes": 1274757,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7474M_BP29928_FMA72677_Right%20lateral%20occipital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7475",
+      "filename": "FJ7475_BP29917_FMA72682_Left lingual gyrus.obj",
+      "sha256": "78efbe613c543f4b75b5775c9ac8ff9c2998f9028713e681bd8129156a78365a",
+      "bytes": 646920,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7475_BP29917_FMA72682_Left%20lingual%20gyrus.obj"
+    },
+    {
+      "id": "FJ7475M",
+      "filename": "FJ7475M_BP29912_FMA72681_Right lingual gyrus.obj",
+      "sha256": "e0b3ee38b759259e3a1b5f5087e2f2a6eef761d9fa85e47e4dd3992d220c564e",
+      "bytes": 651750,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7475M_BP29912_FMA72681_Right%20lingual%20gyrus.obj"
+    },
+    {
+      "id": "FJ7476",
+      "filename": "FJ7476_BP22707_FMA72706_Left parahippocampal gyrus.obj",
+      "sha256": "0328cb7c089ef863c3ee899f048496a98ebb6cf5b439b6d83dba205f89948d05",
+      "bytes": 558891,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7476_BP22707_FMA72706_Left%20parahippocampal%20gyrus.obj"
+    },
+    {
+      "id": "FJ7476M",
+      "filename": "FJ7476M_BP22184_FMA72705_Right parahippocampal gyrus.obj",
+      "sha256": "541c9b6836ebcea582fbd4d78a98afa499a979edd0dd041f87f0b5c84e76a35e",
+      "bytes": 563332,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7476M_BP22184_FMA72705_Right%20parahippocampal%20gyrus.obj"
+    },
+    {
+      "id": "FJ7478",
+      "filename": "FJ7478_BP29923_FMA72676_Left superior occipital gyrus.obj",
+      "sha256": "9a041dfa3d25991caa1f3863cfedd76c7300d3b9f38bedd5b064dc3b2ab5caf1",
+      "bytes": 872282,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7478_BP29923_FMA72676_Left%20superior%20occipital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7478M",
+      "filename": "FJ7478M_BP29921_FMA72675_Right superior occipital gyrus.obj",
+      "sha256": "0f31a80151c865b7650a1326af0faedadc6197e41949ed52919598697f0f572f",
+      "bytes": 876708,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7478M_BP29921_FMA72675_Right%20superior%20occipital%20gyrus.obj"
+    },
+    {
+      "id": "FJ7479",
+      "filename": "FJ7479_BP29914_FMA72684_Left superior temporal gyrus.obj",
+      "sha256": "81446a29e939e6afe5d1889d3dd564c43ef719e6a2fb955d917828a90a51e607",
+      "bytes": 879793,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7479_BP29914_FMA72684_Left%20superior%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ7479M",
+      "filename": "FJ7479M_BP29913_FMA72683_Right superior temporal gyrus.obj",
+      "sha256": "161625f7a1434cb04b02c8b930781ec68c57d1fa00b51665f40d3a0393bc4f55",
+      "bytes": 885407,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7479M_BP29913_FMA72683_Right%20superior%20temporal%20gyrus.obj"
+    },
+    {
+      "id": "FJ7481",
+      "filename": "FJ7481_BP29932_FMA73539_Right substantia nigra.obj",
+      "sha256": "18eed2b7eba9bd335ef5085229b2a96d43c1286bbf1841ec25211b204f749536",
+      "bytes": 764395,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7481_BP29932_FMA73539_Right%20substantia%20nigra.obj"
+    },
+    {
+      "id": "FJ7481M",
+      "filename": "FJ7481M_BP29933_FMA73540_Left substantia nigra.obj",
+      "sha256": "b0b4fe36d3fcaa333c00a64c4e1b39e1ca71621c427ff18bb36abf0b2ae40731",
+      "bytes": 758141,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7481M_BP29933_FMA73540_Left%20substantia%20nigra.obj"
+    },
+    {
+      "id": "FJ7500",
+      "filename": "FJ7500_BP29917_FMA72682_Left lingual gyrus.obj",
+      "sha256": "1cf98926e03c449a7182cbcec853365d001b22924bf12582968f605065f6e28f",
+      "bytes": 220836,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7500_BP29917_FMA72682_Left%20lingual%20gyrus.obj"
+    },
+    {
+      "id": "FJ7500M",
+      "filename": "FJ7500M_BP29912_FMA72681_Right lingual gyrus.obj",
+      "sha256": "08e5f9ebf5d78a676bb01c073c480c83608818cff2423a193731b9c79bd6e41f",
+      "bytes": 222614,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7500M_BP29912_FMA72681_Right%20lingual%20gyrus.obj"
+    },
+    {
+      "id": "FJ7504",
+      "filename": "FJ7504_BP19692_FMA242162_Left cerebral crus.obj",
+      "sha256": "9f885f9d035bcae08b6e942658c52afd9c31a8bffb531ccfc515b47f4ed78668",
+      "bytes": 279343,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7504_BP19692_FMA242162_Left%20cerebral%20crus.obj"
+    },
+    {
+      "id": "FJ7504M",
+      "filename": "FJ7504M_BP19691_FMA242160_Right cerebral crus.obj",
+      "sha256": "43bb889092c16ce48f32378f15ff9893a07df94b6bd748b7c0efec5614247f3a",
+      "bytes": 281686,
+      "url": "https://media.githubusercontent.com/media/olivercase/body_parts_3d_api/fd527e6f4daf732fd814314d9257df5877b844bc/meshes/FJ7504M_BP19691_FMA242160_Right%20cerebral%20crus.obj"
+    }
+  ]
+}
