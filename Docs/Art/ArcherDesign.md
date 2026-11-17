@@ -16,10 +16,12 @@ The opponent appears as a full archer. No local full-body mesh or forced
 third-person camera is part of this prototype decision.
 
 Body-specific knockdown animates the opponent's full character. The local injury
-view follows the character's eyes with live headset tracking, as agreed in
-[task #17](https://github.com/matheusluciano99/Bow-Man-VR/issues/17). The prepared
-rigs supply an animated `EyeAnchor`; physical camera calibration and comfort
-still need headset testing.
+view follows the character's eyes through falls, kneeling and recovery, with
+live headset tracking for looking around. This viewpoint choice needs Quest 2
+validation. The confirmed rules and reactions are in
+[injury reactions](../InjuryReactions.md).
+The prepared rigs supply an animated `EyeAnchor`; final physical camera calibration
+and comfort remain headset checks.
 
 ## Model reference sheet
 
@@ -47,12 +49,12 @@ injury clips and their full contact/deformation review remain separate tasks.
 | Neck | Its own region and fatal animation, separate from the head. The prepared neck/head bones also carry the eye reference. |
 | Chest | Tunic/chest silhouette is visible; the bone-bound chest volume replaces the broad test capsule. |
 | Abdomen | Waist belts and pouches are equipment, not a replacement for locating the underlying body impact. |
-| Pelvis | Its own region and supported seated fall; clothing needs contact/deformation review. |
-| Left/right shoulders | Separate shoulder-cap regions and reactions; validate opposite-hand contact. |
-| Left/right arms | Upper arm, elbow and forearm use supported-arm reactions, excluding shoulders and hands. |
-| Left/right hands | Separate wrist/hand regions and finger motions, including the opposite hand's support contact. |
-| Left/right legs | Separate kneeling reactions; validate injured-side knee and same-side supporting hand contacts. |
-| Left/right feet | Separate lifted-foot reactions; the movement check verifies alternating-foot support. |
+| Pelvis | Separate the hip/groin area from abdomen and thighs; clothing must deform through the supported seated fall. |
+| Left/right shoulders | Use separate shoulder-cap regions and animations, with the opposite hand contacting the injured shoulder. |
+| Left/right arms | Upper arm, elbow and forearm use the supported-arm reaction; keep shoulders and hands separate. |
+| Left/right hands | Separate wrist/hand volumes and finger movement; the opposite hand supports the injured wrist. |
+| Left/right legs | Thigh, knee and shin use side-specific kneeling; skirt/tunic sections need skinning checks. Feet remain separate. |
+| Left/right feet | Foot/toe volumes and lifted-foot reactions are separate from leg kneeling; check balance on the healthy leg and later floor contact. |
 
 This checks visual identification and preparation requirements. Provisional
 body volumes and impact reporting are now implemented in [body hit detection](../BodyHits.md).

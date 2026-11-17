@@ -255,6 +255,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 93934441}
+  - component: {fileID: 93934442}
   m_Layer: 0
   m_Name: Archer2Spawn
   m_TagString: Untagged
@@ -281,6 +282,19 @@ Transform:
   - {fileID: 5436166401246194098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &93934442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93934440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27d967011d296974b99302bf8d0b547f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherHealth
+  maxHealth: 100
 --- !u!1 &255871222
 GameObject:
   m_ObjectHideFlags: 0
@@ -314,6 +328,8 @@ MonoBehaviour:
   firingArcher: {fileID: 1622566257}
   targetArcher: {fileID: 93934441}
   launchVelocity: {x: 0, y: 3.8, z: 25}
+  targetHealth: {fileID: 93934442}
+  testDamage: 25
 --- !u!4 &255871224
 Transform:
   m_ObjectHideFlags: 0
@@ -900,6 +916,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1622566257}
+  - component: {fileID: 1622566258}
   m_Layer: 0
   m_Name: Archer1Spawn
   m_TagString: Untagged
@@ -926,6 +943,19 @@ Transform:
   - {fileID: 1248699263}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1622566258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1622566256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27d967011d296974b99302bf8d0b547f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherHealth
+  maxHealth: 100
 --- !u!1 &1666218356
 GameObject:
   m_ObjectHideFlags: 0
