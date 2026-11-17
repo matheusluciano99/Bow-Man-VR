@@ -45,6 +45,7 @@ namespace BowMan
         private void Update()
         {
             if (!desktopControls || bow == null || Keyboard.current == null) return;
+            bow.SetHeld(bow.ShotAllowed);
             var keyboard = Keyboard.current;
             pitch = Mathf.Clamp(pitch + (keyboard.upArrowKey.ReadValue() - keyboard.downArrowKey.ReadValue()) * 30f * Time.deltaTime, -60f, 80f);
             yaw += (keyboard.rightArrowKey.ReadValue() - keyboard.leftArrowKey.ReadValue()) * 30f * Time.deltaTime;
@@ -100,7 +101,7 @@ namespace BowMan
             if (GUILayout.Button(desktopControls ? "Use VR controls" : "Use desktop controls"))
                 UseDesktopControls(!desktopControls);
             GUILayout.Label(desktopControls ? "Hold Space to draw; release to shoot. Arrow keys aim."
-                : "Bow-hand grip equips; draw-hand trigger grabs the string.");
+                : "Bow stays in hand; opposite trigger grabs the string.");
             GUILayout.Label($"Draw: {bow.DrawStrength:P0}   Shots: {shots}   Hits: {hits}");
             GUILayout.Label(lastHit);
             GUILayout.EndArea();
