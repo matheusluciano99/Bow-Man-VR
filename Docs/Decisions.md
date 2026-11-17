@@ -285,6 +285,15 @@ Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
 bone/fracture rules and X-ray rendering remain separate work. Preserve source
 filenames, mesh GUIDs and native subasset identities when regenerating.
 
+## D023 — Keep manual headset acceptance under the wearer's control
+
+The headset wearer fires each regional test using the actual controller input,
+draw and aim. Passive hit logs, frame captures and region labels guide the
+review without firing arrows or advancing turns on the wearer's behalf. This
+keeps visual review tied to the real interaction being accepted. Scripted
+projectile/animation checks remain separate automated evidence. A temporary
+close opponent helps inspect contacts without settling the arena distance.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current

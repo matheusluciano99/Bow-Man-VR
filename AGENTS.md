@@ -206,6 +206,9 @@ Use GitHub's Assignees field to record task responsibility.
 - Injuries apply animated-eye displacement/rotation to the tracking origin while
   preserving live local head/controller poses. A neutral frame adds no extra
   standing height; restart restores the floor origin without restarting XR.
+- In manual headset review, the wearer fires every test shot. Assistants can
+  label regions and capture frames/hit data; keep automatic demonstrations
+  separate from manual acceptance. Preserve ordinary shooting and turn gates.
 - Build this scene explicitly for Windows x86_64 under `Builds/PCVRDuel/`.
   Shared tracking-scene build settings remain unchanged. Run the lab checklist in
   [Docs/LabTestPlan.md](Docs/LabTestPlan.md); physical eye alignment, comfort,

@@ -39,6 +39,14 @@ also available. Bow hand preference survives match restart.
 - [ ] A fatal hit announces exactly one result; the corpse finishes collapsing and stays down.
 - [ ] Restart restores full health, clears old arrows/actors and restores standing view without leaving Quest Link.
 
+## Manual headset review
+
+The headset wearer fires each acceptance shot using the real bow controls.
+Region labels and captured frames/hit logs can guide the review, but must not
+replace the wearer's shooting with automatic demonstrations. Keep ordinary
+shooting gates and turn handoffs active. A temporary close target is an
+inspection aid, not acceptance of the final duel distance.
+
 ## Regional injury checks
 
 Use `InjuryAnimationTest.unity` for close outside views and the integrated duel
