@@ -20,12 +20,16 @@ view follows the character's eyes through falls, kneeling and recovery, with
 live headset tracking for looking around. This viewpoint choice needs Quest 2
 validation. The confirmed rules and reactions are in
 [injury reactions](../InjuryReactions.md).
+The prepared rigs supply an animated `EyeAnchor`; final physical camera calibration
+and comfort remain headset checks.
 
 ## Model reference sheet
 
-These views were rendered from the prepared Unity prefabs with the actual
-textures and source geometry. English's separate bow/arrow are reference props,
-not an implemented held bow. Views show front, anatomical right side and back.
+These appearance-review views record the models before rig preparation, with
+their actual textures and source geometry. English's separate bow/arrow are
+reference props. Current derivatives and movement checks are documented in
+[rig preparation](RigPreparation.md). Views show front, anatomical right side
+and back.
 
 | Model | Front | Side | Back |
 | --- | --- | --- | --- |
@@ -35,9 +39,9 @@ not an implemented held bow. Views show front, anatomical right side and back.
 ## Bow and hit-region design review
 
 Both outfits leave hands, shoulders and left/right limb silhouettes identifiable.
-Erika has a Humanoid rig and finger bones; English is static and must be rigged
-before draw/release or injury deformation can be validated. Source poses and
-separate bow props do not demonstrate a working bow interaction.
+Both now have prepared Humanoid derivatives with body, eye and finger mappings.
+The shared movement check verifies skinning and support-foot contact. Per-region
+injury clips and their full contact/deformation review remain separate tasks.
 
 | Required region | Design check and preparation consequence |
 | --- | --- |
@@ -66,6 +70,7 @@ and the bow/hardware tasks.
 Sources, licenses, attribution and measured rig status are maintained in
 [CharacterAssets.md](CharacterAssets.md). Use the official sources recorded there;
 keep original archives local and commit prepared runtime files with metadata.
-English's static mesh needs rigging. Erika's rig still needs gameplay animation
-and deformation checks. The prototype currently uses static visual poses and
-simple capsule shot targets; this design does not complete those later systems.
+The source English mesh stays static; the active prefab uses its prepared skinned
+derivative. Erika's derivative repairs source hand weights. The normal prefabs
+keep neutral poses and the duel still has simple capsule shot targets; gameplay
+animations, precise hitboxes and their individual checks remain later work.

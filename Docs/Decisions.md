@@ -47,7 +47,9 @@ The prototype visual choices are English Archer and Erika Archer. The local
 headset view shows tracked hands/controllers only for now; the opponent is a
 full archer. The current rig uses controller markers. Reference views and
 body-region/bow design constraints are in [ArcherDesign.md](Art/ArcherDesign.md).
-English still needs rigging; this choice does not establish animation readiness.
+Both characters now have prepared Humanoid derivatives and a shared movement
+check. Rig readiness and remaining per-animation review are documented in
+[RigPreparation.md](Art/RigPreparation.md).
 
 Record each source, license, attribution and modification with imported assets.
 Verify skeletons, skin weights and animation compatibility in actual files;
@@ -130,6 +132,21 @@ are artificial locomotion with comfort implications, as described in Meta's
 [locomotion comfort guidance](https://developers.meta.com/vr/design/locomotion-comfort-usability/).
 Physical acceptance requires Quest 2 testing under task #35; the design choice
 does not establish that the moving viewpoint is comfortable.
+
+## D010 — Preserve source art and import prepared Humanoid derivatives
+
+Keep downloaded FBXs intact and use separately named rigged derivatives in the
+existing character prefabs. This preserves provenance and original prop-mesh
+references while allowing fitted skinning and source-weight repairs. Store
+Blender authoring/rebuild work in SourceAssets and import FBXs into Unity so
+opening the game does not require a Blender import process.
+
+Store explicit body, eye and finger mappings in the derived `.meta` files;
+automatic Humanoid validity alone does not prove optional fingers are mapped or
+weighted. Check both characters with one baked Humanoid movement clip, including
+support-foot contact, and preserve the animation-only armature hierarchy when
+copying its Avatar. Per-region injury animations and headset acceptance remain
+separate reviews. See the [rig procedure](Art/RigPreparation.md).
 
 ## Open questions and provisional values
 
