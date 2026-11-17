@@ -43,8 +43,8 @@ Use GitHub's Assignees field to record task responsibility.
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
 - The local headset player sees tracked hands/controllers only for now; the
-  opponent appears as a full archer. Injury effects on the local VR viewpoint
-  remain a separate decision under task #17.
+  opponent appears as a full archer. During injury, the local viewpoint follows
+  the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
 - Front/side/back references, bow/hit-region design review and preparation
   boundaries are in [Docs/Art/ArcherDesign.md](Docs/Art/ArcherDesign.md).
 - Keep the retained heavy Templar Knight separate from the player archer selection.
@@ -193,6 +193,10 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Body-specific injury sequences
 
+- Bow-duel archers face each other. Current hit regions are head, neck, chest,
+  abdomen, pelvis, left/right shoulders, left/right arms, left/right hands,
+  left/right legs and left/right feet. Each needs its own reaction. Back hits
+  are outside the bow-duel scope; sword duels are only a future idea.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
@@ -202,23 +206,52 @@ Use GitHub's Assignees field to record task responsibility.
   for support, then recover and get up if still alive.
 - Right-leg hit: kneel on the injured right leg, place the right hand on the ground
   for support, then recover and get up if still alive.
-- Headshot: instant kill regardless of remaining health. Do not play a temporary
-  knockdown followed by recovery for a dead archer.
+- Headshot: instant kill regardless of remaining health, with immediate collapse
+  and loss of posture. A dead archer never recovers or resumes shooting.
+- Neck hit: also an instant kill regardless of health. Reach toward the actual
+  neck wound, let the knees buckle, then collapse without recovery.
+- Left-arm hit: recoil on the left side, cradle the injured left arm with the
+  right hand while standing, then recover if alive. Mirror the sides for a
+  right-arm hit.
+- Abdomen hit: fold forward, hold the actual wound, drop to both knees, then
+  stand if alive.
+- Shoulder hit: recoil on the injured side, turn the torso away and cup that
+  shoulder with the opposite hand while standing; use separate left/right motion.
+- Hand hit: jerk the injured hand back, open its fingers and support its wrist
+  with the opposite hand; use separate left/right motion.
+- Pelvis hit: hips buckle into a seated fall with both hands supporting the body
+  from behind; stand if alive.
+- Foot hit: lift the injured foot, balance on the other leg, then lower the foot
+  and regain stance if alive; use separate left/right motion.
 - Hit markers, arrow placement, organ damage, bone fractures, and blood effects
   must correspond to the actual impact location, not a random or generic injury.
-- Define the complete inventory of hittable regions and their reactions before
-  implementation. Reactions for regions beyond the examples above are not yet
-  specified and must not be invented as settled design decisions.
+- Define complete hit-region coverage before implementation. Additional regions
+  and their reactions must not be invented as settled design decisions.
+- The local injury viewpoint follows the character's eyes through falling,
+  kneeling and getting up, with live headset tracking so the player can look
+  around. Calibrate against the tracked neutral pose and validate the moving
+  viewpoint on Quest 2 before claiming comfort acceptance.
+- The region inventory, reaction table and review cases are in
+  [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
+- For surviving hits, hold the injured resting pose for three seconds, excluding
+  the initial reaction and recovery animation. Block shooting until recovery
+  finishes, then give the injured archer the next turn. A lethal hit ends the
+  match immediately. A miss passes the turn after scenery impact or flight expiry.
+- Resolve each shot outcome once; arrow cleanup must not advance the turn again.
+- Keep local controller tracking live during injury. Cancel any nocked arrow
+  and block drawing/firing until recovery is complete and the archer has the turn.
+- Head and neck hits always kill. Other regions kill when applied damage reaches
+  zero health; damage values and organ/fracture effects remain separate tuning.
 
 ## Combat details still to decide
 
-- Reactions for the remaining body regions, exact recovery durations, and how
-  recovery interacts with turns and lethal damage other than headshots.
+- Exact per-model hitbox dimensions, calibrated from the region boundaries in
+  the injury table and reviewed on the rigged archers.
 - Damage values and the gameplay effects of organ injuries and broken bones.
 - How to present internal injuries in VR, including whether to use an overlay,
   an X-ray view, or another approach.
-- How player knockdown and recovery affect the VR viewpoint; this needs a design
-  decision and testing on the target headset.
+- Physical validation of the chosen first-person eye viewpoint on the target
+  headset.
 
 ## Task tracking
 

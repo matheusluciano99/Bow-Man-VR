@@ -20,6 +20,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `Packages/`, `ProjectSettings/` | Shared dependencies and Unity project settings. |
 | `Docs/Art/` | Character candidates, sources, and preparation status. |
 | `Docs/Decisions.md` | Settled development choices, reasons, and open questions. |
+| `Docs/InjuryReactions.md` | Fifteen injury regions, reaction/turn rules and review cases. |
 | `.agents/`, `.claude/` | Shared development rules and decision-documentation skill entry points. |
 | `SourceAssets/` | Authoring originals such as Blender scenes or layered texture files. |
 | `SourceAssets/Downloads/` | Local download archives; ignored by Git and never imported by Unity. |

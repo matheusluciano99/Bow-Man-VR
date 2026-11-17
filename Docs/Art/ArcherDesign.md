@@ -15,10 +15,11 @@ controller markers; final hand meshes and bow interaction are separate work.
 The opponent appears as a full archer. No local full-body mesh or forced
 third-person camera is part of this prototype decision.
 
-Body-specific knockdown may animate the opponent's full character. How an injury
-affects the local VR viewpoint remains a separate decision under
-[task #17](https://github.com/matheusluciano99/Bow-Man-VR/issues/17), requiring
-headset testing. It must not be inferred from the opponent's animation.
+Body-specific knockdown animates the opponent's full character. The local injury
+view follows the character's eyes through falls, kneeling and recovery, with
+live headset tracking for looking around. This viewpoint choice needs Quest 2
+validation. The confirmed rules and reactions are in
+[injury reactions](../InjuryReactions.md).
 
 ## Model reference sheet
 
@@ -41,16 +42,22 @@ separate bow props do not demonstrate a working bow interaction.
 | Required region | Design check and preparation consequence |
 | --- | --- |
 | Head | Head silhouette is distinct. English's helmet and Erika's hood must map to the actual head region rather than hide it from hit detection. |
+| Neck | Keep a separate neck volume below the head; both regions are fatal but require distinct death animations. |
 | Chest | Tunic/chest silhouette is visible; align a future chest hitbox to the body rather than the broad test capsule. |
 | Abdomen | Waist belts and pouches are equipment, not a replacement for locating the underlying body impact. |
-| Back | Quivers, straps and English's shield obscure some surfaces. Separate equipment and body detection so anatomical feedback uses the actual body hit and side. |
-| Left/right arms | Limbs and hands are distinct; sleeves/bracers must follow the matching side during bow and injury animation. |
-| Left/right legs | Separate leg silhouettes support side-specific reactions; skirt/tunic sections need skinning checks when kneeling or falling. |
+| Pelvis | Separate the hip/groin area from abdomen and thighs; clothing must deform through the supported seated fall. |
+| Left/right shoulders | Use separate shoulder-cap regions and animations, with the opposite hand contacting the injured shoulder. |
+| Left/right arms | Upper arm, elbow and forearm use the supported-arm reaction; keep shoulders and hands separate. |
+| Left/right hands | Separate wrist/hand volumes and finger movement; the opposite hand supports the injured wrist. |
+| Left/right legs | Thigh, knee and shin use side-specific kneeling; skirt/tunic sections need skinning checks. Feet remain separate. |
+| Left/right feet | Foot/toe volumes and lifted-foot reactions are separate from leg kneeling; check balance on the healthy leg and later floor contact. |
 
 This checks visual identification and preparation requirements. It does not claim
 implemented body hitboxes, damage values, draw deformation or injury reactions.
-The complete reaction inventory remains in task #17; no additional reactions are
-settled here. Validate the provisional 0.70 m draw, hand contacts, quiver clearance
+Back geometry remains part of the character model and reference views; back hits
+are outside the facing-archer bow duel's current hit-region inventory.
+The complete fifteen-region reaction inventory is defined in task #17 and the
+linked table. Validate the provisional 0.70 m draw, hand contacts, quiver clearance
 and recovery poses in [task #18](https://github.com/matheusluciano99/Bow-Man-VR/issues/18)
 and the bow/hardware tasks.
 
