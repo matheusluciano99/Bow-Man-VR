@@ -3,3 +3,4 @@ Source: https://sketchfab.com/3d-models/english-archer-8571c31e9c934458be2e434de
 License: Creative Commons Attribution 4.0 International
 https://creativecommons.org/licenses/by/4.0/
 Original GLB preserved locally. Unity preview converted to FBX with extracted textures using Blender 4.5.16. No rig or animation added.
+Assets/_Game/Prefabs/Bow.prefab reuses the grip and limbs at prototype scale with a separate moving string. The source FBX is unchanged.

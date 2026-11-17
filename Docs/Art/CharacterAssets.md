@@ -64,3 +64,13 @@ Source acquisition does not select a final character or establish animation read
 - The Quest 2 Editor preview reached a focused OpenXR session and received positive
   visual feedback. Runtime stereo and head tracking were verified. This does not
   establish animation readiness or replace later bow-reach and comfort testing.
+
+## Interactive bow
+
+`Assets/_Game/Prefabs/Bow.prefab` references the English Archer FBX's existing
+`defaultMaterial.010` grip and `defaultMaterial.011` limbs with the original
+`ammo` material. The parts are repositioned around the grip, rotated into the
+shooting plane, and scaled to a provisional 1.53 m limb height. The source FBX
+is unchanged. Its separate static string is omitted from this prefab and replaced
+with a project-authored moving line. Credit count_zero under the English Archer's
+CC BY 4.0 license; source attribution remains alongside that model.

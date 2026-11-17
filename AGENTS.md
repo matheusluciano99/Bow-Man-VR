@@ -145,7 +145,39 @@ Use GitHub's Assignees field to record task responsibility.
   provisional maximum draw of 0.70 m (70 cm).
 - Use 70 cm as a temporary adult-arm-length placeholder; calibrate comfortable
   draw distance when the classroom headset is available.
-- Exact controller button mappings remain to be defined and tested on Quest 2.
+- The test implementation uses bow-hand grip to equip/hold and draw-hand trigger
+  to grab/release the nearby string. These mappings and grip alignment are
+  provisional until tested on Quest 2. Both bow hands are supported; left is
+  the initial default. The test panel's **Bow hand** button switches sides,
+  cancelling a pending tracked draw. The Inspector also exposes the initial hand.
+- Releasing the bow hand, losing either controller's tracking, pausing or losing
+  application focus cancels the pending shot without firing.
+
+## Running the bow interaction test
+
+- Open `Assets/_Game/Scenes/BowInteractionTest.unity` and enter Play. For VR,
+  start Quest Link first, as with the tracking scene. Hold the bow-hand grip to
+  equip the bow; bring the other controller within 12 cm of the resting string,
+  press and hold its trigger, pull backward, then release the trigger to shoot.
+- Aim with the bow's orientation and the line between the two hands. Backward
+  draw controls speed up to a provisional 25 m/s at 70 cm. Forward/sideways-only
+  pulls and draws below 3 cm do not fire. Extra draw is capped at full strength.
+- Without a headset, click **Use desktop controls** in the Game view. Arrow
+  keys aim; hold Space to draw and release it to shoot. The panel shows draw
+  strength, shot count, hit count and the latest impact. Click **Use VR controls**
+  to return to tracked input; switching cancels the current draw.
+- Erika stands ten metres from the rig with one simple capsule target. This is
+  an interaction test, not the duel's final distance or body-region damage system.
+  The local view uses controller markers without a full player body.
+- `Assets/_Game/Prefabs/Bow.prefab` reuses English Archer's textured grip/limbs,
+  replaces its static string with a moving string, and uses `ArrowFlight` for
+  released arrows. Bow limb bending and character animation remain separate work.
+- Run `BowMan.Gameplay.PlayTests` and `BowMan.VR.EditorTests` before a bow PR.
+  Physical grip alignment, handedness, reach and release comfort still require
+  Quest 2 testing; automated/desktop checks do not establish hardware acceptance.
+- For a standalone test, build this scene for Windows x86_64 to
+  `Builds/PCVR/BowInteraction/BowManVR-Bow.exe`. The tracking scene remains the
+  default in shared build settings.
 
 ## Combat realism and injury feedback
 
