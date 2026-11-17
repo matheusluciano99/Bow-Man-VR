@@ -80,3 +80,13 @@ Blender authoring/rebuild files live under `SourceAssets/EnglishArcher/` and
 eye references and checks are documented in [RigPreparation.md](RigPreparation.md).
 This preparation enables individual animation work; each injury sequence still
 requires its own implementation and review.
+
+## Interactive bow
+
+`Assets/_Game/Prefabs/Bow.prefab` references the English Archer FBX's existing
+`defaultMaterial.010` grip and `defaultMaterial.011` limbs with the original
+`ammo` material. The parts are repositioned around the grip, rotated into the
+shooting plane, and scaled to a provisional 1.53 m limb height. The source FBX
+is unchanged. Its separate static string is omitted from this prefab and replaced
+with a project-authored moving line. Credit count_zero under the English Archer's
+CC BY 4.0 license; source attribution remains alongside that model.
