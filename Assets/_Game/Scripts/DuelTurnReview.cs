@@ -8,6 +8,7 @@ namespace BowMan
         [SerializeField] private ArcherHealth first;
         [SerializeField] private ArcherHealth second;
         [SerializeField] private ArrowFlight arrowPrefab;
+        [SerializeField] private bool useAI;
         private BodyRegion selectedRegion = BodyRegion.Chest;
         private string lastReaction = "No reaction requested";
 
@@ -16,6 +17,7 @@ namespace BowMan
         {
             flow.Initialize(first, second);
             flow.ReactionRequested += OnReaction;
+            if (useAI) second.gameObject.AddComponent<AIArcher>().Initialize(flow, 1, second, first, arrowPrefab);
         }
 
         // Retains the actual region requested by combat without pretending an animation has completed.
@@ -51,7 +53,7 @@ namespace BowMan
             GUILayout.Label(lastReaction);
             selectedRegion = (BodyRegion)GUILayout.SelectionGrid((int)selectedRegion,
                 System.Enum.GetNames(typeof(BodyRegion)), 3);
-            GUI.enabled = flow.CanShoot(flow.ActiveArcher);
+            GUI.enabled = flow.CanShoot(flow.ActiveArcher) && (!useAI || flow.ActiveArcher == 0);
             if (GUILayout.Button("Fire active archer")) Fire();
             GUI.enabled = flow.Phase == DuelPhase.Reacting;
             if (GUILayout.Button("Animation reached injured pose")) flow.MarkInjuredPose(flow.ShotId);

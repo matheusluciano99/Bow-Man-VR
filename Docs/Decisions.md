@@ -181,6 +181,14 @@ Keep explicit manual callbacks in the desktop state-review scene until the
 individual visual sequences are connected; do not disguise them as animations.
 See [turn flow](TurnFlow.md) for the contract and tests.
 
+## D014 — AI uses the same shot and turn authority as the player
+
+The opponent waits for its legal turn, then fires the existing arrow using a
+fixed-speed ballistic arc and bounded aim error. It cannot bypass injury holds,
+recovery or defeat. Keep provisional difficulty values separate from the rules.
+The AI test host supplies explicit animation callbacks until the visual sequences
+are integrated; this does not complete the full PvE mode's anatomy/blood scope.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current

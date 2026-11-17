@@ -15,3 +15,9 @@ Open `Assets/_Game/Scenes/DuelTurnTest.unity`. Select a region and fire the acti
 The original DuelArena still provides the independent hit/health test. Its test-damage listener must not run alongside the duel controller’s damage consumer. The turn-review scene replaces that launcher with DuelTurnReview, preserving both original review flows.
 
 Run Gameplay PlayMode and required VR EditMode checks. Tests include death during the hold, exact one-time handoff, scenery, expiry, fatal head/neck, invalid shooter/actor/arrow registration and early/stale recovery callbacks.
+
+## AI opponent
+
+`AIArcher` uses the same CanShoot gate, ArrowFlight and registered-shot outcome as a human. It waits a provisional 0.8 seconds, aims toward the actual chest volume with up to 20 cm of random target-plane error, then solves a lower-time ballistic arc at the provisional full-draw speed of 25 m/s. Unreachable targets produce a bounded-speed attempt rather than freezing the turn. These values need play tuning.
+
+The AI cannot fire during flight, reaction, hold, recovery or defeat. It does not bypass animation callbacks. The automated two-bot match uses an explicit test-host adapter for those callbacks and the full three-second hold; that proves legal AI turns and match completion, not completed injury visuals. The separate AI review scene keeps its callback buttons visibly manual.
