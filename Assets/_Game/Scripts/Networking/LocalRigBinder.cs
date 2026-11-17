@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.XR;
 using UnityEngine.XR.Management;
 
 namespace BowMan.Networking
@@ -10,10 +8,8 @@ namespace BowMan.Networking
     public sealed class LocalRigBinder : MonoBehaviour
     {
         public const string DesktopFlag = "-desktop";
-        private const float DesktopEyeHeight = 1.6f;
 
         [SerializeField] private Transform rigRoot;
-        [SerializeField] private Transform cameraOffset;
         [SerializeField] private Transform head;
         [SerializeField] private Transform leftHand;
         [SerializeField] private Transform rightHand;
@@ -27,17 +23,6 @@ namespace BowMan.Networking
         private void Awake()
         {
             if (DesktopRequested()) StopXR();
-        }
-
-        // Raises the desktop camera to standing eye height once XR has had a frame to start.
-        private IEnumerator Start()
-        {
-            yield return null;
-            if (!XRSettings.isDeviceActive && cameraOffset != null)
-            {
-                var offset = cameraOffset.localPosition;
-                cameraOffset.localPosition = new Vector3(offset.x, DesktopEyeHeight, offset.z);
-            }
         }
 
         // Moves the rig onto the role's spawn, keeping only its facing direction.
