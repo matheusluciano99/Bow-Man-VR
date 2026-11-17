@@ -44,7 +44,10 @@ also available. Bow hand preference survives match restart.
 The headset wearer fires each acceptance shot using the real bow controls.
 Region labels and captured frames/hit logs can guide the review, but must not
 replace the wearer's shooting with automatic demonstrations. Keep ordinary
-shooting gates and turn handoffs active. A temporary close target is an
+shooting gates active through the full injury, three-second hold and recovery.
+For regional animation review, disable AI shooting and return control to the
+wearer after recovery or a miss; keep target health and existing wounds. Review
+AI attacks separately. A temporary close target is an
 inspection aid, not acceptance of the final duel distance.
 
 ## Regional injury checks

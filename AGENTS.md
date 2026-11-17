@@ -210,7 +210,10 @@ Use GitHub's Assignees field to record task responsibility.
   standing height; restart restores the floor origin without restarting XR.
 - In manual headset review, the wearer fires every test shot. Assistants can
   label regions and capture frames/hit data; keep automatic demonstrations
-  separate from manual acceptance. Preserve ordinary shooting and turn gates.
+  separate from manual acceptance. In regional animation review, disable AI
+  shooting and return practice control to the wearer after a miss or complete
+  recovery, preserving health/wounds and all tracking, focus and injury gates.
+  Review ordinary AI combat separately.
 - Build this scene explicitly for Windows x86_64 under `Builds/PCVRDuel/`.
   Shared tracking-scene build settings remain unchanged. Run the lab checklist in
   [Docs/LabTestPlan.md](Docs/LabTestPlan.md); physical eye alignment, comfort,

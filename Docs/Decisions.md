@@ -302,10 +302,16 @@ filenames, mesh GUIDs and native subasset identities when regenerating.
 
 The headset wearer fires each regional test using the actual controller input,
 draw and aim. Passive hit logs, frame captures and region labels guide the
-review without firing arrows or advancing turns on the wearer's behalf. This
+review without firing arrows or skipping injury/recovery on the wearer's behalf. This
 keeps visual review tied to the real interaction being accepted. Scripted
 projectile/animation checks remain separate automated evidence. A temporary
 close opponent helps inspect contacts without settling the arena distance.
+
+Regional animation review uses a passive opponent that never shoots. After a
+miss or complete surviving recovery, return practice control to the wearer
+without healing the target or resetting its pose. Keep the actual trigger,
+tracking, focus and injury gates; exercise AI combat separately. This avoids
+waiting for unrelated attacks while comparing regional motion.
 
 ## Open questions and provisional values
 
