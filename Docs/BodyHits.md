@@ -69,6 +69,21 @@ exercise animated hand/foot positions, and check overlaps and scenery. The
 body-region tests load editor assets and run in the Editor's PlayMode runner;
 they are excluded from standalone test players.
 
-Arrow attachment, damage rules, injury selection and recovery remain separate
-tasks. This system reports the actual collider impact; it does not yet attach
-arrows to the moving body or select injury animations.
+## Embedded arrows
+
+At a body hit, the arrow keeps its actual world-space tip and rotation while
+becoming a child of the struck volume. Its resulting local position/orientation
+follow that bone through animation and root movement. It does not snap to a
+named wound socket or the volume's centre. Attachment happens before either
+impact event, so consumers observe the final impact pose.
+
+Body arrows persist until the target hierarchy is removed, allowing them to
+remain through the three-second injured hold and complete recovery. Flight
+expiry applies only while flying. Scenery arrows still expire after the smaller
+of three seconds and their remaining flight lifetime. Character/match cleanup
+owns embedded-arrow cleanup; a later pooling system must explicitly clear them.
+
+The attachment test checks the same local impact through fall, kneel and recovery
+transforms, waits beyond the eight-second flight timer, and verifies hierarchy
+destruction removes the arrow. Per-region injury clips still need their own
+contact review. Damage rules, injury selection and recovery remain separate tasks.
