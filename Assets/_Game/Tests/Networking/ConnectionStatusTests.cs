@@ -52,6 +52,18 @@ public class ConnectionStatusTests
         Assert.AreEqual("Disconnected", Describe(ConnectionPhase.Disconnected, error: null));
     }
 
+    // Keeps a reason the server sent, but replaces Netcode's internal debug text with a plain sentence.
+    [Test]
+    public void ReadableReasonHidesNetcodeDebugText()
+    {
+        Assert.AreEqual("Match is full", ConnectionStatus.ReadableDisconnectReason("Match is full"));
+        Assert.AreEqual(ConnectionStatus.LostConnection, ConnectionStatus.ReadableDisconnectReason(
+            "[Disconnect Event][Client-1][TransportClientId-0][TransportShutdown] NetworkConnectionManager was shutdown."));
+        Assert.AreEqual(ConnectionStatus.LostConnection, ConnectionStatus.ReadableDisconnectReason(""));
+        Assert.AreEqual(ConnectionStatus.LostConnection, ConnectionStatus.ReadableDisconnectReason(null));
+        Assert.AreEqual("Lost connection to the other player", ConnectionStatus.LostConnection);
+    }
+
     // Allows Host/Join only while no session is starting or running.
     [Test]
     public void CanStartOnlyWhenIdle()

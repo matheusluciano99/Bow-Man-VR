@@ -19,16 +19,18 @@ namespace BowMan.Networking
         private string joinCode = string.Empty;
         private ArcherRole localRole;
         private bool ignoreStopEvents;
+        private int session;
 
         public ArcherSeatAllocator Seats { get; } = new ArcherSeatAllocator();
         public ConnectionStatus Status { get; private set; } = ConnectionStatus.Offline;
         public event Action<ConnectionStatus> StatusChanged;
 
-        // Finds the sibling network components and installs seat-based connection approval.
+        // Finds the sibling network components, installs seat approval and keeps the single scene unmanaged.
         private void Awake()
         {
             if (networkManager == null) networkManager = GetComponent<NetworkManager>();
             if (transport == null) transport = GetComponent<UnityTransport>();
+            networkManager.NetworkConfig.EnableSceneManagement = false;
             networkManager.NetworkConfig.ConnectionApproval = true;
             networkManager.ConnectionApprovalCallback = Approve;
         }
@@ -56,20 +58,23 @@ namespace BowMan.Networking
         public async Task HostAsync()
         {
             if (!Status.CanStart) return;
+            var attempt = BeginSession(string.Empty);
             try
             {
-                BeginSession(string.Empty);
                 SetStatus(ConnectionPhase.SigningIn);
                 await relay.EnsureSignedInAsync(Profile());
+                if (attempt != session) return;
                 SetStatus(ConnectionPhase.CreatingMatch);
-                joinCode = await relay.HostAsync(transport);
+                var code = await relay.HostAsync(transport);
+                if (attempt != session) return;
+                joinCode = code;
                 if (!networkManager.StartHost()) throw new InvalidOperationException("Could not start the host");
                 localRole = Seats.RoleOf(NetworkManager.ServerClientId);
                 SetStatus(ConnectionPhase.WaitingForOpponent);
             }
             catch (Exception ex)
             {
-                Fail(ex.Message);
+                if (attempt == session) Fail(ex.Message);
             }
         }
 
@@ -83,24 +88,27 @@ namespace BowMan.Networking
                 SetStatus(ConnectionPhase.Failed, InvalidCodeMessage);
                 return;
             }
+            var attempt = BeginSession(code);
             try
             {
-                BeginSession(code);
                 SetStatus(ConnectionPhase.SigningIn);
                 await relay.EnsureSignedInAsync(Profile());
+                if (attempt != session) return;
                 SetStatus(ConnectionPhase.Joining);
                 await relay.JoinAsync(transport, code);
+                if (attempt != session) return;
                 if (!networkManager.StartClient()) throw new InvalidOperationException("Could not start the client");
             }
             catch (Exception ex)
             {
-                Fail(ex.Message);
+                if (attempt == session) Fail(ex.Message);
             }
         }
 
-        // Ends the local session and returns to Offline.
+        // Ends the local session, cancelling any Host or Join still in progress, and returns to Offline.
         public void Leave()
         {
+            session++;
             StopNetwork();
             joinCode = string.Empty;
             localRole = ArcherRole.None;
@@ -144,7 +152,7 @@ namespace BowMan.Networking
             ignoreStopEvents = true;
             Seats.Clear();
             localRole = ArcherRole.None;
-            SetStatus(ConnectionPhase.Disconnected, networkManager.DisconnectReason);
+            SetStatus(ConnectionPhase.Disconnected, ConnectionStatus.ReadableDisconnectReason(networkManager.DisconnectReason));
         }
 
         // Shuts the session down and shows why it failed.
@@ -154,13 +162,15 @@ namespace BowMan.Networking
             SetStatus(ConnectionPhase.Failed, string.IsNullOrEmpty(reason) ? "Unknown error" : reason);
         }
 
-        // Clears the previous session's state before a new Host or Join attempt.
-        private void BeginSession(string code)
+        // Clears the previous session's state and returns the new attempt's number.
+        private int BeginSession(string code)
         {
+            session++;
             ignoreStopEvents = false;
             Seats.Clear();
             joinCode = code;
             localRole = ArcherRole.None;
+            return session;
         }
 
         // Shuts down NGO without reporting the resulting stop events as a disconnect.

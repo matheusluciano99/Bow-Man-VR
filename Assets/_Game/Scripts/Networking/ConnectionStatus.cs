@@ -30,7 +30,14 @@ namespace BowMan.Networking
             Error = error ?? string.Empty;
         }
 
+        public const string LostConnection = "Lost connection to the other player";
+        private const string NetcodeDebugPrefix = "[Disconnect Event]";
+
         public static ConnectionStatus Offline => new ConnectionStatus(ConnectionPhase.Offline, ArcherRole.None, "", "");
+
+        // Keeps a reason the server sent; replaces empty reasons and Netcode's internal debug text.
+        public static string ReadableDisconnectReason(string raw) =>
+            string.IsNullOrEmpty(raw) || raw.StartsWith(NetcodeDebugPrefix, System.StringComparison.Ordinal) ? LostConnection : raw;
 
         // True when no session is starting or running, so Host and Join may be used.
         public bool CanStart =>

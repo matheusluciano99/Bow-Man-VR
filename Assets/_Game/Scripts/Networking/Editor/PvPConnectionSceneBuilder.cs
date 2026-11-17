@@ -172,6 +172,7 @@ namespace BowMan.Networking.Editor
             manager.NetworkConfig.NetworkTransport = transport;
             manager.NetworkConfig.PlayerPrefab = presence;
             manager.NetworkConfig.ConnectionApproval = true;
+            manager.NetworkConfig.EnableSceneManagement = false;
             EditorUtility.SetDirty(manager);
 
             var controller = root.AddComponent<PvPConnectionController>();

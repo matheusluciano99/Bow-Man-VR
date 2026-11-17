@@ -27,7 +27,8 @@ namespace BowMan.Networking
         private void OnGUI()
         {
             var status = controller.Status;
-            GUILayout.BeginArea(new Rect(16, 16, 360, 140), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(16, 16, 360, Screen.height - 32));
+            GUILayout.BeginVertical(GUI.skin.box);
             GUILayout.Label("PvP connection test");
             GUILayout.Label(status.Describe());
             GUI.enabled = status.CanStart;
@@ -39,6 +40,7 @@ namespace BowMan.Networking
             GUI.enabled = !status.CanStart;
             if (GUILayout.Button("Leave")) controller.Leave();
             GUI.enabled = true;
+            GUILayout.EndVertical();
             GUILayout.EndArea();
         }
 
