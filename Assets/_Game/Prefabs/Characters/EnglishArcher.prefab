@@ -106,6 +106,22 @@ MonoBehaviour:
   - {fileID: 7400000, guid: c0251c0b307cedd4193bb91aca287b84, type: 2}
   - {fileID: 7400000, guid: 540a9df8288c7d44a8c2434be169c0e0, type: 2}
   - {fileID: 7400000, guid: a06d57c870cbea3479318ca9eab9f80e, type: 2}
+  holds:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 760dd1e6a44bc3e44a89551a8b642329, type: 2}
+  - {fileID: 7400000, guid: b2617846cc52cdb4aab8d96db7395b37, type: 2}
   deathFinishers:
   - {fileID: 0}
   - {fileID: 0}

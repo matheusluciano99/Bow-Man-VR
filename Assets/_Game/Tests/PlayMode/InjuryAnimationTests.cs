@@ -89,6 +89,90 @@ public class InjuryAnimationTests
         }
     }
 
+    // Requires load transfer before withdrawal and foot contact before weight returns to the injured side.
+    [Test]
+    public void FootReactionsUnloadBeforeLiftingAndLandBeforeRecentering()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        foreach (var region in new[] { BodyRegion.LeftFoot, BodyRegion.RightFoot })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var a = root.GetComponentInChildren<Animator>();
+            var injured = a.GetBoneTransform(region == BodyRegion.LeftFoot ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot);
+            var support = a.GetBoneTransform(region == BodyRegion.LeftFoot ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot);
+            var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+            var rest = injured.position;
+            var hipStart = hips.position;
+            var side = Mathf.Sign(Vector3.Dot(support.position - hips.position, root.transform.right));
+            actor.Entry(region).SampleAnimation(root, 0.05f);
+            Assert.That(Vector3.Dot(hips.position - hipStart, root.transform.right) * side, Is.GreaterThan(0.001f));
+            Assert.That(Vector3.Distance(injured.position, rest), Is.LessThan(0.001f), name + " must unload before lifting");
+            actor.Entry(region).SampleAnimation(root, actor.Entry(region).length);
+            var loaded = Vector3.Dot(hips.position - hipStart, root.transform.right) * side;
+            actor.Recovery(region).SampleAnimation(root, 0.63f);
+            Assert.That(Vector3.Distance(injured.position, rest), Is.LessThan(0.001f), name + " must land before recentering");
+            Assert.That(Vector3.Dot(hips.position - hipStart, root.transform.right) * side, Is.GreaterThan(loaded * 0.5f));
+            actor.Recovery(region).SampleAnimation(root, actor.Recovery(region).length);
+            Assert.That(Vector3.Distance(hips.position, hipStart), Is.LessThan(0.001f));
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Checks balanced hold motion, planted support, floor clearance and continuous poses on both real skins.
+    [Test]
+    public void FootBalanceStaysSupportedAndJoinsEntryAndRecoveryWithoutSnapping()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        foreach (var region in new[] { BodyRegion.LeftFoot, BodyRegion.RightFoot })
+        {
+            var root = Character(name);
+            root.transform.rotation = Quaternion.Euler(0f, 37f, 0f);
+            var a = root.GetComponentInChildren<Animator>();
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var bones = Enumerable.Range(0, (int)HumanBodyBones.LastBone).Select(i => a.GetBoneTransform((HumanBodyBones)i))
+                .Where(b => b != null).Distinct().ToArray();
+            var neutral = bones.Select(b => b.position).ToArray();
+            var lengths = bones.Select(b => Vector3.Distance(b.position, b.parent.position)).ToArray();
+            var support = a.GetBoneTransform(region == BodyRegion.LeftFoot ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot);
+            var planted = support.position;
+            var hold = actor.Hold(region);
+            Assert.That(hold, Is.Not.Null);
+            Assert.That(hold.length, Is.EqualTo(3f).Within(0.001f));
+            var previous = bones.Select(b => b.position).ToArray();
+            var heldStart = Vector3.zero;
+            var balanceMotion = 0f;
+            foreach (var clip in new[] { actor.Entry(region), hold, actor.Recovery(region) })
+            {
+                clip.SampleAnimation(root, 0f);
+                for (var i = 0; i < bones.Length; i++)
+                    Assert.That(Vector3.Distance(bones[i].position, previous[i]), Is.LessThan(0.001f), name + " clip seam " + bones[i].name);
+                if (clip == hold) heldStart = a.GetBoneTransform(HumanBodyBones.Hips).position;
+                for (var frame = 1; frame <= 120; frame++)
+                {
+                    clip.SampleAnimation(root, clip.length * frame / 120f);
+                    Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f), name + " planted foot");
+                    for (var i = 0; i < bones.Length; i++)
+                    {
+                        if (bones[i] != a.GetBoneTransform(HumanBodyBones.Hips))
+                            Assert.That(Vector3.Distance(bones[i].position, bones[i].parent.position), Is.EqualTo(lengths[i]).Within(0.0002f));
+                        Assert.That(Vector3.Distance(bones[i].position, previous[i]), Is.LessThan(0.05f), name + " pose jump " + bones[i].name);
+                        previous[i] = bones[i].position;
+                    }
+                    if (clip == hold)
+                    {
+                        balanceMotion = Mathf.Max(balanceMotion, Vector3.Distance(a.GetBoneTransform(HumanBodyBones.Hips).position, heldStart));
+                        if (frame % 4 == 0) Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+                    }
+                }
+            }
+            Assert.That(balanceMotion, Is.GreaterThan(0.0005f), "Supported balance must retain small body motion");
+            for (var i = 0; i < bones.Length; i++)
+                Assert.That(Vector3.Distance(bones[i].position, neutral[i]), Is.LessThan(0.001f), name + " neutral finish");
+            Object.DestroyImmediate(root);
+        }
+    }
+
     // Creates a real regional shot with playback connected to the existing match callbacks.
     private DuelTurnFlow BodyShot(out ArcherHealth target, out ArrowFlight arrow, BodyRegion region = BodyRegion.LeftFoot, string character = "ErikaArcher")
     {

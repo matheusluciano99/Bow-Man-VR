@@ -8,6 +8,7 @@ namespace BowMan
     {
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
+        [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
         [SerializeField] private AnimationClip[] deathFinishers = new AnimationClip[15];
         private DuelTurnFlow flow;
         private ArcherHealth health;
@@ -40,6 +41,9 @@ namespace BowMan
         // Returns the matching recovery from that region's injured resting pose.
         public AnimationClip Recovery(BodyRegion value) => recoveries[(int)value];
 
+        // Returns optional supported-balance motion sampled during the flow's injured hold.
+        public AnimationClip Hold(BodyRegion value) => holds[(int)value];
+
         // Returns the collapse authored from this region's injured pose, separate from its surviving recovery.
         public AnimationClip DeathFinisher(BodyRegion value) => deathFinishers[(int)value];
 
@@ -51,12 +55,13 @@ namespace BowMan
             deathFinishers[(int)value] = clip;
         }
 
-        // Stores an authored entry and its optional, separately prepared recovery.
-        public void SetSequence(BodyRegion value, AnimationClip entry, AnimationClip recovery)
+        // Stores an authored entry, optional recovery and optional supported-balance hold.
+        public void SetSequence(BodyRegion value, AnimationClip entry, AnimationClip recovery, AnimationClip hold = null)
         {
             if (entry == null) throw new ArgumentException("An injury entry is required.");
             entries[(int)value] = entry;
             recoveries[(int)value] = recovery;
+            holds[(int)value] = hold;
         }
 
         // Connects this character's authored sequences to the existing shot-token and recovery contract.
@@ -107,7 +112,17 @@ namespace BowMan
         // Advances the authored bones and reports completion only after sampling the final frame.
         private void LateUpdate()
         {
-            if (playing == null || health == null || (health.IsDefeated && !fatalPlayback)) return;
+            if (health == null || (health.IsDefeated && !fatalPlayback)) return;
+            if (playing == null)
+            {
+                var hold = Hold(region);
+                if (injured && flow.Phase == DuelPhase.Holding && hold != null)
+                {
+                    elapsed = Mathf.Min(elapsed + Time.deltaTime, hold.length);
+                    hold.SampleAnimation(gameObject, elapsed);
+                }
+                return;
+            }
             elapsed = Mathf.Min(elapsed + Time.deltaTime, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
             if (finishingDeath && elapsed < 0.15f)
@@ -147,7 +162,11 @@ namespace BowMan
                 injured = false;
                 flow.CompleteRecovery(token);
             }
-            else flow.MarkInjuredPose(token);
+            else
+            {
+                elapsed = 0f;
+                flow.MarkInjuredPose(token);
+            }
         }
 
         // Starts the authored collapse from the actual current pose, including interrupted recovery.

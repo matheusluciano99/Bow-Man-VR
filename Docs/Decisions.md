@@ -211,6 +211,13 @@ Fit support contacts against the visible skin, clothing and equipment footprint;
 a joint origin is not the surface that touches the ground. Keep palm orientation
 tied to anatomical handedness through the motion.
 
+Foot reactions separate load transfer, recoil, withdrawal, supported balance and
+landing. Adapt the existing captured torso recoil while fitting limb contacts to
+each rig; do not present this as dedicated foot-injury motion capture. An optional
+hold clip adds motion during the existing three-second hold without changing turn
+ownership. Land the foot before returning weight to it, and preserve continuous
+entry/hold/recovery boundaries. Visual fluidity still requires headset review.
+
 Wound-reaching motions retain the actual impact and approach direction in the
 struck volume’s bone-local space. Fit their hands after sampling the authored
 pose so the contact follows the moving wound rather than a fixed world point.

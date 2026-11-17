@@ -94,7 +94,7 @@ public static class InjuryAnimationBuilder
     {
         if (region != BodyRegion.LeftFoot && region != BodyRegion.RightFoot)
             throw new ArgumentException("A foot region is required.");
-        Rebuild(region);
+        MotionInjuryBuilder.RebuildFoot(region);
     }
 
     // Replaces only the requested region's per-model clip pair and retains every other configured sequence.
@@ -216,33 +216,6 @@ public static class InjuryAnimationBuilder
         }
     }
 
-    // Shifts weight over the healthy leg while lifting the injured foot and opening the arms for balance.
-    private static void FootPose(GameObject root, bool left, float progress)
-    {
-        var a = root.GetComponentInChildren<Animator>();
-        var hips = a.GetBoneTransform(HumanBodyBones.Hips);
-        var leftFoot = a.GetBoneTransform(HumanBodyBones.LeftFoot);
-        var rightFoot = a.GetBoneTransform(HumanBodyBones.RightFoot);
-        var leftTarget = leftFoot.position;
-        var rightTarget = rightFoot.position;
-        var leftRotation = leftFoot.rotation;
-        var rightRotation = rightFoot.rotation;
-        var healthy = left ? rightTarget : leftTarget;
-        hips.position += root.transform.right * ((healthy.x - hips.position.x) * 0.75f * progress)
-            - root.transform.up * (0.04f * progress);
-        var lifted = root.transform.up * (0.14f * progress) + root.transform.forward * (0.04f * progress);
-        Solve(a, HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot,
-            leftTarget + (left ? lifted : Vector3.zero), root.transform.forward);
-        Solve(a, HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot,
-            rightTarget + (!left ? lifted : Vector3.zero), root.transform.forward);
-        leftFoot.rotation = leftRotation;
-        rightFoot.rotation = rightRotation;
-        var armLeft = a.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-        var armRight = a.GetBoneTransform(HumanBodyBones.RightUpperArm);
-        armLeft.rotation = Quaternion.AngleAxis(-20f * progress, root.transform.forward) * armLeft.rotation;
-        armRight.rotation = Quaternion.AngleAxis(20f * progress, root.transform.forward) * armRight.rotation;
-    }
-
     // Dispatches to the exact region's authoring motion instead of substituting a generic body reaction.
     private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights, float seatHeight)
     {
@@ -256,9 +229,6 @@ public static class InjuryAnimationBuilder
                 break;
             case BodyRegion.LeftLeg: case BodyRegion.RightLeg:
                 LegPose(root, region == BodyRegion.LeftLeg, progress, kneeHeights[region == BodyRegion.LeftLeg ? 0 : 1]);
-                break;
-            case BodyRegion.LeftFoot: case BodyRegion.RightFoot:
-                FootPose(root, region == BodyRegion.LeftFoot, progress);
                 break;
             case BodyRegion.LeftArm: case BodyRegion.RightArm:
                 ArmPose(root, region == BodyRegion.LeftArm, progress);

@@ -8,9 +8,122 @@ public static class MotionInjuryBuilder
 {
     private const string MotionFolder = "Assets/ThirdParty/MixamoAnimations/Motions/";
 
+    // Bakes a recorded torso recoil with measured foot withdrawal, supported balance and a cautious landing.
+    internal static void RebuildFoot(BodyRegion region)
+    {
+        var source = ImportMotion("Dying Backwards");
+        var left = region == BodyRegion.LeftFoot;
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            try
+            {
+                var animator = root.GetComponentInChildren<Animator>();
+                var bones = Enumerable.Range(0, (int)HumanBodyBones.LastBone)
+                    .Select(i => animator.GetBoneTransform((HumanBodyBones)i)).Where(t => t != null).Distinct().ToArray();
+                var positions = bones.Select(t => t.localPosition).ToArray();
+                var rotations = bones.Select(t => t.localRotation).ToArray();
+                var modelPosition = animator.transform.localPosition;
+                var modelRotation = animator.transform.localRotation;
+                var axis = root.transform;
+                var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var spine = animator.GetBoneTransform(HumanBodyBones.Spine);
+                var head = animator.GetBoneTransform(HumanBodyBones.Head);
+                var hipStart = hips.position;
+                var feet = new[] { animator.GetBoneTransform(HumanBodyBones.LeftFoot), animator.GetBoneTransform(HumanBodyBones.RightFoot) };
+                var footPositions = feet.Select(t => t.position).ToArray();
+                var footRotations = feet.Select(t => t.rotation).ToArray();
+                var hands = new[] { animator.GetBoneTransform(HumanBodyBones.LeftHand), animator.GetBoneTransform(HumanBodyBones.RightHand) };
+                var handPositions = hands.Select(t => t.position).ToArray();
+                Sample(animator, source, 0.45f, modelPosition, modelRotation);
+                var motionStart = bones.Select(t => t.localRotation).ToArray();
+                Restore(bones, positions, rotations);
+
+                // Evaluates separate load, withdrawal and bracing channels without stretching the planted leg.
+                void Pose(float load, float lift, float brace, float recoilTime, float balance)
+                {
+                    Restore(bones, positions, rotations);
+                    var recoil = recoilTime <= 0f || recoilTime >= 0.72f ? 0f : Mathf.Pow(Mathf.Sin(Mathf.PI * recoilTime / 0.72f), 2f);
+                    if (load == 0f && lift == 0f && brace == 0f && recoil == 0f && balance == 0f) return;
+                    if (recoil > 0f)
+                    {
+                        Sample(animator, source, 0.45f + recoilTime / 0.72f * 0.35f, modelPosition, modelRotation);
+                        var sampled = bones.Select(t => t.localRotation).ToArray();
+                        Restore(bones, positions, rotations);
+                        for (var i = 0; i < bones.Length; i++)
+                            if (bones[i] == spine || bones[i].IsChildOf(spine))
+                                bones[i].localRotation = Quaternion.Slerp(rotations[i],
+                                    sampled[i] * Quaternion.Inverse(motionStart[i]) * rotations[i], recoil * 0.7f);
+                    }
+                    var healthy = footPositions[left ? 1 : 0];
+                    hips.position = hipStart + axis.right * (Vector3.Dot(healthy - hipStart, axis.right) * 0.9f * load + balance * 0.003f)
+                        - axis.up * (0.025f * load);
+                    hips.rotation = Quaternion.AngleAxis((left ? -4f : 4f) * load, axis.forward) * hips.rotation;
+                    spine.rotation = Quaternion.AngleAxis(18f * brace, axis.right) * spine.rotation;
+                    head.rotation = Quaternion.AngleAxis(12f * brace, axis.right) * head.rotation;
+                    var recoilWithdrawal = recoil * Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.07f, 0.2f, recoilTime));
+                    var withdrawal = axis.up * (0.16f * lift + 0.025f * recoilWithdrawal + balance * 0.002f)
+                        + axis.forward * (0.06f * lift - 0.1f * recoilWithdrawal);
+                    for (var i = 0; i < 2; i++)
+                    {
+                        var injured = i == (left ? 0 : 1);
+                        ArcherLimbIK.Solve(animator, i == 0 ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg,
+                            i == 0 ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg,
+                            i == 0 ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot,
+                            footPositions[i] + (injured ? withdrawal : Vector3.zero), axis.forward);
+                        feet[i].rotation = (injured ? Quaternion.AngleAxis(-12f * lift, axis.right) : Quaternion.identity) * footRotations[i];
+                    }
+                    var knee = animator.GetBoneTransform(left ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg);
+                    for (var i = 0; i < 2; i++)
+                    {
+                        var injured = i == (left ? 0 : 1);
+                        var target = injured ? knee.position + axis.up * 0.11f + axis.forward * 0.08f
+                            : handPositions[i] + axis.right * (i == 0 ? -0.07f : 0.07f) + axis.forward * 0.08f;
+                        ArcherLimbIK.Solve(animator, i == 0 ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+                            i == 0 ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
+                            i == 0 ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
+                            Vector3.Lerp(hands[i].position, target, brace), axis.right * (i == 0 ? -1f : 1f) - axis.up * 0.35f);
+                        if (injured) ArcherLimbIK.PointHand(animator, i == 0, -axis.up + axis.forward * 0.25f, brace);
+                    }
+                }
+
+                // Eases one physical stage independently of the other body channels.
+                float Ease(float time, float start, float end) => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(start, end, time));
+
+                var entry = Record(root, bones, 0.9f, time =>
+                    Pose(Ease(time, 0f, 0.38f), Ease(time, 0.07f, 0.42f), Ease(time, 0.1f, 0.72f), time, 0f));
+                var hold = Record(root, bones, 3f, time =>
+                    Pose(1f, 1f, 1f, 1f, Mathf.Sin(time / 3f * Mathf.PI * 2f) * Mathf.Pow(Mathf.Sin(time / 3f * Mathf.PI), 2f)));
+                var recovery = Record(root, bones, 0.9f, time =>
+                    Pose(1f - Ease(time, 0.5f, 0.9f), 1f - Ease(time, 0f, 0.6f), 1f - Ease(time, 0.3f, 0.9f), 1f, 0f));
+                entry.name = region + " Entry";
+                hold.name = region + " Balance";
+                recovery.name = region + " Recovery";
+                var folder = $"Assets/_Game/Animations/Injuries/{name}";
+                entry = InjuryAnimationBuilder.SaveClip(entry, $"{folder}/{region}_Entry.anim");
+                hold = InjuryAnimationBuilder.SaveClip(hold, $"{folder}/{region}_Hold.anim");
+                recovery = InjuryAnimationBuilder.SaveClip(recovery, $"{folder}/{region}_Recovery.anim");
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    prefab.GetComponent<ArcherReactionAnimation>().SetSequence(region, entry, recovery, hold);
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+        RebuildDeathFinishers(region);
+        AssetDatabase.SaveAssets();
+    }
+
     // Bakes each body region's own transition from its injured pose into a complete fatal collapse.
     [MenuItem("Bow Man VR/Injuries/Rebuild Body Death Finishers")]
-    public static void RebuildDeathFinishers()
+    public static void RebuildDeathFinishers() => RebuildDeathFinishers(null);
+
+    // Replaces only the requested region's collapse, or all body collapses for a complete rebuild.
+    private static void RebuildDeathFinishers(BodyRegion? onlyRegion)
     {
         var prone = ImportMotion("Standing Death Backward 01");
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
@@ -31,6 +144,7 @@ public static class MotionInjuryBuilder
                 var clips = new AnimationClip[15];
                 foreach (BodyRegion region in Enum.GetValues(typeof(BodyRegion)))
                 {
+                    if (onlyRegion.HasValue && region != onlyRegion.Value) continue;
                     if (region is BodyRegion.Head or BodyRegion.Neck) continue;
                     Restore(bones, neutralPositions, neutralRotations);
                     var entry = player.Entry(region);

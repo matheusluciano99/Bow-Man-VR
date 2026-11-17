@@ -83,6 +83,8 @@ requires its own implementation and review.
 
 ## Injury motion sources
 
+Foot reactions reuse torso rotation deltas from the existing **Dying Backwards** source at 0.45–0.8 seconds. Foot withdrawal, measured leg support, bracing and recovery are authored adaptations; no dedicated foot-injury capture was acquired. The unchanged source and its terms below also cover this use.
+
 Chest fall uses Adobe Mixamo **Dying Backwards**, catalog description “Shot To The Chest Falling Backwards”, downloaded on Erika Archer through the official catalog. Export: FBX Binary, Without Skin, 30 fps, no key reduction. The unchanged source is `Assets/ThirdParty/MixamoAnimations/Motions/Dying Backwards.fbx` (678,592 bytes; SHA-256 `612a2981bf1c2382d78085f79d89bd4670649e6f1dd3871ba52b8e01211cb2e8`). [Mixamo terms/FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) permit use in games with an Adobe ID; the source belongs to this game project, not a standalone asset pack.
 
 The source is retargeted using the original Erika T-pose in metres; the prepared derivative uses centimetre bone coordinates and cannot supply this motion importer’s reference skeleton unchanged. Per-model native clips preserve prefab roots and correct visible floor penetration. The earlier “Standing Death Backward 01” candidate ended face-down and was rejected for chest hits.
