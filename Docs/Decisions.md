@@ -200,6 +200,10 @@ are integrated; this does not complete the full PvE mode's anatomy/blood scope.
 
 ## D015 — Model-specific authored injury clips drive recovery callbacks
 
+Source animations must be free to download and use in the game without a paid
+subscription. Exclude paid packs from replacement candidates. Preview actual
+motion before selecting it; mechanical tests do not establish visual quality.
+
 Bake explicit transform clips against each prepared skeleton and keep their
 entry/recovery references on the character prefab. Fit supported contacts using
 the model's measured bone lengths. Rebuild with the editor authoring tool;

@@ -273,6 +273,10 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Body-specific injury sequences
 
+- Use free animations only, with no purchase or paid subscription required to
+  download and use the selected clips in this game. Verify each source license
+  and preview the motion before selecting a replacement.
+
 - Authored clip availability and model/contact checks are in
   [Docs/Art/InjuryAnimations.md](Docs/Art/InjuryAnimations.md). The close desktop
   review is `Assets/_Game/Scenes/InjuryAnimationTest.unity`; implemented regions
