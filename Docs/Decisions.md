@@ -47,7 +47,9 @@ The prototype visual choices are English Archer and Erika Archer. The local
 headset view shows tracked hands/controllers only for now; the opponent is a
 full archer. The current rig uses controller markers. Reference views and
 body-region/bow design constraints are in [ArcherDesign.md](Art/ArcherDesign.md).
-English still needs rigging; this choice does not establish animation readiness.
+Both characters now have prepared Humanoid derivatives and a shared movement
+check. Rig readiness and remaining per-animation review are documented in
+[RigPreparation.md](Art/RigPreparation.md).
 
 Record each source, license, attribution and modification with imported assets.
 Verify skeletons, skin weights and animation compatibility in actual files;
@@ -82,6 +84,216 @@ that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
 
+## D009 — Distinct injury regions with a first-person eye viewpoint
+
+Use fifteen hit regions: head, neck, chest, abdomen, pelvis and separate left/right
+shoulders, arms, hands, legs and feet. The newly separated extremities and joints
+have their own reactions so a foot hit cannot select the leg-kneeling animation,
+or a shoulder/hand hit the supported-arm animation. Back hits are excluded from
+the facing-archer bow duel; sword combat remains a conditional future idea.
+
+The full motions and implementation cards are in the
+[injury reaction table](InjuryReactions.md). Head and neck hits always kill.
+Surviving hits hold the injured pose for three seconds, then complete recovery
+before the injured archer receives the next turn. This keeps turn ownership
+consistent with the visible recovery. Death ends the match immediately; misses
+resolve at scenery impact or flight expiry, with one outcome per shot.
+
+During local knockdown, kneeling and recovery, move the VR viewpoint with the
+character's animated eyes so the player sees the injury sequence in first
+person. Keep live headset tracking for looking around and calibrate the eye
+reference against the player's neutral pose to avoid adding standing height
+twice. The local visible-body choice remains hands/controllers for the prototype.
+
+This preserves the first-person experience through injury. Camera-height changes
+are artificial locomotion with comfort implications, as described in Meta's
+[locomotion comfort guidance](https://developers.meta.com/vr/design/locomotion-comfort-usability/).
+Physical acceptance requires Quest 2 testing under task #35; the design choice
+does not establish that the moving viewpoint is comfortable.
+
+## D010 — Preserve source art and import prepared Humanoid derivatives
+
+Keep downloaded FBXs intact and use separately named rigged derivatives in the
+existing character prefabs. This preserves provenance and original prop-mesh
+references while allowing fitted skinning and source-weight repairs. Store
+Blender authoring/rebuild work in SourceAssets and import FBXs into Unity so
+opening the game does not require a Blender import process.
+
+Store explicit body, eye and finger mappings in the derived `.meta` files;
+automatic Humanoid validity alone does not prove optional fingers are mapped or
+weighted. Check both characters with one baked Humanoid movement clip, including
+support-foot contact, and preserve the animation-only armature hierarchy when
+copying its Avatar. Per-region injury animations and headset acceptance remain
+separate reviews. See the [rig procedure](Art/RigPreparation.md).
+
+## D011 — Bone-bound anatomical hit volumes
+
+Use project-owned solid volumes on the prepared skeletons for the fifteen
+agreed regions. Limb capsules follow both joint segments; central boxes divide
+the torso, neck and head. This makes region detection follow animation while
+keeping original art intact and avoiding a skinned-mesh collider rebuild each
+physics step. Geometry fit remains provisional and needs pose-specific review.
+
+Report the first swept impact once, preserving its point and travel direction.
+Keep the generic impact event for scenery and add an anatomical event for body
+consumers. A consumer uses one event to resolve its outcome. Disable the old
+arena capsule targets so they cannot mask the new regions. See
+[body hit detection](BodyHits.md) for event ordering, authoring and checks.
+
+## D012 — Embedded arrows follow their actual bone-bound impact
+
+Parent a stopped body arrow to its struck volume with its world pose preserved.
+This carries the exact tip and impact orientation through animation without a
+generic wound socket or a per-frame follow script. Keep embedded arrows until
+their character is removed so a flight/scenery timer cannot erase them midway
+through injury recovery. Flight and scenery keep bounded cleanup. Match reset
+must remove the old character hierarchy or clear its embedded arrows.
+
+## D013 — Resolve a shot once and wait for actual recovery completion
+
+The duel controller owns damage and turn resolution for one registered arrow.
+Separate reaction entry, the agreed three-second injured hold and recovery;
+animation callbacks identify the current shot so stale completion cannot grant
+a turn. End the match immediately on defeat, including fatal head/neck damage.
+Keep explicit manual callbacks in the desktop state-review scene until the
+individual visual sequences are connected; do not disguise them as animations.
+See [turn flow](TurnFlow.md) for the contract and tests.
+
+## D014 — AI uses the same shot and turn authority as the player
+
+The opponent waits for its legal turn, then fires the existing arrow using a
+fixed-speed ballistic arc and bounded aim error. It cannot bypass injury holds,
+recovery or defeat. Keep provisional difficulty values separate from the rules.
+The AI test host supplies explicit animation callbacks until the visual sequences
+are integrated; this does not complete the full PvE mode's anatomy/blood scope.
+
+## D015 — Model-specific authored injury clips drive recovery callbacks
+
+Bake explicit transform clips against each prepared skeleton and keep their
+entry/recovery references on the character prefab. Fit supported contacts using
+the model's measured bone lengths. Rebuild with the editor authoring tool;
+preserve existing clip GUIDs. Runtime playback signals pose arrival and complete
+recovery to the duel controller. Unsupported regions receive no generic fallback
+and stay visibly pending in the review tools until their own clips exist. Retarget imported motion against its source T-pose and unit scale, bake it to each owned skeleton, and record the source/export terms in the asset document. Keep motion sampling on disposable instances so baking cannot serialize animated bone overrides into a neutral prefab.
+
+Fit support contacts against the visible skin, clothing and equipment footprint;
+a joint origin is not the surface that touches the ground. Keep palm orientation
+tied to anatomical handedness through the motion.
+
+Wound-reaching motions retain the actual impact and approach direction in the
+struck volume’s bone-local space. Fit their hands after sampling the authored
+pose so the contact follows the moving wound rather than a fixed world point.
+
+## D016 — Brief in-body X-ray injury presentation
+
+Show internal injury only for the arrow that confirms an archer's death, as a
+brief finishing X-ray inside that archer. Surviving shots retain blood and
+regional injury/recovery without an internal view. Use the actual arrow
+path and affected anatomy rather than a generic anatomical panel. The X-ray
+presentation must agree with the impact and subsequent body motion. Duration,
+rendering treatment and headset readability remain tuning/physical review;
+this decision does not claim implemented organs, fractures or visual acceptance.
+
+## D017 — Bone fracture depends on shot strength
+
+Distinguish intersecting a bone from fracturing it. The fracture decision depends
+on the shot's strength, preserving a meaningful difference between weak and
+strong draws. A prototype threshold may be tuned during testing; this choice
+does not specify a clinically accurate material/energy simulation or final
+balance. Organ/fracture gameplay effects remain separate tuning decisions.
+
+## D018 — Fatal body hits finish with a full collapse
+
+A fatal hit outside the head or neck first plays the reaction for the actual
+struck region, then collapses fully and remains down. Resolve defeat and the
+match result immediately; the visual sequence does not delay the result or run
+a surviving hold, recovery or turn handoff. Death during an existing reaction
+or recovery interrupts getting up and finishes the collapse from the current
+pose. Preserve the independent head and neck fatal sequences.
+## D019 — Reuse arrow flight for an independently testable bow interaction
+
+Keep draw/nock/release state in `Bow`, tracked controller bindings in `VRBowInput`,
+and desktop simulation in `DesktopBowTest`. Both input paths drive the same bow
+and existing `ArrowFlight`; no additional interaction package is required.
+Backward draw controls launch speed, and the line from the drawn string to its
+resting nock controls aim. Ignore short, forward-only and sideways-only pulls.
+Keep the bow attached to the selected tracked hand throughout the duel without
+holding grip, including shooting locks and injury. Cancel rather than fire when
+tracking or application focus is lost. This supersedes the provisional
+grip-to-equip mapping: continuous grip is not required for this duel.
+
+Use the English Archer's existing textured bow parts and a moving string in the
+project-owned bow prefab. Preserve its original model and attribution. A dedicated
+test scene keeps this work independent of later turn/match integration and makes
+draw strength testable without the classroom headset.
+
+The opposite trigger grabs/releases the nearby string. Align the bow's local +Y
+with the Unity grip pose's +Z using a +90-degree local X rotation, consistent with
+the [OpenXR grip axes](https://registry.khronos.org/OpenXR/specs/1.1-khr/html/xrspec.html#semantic-paths-standard-pose-identifiers).
+Handedness and positional offsets still need physical validation on Quest 2.
+
+Default left bow hand, grip offsets, 12 cm string grab
+radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
+prototype settings. Validate handedness, grip alignment and comfortable draw on
+Quest 2 before treating them as final controls or calibration.
+Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
+panel switches hands without an Inspector edit and cancels a tracked draw before
+rebinding. Final game-menu presentation remains part of menu integration.
+
+## D020 — Keep one XR session and one shot authority for the local duel
+
+Use the existing tracked bow and AI with DuelTurnFlow; every released arrow
+registers there before physics, and the bow rejects nocking/release outside the
+local aiming turn. Rebuild match-owned actors and arrows on restart while keeping
+the XR rig, live Link session and handedness. Keep the local body's renderers
+hidden while its bone-bound volumes and injury clips remain active.
+
+Apply the animated eyes' change from their standing reference to the tracking
+origin after animation. Preserve each tracked head/controller's local position
+and rotation, including live movement during a fall; do not add eye height to
+floor-level tracking. Restore the origin on restart. This implements the chosen
+eye-following presentation; physical height alignment and motion comfort still
+require the Quest 2 checklist.
+
+## D021 — Blood starts at the actual wound and follows its bone
+
+Use the existing typed body-impact event for wound emission without applying a
+second damage outcome. Anchor the emitter at the actual entry point on its
+bone-bound volume; let released droplets move in world space under gravity.
+Scenery hits create no blood. Emission finishes and removes itself, and match
+cleanup removes any live wound with its character. Droplet size, quantity and
+the prototype two-second emission remain provisional visual settings for VR
+review, separate from final blood/stain art.
+
+## D022 — Fitted tissue geometry and finite arrow penetration
+
+Use the free BodyParts3D 4.3 tissue atlas for both prepared archers, preserving
+unchanged original files, pinned digests and the publisher's current CC BY 4.0
+credit. Fit real separate tissue meshes against each rig's eyes, hips and
+interior body envelope. Brain depth uses the visible cranial skin rather than
+the face-inclusive hit volume. Keep native derivatives under `_Game/Models`.
+
+Trace from the actual body entry along the recorded direction to the embedded
+visual tip. The 25 cm penetration is a provisional gameplay depth, not a
+ballistics or clinical claim. Exact finite triangle/closed-tissue queries avoid
+inventing contacts from organ bounding boxes; cache immutable geometry and prune
+triangle batches. Bone-bound contacts follow subsequent motion. Anatomy never
+applies another health outcome. The finishing presentation listens to the
+confirmed lethal-shot gate, not the general per-arrow analysis event.
+
+Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
+bone/fracture rules and X-ray rendering remain separate work. Preserve source
+filenames, mesh GUIDs and native subasset identities when regenerating.
+
+## D023 — Keep manual headset acceptance under the wearer's control
+
+The headset wearer fires each regional test using the actual controller input,
+draw and aim. Passive hit logs, frame captures and region labels guide the
+review without firing arrows or advancing turns on the wearer's behalf. This
+keeps visual review tied to the real interaction being accepted. Scripted
+projectile/animation checks remain separate automated evidence. A temporary
+close opponent helps inspect contacts without settling the arena distance.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current
@@ -89,5 +301,6 @@ following contradictory copies of a rule.
   the agreed hands/controllers presentation.
 - Arena distance, bow draw distance and combat tuning remain provisional as
   described in AGENTS.md and the relevant task cards.
-- Injury reactions beyond the defined examples, injury timing and the VR viewpoint
-  during knockdown require design decisions and hardware validation.
+- Per-model hitbox dimensions, damage values, organ/fracture effects and the
+  accepted brief X-ray's duration/rendering remain implementation/tuning work. The chosen eye
+  viewpoint and injury motion need hardware validation.
