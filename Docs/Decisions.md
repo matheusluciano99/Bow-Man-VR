@@ -84,6 +84,37 @@ that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
 
+## D008 — Reuse arrow flight for an independently testable bow interaction
+
+Keep draw/nock/release state in `Bow`, tracked controller bindings in `VRBowInput`,
+and desktop simulation in `DesktopBowTest`. Both input paths drive the same bow
+and existing `ArrowFlight`; no additional interaction package is required.
+Backward draw controls launch speed, and the line from the drawn string to its
+resting nock controls aim. Ignore short, forward-only and sideways-only pulls.
+Keep the bow attached to the selected tracked hand throughout the duel without
+holding grip, including shooting locks and injury. Cancel rather than fire when
+tracking or application focus is lost. This supersedes the provisional
+grip-to-equip mapping: continuous grip is not required for this duel.
+
+Use the English Archer's existing textured bow parts and a moving string in the
+project-owned bow prefab. Preserve its original model and attribution. A dedicated
+test scene keeps this work independent of later turn/match integration and makes
+draw strength testable without the classroom headset.
+
+The opposite trigger grabs/releases the nearby string. Align the bow's local +Y
+with the Unity grip pose's +Z using a +90-degree local X rotation, consistent with
+the [OpenXR grip axes](https://registry.khronos.org/OpenXR/specs/1.1-khr/html/xrspec.html#semantic-paths-standard-pose-identifiers).
+Both hand alignments were confirmed in the Quest 2 Editor lab review. Draw
+distance and positional offsets remain provisional until final hardware tuning.
+
+Default left bow hand, grip offsets, 12 cm string grab
+radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
+prototype settings. Validate handedness, grip alignment and comfortable draw on
+Quest 2 before treating them as final controls or calibration.
+Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
+panel switches hands without an Inspector edit and cancels a tracked draw before
+rebinding. Final game-menu presentation remains part of menu integration.
+
 ## D009 — Distinct injury regions with a first-person eye viewpoint
 
 Use fifteen hit regions: head, neck, chest, abdomen, pelvis and separate left/right
@@ -210,35 +241,10 @@ match result immediately; the visual sequence does not delay the result or run
 a surviving hold, recovery or turn handoff. Death during an existing reaction
 or recovery interrupts getting up and finishes the collapse from the current
 pose. Preserve the independent head and neck fatal sequences.
-## D019 — Reuse arrow flight for an independently testable bow interaction
+## D019 — Bow controls consolidated into D008
 
-Keep draw/nock/release state in `Bow`, tracked controller bindings in `VRBowInput`,
-and desktop simulation in `DesktopBowTest`. Both input paths drive the same bow
-and existing `ArrowFlight`; no additional interaction package is required.
-Backward draw controls launch speed, and the line from the drawn string to its
-resting nock controls aim. Ignore short, forward-only and sideways-only pulls.
-Keep the bow attached to the selected tracked hand throughout the duel without
-holding grip, including shooting locks and injury. Cancel rather than fire when
-tracking or application focus is lost. This supersedes the provisional
-grip-to-equip mapping: continuous grip is not required for this duel.
-
-Use the English Archer's existing textured bow parts and a moving string in the
-project-owned bow prefab. Preserve its original model and attribution. A dedicated
-test scene keeps this work independent of later turn/match integration and makes
-draw strength testable without the classroom headset.
-
-The opposite trigger grabs/releases the nearby string. Align the bow's local +Y
-with the Unity grip pose's +Z using a +90-degree local X rotation, consistent with
-the [OpenXR grip axes](https://registry.khronos.org/OpenXR/specs/1.1-khr/html/xrspec.html#semantic-paths-standard-pose-identifiers).
-Handedness and positional offsets still need physical validation on Quest 2.
-
-Default left bow hand, grip offsets, 12 cm string grab
-radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
-prototype settings. Validate handedness, grip alignment and comfortable draw on
-Quest 2 before treating them as final controls or calibration.
-Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
-panel switches hands without an Inspector edit and cancels a tracked draw before
-rebinding. Final game-menu presentation remains part of menu integration.
+D008 is the canonical bow-control decision, including continuous attachment,
+both-handed grip alignment and the recorded Quest 2 review status.
 
 ## D020 — Keep one XR session and one shot authority for the local duel
 

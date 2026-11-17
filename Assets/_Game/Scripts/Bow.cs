@@ -51,7 +51,7 @@ namespace BowMan
         // Cancels any unfinished draw when the bow is disabled.
         private void OnDisable() => SetHeld(false);
 
-        // Equips or releases the bow; releasing the bow hand cancels a nocked shot.
+        // Equips or unequips the bow and cancels a nocked shot when unequipped.
         public void SetHeld(bool held)
         {
             IsHeld = held && ShotAllowed;
