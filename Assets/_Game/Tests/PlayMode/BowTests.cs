@@ -228,6 +228,7 @@ public class BowTests
         bow.Fired += _ => shots++;
         inputObject.SetActive(true);
         input.SetBowHand(leftBow);
+        input.SendMessage("OnApplicationFocus", true);
         Button(left, "isTracked", true);
         Button(right, "isTracked", true);
         yield return null;
