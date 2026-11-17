@@ -1,0 +1,108 @@
+# Free animation source review
+
+Only free-to-download, free-to-use candidates are eligible. File validity and a
+matching catalog title do not establish convincing animation or acceptance.
+Retain the captured Mixamo death/chest motions as the visual comparison.
+
+## Acquired candidates
+
+24 individual Cosindra MotionSmith FBXs (29,541,344 bytes total) and the right-foot
+GLB reference are cached locally under `SourceAssets/Downloads/Cosindra/`.
+They are not imported into the active Unity characters. Original filenames are
+preserved; `manifest.json` in that cache records byte counts and SHA-256 hashes.
+
+These are AI-generated catalog motions, not human motion capture. Each selected
+download was explicitly marked free on the official page, whose game-use notice
+states commercial use is permitted on the free plan, in any engine, without
+attribution. Only the designated free takes were acquired; no paid plan or
+additional generation was used. See the publisher's [terms](https://cosindra.ai/terms)
+and [license](https://cosindra.ai/license).
+
+All 24 files open in Blender 4.5.16, contain 89 bones and finite animation samples
+at 30 fps. They contain skeleton/animation data without a character mesh. Several
+files bind in their first animated pose, including lying or kneeling; a shared
+standing bind-pose assumption distorts previews. Inspect native motion or prepare
+the source rig correctly before retargeting. No current clip is declared Unity
+Humanoid-ready solely from the Blender file check.
+
+| Downloaded source | Frames | Free take / file |
+| --- | --- | --- |
+| [Choking](https://cosindra.ai/motionsmith/motions/choking) | 120 | `MotionSmith_choking_take1.fbx` |
+| [Collapse to the knees](https://cosindra.ai/motionsmith/motions/collapse-knees) | 120 | `MotionSmith_collapse_knees_take1.fbx` |
+| [Shot and fall backwards](https://cosindra.ai/motionsmith/motions/death-backward) | 120 | `MotionSmith_death_backward_take5.fbx` |
+| [Death fall](https://cosindra.ai/motionsmith/motions/death-fall) | 120 | `MotionSmith_death_fall_take1.fbx` |
+| [Headshot collapse](https://cosindra.ai/motionsmith/motions/death-headshot) | 120 | `MotionSmith_death_headshot_take1.fbx` |
+| [Fall to the knees and die](https://cosindra.ai/motionsmith/motions/death-kneel-fall) | 150 | `MotionSmith_death_kneel_fall_take1.fbx` |
+| [Left arm flinch](https://cosindra.ai/motionsmith/motions/flinch-left-arm) | 90 | `MotionSmith_flinch_left_arm_take2.fbx` |
+| [Right arm flinch](https://cosindra.ai/motionsmith/motions/flinch-right-arm) | 90 | `MotionSmith_flinch_right_arm_take1.fbx` |
+| [Get up from lying face up](https://cosindra.ai/motionsmith/motions/get-up-from-back) | 150 | `MotionSmith_get_up_from_back_take1.fbx` |
+| [Get up from the left side](https://cosindra.ai/motionsmith/motions/get-up-from-side-left) | 150 | `MotionSmith_get_up_from_side_left_take1.fbx` |
+| [Get up from the right side](https://cosindra.ai/motionsmith/motions/get-up-from-side-right) | 150 | `MotionSmith_get_up_from_side_right_take1.fbx` |
+| [Get up from the stomach](https://cosindra.ai/motionsmith/motions/get-up-front) | 150 | `MotionSmith_get_up_front_take2.fbx` |
+| [Hit in the stomach](https://cosindra.ai/motionsmith/motions/gut-punch-react) | 90 | `MotionSmith_gut_punch_react_take1.fbx` |
+| [Hit in the hip](https://cosindra.ai/motionsmith/motions/hip-hit-recoil) | 90 | `MotionSmith_hip_hit_recoil_take1.fbx` |
+| [Hit on the right hand](https://cosindra.ai/motionsmith/motions/hit-right-hand-open) | 90 | `MotionSmith_hit_right_hand_open_take1.fbx` |
+| [Kneel down](https://cosindra.ai/motionsmith/motions/kneel-down) | 90 | `MotionSmith_kneel_down_take1.fbx` |
+| [Knees buckle and recover](https://cosindra.ai/motionsmith/motions/knees-buckle-recover) | 120 | `MotionSmith_knees_buckle_recover_take1.fbx` |
+| [Left foot pain](https://cosindra.ai/motionsmith/motions/pain-left-foot) | 120 | `MotionSmith_pain_left_foot_take1.fbx` |
+| [Right foot pain](https://cosindra.ai/motionsmith/motions/pain-right-foot) | 120 | `MotionSmith_pain_right_foot_take1.fbx` |
+| [Shot in the right shoulder](https://cosindra.ai/motionsmith/motions/shot-right-shoulder-clutch) | 90 | `MotionSmith_shot_right_shoulder_clutch_take4.fbx` |
+| [Shot in the shoulder](https://cosindra.ai/motionsmith/motions/shot-shoulder-clutch) | 90 | `MotionSmith_shot_shoulder_clutch_take1.fbx` |
+| [Sit on the floor](https://cosindra.ai/motionsmith/motions/sit-floor) | 150 | `MotionSmith_sit_floor_take1.fbx` |
+| [Stand up from the floor](https://cosindra.ai/motionsmith/motions/stand-up-floor) | 150 | `MotionSmith_stand_up_floor_take1.fbx` |
+| [Stand up from a kneel](https://cosindra.ai/motionsmith/motions/stand-up-kneel) | 90 | `MotionSmith_stand_up_kneel_take1.fbx` |
+
+## Coverage against the agreed reactions
+
+These are source candidates and adaptation requirements, not completed replacement
+sequences. All fifteen regions retain the behavior in [InjuryReactions.md](../InjuryReactions.md).
+
+| Region | Available source direction | Remaining fit or source gap |
+| --- | --- | --- |
+| Head | Existing captured collapse; downloaded Headshot collapse for comparison. | Compare complete movement before choosing any replacement. |
+| Neck | Choking plus Fall to the knees and die candidates. | Actual neck-wound reach, knee buckle and fatal transition need one coherent sequence; no recovery. |
+| Chest | Existing captured back fall and Getting Up; downloaded backward fall/get-up alternatives. | Retain the back-down landing and full hold; do not replace an accepted motion simply to use a new source. |
+| Abdomen | Hit in the stomach, Collapse to the knees, kneel/get-up sources. | Both hands must hold the wound and both knees must reach the ground; separate clips do not yet provide this complete sequence. |
+| Pelvis | Hip recoil and seated/get-up candidates. | Sit on the floor is cross-legged and does not meet the supported seated-fall requirement. A matching fall remains a source gap. |
+| Left shoulder | Shot in the shoulder (left). | Fit the right palm to the left shoulder and preserve standing balance. |
+| Right shoulder | Shot in the right shoulder. | Fit the left palm to the right shoulder; check full motion and recovery. |
+| Left arm | Left arm flinch. | Opposite-hand cradling is absent from the catalog description; seek a suitable injured idle/support source. |
+| Right arm | Right arm flinch. | Same gap for left-hand support; do not substitute shoulder cupping. |
+| Left hand | Right-hand hit is a potential mirrored source. | A derived left-hand motion has not been authored; wrist support and finger opening still need fitting. |
+| Right hand | Hit on the right hand. | Actual opposite-hand wrist support is not established by this download. |
+| Left leg | Kneel down / stand up from a kneel, potential mirrored source. | The downloaded kneel is right-sided. Left knee and left palm support need their own fitted result. |
+| Right leg | Kneel down / stand up from a kneel. | Source kneels on the right knee but does not establish right-palm ground support. |
+| Left foot | Left foot pain; potential mirrored right-foot source. | Left take travels about 1.6 m: unsuitable as supplied for the stationary reaction. No mirrored replacement is authored. |
+| Right foot | Right foot pain. | Inspect withdrawal, balance and landing; fit the full three-second hold and neutral recovery without pose snaps. |
+
+Fatal hits outside head/neck still require the regional reaction followed by a
+complete collapse. Capture-based existing finishers remain the comparison.
+Foot sliding, hand contacts, limb/body penetration and the animated-eye viewpoint
+must be checked on both actual archer meshes; skeleton previews cannot establish
+these properties.
+
+## Additional free sources
+
+- [Adobe Mixamo](https://www.mixamo.com/): existing captured death/chest clips are
+  already retained. Additional injured-idle and recovery candidates require the
+  official signed-in catalog download, then full-motion inspection.
+- [Kevin Iglesias Human Archer Animations FREE](https://kevdev.itch.io/human-archer-animations-free):
+  publisher lists 136 files, masculine/feminine bow idles, load/hold/release and
+  other transitions. This is a candidate for normal archery movement, not a
+  regional-injury replacement. It has not been downloaded or inspected locally.
+  [Official free animation list](https://www.keviniglesias.com/documentation/Human%20Archer%20Animations%20FREE.pdf).
+- [Quaternius Universal Animation Library](https://quaternius.itch.io/universal-animation-library):
+  only its free Standard archive is eligible. CC0 library; no local archive has
+  been acquired or checked. Do not confuse the paid editions with the free set.
+
+## Local inspection artifacts
+
+`Artifacts/FootReview/all-downloaded-motion-inspection.json` records native joint
+samples and file identity. `source-review.html` replays those exact samples with
+speed, scrubbing and viewing-angle controls. This is a skeleton diagnostic,
+not a new character model or a claim of finished archer animation. The viewer's
+initial playback and finite sample data were checked in the existing Edge browser.
+
+Original source-page/license observations are in `acquisition.jsonl`. Preview
+images made with an unprepared shared bind pose are invalid visual evidence and
+must not be used for selection.
