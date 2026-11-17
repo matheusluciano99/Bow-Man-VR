@@ -181,12 +181,12 @@ Use GitHub's Assignees field to record task responsibility.
   provisional maximum draw of 0.70 m (70 cm).
 - Use 70 cm as a temporary adult-arm-length placeholder; calibrate comfortable
   draw distance when the classroom headset is available.
-- The test implementation uses bow-hand grip to equip/hold and draw-hand trigger
-  to grab/release the nearby string. These mappings and grip alignment are
+- The bow stays attached to the selected tracked hand without holding grip.
+  The opposite trigger grabs/releases the nearby string. Grip-pose alignment is
   provisional until tested on Quest 2. Both bow hands are supported; left is
   the initial default. The test panel's **Bow hand** button switches sides,
   cancelling a pending tracked draw. The Inspector also exposes the initial hand.
-- Releasing the bow hand, losing either controller's tracking, pausing or losing
+- Losing either controller's tracking, pausing or losing
   application focus cancels the pending shot without firing.
 
 ## Running the local VR duel
@@ -194,7 +194,7 @@ Use GitHub's Assignees field to record task responsibility.
 - Open `Assets/_Game/Scenes/LocalDuel.unity` after starting Quest Link. The player
   faces Erika across the existing 20-metre arena and sees tracked controllers
   plus their bow; the hidden local body still receives anatomical impacts.
-- Grip holds the bow; the opposite trigger draws/releases. Right-controller B
+- The bow stays equipped; the opposite trigger draws/releases. Right-controller B
   switches bow hands during the player's aiming turn. Right-controller A restarts
   after victory/defeat. Hand preference survives restart.
 - The headset-visible text shows both health values, current flow, draw strength,
@@ -214,8 +214,8 @@ Use GitHub's Assignees field to record task responsibility.
 ## Running the bow interaction test
 
 - Open `Assets/_Game/Scenes/BowInteractionTest.unity` and enter Play. For VR,
-  start Quest Link first, as with the tracking scene. Hold the bow-hand grip to
-  equip the bow; bring the other controller within 12 cm of the resting string,
+  start Quest Link first, as with the tracking scene. The bow stays attached to
+  the selected hand; bring the other controller within 12 cm of the resting string,
   press and hold its trigger, pull backward, then release the trigger to shoot.
 - Aim with the bow's orientation and the line between the two hands. Backward
   draw controls speed up to a provisional 25 m/s at 70 cm. Forward/sideways-only

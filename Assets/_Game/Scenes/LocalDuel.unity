@@ -621,7 +621,7 @@ MonoBehaviour:
   rightController: {fileID: 1591320576}
   bowInLeftHand: 1
   gripPositionOffset: {x: 0, y: 0, z: 0}
-  gripRotationOffset: {x: 0, y: 0, z: 0}
+  gripRotationOffset: {x: 90, y: 0, z: 0}
 --- !u!114 &1293801861
 MonoBehaviour:
   m_ObjectHideFlags: 0
