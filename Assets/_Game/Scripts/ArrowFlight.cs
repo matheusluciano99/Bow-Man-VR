@@ -8,16 +8,21 @@ namespace BowMan
         [SerializeField, Min(0.01f)] private float lifetime = 8f;
         [SerializeField, Min(0.01f)] private float impactLifetime = 3f;
         [SerializeField] private LayerMask hitLayers = Physics.DefaultRaycastLayers;
+        [SerializeField, Min(0.01f)] private float bodyPenetration = 0.25f;
 
         private Vector3 velocity;
         private Transform owner;
         private bool launched;
         private bool flying;
+        private float remainingLifetime;
 
         public event Action<RaycastHit> Hit;
+        public event Action<BodyImpact> BodyHit;
+        public event Action Expired;
+        public bool IsFlying => flying;
 
-        // Starts a single flight with the given velocity, ignores the firing archer, and schedules cleanup.
-        // The root is the arrow tip; visual geometry extends behind it along local -Z.
+        // Starts one timed flight with the given velocity, ignoring the firing archer.
+        // In flight the root is the tip; an embedded root anchors the entry while geometry penetrates ahead.
         public void Launch(Vector3 initialVelocity, Transform firingArcher = null)
         {
             var speedSquared = initialVelocity.sqrMagnitude;
@@ -25,18 +30,31 @@ namespace BowMan
                 throw new ArgumentException("Launch velocity must be finite and nonzero.", nameof(initialVelocity));
             if (launched)
                 throw new InvalidOperationException("An arrow can only be launched once.");
+            if (!(bodyPenetration > 0f) || float.IsInfinity(bodyPenetration))
+                throw new InvalidOperationException("Body penetration must be finite and positive.");
 
             owner = firingArcher;
             velocity = initialVelocity;
             launched = flying = true;
             transform.rotation = Quaternion.LookRotation(velocity);
-            Destroy(gameObject, lifetime);
+            remainingLifetime = lifetime;
         }
 
         // Applies gravity each physics step, sweeps the tip's path, and stops at the first valid hit.
         private void FixedUpdate()
         {
             if (!flying) return;
+
+            remainingLifetime -= Time.fixedDeltaTime;
+            if (remainingLifetime <= 0f)
+            {
+                flying = false;
+                Expired?.Invoke();
+                Destroy(gameObject);
+                return;
+            }
+
+            Physics.SyncTransforms();
 
             var dt = Time.fixedDeltaTime;
             var displacement = velocity * dt + Physics.gravity * (0.5f * dt * dt);
@@ -48,9 +66,11 @@ namespace BowMan
                 foreach (var hit in Physics.RaycastAll(transform.position, displacement / distance,
                     distance, hitLayers, QueryTriggerInteraction.Ignore))
                 {
-                    if (owner != null && hit.transform.IsChildOf(owner)) continue;
-                    if (hit.transform.IsChildOf(transform)) continue;
-                    if (hit.distance < nearest.distance) nearest = hit;
+                    if (owner != null && hit.collider.transform.IsChildOf(owner)) continue;
+                    if (hit.collider.transform.IsChildOf(transform)) continue;
+                    if (hit.distance < nearest.distance ||
+                        hit.distance == nearest.distance && hit.collider.GetInstanceID() < nearest.collider.GetInstanceID())
+                        nearest = hit;
                 }
             }
 
@@ -59,7 +79,13 @@ namespace BowMan
                 flying = false;
                 transform.position = nearest.point;
                 transform.rotation = Quaternion.LookRotation(displacement);
-                Destroy(gameObject, impactLifetime);
+                if (nearest.collider.TryGetComponent<BodyHitRegion>(out var region))
+                {
+                    transform.SetParent(nearest.collider.transform, true);
+                    foreach (Transform visual in transform) visual.position += transform.forward * bodyPenetration;
+                    BodyHit?.Invoke(new BodyImpact(region, nearest, displacement, bodyPenetration));
+                }
+                else Destroy(gameObject, Mathf.Min(impactLifetime, remainingLifetime));
                 Hit?.Invoke(nearest);
                 return;
             }

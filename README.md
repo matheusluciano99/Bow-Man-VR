@@ -9,9 +9,12 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | Location | Purpose |
 | --- | --- |
 | `Assets/_Game/Scripts/` | Game code and its runtime assembly. |
+| `Assets/_Game/Editor/` | Project-owned Unity authoring tools, excluded from players. |
 | `Assets/_Game/Scenes/` | Game and test scenes. |
 | `Assets/_Game/Prefabs/`, `Assets/_Game/Materials/` | Project-authored reusable assets. |
+| `Assets/_Game/Models/` | Project-generated native geometry, including fitted anatomy. |
 | `Assets/_Game/Input/` | Game input actions. |
+| `Assets/_Game/Animations/` | Project-owned clips, animation imports and controllers. |
 | `Assets/ThirdParty/<asset>/` | Imported models, textures, and attribution grouped by asset. |
 | `Assets/_Game/Tests/Editor/`, `Assets/_Game/Tests/PlayMode/` | Unity EditMode and PlayMode tests. |
 | `Assets/_Game/Settings/` | Game render-pipeline configuration. |
@@ -20,11 +23,12 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `Packages/`, `ProjectSettings/` | Shared dependencies and Unity project settings. |
 | `Docs/Art/` | Character candidates, sources, and preparation status. |
 | `Docs/Decisions.md` | Settled development choices, reasons, and open questions. |
+| `Docs/InjuryReactions.md` | Fifteen injury regions, reaction/turn rules and review cases. |
 | `.agents/`, `.claude/` | Shared development rules and decision-documentation skill entry points. |
 | `SourceAssets/` | Authoring originals such as Blender scenes or layered texture files. |
 | `SourceAssets/Downloads/` | Local download archives; ignored by Git and never imported by Unity. |
 | `Artifacts/` | Local screenshots and validation reports; ignored by Git. |
-| `Builds/PCVR/`, `Builds/PCVRCharacterReview/` | Generated Windows tracking and character-review players; ignored by Git. |
+| `Builds/PCVR/`, `Builds/PCVRCharacterReview/`, `Builds/PCVRDuel/` | Generated Windows tracking, character review and duel players; ignored by Git. |
 
 Keep project-owned Unity assets under `Assets/_Game` and imported assets under
 `Assets/ThirdParty`. Package-managed XR configuration stays at `Assets/XR`;
@@ -52,3 +56,21 @@ player archer.
 
 Prototype character choices, front/side/back references and the first-person
 presentation are in [archer design](Docs/Art/ArcherDesign.md).
+
+Prepared Humanoid models, the desktop movement check and reproducible Blender
+work are documented in [rig preparation](Docs/Art/RigPreparation.md).
+
+Anatomical hit volumes, the arena test controls and impact events are documented
+in [body-region hit detection](Docs/BodyHits.md).
+
+Shot ownership, defeat and injury/recovery handoff are documented in
+[duel turn flow](Docs/TurnFlow.md).
+
+Prepared injury clips, rebuild commands and contact checks are documented in
+[injury animations](Docs/Art/InjuryAnimations.md).
+
+The integrated VR duel and the pending headset checks are described in
+[the lab test plan](Docs/LabTestPlan.md).
+
+Actual-entry blood emission, bone alignment and effect cleanup are documented in
+[wound blood](Docs/BloodEffects.md).
