@@ -1,0 +1,5 @@
+English Archer by count_zero
+Source: https://sketchfab.com/3d-models/english-archer-8571c31e9c934458be2e434de71f94f5
+License: Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Original GLB preserved locally. Unity preview converted to FBX with extracted textures using Blender 4.5.16. No rig or animation added.

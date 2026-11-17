@@ -5,12 +5,51 @@ Keep the project brief in this file; `CLAUDE.md` references it.
 Record design decisions directly, without personal narrative attribution.
 Use GitHub's Assignees field to record task responsibility.
 
+## Maintaining development decisions
+
+- Read and follow [.agents/rules/development.md](.agents/rules/development.md).
+- Record settled choices and their reasons in [Docs/Decisions.md](Docs/Decisions.md)
+  and update the affected project requirements. Keep provisional choices explicit.
+- Use the shared [decision-documentation skill](.agents/skills/document-development-decisions/SKILL.md)
+  for decision updates. The `.claude/` rules and skill reference the same guidance.
+- Put a short purpose comment above each function, describing current behavior
+  in one or two lines. Keep change history in Git and pull requests.
+
+## Repository organization
+
+- Follow the folder roles in [README.md](README.md). Keep `Builds/` for generated
+  players, `Artifacts/` for local review output, and `SourceAssets/Downloads/`
+  for local source archives. The latter two are excluded from Git.
+- Keep project-owned scenes, scripts, prefabs, materials, input, render settings,
+  and tests under `Assets/_Game/`. Keep package-managed XR assets at `Assets/XR/`,
+  the path expected by OpenXR.
+- Group imported character models, textures, and attribution under
+  `Assets/ThirdParty/<asset>/`. Keep original filenames when importing source files.
+- Preserve existing asset GUIDs and `.meta` files when moving Unity assets.
+  Models and textures use regular Git binary storage; do not add LFS pointers
+  while the repository has no available LFS budget.
+- Keep Unity asset files and project folders visible in VS Code.
+
 ## Game concept
 
 - A Unity bow-and-arrow game for virtual reality (VR).
 - Inspired by the classic Bow Man: two archers take turns shooting arrows at
   each other, with aiming and shot strength determining the arrow's trajectory.
 - Adapt that archery duel to VR using the bow interaction described below.
+
+## Character art
+
+- Use free realistic medieval human archers in the visual style of For Honor
+  and Conqueror's Blade, with light clothing or armor. Different archer models
+  are allowed. English Archer and Erika Archer are the prototype visual choices.
+- The local headset player sees tracked hands/controllers only for now; the
+  opponent appears as a full archer. Injury effects on the local VR viewpoint
+  remain a separate decision under task #17.
+- Front/side/back references, bow/hit-region design review and preparation
+  boundaries are in [Docs/Art/ArcherDesign.md](Docs/Art/ArcherDesign.md).
+- Keep the retained heavy Templar Knight separate from the player archer selection.
+  Record sources, licenses and actual preparation status in
+  [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
 
 ## Game modes
 
@@ -30,7 +69,7 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Running the VR tracking scene
 
-- Open `Assets/Scenes/VRTrackingTest.unity` in Unity 6000.3.25f1.
+- Open `Assets/_Game/Scenes/VRTrackingTest.unity` in Unity 6000.3.25f1.
 - On the Windows test PC, configure [Meta Quest Link](https://developers.meta.com/vr/documentation/unity/unity-link/)
   as the active OpenXR runtime, connect the Quest 2, and launch its Link session.
 - In the Meta Link desktop app, enable Settings > General > Unknown Sources
@@ -44,25 +83,40 @@ Use GitHub's Assignees field to record task responsibility.
 - A successful Quest 2 test in both the Editor and Windows player satisfies
   the hardware acceptance criterion in task #2.
 
+## Reviewing archer appearance on Quest 2
+
+- Open `Assets/_Game/Scenes/VRCharacterReview.unity`, start Quest Link on the
+  headset, then enter Play. Restart Play if Link was not active when XR initialized.
+- English Archer is on the left and Erika Archer on the right, 3.5 metres from
+  the rig origin. Inspect textures, face/hair transparency, floor contact and scale.
+- The 1.75-metre body height is a provisional review setting. English Archer
+  is a static visual model; Erika has a rig with a static relaxed-arm pose.
+  Neither character has gameplay archery or injury animations yet.
+- Source files, licenses and preparation status are in
+  [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
+- The Windows review player is generated at
+  `Builds/PCVRCharacterReview/BowManVR-Characters.exe`. It starts this review
+  scene directly; the tracking scene's default build settings stay unchanged.
+
 ## Running the duel arena test scene
 
-- Open `Assets/Scenes/DuelArena.unity` in Unity 6000.3.25f1 and enter Play
+- Open `Assets/_Game/Scenes/DuelArena.unity` in Unity 6000.3.25f1 and enter Play
   mode to view the layout through the desktop overview camera.
 - `Archer1Spawn` is at `(0, 0, -10)` and faces +Z; `Archer2Spawn` is at
   `(0, 0, 10)` and faces -Z. Both origins sit on the floor at Y=0.
-- Blue and orange capsule placeholders mark the opposing positions. Each
+- English Archer and Erika Archer mark the blue and orange positions. Each
   spawn has a floor marker and a short strip pointing toward its opponent.
 - The floor is 12 by 28 metres with a clear firing lane between the archers.
   The 20-metre separation is a provisional test distance; validate final scale
   and comfort on Quest 2.
-- Capsule colliders provide simple targets for shot tests. Character design,
-  body-region hit detection, bow interaction, and VR rig integration have their
-  own tasks. Remove the placeholders when integrating actual archers.
+- Hidden capsule visuals retain their colliders as simple shot-test targets;
+  these are not body-region hitboxes. Final character design, body-region hit
+  detection, bow interaction and gameplay VR integration have their own tasks.
 - A desktop test arrow fires automatically on Play. Focus the Game view and
   press Space, or click **Fire test arrow**, to repeat it. The panel reports
   shots, hits, and the most recent impact point. The default shot hits the
   opposing orange capsule; no headset is required for this test.
-- `Assets/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
+- `Assets/_Game/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
   as forward. Instantiate it and call `ArrowFlight.Launch(velocity, owner)`;
   subscribe to `Hit` before launching to receive the first solid impact.
   Pass the firing archer's root to ignore its colliders. Trigger colliders are
