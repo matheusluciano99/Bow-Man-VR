@@ -167,6 +167,11 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Bow interaction
 
+- `Assets/_Game/Scenes/DuelTurnTest.unity` reviews the two-archer turn contract
+  without a headset. It explicitly exposes manual animation-completion buttons;
+  those controls do not claim completed injury animations. Runtime gates and
+  callback ownership are documented in [Docs/TurnFlow.md](Docs/TurnFlow.md).
+
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
   provisional maximum draw of 0.70 m (70 cm).

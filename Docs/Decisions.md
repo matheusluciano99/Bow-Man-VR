@@ -171,6 +171,16 @@ their character is removed so a flight/scenery timer cannot erase them midway
 through injury recovery. Flight and scenery keep bounded cleanup. Match reset
 must remove the old character hierarchy or clear its embedded arrows.
 
+## D013 — Resolve a shot once and wait for actual recovery completion
+
+The duel controller owns damage and turn resolution for one registered arrow.
+Separate reaction entry, the agreed three-second injured hold and recovery;
+animation callbacks identify the current shot so stale completion cannot grant
+a turn. End the match immediately on defeat, including fatal head/neck damage.
+Keep explicit manual callbacks in the desktop state-review scene until the
+individual visual sequences are connected; do not disguise them as animations.
+See [turn flow](TurnFlow.md) for the contract and tests.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current
