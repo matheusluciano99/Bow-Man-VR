@@ -15,6 +15,7 @@ namespace BowMan
         private bool flying;
 
         public event Action<RaycastHit> Hit;
+        public event Action<BodyImpact> BodyHit;
 
         // Starts a single flight with the given velocity, ignores the firing archer, and schedules cleanup.
         // The root is the arrow tip; visual geometry extends behind it along local -Z.
@@ -38,6 +39,8 @@ namespace BowMan
         {
             if (!flying) return;
 
+            Physics.SyncTransforms();
+
             var dt = Time.fixedDeltaTime;
             var displacement = velocity * dt + Physics.gravity * (0.5f * dt * dt);
             velocity += Physics.gravity * dt;
@@ -48,9 +51,11 @@ namespace BowMan
                 foreach (var hit in Physics.RaycastAll(transform.position, displacement / distance,
                     distance, hitLayers, QueryTriggerInteraction.Ignore))
                 {
-                    if (owner != null && hit.transform.IsChildOf(owner)) continue;
-                    if (hit.transform.IsChildOf(transform)) continue;
-                    if (hit.distance < nearest.distance) nearest = hit;
+                    if (owner != null && hit.collider.transform.IsChildOf(owner)) continue;
+                    if (hit.collider.transform.IsChildOf(transform)) continue;
+                    if (hit.distance < nearest.distance ||
+                        hit.distance == nearest.distance && hit.collider.GetInstanceID() < nearest.collider.GetInstanceID())
+                        nearest = hit;
                 }
             }
 
@@ -60,6 +65,8 @@ namespace BowMan
                 transform.position = nearest.point;
                 transform.rotation = Quaternion.LookRotation(displacement);
                 Destroy(gameObject, impactLifetime);
+                if (nearest.collider.TryGetComponent<BodyHitRegion>(out var region))
+                    BodyHit?.Invoke(new BodyImpact(region, nearest, displacement));
                 Hit?.Invoke(nearest);
                 return;
             }

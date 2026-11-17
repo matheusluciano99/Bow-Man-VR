@@ -129,19 +129,24 @@ Use GitHub's Assignees field to record task responsibility.
 - The floor is 12 by 28 metres with a clear firing lane between the archers.
   The 20-metre separation is a provisional test distance; validate final scale
   and comfort on Quest 2.
-- Hidden capsule visuals retain their colliders as simple shot-test targets;
-  these are not body-region hitboxes. Final character design, body-region hit
-  detection, bow interaction and gameplay VR integration have their own tasks.
+- Each character now has solid, bone-bound volumes for all fifteen body regions.
+  Hidden placeholder capsule colliders are disabled. Review provisional volume
+  fit when adding new poses; bow interaction and gameplay VR integration remain
+  separate tasks.
 - A desktop test arrow fires automatically on Play. Focus the Game view and
-  press Space, or click **Fire test arrow**, to repeat it. The panel reports
-  shots, hits, and the most recent impact point. The default shot hits the
-  opposing orange capsule; no headset is required for this test.
+  press Space, or click **Fire test arrow**, to repeat it. Choose a body-region
+  button to aim at that volume. The panel reports the actual region, anatomical
+  side, impact point and direction. The default shot targets Erika's chest;
+  no headset is required for this test.
 - `Assets/_Game/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
   as forward. Instantiate it and call `ArrowFlight.Launch(velocity, owner)`;
   subscribe to `Hit` before launching to receive the first solid impact.
   Pass the firing archer's root to ignore its colliders. Trigger colliders are
   ignored. Flight uses gravity and a swept tip ray each fixed step. The arrow
   stops at impact; moving-body attachment belongs to task #20.
+- `ArrowFlight.BodyHit` reports one anatomical `BodyImpact` before the existing
+  generic `Hit` event. Use only one event to apply a shot outcome. Details,
+  authoring instructions and validation are in [Docs/BodyHits.md](Docs/BodyHits.md).
 - Test speeds and appearance are provisional. Missed arrows expire after
   8 seconds; impacted arrows expire after 3 seconds or the remaining flight
   lifetime, whichever comes first. Run `BowMan.Gameplay.PlayTests` in PlayMode

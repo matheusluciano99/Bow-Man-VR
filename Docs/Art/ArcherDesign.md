@@ -46,8 +46,8 @@ injury clips and their full contact/deformation review remain separate tasks.
 | Required region | Design check and preparation consequence |
 | --- | --- |
 | Head | Head silhouette is distinct. English's helmet and Erika's hood must map to the actual head region rather than hide it from hit detection. |
-| Neck | Keep a separate neck volume below the head; both regions are fatal but require distinct death animations. |
-| Chest | Tunic/chest silhouette is visible; align a future chest hitbox to the body rather than the broad test capsule. |
+| Neck | Its own region and fatal animation, separate from the head. The prepared neck/head bones also carry the eye reference. |
+| Chest | Tunic/chest silhouette is visible; the bone-bound chest volume replaces the broad test capsule. |
 | Abdomen | Waist belts and pouches are equipment, not a replacement for locating the underlying body impact. |
 | Pelvis | Separate the hip/groin area from abdomen and thighs; clothing must deform through the supported seated fall. |
 | Left/right shoulders | Use separate shoulder-cap regions and animations, with the opposite hand contacting the injured shoulder. |
@@ -56,12 +56,12 @@ injury clips and their full contact/deformation review remain separate tasks.
 | Left/right legs | Thigh, knee and shin use side-specific kneeling; skirt/tunic sections need skinning checks. Feet remain separate. |
 | Left/right feet | Foot/toe volumes and lifted-foot reactions are separate from leg kneeling; check balance on the healthy leg and later floor contact. |
 
-This checks visual identification and preparation requirements. It does not claim
-implemented body hitboxes, damage values, draw deformation or injury reactions.
-Back geometry remains part of the character model and reference views; back hits
-are outside the facing-archer bow duel's current hit-region inventory.
-The complete fifteen-region reaction inventory is defined in task #17 and the
-linked table. Validate the provisional 0.70 m draw, hand contacts, quiver clearance
+This checks visual identification and preparation requirements. Provisional
+body volumes and impact reporting are now implemented in [body hit detection](../BodyHits.md).
+Damage values, draw deformation and injury reactions remain separate work.
+The fifteen-region inventory and reactions are agreed in task #17. Back hits are
+outside the facing-archer bow duel; the back views remain useful art references.
+Validate the provisional 0.70 m draw, hand contacts, quiver clearance
 and recovery poses in [task #18](https://github.com/matheusluciano99/Bow-Man-VR/issues/18)
 and the bow/hardware tasks.
 
@@ -72,5 +72,5 @@ Sources, licenses, attribution and measured rig status are maintained in
 keep original archives local and commit prepared runtime files with metadata.
 The source English mesh stays static; the active prefab uses its prepared skinned
 derivative. Erika's derivative repairs source hand weights. The normal prefabs
-keep neutral poses and the duel still has simple capsule shot targets; gameplay
-animations, precise hitboxes and their individual checks remain later work.
+keep neutral poses; the duel uses bone-bound anatomical shot volumes. Gameplay
+animations and pose-specific volume/contact refinements remain later work.
