@@ -82,6 +82,22 @@ that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
 
+## D008 — Unity Relay and Netcode for GameObjects for online PvP
+
+Use Netcode for GameObjects 2.14.0 with Unity Gaming Services Multiplayer 2.5.0:
+anonymous Authentication plus a Unity Relay allocation for one opponent, joined
+with a short code. Relay traverses home and campus NATs without port forwarding,
+which the "different locations and networks" PvP requirement needs, and the
+project is already linked to Unity Cloud. Photon Fusion would add a separate
+account and API; direct-IP Mirror/FishNet would need port forwarding or a VPN.
+
+The host is Archer 1 and the first joining client Archer 2; the host's
+connection approval refuses any further client, and Relay allows one remote
+connection. Each process signs in with its own auth profile so two instances on
+one PC can connect. Online play therefore depends on UGS availability, the free
+Relay quota and Relay being enabled for the project. Lobby/matchmaking, dedicated
+servers and duel synchronization are outside this choice (#12, #13).
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current

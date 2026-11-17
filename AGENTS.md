@@ -54,7 +54,9 @@ Use GitHub's Assignees field to record task responsibility.
 ## Game modes
 
 - 1v1 PvP: online duels against another player over the internet, including
-  players in different locations and on different networks.
+  players in different locations and on different networks. Players connect
+  through Unity Relay with a host-issued join code; the host is Archer 1 and the
+  joining player is Archer 2 (see D008).
 - PvE: duel against an AI-controlled archer.
 
 ## Project scope
@@ -126,6 +128,32 @@ Use GitHub's Assignees field to record task responsibility.
   8 seconds; impacted arrows expire after 3 seconds or the remaining flight
   lifetime, whichever comes first. Run `BowMan.Gameplay.PlayTests` in PlayMode
   and `BowMan.VR.EditorTests` in EditMode before reviewing arrow changes.
+
+## Testing PvP connectivity
+
+- One-time setup: in the Unity Cloud dashboard for the linked project
+  (`cloudProjectId` in ProjectSettings), enable **Relay**. Both machines sign in
+  anonymously; no Unity account login is needed in the player.
+- In Unity 6000.3.25f1, run **Bow Man VR > PvP > Build Connection Test Scene**.
+  It regenerates `Assets/_Game/Scenes/PvPConnectionTest.unity` and
+  `Assets/_Game/Prefabs/Networking/NetworkArcherPresence.prefab`; commit both
+  with their `.meta` files after changing the generator.
+- Run **Bow Man VR > PvP > Build Windows Connection Player** to build
+  `Builds/PCVRPvP/BowManVR-PvP.exe`. It does not change the default build scenes.
+- Host: enter Play (or start the player), click **Host** in the desktop window
+  and share the code shown on the panel and in the headset.
+- Join: on the other machine, type the code and click **Join**. Start a player
+  without a headset with `BowManVR-PvP.exe -desktop`.
+- Expected: the host reads "Connected as Archer 1", the joining player
+  "Connected as Archer 2", each rig stands on its spawn, and each player sees
+  the opponent's head and hands as red markers. A third player is refused with
+  "Match is full".
+- Cross-network acceptance for #11 needs two PCs on different networks, for
+  example one on a phone hotspot. Editor plus a `-desktop` player on one PC is a
+  quick smoke test only.
+- Only presence and roles are synchronized. Shots, hits, health and turns
+  belong to #12; leaving and rematch to #13. Run `BowMan.Networking.EditorTests`
+  in EditMode before a networking PR.
 
 ## Bow interaction
 
