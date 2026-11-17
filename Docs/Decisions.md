@@ -82,6 +82,28 @@ that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
 
+## D008 — Reuse arrow flight for an independently testable bow interaction
+
+Keep draw/nock/release state in `Bow`, tracked controller bindings in `VRBowInput`,
+and desktop simulation in `DesktopBowTest`. Both input paths drive the same bow
+and existing `ArrowFlight`; no additional interaction package is required.
+Backward draw controls launch speed, and the line from the drawn string to its
+resting nock controls aim. Ignore short, forward-only and sideways-only pulls.
+Cancel rather than fire when grip, tracking or application focus is lost.
+
+Use the English Archer's existing textured bow parts and a moving string in the
+project-owned bow prefab. Preserve its original model and attribution. A dedicated
+test scene keeps this work independent of later turn/match integration and makes
+draw strength testable without the classroom headset.
+
+Grip/trigger mappings, default left bow hand, grip offsets, 12 cm string grab
+radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
+prototype settings. Validate handedness, grip alignment and comfortable draw on
+Quest 2 before treating them as final controls or calibration.
+Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
+panel switches hands without an Inspector edit and cancels a tracked draw before
+rebinding. Final game-menu presentation remains part of menu integration.
+
 ## D009 — Distinct injury regions with a first-person eye viewpoint
 
 Use fifteen hit regions: head, neck, chest, abdomen, pelvis and separate left/right
