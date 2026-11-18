@@ -491,11 +491,12 @@ public class InjuryAnimationTests
         }
     }
 
-    // Checks moving forearms and hands against the head, neck and torso through each sampled sequence.
+    // Checks the distal limbs against the head, neck and torso through each sampled sequence.
     [TestCase(BodyRegion.LeftHand)]
     [TestCase(BodyRegion.RightHand)]
     [TestCase(BodyRegion.LeftShoulder)]
     [TestCase(BodyRegion.RightShoulder)]
+    [TestCase(BodyRegion.Pelvis)]
     public void UpperBodySequencesClearTorsoThroughRecoilRecoveryAndCollapse(BodyRegion region)
     {
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
@@ -506,11 +507,14 @@ public class InjuryAnimationTests
             var forearms = new[] { animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
                 animator.GetBoneTransform(HumanBodyBones.RightLowerArm) };
             var regions = root.GetComponentsInChildren<BodyHitRegion>();
+            var includeBoots = region == BodyRegion.Pelvis;
             var limbs = regions.Where(r => r.Region is BodyRegion.LeftHand or BodyRegion.RightHand ||
-                forearms.Contains(r.transform.parent)).Select(r => r.GetComponent<Collider>()).ToArray();
+                forearms.Contains(r.transform.parent) ||
+                includeBoots && r.Region is (BodyRegion.LeftFoot or BodyRegion.RightFoot))
+                .Select(r => r.GetComponent<Collider>()).ToArray();
             var bodyVolumes = regions.Where(r => r.Region is BodyRegion.Head or BodyRegion.Neck or BodyRegion.Chest or
                 BodyRegion.Abdomen or BodyRegion.Pelvis).Select(r => r.GetComponent<Collider>()).ToArray();
-            Assert.That(limbs, Has.Length.EqualTo(4));
+            Assert.That(limbs, Has.Length.EqualTo(includeBoots ? 6 : 4));
             Assert.That(bodyVolumes, Has.Length.EqualTo(5));
 
             foreach (var clip in new[] { actor.Entry(region), actor.Recovery(region), actor.DeathFinisher(region) })
@@ -1066,6 +1070,15 @@ public class InjuryAnimationTests
             var recovery = actor.Recovery(BodyRegion.Pelvis);
             recovery.SampleAnimation(root, 0f);
             for (var i = 0; i < hands.Length; i++) Assert.That(Vector3.Distance(hands[i].position, resting[i]), Is.LessThan(0.001f));
+            recovery.SampleAnimation(root, 0.65f);
+            var leadBoot = a.GetBoneTransform(HumanBodyBones.LeftFoot);
+            var planted = leadBoot.position;
+            Assert.That(a.GetBoneTransform(HumanBodyBones.RightLowerLeg).position.y, Is.LessThan(0.15f));
+            for (var frame = 1; frame <= 45; frame++)
+            {
+                recovery.SampleAnimation(root, 0.65f + frame / 60f);
+                Assert.That(Vector3.Distance(leadBoot.position, planted), Is.LessThan(0.01f), name + " lead boot");
+            }
             for (var frame = 0; frame <= 81; frame++)
             {
                 recovery.SampleAnimation(root, recovery.length * frame / 81f);
@@ -1081,6 +1094,7 @@ public class InjuryAnimationTests
     public IEnumerator PelvisHitWaitsForTheFullSeatedHoldAndRecovery()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Pelvis);
+        var animation = target.GetComponent<ArcherReactionAnimation>();
         var landed = -1f;
         var recoveryStarted = -1f;
         flow.Changed += () =>
@@ -1088,11 +1102,11 @@ public class InjuryAnimationTests
             if (flow.Phase == DuelPhase.Holding) landed = Time.time;
             if (flow.Phase == DuelPhase.Recovering) recoveryStarted = Time.time;
         };
-        yield return new WaitForSeconds(1.1f);
+        yield return new WaitForSeconds(animation.Entry(BodyRegion.Pelvis).length + 0.15f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         Assert.That(flow.CanShoot(1), Is.False);
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Pelvis));
-        yield return new WaitForSeconds(4.1f);
+        yield return new WaitForSeconds(3f + animation.Recovery(BodyRegion.Pelvis).length);
         Assert.That(recoveryStarted - landed, Is.GreaterThanOrEqualTo(2.995f));
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
@@ -1103,7 +1117,8 @@ public class InjuryAnimationTests
     public IEnumerator DeathInterruptsPelvisRecovery()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Pelvis);
-        yield return new WaitForSeconds(4.1f);
+        var entry = target.GetComponent<ArcherReactionAnimation>().Entry(BodyRegion.Pelvis);
+        yield return new WaitForSeconds(entry.length + 3.2f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         target.TakeDamage(100);
         var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);

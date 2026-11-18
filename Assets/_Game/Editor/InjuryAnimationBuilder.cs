@@ -11,7 +11,7 @@ public static class InjuryAnimationBuilder
 {
     // Rebuilds the pelvis-specific seated fall with both palms supporting the body from behind.
     [MenuItem("Bow Man VR/Injuries/Rebuild Pelvis")]
-    public static void RebuildPelvis() => Rebuild(BodyRegion.Pelvis);
+    public static void RebuildPelvis() => MotionInjuryBuilder.RebuildPelvis();
 
     // Rebuilds the abdomen-specific wound brace, both-knee descent and standing recovery.
     [MenuItem("Bow Man VR/Injuries/Rebuild Abdomen")]
@@ -120,7 +120,6 @@ public static class InjuryAnimationBuilder
                 var folder = $"Assets/_Game/Animations/Injuries/{name}";
                 System.IO.Directory.CreateDirectory(folder);
                 var kneeHeights = Vector2.one * 0.08f;
-                var seatHeight = 0.18f;
                 if (region is BodyRegion.LeftLeg or BodyRegion.RightLeg)
                 {
                     var side = region == BodyRegion.LeftLeg ? 0 : 1;
@@ -142,17 +141,8 @@ public static class InjuryAnimationBuilder
                         kneeHeights.y -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position) - root.transform.position.y;
                     }
                 }
-                if (region == BodyRegion.Pelvis)
-                {
-                    for (var fit = 0; fit < 3; fit++)
-                    {
-                        Restore(bones, positions, rotations);
-                        PelvisPose(root, 1f, seatHeight);
-                        seatHeight -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.Hips).position, true) - root.transform.position.y;
-                    }
-                }
-                var entry = BuildClip(root, bones, positions, rotations, region, false, kneeHeights, seatHeight);
-                var recovery = BuildClip(root, bones, positions, rotations, region, true, kneeHeights, seatHeight);
+                var entry = BuildClip(root, bones, positions, rotations, region, false, kneeHeights);
+                var recovery = BuildClip(root, bones, positions, rotations, region, true, kneeHeights);
                 entry = SaveClip(entry, $"{folder}/{region}_Entry.anim");
                 recovery = SaveClip(recovery, $"{folder}/{region}_Recovery.anim");
                 Restore(bones, positions, rotations);
@@ -173,7 +163,7 @@ public static class InjuryAnimationBuilder
 
     // Records eased entry or return curves for changed bone channels at thirty samples per second.
     private static AnimationClip BuildClip(GameObject root, Transform[] bones, Vector3[] positions,
-        Quaternion[] rotations, BodyRegion region, bool recovery, Vector2 kneeHeights, float seatHeight)
+        Quaternion[] rotations, BodyRegion region, bool recovery, Vector2 kneeHeights)
     {
         var clip = new AnimationClip { name = region + (recovery ? " Recovery" : " Entry"), frameRate = 30f };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
@@ -183,7 +173,7 @@ public static class InjuryAnimationBuilder
             Restore(bones, positions, rotations);
             var progress = Mathf.SmoothStep(0f, 1f, sample / 27f);
             var amount = recovery ? 1f - progress : progress;
-            if (amount > 0f) ApplyPose(root, region, amount, kneeHeights, seatHeight, recovery);
+            if (amount > 0f) ApplyPose(root, region, amount, kneeHeights, recovery);
             for (var i = 0; i < bones.Length; i++)
             {
                 var p = bones[i].localPosition;
@@ -223,13 +213,10 @@ public static class InjuryAnimationBuilder
     }
 
     // Dispatches to the exact region's authoring motion instead of substituting a generic body reaction.
-    private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights, float seatHeight, bool recovery)
+    private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights, bool recovery)
     {
         switch (region)
         {
-            case BodyRegion.Pelvis:
-                PelvisPose(root, progress, seatHeight);
-                break;
             case BodyRegion.Abdomen:
                 AbdomenPose(root, progress, kneeHeights);
                 break;
@@ -249,28 +236,42 @@ public static class InjuryAnimationBuilder
         }
     }
 
-    // Buckles into a reclined seated pose with raised knees and palms planted behind the hips.
-    private static void PelvisPose(GameObject root, float progress, float seatHeight)
+    // Fits a reclined seat to the visible hips, raised knees, and both rear palms.
+    internal static void FitPelvisSeat(GameObject root, Transform[] bones, Vector3[] positions, Quaternion[] rotations)
+    {
+        var hips = root.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+        var seatHeight = 0.18f;
+        for (var fit = 0; fit < 3; fit++)
+        {
+            Restore(bones, positions, rotations);
+            PelvisSeat(root, seatHeight);
+            seatHeight -= NearbyFloor(root, hips.position, true) - root.transform.position.y;
+        }
+        Restore(bones, positions, rotations);
+        PelvisSeat(root, seatHeight);
+    }
+
+    // Places the seated hips and feet using each rig's measured leg lengths.
+    private static void PelvisSeat(GameObject root, float seatHeight)
     {
         var a = root.GetComponentInChildren<Animator>();
         var hips = a.GetBoneTransform(HumanBodyBones.Hips);
         var feet = new[] { a.GetBoneTransform(HumanBodyBones.LeftFoot), a.GetBoneTransform(HumanBodyBones.RightFoot) };
         var positions = feet.Select(t => t.position).ToArray();
         var rotations = feet.Select(t => t.rotation).ToArray();
-        hips.position += root.transform.up * ((root.transform.position.y + seatHeight - hips.position.y) * progress)
-            - root.transform.forward * (0.15f * progress);
-        hips.rotation = Quaternion.AngleAxis(-45f * progress, root.transform.right) * hips.rotation;
+        hips.position += root.transform.up * (root.transform.position.y + seatHeight - hips.position.y)
+            - root.transform.forward * 0.15f;
+        hips.rotation = Quaternion.AngleAxis(-45f, root.transform.right) * hips.rotation;
         for (var i = 0; i < 2; i++)
         {
-            var target = positions[i] + root.transform.forward * (0.45f * progress) +
-                root.transform.up * (0.012f * progress + 0.08f * Mathf.Sin(progress * Mathf.PI));
+            var target = positions[i] + root.transform.forward * 0.45f + root.transform.up * 0.012f;
             Solve(a, i == 0 ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg,
                 i == 0 ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg,
                 i == 0 ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot, target, root.transform.forward);
-            feet[i].rotation = Quaternion.AngleAxis(-8f * progress, root.transform.right) * rotations[i];
+            feet[i].rotation = Quaternion.AngleAxis(-8f, root.transform.right) * rotations[i];
         }
-        GroundPalm(root, a, true, progress, -0.08f);
-        GroundPalm(root, a, false, progress, -0.08f);
+        GroundPalm(root, a, true, 1f, -0.08f);
+        GroundPalm(root, a, false, 1f, -0.08f);
     }
 
     // Folds over the abdominal wound while placing both visible knees on their fitted support surfaces.

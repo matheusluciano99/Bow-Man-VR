@@ -8,7 +8,7 @@ All fifteen agreed regions have model-specific entry clips under Assets/_Game/An
 | Neck | Reach the actual neck wound, buckle the knees, then collapse without recovery. | Separate fatal clips on both models with runtime contact fitting; headset review pending. |
 | Chest | Recoil and fall backward onto the back. | Separate retargeted fall/get-up clips on both models; full hold and recovery callbacks checked. Headset review pending. |
 | Abdomen | Fold forward, hold the actual wound with both hands and kneel on both knees before recovering. | Own clips and runtime wound fitting; headset review pending. |
-| Pelvis | Hips buckle into a supported seated fall, with both palms behind the body, then regain standing. | Separate seat/contact-fitted clips; headset review pending. |
+| Pelvis | Hips buckle into a supported seated fall, with both palms behind the body, then regain standing. | Captured fall and half-kneel rise fitted to both rigs; visual review pending. |
 | Left shoulder | Turn away and cup the left shoulder with the right palm while the injured arm recoils. | Separate shoulder clips/contact checks on both models; headset review pending. |
 | Right shoulder | Turn away and cup the right shoulder with the left palm while the injured arm recoils. | Independent shoulder clips/contact checks on both models; headset review pending. |
 | Left arm | Recoil/turn away, bend the left arm and cradle its forearm with the right hand while standing. | Dedicated clips and support-contact review on both models; headset review pending. |
@@ -75,9 +75,9 @@ Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. It fits 
 
 The kneeling pose angles the boots outward to clear the pelvis while both knees keep their ground contacts. The rebuild also updates the fatal continuation from the new kneeling pose. PlayMode checks measure boot and pelvis clearance throughout entry, recovery and collapse on both archers.
 
-Use Bow Man VR > Injuries > Rebuild Pelvis for the pelvis-specific supported seat and recovery. The authoring tool fits the visible seat surface, places both palms behind the hips, and uses measured leg chains for the raised-knee position. It remains distinct from the abdomen’s both-knee wound brace. The three-second hold starts at the seated pose; only living archers complete the return before a turn handoff.
+Use Bow Man VR > Injuries > Rebuild Pelvis to retarget the recorded stagger and fall into the fitted seated pose. Both palms brace behind the hips during the three-second hold. The return moves through a half-kneel with one palm supporting the pivot. The captured rise bears weight on the planted lead boot before returning to the archer's ready stance.
 
-Seat support uses the visible footprint beneath the hips, including clothing and worn equipment. Support palms keep a consistent anatomical orientation through descent and recovery; they do not choose a new palm side as the elbow bends.
+The rebuild fits the visible seat and ground contacts, routes the wrists outside the torso, and corrects residual forearm and rear-boot penetration against the fitted body volumes. It also rebakes the fatal continuation from the supported seat. Only a living archer completes the return and receives a turn.
 
 Use Bow Man VR > Injuries > Rebuild Body Death Finishers after rebuilding any regional pose. Each of the thirteen surviving-hit regions has its own fatal transition from that exact injured pose to a complete collapse; it does not reuse a standing start. Forward-bent/standing injuries finish face-down, while chest and pelvis retain a back-down finish. The model-specific final poses come from the recorded Mixamo sources. Sampled visible-skin floor correction keeps the transition grounded. The prototype finisher lasts 0.8 seconds.
 

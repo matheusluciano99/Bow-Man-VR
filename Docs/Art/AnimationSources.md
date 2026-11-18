@@ -69,10 +69,11 @@ All eleven files were inspected: 67 bones and finite sampled motion at 30 fps.
 File identities and native tracks are recorded in the local
 `Artifacts/FootReview/captured-motion-inspection.json`. The captured skinned Erika
 reference in the ignored `Preview/` cache is for inspection, not another playable
-character. These clips have not yet replaced regional gameplay animations.
+character.
 
-`Falling Down` lands seated with both palms braced behind and is a promising
-pelvis entry. `Kneeling Down`/`Standing` provide a right-knee descent/return pair.
+`Falling Down` drives the pelvis stagger and drop. The builder blends out its
+late floor penetration into a fitted, two-palm seat. `Standing` drives the rise
+after an authored pivot to one knee. `Kneeling Down` remains a descent candidate.
 `Injured Hurting Idle` holds the upper thigh; it is not a raised-foot reaction.
 `Injured Idle` does not supply the required forearm cradle. Arm Stretching and
 Injured Walking contain useful support movement but do not by themselves complete
@@ -90,7 +91,7 @@ sequences. All fifteen regions retain the behavior in [InjuryReactions.md](../In
 | Neck | Choking plus Fall to the knees and die candidates. | Actual neck-wound reach, knee buckle and fatal transition need one coherent sequence; no recovery. |
 | Chest | Existing captured back fall and Getting Up; downloaded backward fall/get-up alternatives. | Retain the back-down landing and full hold; do not replace an accepted motion simply to use a new source. |
 | Abdomen | Hit in the stomach, Collapse to the knees, kneel/get-up sources. | Both hands must hold the wound and both knees must reach the ground; separate clips do not yet provide this complete sequence. |
-| Pelvis | Hip recoil and seated/get-up candidates. | Sit on the floor is cross-legged and does not meet the supported seated-fall requirement. Captured Mixamo Falling Down provides the supported landing candidate; full entry/recovery and contacts still need fitting. |
+| Pelvis | Captured Mixamo Falling Down and Standing. | Both rigs use the fitted seat and a half-kneel rise. Visual acceptance in the review scene remains open. |
 | Left shoulder | Shot in the shoulder (left). | Fit the right palm to the left shoulder and preserve standing balance. |
 | Right shoulder | Shot in the right shoulder. | Fit the left palm to the right shoulder; check full motion and recovery. |
 | Left arm | Left arm flinch. | Opposite-hand cradling is absent from the catalog description; seek a suitable injured idle/support source. |
