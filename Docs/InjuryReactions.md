@@ -18,7 +18,7 @@ wounds, organ/bone damage and blood throughout the sequence.
 | --- | --- | --- | --- |
 | Head | Instant kill; immediate collapse with loss of posture. | None; remain dead. | [#21](https://github.com/matheusluciano99/Bow-Man-VR/issues/21) |
 | Neck | Instant kill; reach toward the actual neck wound, knees buckle, then collapse. | None; remain dead. | [#51](https://github.com/matheusluciano99/Bow-Man-VR/issues/51) |
-| Chest | Fall backward and land with the back on the ground. | Hold back-down pose for 3 s, then return to relaxed standing if alive. | [#22](https://github.com/matheusluciano99/Bow-Man-VR/issues/22), [#23](https://github.com/matheusluciano99/Bow-Man-VR/issues/23) |
+| Chest | Fall backward and land with the back on the ground. | Hold back-down pose for 1.5 s, then return to relaxed standing if alive. | [#22](https://github.com/matheusluciano99/Bow-Man-VR/issues/22), [#23](https://github.com/matheusluciano99/Bow-Man-VR/issues/23) |
 | Left shoulder | Recoil on the left, turn the torso away, cup the left shoulder with the right hand while standing. | Hold for 3 s, then release the supported pose if alive. | [#52](https://github.com/matheusluciano99/Bow-Man-VR/issues/52) |
 | Right shoulder | Recoil on the right, turn the torso away, cup the right shoulder with the left hand while standing. | Hold for 3 s, then release the supported pose if alive. | [#53](https://github.com/matheusluciano99/Bow-Man-VR/issues/53) |
 | Left arm | Recoil on the left, bend the injured arm and cradle it with the right hand while standing. | Hold for 3 s, then recover from the supported-arm pose if alive. | [#26](https://github.com/matheusluciano99/Bow-Man-VR/issues/26) |
@@ -62,7 +62,8 @@ sword combat is not an agreed game mode.
 ## Recovery, lethality and turn flow
 
 For a surviving hit, the hold timer starts after reaching the injured resting
-pose. It lasts three seconds for most regions and two seconds for feet.
+pose. It lasts 1.5 seconds for chest, two seconds for feet, and three seconds
+for the other regions.
 Foot reactions preserve their 1.1-second recoil and return to standing in 0.8
 seconds after the hold. Other reactions retain their authored recovery speeds.
 
@@ -71,7 +72,7 @@ seconds after the hold. Other reactions retain their authored recovery speeds.
    of health. Other regions kill when applied damage exhausts remaining health.
 3. Death ends the match immediately, cancels pending recovery and prevents any new
    turn or shot by the dead archer. Death animation can finish visually without
-   delaying the result; there is no three-second surviving hold or get-up. A fatal
+   delaying the result; the surviving hold and get-up are skipped. A fatal
    hit outside the head/neck plays its own region/side reaction, then collapses
    fully and remains down. Head and neck retain their separate fatal sequences.
 4. If B survives a hit, play B's region/side reaction, hold the injured pose for

@@ -327,8 +327,9 @@ Use GitHub's Assignees field to record task responsibility.
   viewpoint on Quest 2 before claiming comfort acceptance.
 - The region inventory, reaction table and review cases are in
   [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
-- For surviving hits, hold the injured pose for three seconds, or two seconds
-  for foot hits. Foot reactions return to standing in 0.8 seconds after the hold.
+- For surviving hits, hold for 1.5 seconds after a chest fall, two seconds
+  after a foot hit, and three seconds for the other regions. Foot reactions
+  return to standing in 0.8 seconds after the hold.
   Keep the original foot-hit recoil. Block shooting until recovery
   finishes, then give the injured archer the next turn. A lethal hit ends the
   match immediately. A miss passes the turn after scenery impact or flight expiry.

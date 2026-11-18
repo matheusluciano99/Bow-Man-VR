@@ -4,7 +4,7 @@
 
 Scenery or the eight-second flight expiry passes the turn once. A body hit applies provisional 25 damage, or immediate fatal damage for head/neck. Defeat emits one result immediately and cancels pending recovery. Existing health remains clamped at zero with one defeat event.
 
-For a surviving body hit, `ReactionRequested(target, impact, lethal, shotId)` starts the region-specific reaction. Call `MarkInjuredPose(shotId)` only when its resting pose is reached. The flow holds that pose for three seconds, or two seconds for feet, then emits `RecoveryRequested(target, shotId)`. Call `CompleteRecovery(shotId)` only when the get-up or standing recovery finishes. Until then neither archer may shoot. Stale, repeated, premature or post-death callbacks cannot pass the turn.
+For a surviving body hit, `ReactionRequested(target, impact, lethal, shotId)` starts the region-specific reaction. Call `MarkInjuredPose(shotId)` only when its resting pose is reached. The flow holds that pose for 1.5 seconds for chest, two seconds for feet, or three seconds for other regions, then emits `RecoveryRequested(target, shotId)`. Call `CompleteRecovery(shotId)` only when the get-up or standing recovery finishes. Until then neither archer may shoot. Stale, repeated, premature or post-death callbacks cannot pass the turn.
 
 This controller does not substitute a timer for the entry/get-up animation. Animation clips and their completion callbacks belong to their own tasks. Head and neck share fatal gameplay rules while requiring different visual death sequences. A match host must cancel nocked bows when the gate closes; the later bow integration owns that connection.
 
@@ -20,4 +20,4 @@ Run Gameplay PlayMode and required VR EditMode checks. Tests include death durin
 
 `AIArcher` uses the same CanShoot gate, ArrowFlight and registered-shot outcome as a human. It waits a provisional 0.8 seconds, aims toward the actual chest volume with up to 20 cm of random target-plane error, then solves a lower-time ballistic arc at the provisional full-draw speed of 25 m/s. Unreachable targets produce a bounded-speed attempt rather than freezing the turn. These values need play tuning.
 
-The AI cannot fire during flight, reaction, hold, recovery or defeat. It does not bypass animation callbacks. The automated two-bot match uses an explicit test-host adapter for those callbacks and the full three-second hold; that proves legal AI turns and match completion, not completed injury visuals. The separate AI review scene keeps its callback buttons visibly manual.
+The AI cannot fire during flight, reaction, hold, recovery or defeat. It does not bypass animation callbacks. The automated two-bot match uses an explicit test-host adapter for those callbacks and the full region-specific hold; that proves legal AI turns and match completion, not completed injury visuals. The separate AI review scene keeps its callback buttons visibly manual.

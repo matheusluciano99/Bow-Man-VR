@@ -60,9 +60,13 @@ namespace BowMan
             return true;
         }
 
-        // Gives foot reactions the shorter hold verified in headset review.
-        internal static float InjuredHoldDuration(BodyRegion region) =>
-            region is BodyRegion.LeftFoot or BodyRegion.RightFoot ? 2f : 3f;
+        // Sets the hold from the end of the region's entry to the start of its recovery.
+        internal static float InjuredHoldDuration(BodyRegion region) => region switch
+        {
+            BodyRegion.Chest => 1.5f,
+            BodyRegion.LeftFoot or BodyRegion.RightFoot => 2f,
+            _ => 3f
+        };
 
         // Starts the hold only when the current reaction has reached its injured resting pose.
         public void MarkInjuredPose(int shotId)

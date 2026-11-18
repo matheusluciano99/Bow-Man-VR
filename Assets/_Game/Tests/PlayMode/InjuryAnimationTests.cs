@@ -599,7 +599,7 @@ public class InjuryAnimationTests
         yield return new WaitForSeconds(2.5f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
-        yield return new WaitForSeconds(3.2f);
+        yield return new WaitForSeconds(1.7f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         Assert.That(flow.CanShoot(1), Is.False);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
@@ -717,14 +717,14 @@ public class InjuryAnimationTests
         }
     }
 
-    // Grants the surviving archer a turn only after landing, three seconds down and the complete get-up.
+    // Grants the surviving archer a turn only after landing, the chest hold and the complete get-up.
     [UnityTest]
     public IEnumerator ChestRecoveryFinishesBeforeGrantingTheNextTurn()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
         yield return new WaitForSeconds(3f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
-        yield return new WaitForSeconds(2.4f);
+        yield return new WaitForSeconds(0.9f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         yield return new WaitForSeconds(0.7f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
@@ -743,7 +743,7 @@ public class InjuryAnimationTests
     public IEnumerator DeathDuringChestRecoveryStopsTheGetUp()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
-        yield return new WaitForSeconds(6.1f);
+        yield return new WaitForSeconds(4.6f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         target.TakeDamage(100);
         var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
@@ -1315,7 +1315,12 @@ public class InjuryAnimationTests
                 Assert.That(target.CurrentHealth, Is.EqualTo(75), name + " " + region);
                 Assert.That(recoveries, Is.EqualTo(1));
                 Assert.That(landed, Is.GreaterThan(0f));
-                var holdDuration = region is BodyRegion.LeftFoot or BodyRegion.RightFoot ? 2f : 3f;
+                var holdDuration = region switch
+                {
+                    BodyRegion.Chest => 1.5f,
+                    BodyRegion.LeftFoot or BodyRegion.RightFoot => 2f,
+                    _ => 3f
+                };
                 Assert.That(recovery - landed, Is.GreaterThanOrEqualTo(holdDuration - 0.005f));
                 Assert.That(readyError, Is.LessThan(0.005f), name + " " + region);
                 Assert.That(readyRotationError, Is.LessThan(0.2f), name + " " + region);

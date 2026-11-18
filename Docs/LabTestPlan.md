@@ -44,7 +44,7 @@ also available. Bow hand preference survives match restart.
 The headset wearer fires each acceptance shot using the real bow controls.
 Region labels and captured frames/hit logs can guide the review, but must not
 replace the wearer's shooting with automatic demonstrations. Keep ordinary
-shooting gates active through the full injury, three-second hold and recovery.
+shooting gates active through the full injury, region-specific hold and recovery.
 For regional animation review, disable AI shooting and return control to the
 wearer after recovery or a miss; keep target health and existing wounds. Review
 AI attacks separately. A temporary close target is an
@@ -55,7 +55,7 @@ inspection aid, not acceptance of the final duel distance.
 Use `InjuryAnimationTest.unity` for close outside views and the integrated duel
 for live local-eye checks. Record **both** the visible opponent and local view;
 an outside-camera pass does not establish VR acceptance. A surviving entry must
-reach its own injured pose, hold for three seconds (two for a foot hit), then finish its own recovery
+reach its own injured pose, hold for 1.5 seconds (chest), two seconds (feet) or three seconds (other regions), then finish its own recovery
 before that archer receives a turn. Head/neck never recover. Fatal body hits
 play their own reaction then collapse fully, with an immediate match result.
 

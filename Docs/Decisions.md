@@ -125,7 +125,9 @@ the facing-archer bow duel; sword combat remains a conditional future idea.
 
 The full motions and implementation cards are in the
 [injury reaction table](InjuryReactions.md). Head and neck hits always kill.
-Surviving hits hold the injured pose for three seconds, or two for foot hits.
+Surviving hits hold for 1.5 seconds after a chest fall, two seconds for
+foot hits, and three seconds for other regions. The shorter chest hold lets
+the archer start getting up sooner after landing.
 The injured archer receives the next turn after completing recovery. This keeps turn ownership
 consistent with the visible recovery. Death ends the match immediately; misses
 resolve at scenery impact or flight expiry, with one outcome per shot.
@@ -333,8 +335,8 @@ waiting for unrelated attacks while comparing regional motion.
 
 ## Open questions and provisional values
 
-- Chest playback keeps the reviewed fall and the agreed three-second hold.
-  The get-up takes 3.6 seconds for the next pace review.
+- Chest playback uses a 2.7-second fall, a provisional 1.5-second ground
+  hold, and a 3.6-second get-up.
 
 - Additional archer variants and later visual refinements remain open. The current
   prototype uses English Archer and Erika; local full-body rendering is outside
