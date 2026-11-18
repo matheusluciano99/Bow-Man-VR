@@ -599,7 +599,7 @@ public class InjuryAnimationTests
         yield return new WaitForSeconds(2.5f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
-        yield return new WaitForSeconds(1.7f);
+        yield return new WaitForSeconds(0.95f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         Assert.That(flow.CanShoot(1), Is.False);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
@@ -724,7 +724,7 @@ public class InjuryAnimationTests
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
         yield return new WaitForSeconds(3f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
-        yield return new WaitForSeconds(0.9f);
+        yield return new WaitForSeconds(0.15f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         yield return new WaitForSeconds(0.7f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
@@ -743,7 +743,7 @@ public class InjuryAnimationTests
     public IEnumerator DeathDuringChestRecoveryStopsTheGetUp()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
-        yield return new WaitForSeconds(4.6f);
+        yield return new WaitForSeconds(3.85f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         target.TakeDamage(100);
         var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
@@ -1317,7 +1317,7 @@ public class InjuryAnimationTests
                 Assert.That(landed, Is.GreaterThan(0f));
                 var holdDuration = region switch
                 {
-                    BodyRegion.Chest => 1.5f,
+                    BodyRegion.Chest => 0.75f,
                     BodyRegion.LeftFoot or BodyRegion.RightFoot => 2f,
                     _ => 3f
                 };

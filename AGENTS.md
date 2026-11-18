@@ -327,7 +327,7 @@ Use GitHub's Assignees field to record task responsibility.
   viewpoint on Quest 2 before claiming comfort acceptance.
 - The region inventory, reaction table and review cases are in
   [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
-- For surviving hits, hold for 1.5 seconds after a chest fall, two seconds
+- For surviving hits, hold for 0.75 seconds after a chest fall, two seconds
   after a foot hit, and three seconds for the other regions. Foot reactions
   return to standing in 0.8 seconds after the hold.
   Keep the original foot-hit recoil. Block shooting until recovery
