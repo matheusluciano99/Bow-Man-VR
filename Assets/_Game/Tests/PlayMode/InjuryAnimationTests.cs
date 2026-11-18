@@ -1109,6 +1109,43 @@ public class InjuryAnimationTests
         }
     }
 
+    // Checks both rigs on a low off-center impact throughout the real reaction and recovery.
+    [UnityTest]
+    public IEnumerator LowAbdomenHitsKeepBothForearmsClear()
+    {
+        foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var flow = BodyShot(out var target, out var arrow, BodyRegion.Abdomen, model);
+            arrow.transform.position += Vector3.right * 0.075f - Vector3.up * 0.022f;
+            var animator = target.GetComponentInChildren<Animator>();
+            var forearms = new[] { animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
+                animator.GetBoneTransform(HumanBodyBones.RightLowerArm) };
+            var regions = target.GetComponentsInChildren<BodyHitRegion>();
+            var limbs = regions.Where(region => region.Region is BodyRegion.LeftHand or BodyRegion.RightHand ||
+                forearms.Contains(region.transform.parent)).Select(region => region.GetComponent<Collider>()).ToArray();
+            var body = regions.Where(region => region.Region is BodyRegion.Head or BodyRegion.Neck or BodyRegion.Chest or
+                BodyRegion.Abdomen or BodyRegion.Pelvis).Select(region => region.GetComponent<Collider>()).ToArray();
+
+            var deadline = Time.time + 8f;
+            while (!flow.CanShoot(1) && Time.time < deadline)
+            {
+                if (flow.Phase is DuelPhase.Reacting or DuelPhase.Holding or DuelPhase.Recovering)
+                {
+                    foreach (var limb in limbs)
+                    foreach (var core in body)
+                        if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
+                            core, core.transform.position, core.transform.rotation, out _, out var depth))
+                            Assert.That(depth, Is.LessThanOrEqualTo(0.0021f), $"{model} {flow.Phase}: {limb.name}/{core.name}");
+                }
+                yield return null;
+            }
+            Assert.That(flow.CanShoot(1), Is.True);
+            Assert.That(target.CurrentHealth, Is.EqualTo(75));
+            Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Abdomen));
+            yield return CleanUp();
+        }
+    }
+
     // Interrupts abdominal recovery with a full fatal collapse and no return to shooting.
     [UnityTest]
     public IEnumerator DeathInterruptsAbdominalRecovery()

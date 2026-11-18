@@ -28,6 +28,7 @@ namespace BowMan
         private Vector3[] deathBlendPositions;
         private Quaternion[] deathBlendRotations;
         private Animator poseAnimator;
+        private ArcherAbdomenContact abdomenContact;
         private BodyImpact entryImpact;
         private Transform woundAnchor;
         private Vector3 woundPoint;
@@ -78,6 +79,8 @@ namespace BowMan
             health = actor;
             archerIndex = index;
             poseAnimator = GetComponentInChildren<Animator>();
+            if (poseAnimator != null && poseAnimator.isHuman && Supports(BodyRegion.Abdomen))
+                abdomenContact = new ArcherAbdomenContact(poseAnimator, GetComponentsInChildren<BodyHitRegion>());
             flow.ReactionRequested += OnReaction;
             flow.RecoveryRequested += OnRecovery;
             flow.Changed += OnFlowChanged;
@@ -152,10 +155,10 @@ namespace BowMan
             if (fatalPlayback && region == BodyRegion.Neck && woundAnchor != null)
                 ArcherLimbIK.ReachNeck(poseAnimator, woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
-            if (region == BodyRegion.Abdomen && woundAnchor != null && !finishingDeath)
+            if (region == BodyRegion.Abdomen && woundAnchor != null && !finishingDeath && abdomenContact != null)
             {
-                var reach = ArcherLimbIK.AbdomenReachWeight(elapsed / playing.length, recovering);
-                ArcherLimbIK.ReachAbdomen(poseAnimator, woundAnchor.TransformPoint(woundPoint),
+                var reach = AbdomenContactWeight(elapsed / playing.length, recovering);
+                abdomenContact.Apply(woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, reach);
             }
             if (elapsed < playing.length) return;
@@ -183,6 +186,11 @@ namespace BowMan
                 flow.MarkInjuredPose(token);
             }
         }
+
+        // Retargets near contact while letting the fitted clips handle the approach and release.
+        internal static float AbdomenContactWeight(float progress, bool recovering) => recovering
+            ? Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(0.37f, 0.54f, progress))
+            : Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.34f, 0.53f, progress));
 
         // Starts the authored collapse from the actual current pose, including interrupted recovery.
         private void BeginDeathFinisher()
@@ -225,6 +233,7 @@ namespace BowMan
             deathBlendBones = null;
             deathBlendPositions = null;
             deathBlendRotations = null;
+            abdomenContact = null;
         }
 
         // Prevents late match callbacks from sampling a destroyed character.

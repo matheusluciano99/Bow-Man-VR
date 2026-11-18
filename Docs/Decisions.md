@@ -236,6 +236,10 @@ by [#35](https://github.com/matheusluciano99/Bow-Man-VR/issues/35).
 Wound-reaching motions retain the actual impact and approach direction in the
 struck volume’s bone-local space. Fit their hands after sampling the authored
 pose so the contact follows the moving wound rather than a fixed world point.
+For the abdomen, retain the authored approach and release. Near contact,
+resolve forearm/body overlap by swiveling the elbow with the wrist fixed
+when possible. Limit the live adjustment to the clear part of the blend
+from the collision-fitted pose.
 
 Apply the arrow’s incoming direction during the first contact response for
 abdomen, shoulder, arm, hand, and leg hits so the archer visibly reacts when

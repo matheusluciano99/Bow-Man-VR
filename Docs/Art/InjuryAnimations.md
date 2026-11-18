@@ -83,7 +83,7 @@ along the healthy knee. Both rebuild commands record the supported motions at
 60 Hz and update their separate fatal continuations. The collision check samples
 hand, forearm, shin and boot volumes against the core at 120 Hz on both models.
 
-Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. The archer folds and reaches for the wound, then shifts weight with the captured descent into a fitted double kneel. After the three-second hold, the archer plants a boot and pushes through a captured rise. Runtime fitting keeps the hands near the actual bone-local wound through the hold and releases them during recovery.
+Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. The archer folds and reaches for the wound, then shifts weight with the captured descent into a fitted double kneel. After the three-second hold, the archer plants a boot and pushes through a captured rise. Runtime fitting preserves the authored approach and release. Near contact, the arms follow the actual bone-local wound. The elbow can swivel while the wrist stays in place. If the forearm volumes still overlap the body, the adjustment blends toward the fitted authored pose.
 
 The kneeling pose fits each visible kneepad and angles the boots away from the hips. The rebuild also updates the fatal continuation from the kneel. PlayMode checks sample the forearms, hands, and boots against the body volumes on both archers.
 

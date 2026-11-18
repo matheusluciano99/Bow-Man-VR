@@ -61,9 +61,9 @@ namespace BowMan
         }
 
         // Swivels the elbow around its wrist target and nudges the wrist away only when needed for clearance.
-        public static void ClearForearm(Animator animator, bool left, Collider[] armVolumes, Collider[] bodyVolumes)
+        public static void ClearForearm(Animator animator, bool left, Collider[] armVolumes, Collider[] bodyVolumes,
+            int wristOffsetSteps = 5, float clearanceTolerance = 0.0002f)
         {
-            const float clearanceTolerance = 0.0002f;
             var bestDepth = DeepestOverlap(armVolumes, bodyVolumes, out var away);
             if (bestDepth <= clearanceTolerance) return;
 
@@ -82,7 +82,7 @@ namespace BowMan
             var bestUpper = upperStart;
             var bestLower = lowerStart;
 
-            for (var push = 0; push <= 5 && bestDepth > clearanceTolerance; push++)
+            for (var push = 0; push <= wristOffsetSteps && bestDepth > clearanceTolerance; push++)
             for (var swivel = 0; swivel <= 24 && bestDepth > clearanceTolerance; swivel++)
             {
                 var angle = (swivel + 1) / 2 * 3f * (swivel % 2 == 0 ? -1f : 1f);
@@ -104,7 +104,7 @@ namespace BowMan
         }
 
         // Finds the deepest penetration and its separating direction using the current bone poses.
-        private static float DeepestOverlap(Collider[] armVolumes, Collider[] bodyVolumes, out Vector3 away)
+        internal static float DeepestOverlap(Collider[] armVolumes, Collider[] bodyVolumes, out Vector3 away)
         {
             var deepest = 0f;
             away = Vector3.zero;
