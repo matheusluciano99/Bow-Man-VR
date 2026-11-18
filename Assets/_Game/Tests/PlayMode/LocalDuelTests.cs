@@ -78,12 +78,26 @@ public class LocalDuelTests
         typeof(AIArcher).GetField("aimError", BindingFlags.Instance | BindingFlags.NonPublic)
             .SetValue(duel.Opponent.GetComponent<AIArcher>(), 0f);
         Assert.That(duel.Flow.CanShoot(0), Is.True, $"{duel.Flow.Phase}: local health {duel.LocalArcher.CurrentHealth}");
+        var bowInput = new UnityEditor.SerializedObject(Find<VRBowInput>());
+        Assert.That(bowInput.FindProperty("gripRotationOffset").vector3Value, Is.EqualTo(new Vector3(90f, 0f, 0f)));
+        Assert.That(Find<TextMesh>().text, Does.Contain("Trigger: draw/release"));
+        Assert.That(Find<TextMesh>().text, Does.Not.Contain("Grip: hold bow"));
         Assert.That(duel.LocalArcher.GetComponentsInChildren<Renderer>().All(r => !r.enabled), Is.True);
         Assert.That(duel.Opponent.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r => r.enabled), Is.True);
+        var fatalities = 0;
+        AnatomicalImpact lastFatality = null;
+        duel.Flow.FatalityRequested += (target, report) =>
+        {
+            Assert.That(target, Is.EqualTo(1));
+            Assert.That(duel.Opponent.IsDefeated, Is.True);
+            lastFatality = report;
+            fatalities++;
+        };
         var arrow = Shoot(duel, BodyRegion.Chest);
         var deadline = Time.time + 3f;
         while (duel.Opponent.CurrentHealth == 100 && Time.time < deadline) yield return null;
         Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(75));
+        Assert.That(fatalities, Is.Zero);
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
         Assert.That(bow.ShotAllowed, Is.False);
         deadline = Time.time + 32f;
@@ -103,6 +117,8 @@ public class LocalDuelTests
         while (duel.Flow.Phase != DuelPhase.Finished && Time.time < deadline) yield return null;
         Assert.That(duel.Flow.Winner, Is.Zero);
         Assert.That(results, Is.EqualTo(1));
+        Assert.That(fatalities, Is.EqualTo(1));
+        Assert.That(lastFatality.Entry.Region, Is.EqualTo(BodyRegion.Head));
         Assert.That(bow.ShotAllowed, Is.False);
         var wounds = duel.Opponent.GetComponentsInChildren<ParticleSystem>();
         Assert.That(wounds.Length, Is.GreaterThan(0));
@@ -122,6 +138,16 @@ public class LocalDuelTests
         Assert.That(scene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<ArrowFlight>()).Count(), Is.Zero);
         Assert.That(Find<TextMesh>().text, Does.Contain("You 100"));
         Assert.That(duel.Opponent.GetComponent<AIArcher>().ShotsFired, Is.Zero);
+
+        var neckArrow = Shoot(duel, BodyRegion.Neck);
+        deadline = Time.time + 3f;
+        while (duel.Flow.Phase != DuelPhase.Finished && Time.time < deadline) yield return null;
+        Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
+        Assert.That(neckArrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Neck));
+        Assert.That(duel.Opponent.IsDefeated, Is.True);
+        Assert.That(results, Is.EqualTo(2));
+        Assert.That(fatalities, Is.EqualTo(2));
+        Assert.That(lastFatality.Entry.Region, Is.EqualTo(BodyRegion.Neck));
     }
 
     // Preserves physical head/controller offsets while all animated-eye displacement is applied exactly once.

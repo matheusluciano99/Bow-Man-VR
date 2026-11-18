@@ -377,8 +377,7 @@ TextMesh:
 
     Bow: left hand   Draw: 0%
 
-    Grip:
-    hold bow   Trigger: draw/release   B: switch bow hand'
+    Trigger: draw/release   B: switch bow hand'
   m_OffsetZ: 0
   m_CharacterSize: 0.02
   m_LineSpacing: 1
