@@ -276,6 +276,8 @@ public class BowTests
         Assert.That(bow.IsHeld, Is.False);
         Assert.That(shots, Is.EqualTo(1));
         input.SetBowHand(leftBow);
+        // Restores simulated application focus after the input actions rebind.
+        input.SendMessage("OnApplicationFocus", true);
         Button(drawing, "triggerPressed", false);
         yield return null;
         yield return null;
