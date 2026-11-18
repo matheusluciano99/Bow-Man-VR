@@ -171,3 +171,6 @@ Packages/packages-lock.json linguist-generated
 
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
+
+# Generated anatomical vertex buffers remain regular Git binaries.
+Assets/_Game/Models/Anatomy/**/*.asset unity-binary

@@ -136,6 +136,438 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.18, y: 0.18990076, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &681938180743224623
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7211095394233713995}
+  - component: {fileID: 3049741006024043401}
+  m_Layer: 0
+  m_Name: Anatomy_Brain_Center_Head
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7211095394233713995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 681938180743224623}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.013409855, y: 2.0085234e-11, z: 1.6742881e-11, w: 0.9999101}
+  m_LocalPosition: {x: -0.0015379165, y: -160.49794, z: -2.793254}
+  m_LocalScale: {x: 102.887726, y: 102.88773, z: 102.88773}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 118576844655913816}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3049741006024043401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 681938180743224623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 0
+  side: 0
+  region: 0
+  surfaces:
+  - {fileID: 4300000, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -1584569783840784089, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -1196149954604756747, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -1601120129839904639, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -895542378777533938, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -6026957810422016616, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -7770604901561848562, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 1264972122108070761, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -4288106934250304036, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 6589347883615940297, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -8007191542939078434, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 3084374411340418713, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -5697838854132611807, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -3755233832573493390, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 156186253924028936, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 5027646674265250560, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 3307731738353774711, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 4760151440085563070, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 3546802852071231627, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 4796710668096979795, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -6785550063259343671, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -8942874136831352668, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -3817261005450188901, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 5005323280742507369, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -7809359251198530416, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 4688016623729427079, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 5351547837447117293, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 8141178146825394097, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -669344871619170421, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -201189879236896255, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -1843997740633420063, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -7787629231174628164, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 4433044137330569493, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 1968318334892342486, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 2286202434920975453, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 2357905696063950730, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 162176097027078723, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 922015393799993025, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -4691239882314739120, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 7942890464208663421, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 4420631642762878175, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 8497995238635627987, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 1977044718691262878, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 1676192405079335485, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 7031392143088069964, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -2836497985755157620, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -7960955169424654405, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 3903868821168148475, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 816588428302092078, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -95840014882488865, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 5512493182689830295, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -3806043837443957193, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 7037377678748162367, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -376685530667258040, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -8704858162495606525, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 2208083723868820875, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 2454214867437924175, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 5535121045236404453, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 2186933778028343969, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 3853084417937967954, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 5925230605595996120, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 2183103921959936812, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: 2886084484224022333, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -4077770625634281548, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -1030367706968513254, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+  - {fileID: -2151318266305553174, guid: e044f176a2902bf49b5857d6fefd588f, type: 2}
+--- !u!1 &684818352737821222
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8579468764707727879}
+  - component: {fileID: 4597391468481788131}
+  m_Layer: 0
+  m_Name: Anatomy_SmallIntestine_Center_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8579468764707727879
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684818352737821222}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4597391468481788131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684818352737821222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 8
+  side: 0
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 2123493586395265380, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -1782400679230506750, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 1301156560906194687, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -3989569287952606249, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -3970777690280274838, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -998850187866316729, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 426311048870547647, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -404864068280417520, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -541884865711327189, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 7638689763755250590, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 1912410804037904035, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 9215858893467389559, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 2734323856666489899, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 5823045225822996732, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 2221071392942399913, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 7013497542297798534, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 3654184242119768162, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 8777446134296616126, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -3424195569752961377, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -7000393803609457893, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -7013100390984003642, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -1469735501693813584, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -3951289899006982861, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 3705143481425542943, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 8579800579409042417, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -5302065636117494091, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -402674638335181684, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 7925510268729142887, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 6983278793315576818, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 2063770305522863085, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -973642947144794098, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -6896004960653582833, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 6068368483589152469, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -2586059054187181705, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -4979446933314014932, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -8918574933955455279, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -5499743311316878026, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 7072464206660419702, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -5493108181446481918, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 740517142188142576, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 3837636227606119630, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 7220996674157679509, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 1090635683630210529, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -8727159172029678360, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 5986621321433589517, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 545261590459432916, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -2028799769226443841, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -7722298345931838802, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -1290462674198215052, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -8868345971051968057, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 4911886058210386262, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 8055950775564182065, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 4440992969329836227, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: -3524452431595430766, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+  - {fileID: 5974315892415064576, guid: 5ff8d5eccd8114648894f0802279c720, type: 2}
+--- !u!1 &952930772719578191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6958155662118778550}
+  - component: {fileID: 3666563213249442455}
+  m_Layer: 0
+  m_Name: Anatomy_Bladder_Center_Hips
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6958155662118778550
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952930772719578191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000003775082, y: 0.0000010519857, z: -0.000034628327, w: 1}
+  m_LocalPosition: {x: -0.009507547, y: -104.84246, z: -1.5542432}
+  m_LocalScale: {x: 102.887726, y: 102.887726, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6117284098877489476}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3666563213249442455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952930772719578191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 10
+  side: 0
+  region: 4
+  surfaces:
+  - {fileID: 4300000, guid: 55219a771fe8b854eafa1b3957148318, type: 2}
+--- !u!1 &1710393638834031198
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4853985617681494299}
+  - component: {fileID: 6143551050144841581}
+  m_Layer: 0
+  m_Name: Anatomy_Liver_Center_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4853985617681494299
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1710393638834031198}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6143551050144841581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1710393638834031198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 3
+  side: 0
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: -7423329497323486357, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: 1215886739573982807, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: -4917537086071342419, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: 6808166587542667475, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: 5522608983473392516, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: 1105977371990017461, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: -3261974437735404028, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+  - {fileID: -4680567505009820623, guid: 4c3989ea21958074cafefcbc537c282f, type: 2}
+--- !u!1 &1893861648032693501
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4363274663622741515}
+  - component: {fileID: 498718368778295042}
+  m_Layer: 0
+  m_Name: Anatomy_Heart_Center_UpperChest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4363274663622741515
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893861648032693501}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.07526705, y: 1.903594e-11, z: 1.8183769e-11, w: 0.9971635}
+  m_LocalPosition: {x: -0.0015374925, y: -132.8014, z: -19.506407}
+  m_LocalScale: {x: 102.887726, y: 102.887695, z: 102.88772}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4984857326531063386}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &498718368778295042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893861648032693501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 1
+  side: 0
+  region: 2
+  surfaces:
+  - {fileID: 4300000, guid: f6601bee7528c4044a72041e3974fc86, type: 2}
+  - {fileID: 4579410059184584485, guid: f6601bee7528c4044a72041e3974fc86, type: 2}
+  - {fileID: 4280648850139469232, guid: f6601bee7528c4044a72041e3974fc86, type: 2}
+--- !u!1 &1917914941618211444
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 923162253563587505}
+  - component: {fileID: 4987198789143635672}
+  m_Layer: 0
+  m_Name: Anatomy_Lung_Left_UpperChest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &923162253563587505
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917914941618211444}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.07526705, y: 1.903594e-11, z: 1.8183769e-11, w: 0.9971635}
+  m_LocalPosition: {x: -0.0015374925, y: -132.8014, z: -19.506407}
+  m_LocalScale: {x: 102.887726, y: 102.887695, z: 102.88772}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4984857326531063386}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4987198789143635672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917914941618211444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 2
+  side: 1
+  region: 2
+  surfaces:
+  - {fileID: 4300000, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: -9086177924572203052, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: -5172981980771740629, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: -836383878701601883, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: -9171823212746550722, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: -2283921607921386177, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: -7120506521875872968, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: 7069908440526292010, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
+  - {fileID: 8433907993322394011, guid: f71d5cebe9bd0b644ae1e3dc9a197e5a, type: 2}
 --- !u!1 &2302005852505827469
 GameObject:
   m_ObjectHideFlags: 0
@@ -203,6 +635,104 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.27, y: 0.18, z: 0.19}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &3506786778925845338
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1674815112301645919}
+  - component: {fileID: 9017083779771935369}
+  m_Layer: 0
+  m_Name: Anatomy_Kidney_Left_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1674815112301645919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3506786778925845338}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9017083779771935369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3506786778925845338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 7
+  side: 1
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: 0c2f7be0820359e4e9e0d1c836ef47ab, type: 2}
+--- !u!1 &3890519046462154877
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6443822468718464418}
+  - component: {fileID: 2391854424666391030}
+  m_Layer: 0
+  m_Name: Anatomy_Kidney_Right_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6443822468718464418
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890519046462154877}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2391854424666391030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890519046462154877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 7
+  side: 2
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: f1de6de36dad3dc4f91f0454d0708c00, type: 2}
 --- !u!1 &4993146299308150359
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +800,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.095, y: 0.1185081, z: 0.11}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5038440777640036279
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2425170208795679319}
+  - component: {fileID: 860487872938267039}
+  m_Layer: 0
+  m_Name: Anatomy_Pancreas_Center_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2425170208795679319
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038440777640036279}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &860487872938267039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038440777640036279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 6
+  side: 0
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: ad18f7359c1e41a42b47e856e705ea7c, type: 2}
 --- !u!1 &5125899312878103343
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,6 +860,7 @@ GameObject:
   - component: {fileID: 1158410821472227283}
   - component: {fileID: 2485440425683305889}
   - component: {fileID: 956488499937504348}
+  - component: {fileID: 8375443052293470677}
   m_Layer: 0
   m_Name: ErikaArcher
   m_TagString: Untagged
@@ -331,6 +911,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8375443052293470677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5125899312878103343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 608014a72d9ce44408d2f9cd648559e6, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherAnatomy
 --- !u!1 &5164774457985036464
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,6 +992,57 @@ CapsuleCollider:
   m_Height: 0.32387954
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5191490921600503016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1876846645502658070}
+  - component: {fileID: 1479105963822323709}
+  m_Layer: 0
+  m_Name: Anatomy_LargeIntestine_Center_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1876846645502658070
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5191490921600503016}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1479105963822323709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5191490921600503016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 9
+  side: 0
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: c1ab4b89c4342f448a583bf8c8365c16, type: 2}
+  - {fileID: -6098455566855849904, guid: c1ab4b89c4342f448a583bf8c8365c16, type: 2}
+  - {fileID: -6247392160180012898, guid: c1ab4b89c4342f448a583bf8c8365c16, type: 2}
 --- !u!1 &5230440535568924054
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,6 +1181,55 @@ CapsuleCollider:
   m_Height: 0.36139798
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5640416191690949081
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6945373927998276080}
+  - component: {fileID: 7666015998882425715}
+  m_Layer: 0
+  m_Name: Anatomy_Spleen_Center_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6945373927998276080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5640416191690949081}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7666015998882425715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5640416191690949081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 5
+  side: 0
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: 423d08b9e9c65ef42be3a75368aad33d, type: 2}
 --- !u!1 &5752569315902581095
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,6 +1297,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.29, y: 0.2745676, z: 0.21}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6031718990380316000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8972313010260613687}
+  - component: {fileID: 5345811031502925148}
+  m_Layer: 0
+  m_Name: Anatomy_LargeIntestine_Center_Hips
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8972313010260613687
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6031718990380316000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000003775082, y: 0.0000010519857, z: -0.000034628327, w: 1}
+  m_LocalPosition: {x: -0.009507547, y: -104.84246, z: -1.5542432}
+  m_LocalScale: {x: 102.887726, y: 102.887726, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6117284098877489476}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5345811031502925148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6031718990380316000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 9
+  side: 0
+  region: 4
+  surfaces:
+  - {fileID: 4300000, guid: 0c60c681ab0ad83409a439842c245700, type: 2}
 --- !u!1 &6068107852416119087
 GameObject:
   m_ObjectHideFlags: 0
@@ -1184,6 +1925,63 @@ CapsuleCollider:
   m_Height: 0.5733419
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7696053920844642248
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 704531560750126270}
+  - component: {fileID: 5105458510556661843}
+  m_Layer: 0
+  m_Name: Anatomy_Lung_Right_UpperChest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &704531560750126270
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7696053920844642248}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.07526705, y: 1.903594e-11, z: 1.8183769e-11, w: 0.9971635}
+  m_LocalPosition: {x: -0.0015374925, y: -132.8014, z: -19.506407}
+  m_LocalScale: {x: 102.887726, y: 102.887695, z: 102.88772}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4984857326531063386}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5105458510556661843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7696053920844642248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 2
+  side: 2
+  region: 2
+  surfaces:
+  - {fileID: 4300000, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: -8803637417870845047, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: 2987139401602821195, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: 5018041778683151216, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: 2997100583394845448, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: 948752176979216484, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: -6353708585929229041, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: 5808266695256545928, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
+  - {fileID: -3592939876017733521, guid: 92da154083f0c034fba74a4ba3bb0527, type: 2}
 --- !u!1 &8511842241980248468
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,6 +2051,55 @@ CapsuleCollider:
   m_Height: 0.57317084
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8517699423710334923
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 176189162874360616}
+  - component: {fileID: 7174506959507869759}
+  m_Layer: 0
+  m_Name: Anatomy_Stomach_Center_Spine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &176189162874360616
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8517699423710334923}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.042321544, y: 1.9554136e-11, z: 1.8225421e-11, w: 0.9991041}
+  m_LocalPosition: {x: -0.0015380913, y: -114.48055, z: -11.275935}
+  m_LocalScale: {x: 102.887726, y: 102.88772, z: 102.887726}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8478219101643442396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7174506959507869759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8517699423710334923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe131094127eef9428ad99a61300dc02, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.AnatomyOrgan
+  kind: 4
+  side: 0
+  region: 3
+  surfaces:
+  - {fileID: 4300000, guid: bdcf3523d39275641bb1c6e97b124f5f, type: 2}
 --- !u!1 &8775467440800908399
 GameObject:
   m_ObjectHideFlags: 0
@@ -1495,6 +2342,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 988047948033617506}
+    - targetCorrespondingSourceObject: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8972313010260613687}
+    - targetCorrespondingSourceObject: {fileID: -5671910290767253545, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6958155662118778550}
     - targetCorrespondingSourceObject: {fileID: -2593687625098271875, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6016441278274641099}
@@ -1516,9 +2369,42 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3129585085045581517}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4853985617681494299}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 176189162874360616}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2425170208795679319}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6945373927998276080}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1674815112301645919}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6443822468718464418}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8579468764707727879}
+    - targetCorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1876846645502658070}
     - targetCorrespondingSourceObject: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7347339804739560922}
+    - targetCorrespondingSourceObject: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4363274663622741515}
+    - targetCorrespondingSourceObject: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 923162253563587505}
+    - targetCorrespondingSourceObject: {fileID: -6881390770214846263, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 704531560750126270}
     - targetCorrespondingSourceObject: {fileID: -8028729752870558221, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1189538553366639638}
@@ -1540,6 +2426,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7208261743932278219, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7334376498570261637}
+    - targetCorrespondingSourceObject: {fileID: 7208261743932278219, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7211095394233713995}
     - targetCorrespondingSourceObject: {fileID: 4582277379452294679, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8649324942711729560}

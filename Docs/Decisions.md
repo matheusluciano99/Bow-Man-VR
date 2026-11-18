@@ -220,6 +220,26 @@ Quest 2 review accepted both revised reactions. Keep the 1.1-second recoil,
 two-second balance and 0.8-second recovery. Shooting stays locked until standing
 recovery finishes. Moving first-person eye comfort remains tracked by #35.
 
+## D022 — Fitted tissue geometry and finite arrow penetration
+
+Use the free BodyParts3D 4.3 tissue atlas for both prepared archers, preserving
+unchanged original files, pinned digests and the publisher's current CC BY 4.0
+credit. Fit real separate tissue meshes against each rig's eyes, hips and
+interior body envelope. Brain depth uses the visible cranial skin rather than
+the face-inclusive hit volume. Keep native derivatives under `_Game/Models`.
+
+Trace from the actual body entry along the recorded direction to the embedded
+visual tip. The 25 cm penetration is a provisional gameplay depth, not a
+ballistics or clinical claim. Exact finite triangle/closed-tissue queries avoid
+inventing contacts from organ bounding boxes; cache immutable geometry and prune
+triangle batches. Bone-bound contacts follow subsequent motion. Anatomy never
+applies another health outcome. The finishing presentation listens to the
+confirmed lethal-shot gate, not the general per-arrow analysis event.
+
+Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
+bone/fracture rules and X-ray rendering remain separate work. Preserve source
+filenames, mesh GUIDs and native subasset identities when regenerating.
+
 ## Open questions and provisional values
 
 - Additional archer variants and later visual refinements remain open. The current
