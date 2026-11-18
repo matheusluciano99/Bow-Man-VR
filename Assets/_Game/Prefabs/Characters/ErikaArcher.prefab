@@ -1670,8 +1670,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: c03f20bbb864ab940838e9fa2532ce1b, type: 2}
+  - {fileID: 7400000, guid: 23462a725eccb034f9f3bed8721d8fbc, type: 2}
   recoveries:
   - {fileID: 0}
   - {fileID: 0}
@@ -1686,5 +1686,37 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 7400000, guid: 7845623d666421247ad0cb9d26e5b1c1, type: 2}
+  - {fileID: 7400000, guid: 16001e97ac981c04283b0788d9462a35, type: 2}
+  holds:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 5b5a51260f77b664781b82554c0d3b08, type: 2}
+  - {fileID: 7400000, guid: e03fa7b9e4139e34c977c751c7af1fcd, type: 2}
+  deathFinishers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 14890c2eb38dce247bcce17da7454ede, type: 2}
+  - {fileID: 7400000, guid: d4f1bfdb7b353e74980f613c8a3841b8, type: 2}
