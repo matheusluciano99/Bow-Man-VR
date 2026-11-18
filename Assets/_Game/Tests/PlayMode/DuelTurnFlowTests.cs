@@ -74,7 +74,7 @@ public class DuelTurnFlowTests
         flow.MarkInjuredPose(token - 1);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Reacting));
         flow.MarkInjuredPose(token);
-        yield return new WaitForSeconds(1.25f);
+        yield return new WaitForSeconds(0.55f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         yield return new WaitForSeconds(0.4f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));

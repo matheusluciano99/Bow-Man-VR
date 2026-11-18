@@ -4,7 +4,7 @@
 
 Scenery or the eight-second flight expiry passes the turn once. A body hit applies provisional 25 damage, or immediate fatal damage for head/neck. Defeat emits one result immediately and cancels pending recovery. Existing health remains clamped at zero with one defeat event.
 
-For a surviving body hit, `ReactionRequested(target, impact, lethal, shotId)` starts the region-specific reaction. Call `MarkInjuredPose(shotId)` only when its resting pose is reached. The flow holds that pose for 1.5 seconds for chest, two seconds for feet, or three seconds for other regions, then emits `RecoveryRequested(target, shotId)`. Call `CompleteRecovery(shotId)` only when the get-up or standing recovery finishes. Until then neither archer may shoot. Stale, repeated, premature or post-death callbacks cannot pass the turn.
+For a surviving body hit, `ReactionRequested(target, impact, lethal, shotId)` starts the region-specific reaction. Call `MarkInjuredPose(shotId)` only when its resting pose is reached. The flow holds that pose for 0.75 seconds for chest, two seconds for feet, or three seconds for other regions, then emits `RecoveryRequested(target, shotId)`. Call `CompleteRecovery(shotId)` only when the get-up or standing recovery finishes. Until then neither archer may shoot. Stale, repeated, premature or post-death callbacks cannot pass the turn.
 
 This controller does not substitute a timer for the entry/get-up animation. Animation clips and their completion callbacks belong to their own tasks. Head and neck share fatal gameplay rules while requiring different visual death sequences. A match host must cancel nocked bows when the gate closes; the later bow integration owns that connection.
 
