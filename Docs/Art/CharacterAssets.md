@@ -104,3 +104,22 @@ neck hits and their separate animation task.
 The clips are baked at 60 Hz. Floor fitting uses the visible skin and a
 4 mm allowance between the grounded start and end poses. The English rig
 keeps its separate equipment and omits the loose baked display arrow.
+
+## Foot reactions
+
+Foot reactions use the free generated **MotionSmith pain right foot, take 1**
+performance across the body, anatomically mirrored for the left foot on each
+archer. This replaces the procedural adaptation of chest-fall torso deltas.
+The unchanged original is `Assets/ThirdParty/CosindraAnimations/Motions/MotionSmith_pain_right_foot_take1.fbx`
+(1,255,020 bytes; SHA-256 `e49bfb9c5c4ac2a8bcc5945c07d19a881f91718d98ff390e198ab9d918b95e7d`).
+A prepared neutral reference preserves every source frame; final native clips
+fit boot contact and standing transitions at 60 Hz. This is AI-generated catalog
+motion, not human motion capture. See [asset provenance](../../Assets/ThirdParty/CosindraAnimations/Attribution.md)
+and [rebuild instructions](../../SourceAssets/CosindraAnimations/README.md).
+Both replacement foot reactions and their timing were accepted in Quest 2.
+
+Use **Bow Man VR > Injuries > Rebuild Left Foot** or **Rebuild Right Foot**
+to regenerate the existing clip assets for both skeletons. Open
+`Assets/_Game/Scenes/DuelTurnTest.unity` and select either foot to review the
+recoil, supported balance and standing recovery. A lethal foot hit ends the
+match at impact and plays the foot reaction before its fatal continuation.

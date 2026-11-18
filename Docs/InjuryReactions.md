@@ -29,8 +29,8 @@ wounds, organ/bone damage and blood throughout the sequence.
 | Pelvis | Hips buckle into a seated fall; both hands support the body from behind. | Hold seated pose for 3 s, then stand if alive. | [#56](https://github.com/matheusluciano99/Bow-Man-VR/issues/56) |
 | Left leg | Kneel on the injured left leg and support the body with the left hand on the ground. | Hold for 3 s, then stand if alive. | [#24](https://github.com/matheusluciano99/Bow-Man-VR/issues/24) |
 | Right leg | Kneel on the injured right leg and support the body with the right hand on the ground. | Hold for 3 s, then stand if alive. | [#25](https://github.com/matheusluciano99/Bow-Man-VR/issues/25) |
-| Left foot | Lift the injured left foot and balance on the right leg. | Hold for 3 s, then lower the left foot and regain stance if alive. | [#57](https://github.com/matheusluciano99/Bow-Man-VR/issues/57) |
-| Right foot | Lift the injured right foot and balance on the left leg. | Hold for 3 s, then lower the right foot and regain stance if alive. | [#58](https://github.com/matheusluciano99/Bow-Man-VR/issues/58) |
+| Left foot | Lift the injured left foot and balance on the right leg. | Hold for 2 s, then lower the left foot and regain stance if alive. | [#57](https://github.com/matheusluciano99/Bow-Man-VR/issues/57) |
+| Right foot | Lift the injured right foot and balance on the left leg. | Hold for 2 s, then lower the right foot and regain stance if alive. | [#58](https://github.com/matheusluciano99/Bow-Man-VR/issues/58) |
 
 ## Region boundaries
 
@@ -61,11 +61,9 @@ sword combat is not an agreed game mode.
 
 ## Recovery, lethality and turn flow
 
-For a surviving hit, the three-second timer starts after reaching the injured
-resting pose: on the ground, kneeling, seated, supporting an arm/hand/shoulder,
-or balancing on the healthy foot. The initial reaction and recovery animation
-are additional time. The three-second hold is an agreed prototype value;
-validate the complete sequence on the rigged models and target headset.
+For a surviving hit, the timer starts at the injured pose. Most regions hold for
+three seconds. A foot reaction has a 1.1-second recoil, two seconds of balance
+and a 0.8-second return to stance. Both foot motions passed Quest 2 review.
 
 1. A releases one arrow on their turn. Lock further shooting while that shot resolves.
 2. Apply its one resolved hit or miss. A head/neck hit kills immediately regardless
@@ -74,7 +72,7 @@ validate the complete sequence on the rigged models and target headset.
    turn or shot by the dead archer. Death animation can finish visually without
    delaying the result; there is no three-second surviving hold or get-up.
 4. If B survives a hit, play B's region/side reaction, hold the injured pose for
-   three seconds, then complete the recovery animation. Give B the next turn only
+   three seconds or two for a foot, then complete recovery. Give B the next turn only
    after recovery finishes. Standing reactions recover from their supported pose;
    they do not invent an extra fall/get-up.
 5. A miss resolves at the arrow's first scenery impact or flight expiry, then

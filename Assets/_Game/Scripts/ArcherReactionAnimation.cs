@@ -1,12 +1,17 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace BowMan
 {
     public sealed class ArcherReactionAnimation : MonoBehaviour
     {
+        private const float FootRecoveryDuration = 0.8f;
+
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
+        [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
+        [SerializeField] private AnimationClip[] deathFinishers = new AnimationClip[15];
         private DuelTurnFlow flow;
         private ArcherHealth health;
         private int archerIndex;
@@ -16,6 +21,11 @@ namespace BowMan
         private float elapsed;
         private bool recovering;
         private bool fatalPlayback;
+        private bool injured;
+        private bool finishingDeath;
+        private Transform[] deathBlendBones;
+        private Vector3[] deathBlendPositions;
+        private Quaternion[] deathBlendRotations;
 
         // Requires an exact entry and, for surviving regions, an authored recovery.
         public bool Supports(BodyRegion value) => Entry(value) != null &&
@@ -27,12 +37,27 @@ namespace BowMan
         // Returns the matching recovery from that region's injured resting pose.
         public AnimationClip Recovery(BodyRegion value) => recoveries[(int)value];
 
-        // Stores an authored entry and its optional, separately prepared recovery.
-        public void SetSequence(BodyRegion value, AnimationClip entry, AnimationClip recovery)
+        // Returns optional supported-balance motion sampled during the flow's injured hold.
+        public AnimationClip Hold(BodyRegion value) => holds[(int)value];
+
+        // Returns the collapse authored from this region's injured pose, separate from its surviving recovery.
+        public AnimationClip DeathFinisher(BodyRegion value) => deathFinishers[(int)value];
+
+        // Stores a body-region collapse without replacing the independent head and neck fatal entries.
+        public void SetDeathFinisher(BodyRegion value, AnimationClip clip)
+        {
+            if (clip == null || value is BodyRegion.Head or BodyRegion.Neck)
+                throw new ArgumentException("A collapse clip for a surviving-hit region is required.");
+            deathFinishers[(int)value] = clip;
+        }
+
+        // Stores an authored entry, optional recovery and optional supported-balance hold.
+        public void SetSequence(BodyRegion value, AnimationClip entry, AnimationClip recovery, AnimationClip hold = null)
         {
             if (entry == null) throw new ArgumentException("An injury entry is required.");
             entries[(int)value] = entry;
             recoveries[(int)value] = recovery;
+            holds[(int)value] = hold;
         }
 
         // Connects this character's authored sequences to the existing shot-token and recovery contract.
@@ -53,11 +78,12 @@ namespace BowMan
         private void OnReaction(int target, BodyImpact hit, bool lethal, int shotId)
         {
             if (target != archerIndex || Entry(hit.Region) == null) return;
-            if (lethal && hit.Region != BodyRegion.Head && hit.Region != BodyRegion.Neck) return;
             region = hit.Region;
             token = shotId;
             recovering = false;
             fatalPlayback = lethal;
+            finishingDeath = false;
+            injured = true;
             elapsed = 0f;
             playing = Entry(region);
             playing.SampleAnimation(gameObject, 0f);
@@ -67,6 +93,8 @@ namespace BowMan
         private void OnRecovery(int target, int shotId)
         {
             if (target != archerIndex || shotId != token || !Supports(region) || health.IsDefeated) return;
+            var hold = Hold(region);
+            if (hold != null) hold.SampleAnimation(gameObject, hold.length);
             recovering = true;
             elapsed = 0f;
             playing = Recovery(region);
@@ -75,31 +103,98 @@ namespace BowMan
         // Advances the authored bones and reports completion only after sampling the final frame.
         private void LateUpdate()
         {
-            if (playing == null || health == null || (health.IsDefeated && !fatalPlayback)) return;
-            elapsed = Mathf.Min(elapsed + Time.deltaTime, playing.length);
+            if (health == null || (health.IsDefeated && !fatalPlayback)) return;
+            if (playing == null)
+            {
+                var hold = Hold(region);
+                if (injured && flow.Phase == DuelPhase.Holding && hold != null)
+                {
+                    var holdSpeed = hold.length / DuelTurnFlow.InjuredHoldDuration(region);
+                    elapsed = Mathf.Min(elapsed + Time.deltaTime * holdSpeed, hold.length);
+                    hold.SampleAnimation(gameObject, elapsed);
+                }
+                return;
+            }
+            var recoverySpeed = recovering && (region is BodyRegion.LeftFoot or BodyRegion.RightFoot)
+                ? playing.length / FootRecoveryDuration : 1f;
+            elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
+            if (finishingDeath && elapsed < 0.15f)
+            {
+                var blend = Mathf.SmoothStep(0f, 1f, elapsed / 0.15f);
+                for (var i = 0; i < deathBlendBones.Length; i++)
+                {
+                    deathBlendBones[i].localPosition = Vector3.Lerp(deathBlendPositions[i], deathBlendBones[i].localPosition, blend);
+                    deathBlendBones[i].localRotation = Quaternion.Slerp(deathBlendRotations[i], deathBlendBones[i].localRotation, blend);
+                }
+            }
             if (elapsed < playing.length) return;
             playing = null;
-            if (fatalPlayback) { fatalPlayback = false; return; }
-            if (recovering) flow.CompleteRecovery(token);
-            else flow.MarkInjuredPose(token);
+            if (fatalPlayback)
+            {
+                if (!finishingDeath && region is not BodyRegion.Head and not BodyRegion.Neck)
+                {
+                    BeginDeathFinisher();
+                    return;
+                }
+                fatalPlayback = false;
+                finishingDeath = false;
+                injured = false;
+                return;
+            }
+            if (recovering)
+            {
+                injured = false;
+                flow.CompleteRecovery(token);
+            }
+            else
+            {
+                elapsed = 0f;
+                flow.MarkInjuredPose(token);
+            }
         }
 
-        // Stops surviving recovery immediately when either defeat finishes the match.
+        // Starts the authored collapse from the actual current pose, including interrupted recovery.
+        private void BeginDeathFinisher()
+        {
+            var clip = DeathFinisher(region);
+            if (clip == null) throw new InvalidOperationException("Missing death collapse for " + region);
+            deathBlendBones = GetComponentsInChildren<SkinnedMeshRenderer>().SelectMany(s => s.bones)
+                .Where(t => t != null).Distinct().ToArray();
+            deathBlendPositions = deathBlendBones.Select(t => t.localPosition).ToArray();
+            deathBlendRotations = deathBlendBones.Select(t => t.localRotation).ToArray();
+            fatalPlayback = true;
+            finishingDeath = true;
+            recovering = false;
+            elapsed = 0f;
+            playing = clip;
+        }
+
+        // Interrupts get-up on defeat while allowing the defeated archer's final collapse to finish visually.
         private void OnFlowChanged()
         {
-            if (flow.Phase == DuelPhase.Finished && !fatalPlayback) playing = null;
+            if (flow.Phase != DuelPhase.Finished || fatalPlayback) return;
+            if (health.IsDefeated && injured) BeginDeathFinisher();
+            else playing = null;
         }
 
         // Removes the old match's listeners before reconnecting or destroying the character.
         private void Detach()
         {
-            if (flow == null) return;
-            flow.ReactionRequested -= OnReaction;
-            flow.RecoveryRequested -= OnRecovery;
-            flow.Changed -= OnFlowChanged;
+            if (flow != null)
+            {
+                flow.ReactionRequested -= OnReaction;
+                flow.RecoveryRequested -= OnRecovery;
+                flow.Changed -= OnFlowChanged;
+            }
+            flow = null;
             playing = null;
             fatalPlayback = false;
+            finishingDeath = false;
+            injured = false;
+            deathBlendBones = null;
+            deathBlendPositions = null;
+            deathBlendRotations = null;
         }
 
         // Prevents late match callbacks from sampling a destroyed character.
