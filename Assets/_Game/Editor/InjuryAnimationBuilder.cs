@@ -15,7 +15,11 @@ public static class InjuryAnimationBuilder
 
     // Rebuilds the abdomen-specific wound brace, both-knee descent and standing recovery.
     [MenuItem("Bow Man VR/Injuries/Rebuild Abdomen")]
-    public static void RebuildAbdomen() => Rebuild(BodyRegion.Abdomen);
+    public static void RebuildAbdomen()
+    {
+        Rebuild(BodyRegion.Abdomen);
+        MotionInjuryBuilder.RebuildDeathFinishers(BodyRegion.Abdomen);
+    }
 
     // Rebuilds a left-knee injury with left-palm ground support and a standing recovery.
     [MenuItem("Bow Man VR/Injuries/Rebuild Left Leg")]
@@ -292,8 +296,13 @@ public static class InjuryAnimationBuilder
             var kneeZ = thigh.z + Mathf.Sqrt(Mathf.Max(0f, upperLengths[i] * upperLengths[i] -
                 Mathf.Pow(thigh.y - kneeY, 2f) - Mathf.Pow(thigh.x - kneeX, 2f)));
             kneeTargets[i] = new Vector3(kneeX, kneeY, kneeZ);
-            targets[i] = new Vector3(kneeX, root.transform.position.y + 0.22f,
-                kneeZ - Mathf.Sqrt(Mathf.Max(0f, lowerLengths[i] * lowerLengths[i] - Mathf.Pow(0.22f - kneeHeights[i], 2f))));
+            // The ankles sit outside the pelvis while both knees retain their fitted contact.
+            const float ankleHeight = 0.22f;
+            var ankleRise = ankleHeight - kneeHeights[i];
+            var ankleBack = Mathf.Sqrt(Mathf.Max(0f, lowerLengths[i] * lowerLengths[i] - ankleRise * ankleRise));
+            var ankleOffset = Quaternion.AngleAxis(i == 0 ? 24f : -24f, root.transform.up)
+                * new Vector3(0f, ankleRise, -ankleBack);
+            targets[i] = kneeTargets[i] + ankleOffset;
         }
         hips.position = Vector3.Lerp(hipStart, finalHip, progress);
         hips.rotation = Quaternion.AngleAxis(20f * progress, root.transform.right) * hips.rotation;

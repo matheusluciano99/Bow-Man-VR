@@ -908,6 +908,36 @@ public class InjuryAnimationTests
         }
     }
 
+    // Samples the kneeling entry, recovery and fatal continuation for boot penetration through the pelvis.
+    [Test]
+    public void AbdomenClipsKeepBothBootsClearOfThePelvis()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var hitVolumes = root.GetComponentsInChildren<BodyHitRegion>();
+            var pelvis = hitVolumes.Single(r => r.Region == BodyRegion.Pelvis).GetComponent<Collider>();
+            var boots = hitVolumes.Where(r => r.Region is BodyRegion.LeftFoot or BodyRegion.RightFoot)
+                .Select(r => r.GetComponent<Collider>()).ToArray();
+            Assert.That(boots, Has.Length.EqualTo(2), name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            foreach (var clip in new[] { actor.Entry(BodyRegion.Abdomen), actor.Recovery(BodyRegion.Abdomen),
+                actor.DeathFinisher(BodyRegion.Abdomen) })
+            for (var sample = 0; sample <= 60; sample++)
+            {
+                var time = clip.length * sample / 60f;
+                clip.SampleAnimation(root, time);
+                foreach (var boot in boots)
+                {
+                    if (Physics.ComputePenetration(boot, boot.transform.position, boot.transform.rotation,
+                        pelvis, pelvis.transform.position, pelvis.transform.rotation, out _, out var depth))
+                        Assert.That(depth, Is.LessThanOrEqualTo(0.002f), $"{name} {clip.name} {boot.name} at {time:F3}s");
+                }
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
     // Fits both hands to actual left/right abdominal impacts and keeps the turn locked until standing.
     [UnityTest]
     public IEnumerator AbdomenReachFollowsTheActualWoundThroughItsFullHold()

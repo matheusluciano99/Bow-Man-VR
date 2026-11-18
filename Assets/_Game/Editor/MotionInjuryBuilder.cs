@@ -188,7 +188,7 @@ public static class MotionInjuryBuilder
     public static void RebuildDeathFinishers() => RebuildDeathFinishers(null);
 
     // Replaces only the requested region's collapse, or all body collapses for a complete rebuild.
-    private static void RebuildDeathFinishers(BodyRegion? onlyRegion)
+    internal static void RebuildDeathFinishers(BodyRegion? onlyRegion)
     {
         var prone = ImportMotion("Standing Death Backward 01");
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })

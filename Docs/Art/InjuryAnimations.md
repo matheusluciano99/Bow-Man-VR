@@ -67,6 +67,8 @@ Use Bow Man VR > Injuries > Rebuild Right Leg for the independent right-knee seq
 
 Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. It fits each visible kneepad separately, folds the torso and braces the front abdominal surface. Runtime fitting moves both hands to the actual bone-local wound/arrow approach, retaining that pose through the three-second hold and releasing it during recovery. The pelvis keeps a separate seated-fall reaction.
 
+The kneeling pose angles the boots outward to clear the pelvis while both knees keep their ground contacts. The rebuild also updates the fatal continuation from the new kneeling pose. PlayMode checks measure boot and pelvis clearance throughout entry, recovery and collapse on both archers.
+
 Use Bow Man VR > Injuries > Rebuild Pelvis for the pelvis-specific supported seat and recovery. The authoring tool fits the visible seat surface, places both palms behind the hips, and uses measured leg chains for the raised-knee position. It remains distinct from the abdomen’s both-knee wound brace. The three-second hold starts at the seated pose; only living archers complete the return before a turn handoff.
 
 Seat support uses the visible footprint beneath the hips, including clothing and worn equipment. Support palms keep a consistent anatomical orientation through descent and recovery; they do not choose a new palm side as the elbow bends.
