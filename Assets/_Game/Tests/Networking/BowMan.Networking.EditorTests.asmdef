@@ -1,0 +1,7 @@
+{
+  "name": "BowMan.Networking.EditorTests",
+  "references": ["BowMan.Networking"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}
