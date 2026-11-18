@@ -841,11 +841,12 @@ public class InjuryAnimationTests
 
     // Tracks two actual off-centre wounds instead of reaching toward one generic neck socket.
     [UnityTest]
-    public IEnumerator FatalNeckReachFollowsTheActualImpactOnEitherSide()
+    public IEnumerator FatalNeckReachFollowsTheActualImpactOnEitherSide(
+        [Values("EnglishArcher", "ErikaArcher")] string character)
     {
         foreach (var offset in new[] { -0.035f, 0.035f })
         {
-            var flow = BodyShot(out var target, out var arrow, BodyRegion.Neck);
+            var flow = BodyShot(out var target, out var arrow, BodyRegion.Neck, character);
             arrow.transform.position += Vector3.right * offset;
             var results = 0;
             var recoveries = 0;
@@ -854,13 +855,17 @@ public class InjuryAnimationTests
             yield return new WaitForSeconds(0.65f);
             Assert.That(target.CurrentHealth, Is.Zero);
             Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+            Assert.That(arrow.transform.parent, Is.Not.Null, character + " wound " + offset);
             Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Neck));
             var a = target.GetComponentInChildren<Animator>();
             var neck = a.GetBoneTransform(HumanBodyBones.Neck);
             var wrist = a.GetBoneTransform(HumanBodyBones.RightHand);
             var expected = arrow.transform.position - neck.up * 0.045f - arrow.transform.forward * 0.025f;
             Assert.That(Vector3.Distance(wrist.position, expected), Is.LessThan(0.008f), "Actual wound side " + offset);
+            var anchored = arrow.transform.localPosition;
             yield return new WaitForSeconds(2f);
+            Assert.That(arrow.transform.localPosition, Is.EqualTo(anchored));
+            Assert.That(flow.CanShoot(0), Is.False);
             Assert.That(a.GetBoneTransform(HumanBodyBones.Head).position.y - target.transform.position.y, Is.LessThan(0.35f));
             Assert.That(flow.CanShoot(1), Is.False);
             Assert.That(results, Is.EqualTo(1));

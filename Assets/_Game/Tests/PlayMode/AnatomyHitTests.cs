@@ -190,7 +190,8 @@ public class AnatomyHitTests
             var root = Character(name, name == "ErikaArcher" ? 37f : 0f);
             var anatomy = root.GetComponent<ArcherAnatomy>();
             var organs = root.GetComponentsInChildren<AnatomyOrgan>().GroupBy(o => (o.Kind, o.Side)).Select(g => g.First()).ToArray();
-            OrganHit moving = default;
+            OrganHit heart = default;
+            OrganHit brain = default;
             foreach (var organ in organs)
             {
                 yield return Shoot(root, AimPoint(organ));
@@ -206,17 +207,25 @@ public class AnatomyHitTests
                     Assert.That(along, Is.InRange(-0.001f, report.Entry.PenetrationDepth + 0.001f));
                     Assert.That(Vector3.Distance(hit.Point, report.Entry.Point + report.Entry.Direction * along), Is.LessThan(0.001f));
                 }
-                if (organ.Kind == OrganKind.Heart) moving = report.Organs.First(h => h.Organ.Kind == OrganKind.Heart);
+                if (organ.Kind == OrganKind.Heart) heart = report.Organs.First(h => h.Organ.Kind == OrganKind.Heart);
+                if (organ.Kind == OrganKind.Brain) brain = report.Organs.First(h => h.Organ.Kind == OrganKind.Brain);
                 var watch = System.Diagnostics.Stopwatch.StartNew();
                 anatomy.Trace(report.Entry);
                 profile.Add(name + " " + organ.DisplayName + " " + watch.Elapsed.TotalMilliseconds.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + " ms");
             }
-            var local = moving.LocalPoint;
-            var standing = moving.Point;
             var reaction = root.GetComponent<ArcherReactionAnimation>();
-            reaction.Entry(BodyRegion.Chest).SampleAnimation(root, reaction.Entry(BodyRegion.Chest).length);
-            Assert.That(moving.LocalPoint, Is.EqualTo(local));
-            Assert.That(Vector3.Distance(moving.Point, standing), Is.GreaterThan(0.2f));
+            var contacts = new[]
+            {
+                (Region: BodyRegion.Chest, Contact: heart, Local: heart.LocalPoint, Standing: heart.Point),
+                (Region: BodyRegion.Head, Contact: brain, Local: brain.LocalPoint, Standing: brain.Point)
+            };
+            foreach (var sample in contacts)
+            {
+                var clip = reaction.Entry(sample.Region);
+                clip.SampleAnimation(root, clip.length);
+                Assert.That(sample.Contact.LocalPoint, Is.EqualTo(sample.Local));
+                Assert.That(Vector3.Distance(sample.Contact.Point, sample.Standing), Is.GreaterThan(0.2f));
+            }
             Object.Destroy(root);
             yield return null;
         }

@@ -143,9 +143,17 @@ Erika from Adobe Mixamo’s Dying Backwards motion. The source FBX is kept with
 the third-party motion assets. Use **Bow Man VR > Injuries > Rebuild Head
 Collapse** to regenerate the clips. Open the existing desktop DuelTurnTest,
 select Head and fire. A headshot resolves defeat at impact while the defeated
-archer completes its collapse. The runtime retains the instant-kill rule for
-neck hits and their separate animation task.
+archer completes its collapse.
 
 The clips are baked at 60 Hz. Floor fitting uses the visible skin and a
 4 mm allowance between the grounded start and end poses. The English rig
 keeps its separate equipment and omits the loose baked display arrow.
+
+## Fatal neck reaction
+
+English Archer and Erika have separate 2.4-second neck clips based on Mixamo's
+Dying Backwards motion. The archer reaches toward the actual wound before the
+knees buckle. The match ends on impact and the archer stays down once the
+collapse completes. Use **Bow Man VR > Injuries > Rebuild Neck Collapse** to
+regenerate the clips, then choose **Neck** in **DuelTurnTest**. First-person
+headset comfort is tracked in #35.
