@@ -115,7 +115,7 @@ namespace BowMan
                 $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}\n" +
                 (Flow.Phase == DuelPhase.Finished ? "A / R: restart   Menu / Esc: modes" :
                 desktopMode ? "Arrow keys: aim   Hold/release Space: shoot   Tab: VR" :
-                "Grip: hold bow   Trigger: draw/release   B: switch bow hand");
+                "Bow stays in hand   Trigger: draw/release   B: switch bow hand");
         }
 
         // Releases input actions and listeners when this duel scene closes.

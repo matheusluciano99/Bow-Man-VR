@@ -228,22 +228,24 @@ Use GitHub's Assignees field to record task responsibility.
   provisional maximum draw of 0.70 m (70 cm).
 - Use 70 cm as a temporary adult-arm-length placeholder; calibrate comfortable
   draw distance when the classroom headset is available.
-- The test implementation uses bow-hand grip to equip/hold and draw-hand trigger
-  to grab/release the nearby string. These mappings and grip alignment are
-  provisional until tested on Quest 2. Both bow hands are supported; left is
-  the initial default. The test panel's **Bow hand** button switches sides,
-  cancelling a pending tracked draw. The Inspector also exposes the initial hand.
-- Releasing the bow hand, losing either controller's tracking, pausing or losing
-  application focus cancels the pending shot without firing.
+- The bow stays attached to the selected tracked hand without holding grip;
+  the opposite trigger grabs/releases the nearby string. Its local +Y aligns
+  with controller grip +Z using a +90-degree local X rotation. Both bow hands
+  are supported; left is the initial default. The test panel's **Bow hand**
+  button switches sides and cancels a pending tracked draw.
+- Losing either controller's tracking, pausing, losing application focus or a
+  shooting lock cancels the pending shot without firing. The bow remains
+  visually attached during a shooting lock. `Bow.SetShotAllowed` gates both
+  input paths without changing tracked head/controller poses.
 
 ## Running the local VR duel
 
 - Open `Assets/_Game/Scenes/LocalDuel.unity` after starting Quest Link. The player
   faces Erika across the existing 20-metre arena and sees tracked controllers
   plus their bow; the hidden local body still receives anatomical impacts.
-- Grip holds the bow; the opposite trigger draws/releases. Right-controller B
-  switches bow hands during the player's aiming turn. Right-controller A restarts
-  after victory/defeat. Hand preference survives restart.
+- The bow stays in the tracked bow hand; the opposite trigger draws/releases.
+  Right-controller B switches bow hands during the player's aiming turn.
+  Right-controller A restarts after victory/defeat. Hand preference survives restart.
 - The headset-visible text shows both health values, current flow, draw strength,
   handedness and restart controls. Flying arrows, opponent turns, injuries and
   defeat lock nocking/release through the shared bow gate.
@@ -261,8 +263,8 @@ Use GitHub's Assignees field to record task responsibility.
 ## Running the bow interaction test
 
 - Open `Assets/_Game/Scenes/BowInteractionTest.unity` and enter Play. For VR,
-  start Quest Link first, as with the tracking scene. Hold the bow-hand grip to
-  equip the bow; bring the other controller within 12 cm of the resting string,
+  start Quest Link first, as with the tracking scene. The bow remains in the
+  selected hand; bring the other controller within 12 cm of the resting string,
   press and hold its trigger, pull backward, then release the trigger to shoot.
 - Aim with the bow's orientation and the line between the two hands. Backward
   draw controls speed up to a provisional 25 m/s at 70 cm. Forward/sideways-only

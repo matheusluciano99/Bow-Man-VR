@@ -14,7 +14,7 @@ blood feedback have their own tasks and must be verified in a cut containing the
 
 | Action | Quest 2 | Desktop check |
 | --- | --- | --- |
-| Hold bow | Grip on bow hand | Tab enables desktop input |
+| Hold bow | Stays attached to the tracked bow hand | Tab enables desktop input |
 | Grab/draw/release string | Opposite trigger near string; hold, pull, release | Hold/release Space |
 | Aim | Both tracked hand positions | Arrow keys |
 | Switch bow hand | Right B during your aiming turn | H during your aiming turn |
@@ -29,7 +29,7 @@ also available. Bow hand preference survives match restart.
 
 - [ ] Head motion and both controller markers track correctly; floor and body scale match the real room.
 - [ ] Grip alignment, nearby-string grab, short/half/full draw and release feel natural with each bow hand.
-- [ ] Releasing grip, losing tracking or losing app focus cancels without an accidental shot.
+- [ ] Losing tracking or losing app focus cancels without an accidental shot.
 - [ ] The full opposing archer is textured and correctly scaled; the local view shows controllers/bow only.
 - [ ] Both health values, turn state and draw feedback are readable in stereo.
 - [ ] One released arrow locks shooting until its outcome and any living recovery finish; misses pass the turn.
