@@ -50,7 +50,8 @@ public static class MotionInjuryBuilder
                             bones[i].localRotation = Quaternion.Slerp(rotations[i], bones[i].localRotation, blend);
                         }
                         animator.GetBoneTransform(HumanBodyBones.Head).localRotation *= Quaternion.Euler(12f * blend, 0f, 35f * blend);
-                        Ground(root, hips, mesh);
+                        var clearance = time > 0f && time < duration ? 0.004f : 0f;
+                        Ground(root, hips, mesh, clearance);
                     });
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
@@ -110,8 +111,8 @@ public static class MotionInjuryBuilder
         hips.SetPositionAndRotation(hipPosition, hipRotation);
     }
 
-    // Raises only penetrating samples against the visible skin, including the model's attached equipment.
-    private static void Ground(GameObject root, Transform hips, Mesh mesh)
+    // Holds a small clearance during interpolation and grounds both ends against the visible skin.
+    private static void Ground(GameObject root, Transform hips, Mesh mesh, float clearance)
     {
         var floor = float.PositiveInfinity;
         foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -120,18 +121,20 @@ public static class MotionInjuryBuilder
             foreach (var vertex in mesh.vertices) floor = Mathf.Min(floor, skin.transform.TransformPoint(vertex).y);
             mesh.Clear();
         }
-        if (floor < root.transform.position.y) hips.position += Vector3.up * (root.transform.position.y - floor);
+        var groundedHeight = root.transform.position.y + clearance;
+        if (floor < groundedHeight) hips.position += Vector3.up * (groundedHeight - floor);
     }
 
-    // Bakes complete local position/quaternion groups at thirty samples per second on the actual target hierarchy.
+    // Bakes complete local position/quaternion groups at sixty samples per second on the actual target hierarchy.
     private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose)
     {
-        var clip = new AnimationClip { frameRate = 30f };
+        const float sampleRate = 60f;
+        var clip = new AnimationClip { frameRate = sampleRate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
-        var frames = Mathf.RoundToInt(duration * 30f);
+        var frames = Mathf.RoundToInt(duration * sampleRate);
         for (var frame = 0; frame <= frames; frame++)
         {
-            var time = frame / 30f;
+            var time = frame / sampleRate;
             pose(time);
             for (var i = 0; i < bones.Length; i++)
             {
@@ -145,7 +148,15 @@ public static class MotionInjuryBuilder
             "localRotation.x", "localRotation.y", "localRotation.z", "localRotation.w" };
         for (var i = 0; i < bones.Length; i++)
         for (var c = 0; c < 7; c++)
-            clip.SetCurve(AnimationUtility.CalculateTransformPath(bones[i], root.transform), typeof(Transform), properties[c], curves[i][c]);
+        {
+            var curve = curves[i][c];
+            for (var key = 0; key < curve.length; key++)
+            {
+                AnimationUtility.SetKeyLeftTangentMode(curve, key, AnimationUtility.TangentMode.Linear);
+                AnimationUtility.SetKeyRightTangentMode(curve, key, AnimationUtility.TangentMode.Linear);
+            }
+            clip.SetCurve(AnimationUtility.CalculateTransformPath(bones[i], root.transform), typeof(Transform), properties[c], curve);
+        }
         clip.EnsureQuaternionContinuity();
         return clip;
     }
