@@ -2548,7 +2548,7 @@ MonoBehaviour:
   entries:
   - {fileID: 7400000, guid: e74b07ff8bf52df41ab554d7c24a48f4, type: 2}
   - {fileID: 7400000, guid: f0dccee8c1be0b647b383faf292191f5, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: a219964728a566946bb6967a1140f422, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -2564,7 +2564,7 @@ MonoBehaviour:
   recoveries:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: a877b8e0bd2146a40ab2b78191b890ff, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -2596,7 +2596,7 @@ MonoBehaviour:
   deathFinishers:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: dbf90732ee4d9bf40a9dc003a2e7820c, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

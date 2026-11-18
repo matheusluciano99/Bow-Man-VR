@@ -248,8 +248,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
-- Chest hit: fall backward and land with the back on the ground, remain down
-  briefly, then get up if the hit was not lethal.
+- Chest hit: fall backward and land with the back on the ground. After the
+  hold, return to relaxed standing with both arms lowered if alive.
 - Left-leg hit: kneel on the injured left leg, place the left hand on the ground
   for support, then recover and get up if still alive.
 - Right-leg hit: kneel on the injured right leg, place the right hand on the ground
@@ -282,8 +282,8 @@ Use GitHub's Assignees field to record task responsibility.
   viewpoint on Quest 2 before claiming comfort acceptance.
 - The region inventory, reaction table and review cases are in
   [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
-- For surviving hits, hold the injured resting pose for three seconds, or two
-  seconds for a foot hit. The foot recovery lasts 0.8 seconds after the hold.
+- For surviving hits, hold for 0.75 seconds after a chest fall, two seconds
+  after a foot hit, and three seconds for the other regions. The foot recovery lasts 0.8 seconds after the hold.
   Keep the original foot recoil. Block shooting until recovery
   finishes, then give the injured archer the next turn. A lethal hit ends the
   match immediately. A miss passes the turn after scenery impact or flight expiry.
