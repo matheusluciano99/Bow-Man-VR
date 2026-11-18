@@ -98,12 +98,54 @@ Erika from Adobe Mixamo’s Dying Backwards motion. The source FBX is kept with
 the third-party motion assets. Use **Bow Man VR > Injuries > Rebuild Head
 Collapse** to regenerate the clips. Open the existing desktop DuelTurnTest,
 select Head and fire. A headshot resolves defeat at impact while the defeated
-archer completes its collapse. The runtime retains the instant-kill rule for
-neck hits and their separate animation task.
+archer completes its collapse.
 
 The clips are baked at 60 Hz. Floor fitting uses the visible skin and a
 4 mm allowance between the grounded start and end poses. The English rig
 keeps its separate equipment and omits the loose baked display arrow.
+
+## Foot reactions
+
+Foot reactions use the free generated **MotionSmith pain right foot, take 1**
+performance across the body, anatomically mirrored for the left foot on each
+archer. This replaces the procedural adaptation of chest-fall torso deltas.
+The unchanged original is `Assets/ThirdParty/CosindraAnimations/Motions/MotionSmith_pain_right_foot_take1.fbx`
+(1,255,020 bytes; SHA-256 `e49bfb9c5c4ac2a8bcc5945c07d19a881f91718d98ff390e198ab9d918b95e7d`).
+A prepared neutral reference preserves every source frame; final native clips
+fit boot contact and standing transitions at 60 Hz. This is AI-generated catalog
+motion, not human motion capture. See [asset provenance](../../Assets/ThirdParty/CosindraAnimations/Attribution.md)
+and [rebuild instructions](../../SourceAssets/CosindraAnimations/README.md).
+Both replacement foot reactions and their timing were accepted in Quest 2.
+
+Use **Bow Man VR > Injuries > Rebuild Left Foot** or **Rebuild Right Foot**
+to regenerate the existing clip assets for both skeletons. Open
+`Assets/_Game/Scenes/DuelTurnTest.unity` and select either foot to review the
+recoil, supported balance and standing recovery. A lethal foot hit ends the
+match at impact and plays the foot reaction before its fatal continuation.
+
+## Fatal neck reaction
+
+English Archer and Erika have separate 2.4-second neck clips based on Mixamo's
+Dying Backwards motion. The archer reaches toward the actual wound before the
+knees buckle. The match ends on impact and the archer stays down once the
+collapse completes. Use **Bow Man VR > Injuries > Rebuild Neck Collapse** to
+regenerate the clips, then choose **Neck** in **DuelTurnTest**. First-person
+headset comfort is tracked in #35.
+
+## Internal anatomical tissue
+
+Both active archer prefabs contain fitted BodyParts3D 4.3 tissue, without runtime
+renderers or extra collision targets. The 166 unchanged OBJ originals and full
+credit live under `Assets/ThirdParty/BodyParts3D/`; native fitted derivatives are
+under `Assets/_Game/Models/Anatomy/`. Sources, pinned SHA-256 values and rebuild
+steps are in [SourceAssets/BodyParts3D](../../SourceAssets/BodyParts3D/README.md).
+
+BodyParts3D, © The Database Center for Life Science licensed under CC Attribution
+4.0 International. The [current publisher README](https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/README_e.html)
+records the February 2025 license update; a copy is preserved with the imported
+assets, including the older redistribution's license context. Axes/units and
+per-rig fitting are documented modifications. These are game registration
+approximations, not subject-specific clinical anatomy.
 
 ## Chest reactions
 
@@ -113,8 +155,8 @@ The source is retargeted using the original Erika T-pose in metres; the prepared
 
 Chest recovery uses Mixamo **Getting Up**, the first catalog variant described as “Getting Up From Back”, downloaded on Erika Archer with the same export settings. Unchanged source: `Assets/ThirdParty/MixamoAnimations/Motions/Getting Up.fbx` (999,888 bytes; SHA-256 `2413541e9b26256399ab8793f33630d783462b04d205e4a29ebf73e4bd43a21a`). The same Mixamo game-use terms apply.
 
-The fall remains 2.7 seconds. A surviving archer stays down for three
-seconds and takes 3.6 seconds to get up at the current playback speed. The
+The fall lasts 2.7 seconds. A surviving archer stays down for 1.5 seconds,
+then gets up with arms lowering to relaxed standing over 3.6 seconds. The
 get-up bake guides the supporting limbs around the pelvis and head while
 keeping the original rig lengths and grounding the posed skin. A fatal
 chest hit ends the match at impact and plays its grounded collapse without

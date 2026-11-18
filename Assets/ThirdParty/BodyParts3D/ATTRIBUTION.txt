@@ -1,0 +1,16 @@
+BodyParts3D anatomical meshes
+BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.
+Publisher: https://lifesciencedb.jp/bp3d/
+Current publisher license (updated 2025-02-25): https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/README_e.html
+License: https://creativecommons.org/licenses/by/4.0/
+
+Version 4.3 source redistribution: https://github.com/olivercase/body_parts_3d_api
+Pinned source revision: fd527e6f4daf732fd814314d9257df5877b844bc
+Original OBJ filenames and geometry are preserved. Each download is checked against its pinned Git LFS SHA-256 and size; this project stores real files in regular Git, not LFS pointers.
+
+Older file/repository notices cite Attribution-ShareAlike 2.1 Japan. The saved current primary-publisher README records the 2025 database license update to Attribution 4.0 International. The redistribution's Python code is not included or executed.
+
+Project modifications: native tissue meshes convert axes/units, reverse reflected winding and fit hip/eye references plus interior body envelopes on English Archer and Erika Archer. Source surfaces are grouped by organ and attached to their animated bones. Source geometry is unchanged; fitted native derivatives are project-owned assets under Assets/_Game/Models/Anatomy/. This registration is a game prototype, not subject-specific anatomical reconstruction.
+
+Source inventory, original hashes, URLs, FMA concepts and rebuild input: SourceAssets/BodyParts3D/Sources.json
+Preparation: SourceAssets/BodyParts3D/PrepareAnatomy.py

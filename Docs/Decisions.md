@@ -125,8 +125,9 @@ the facing-archer bow duel; sword combat remains a conditional future idea.
 
 The full motions and implementation cards are in the
 [injury reaction table](InjuryReactions.md). Head and neck hits always kill.
-Surviving hits hold the injured pose for three seconds, then complete recovery
-before the injured archer receives the next turn. This keeps turn ownership
+After landing, the chest holds for 1.5 seconds. Foot hits hold for two
+seconds and other regions for three. The injured archer receives the next
+turn after recovery. This keeps turn ownership
 consistent with the visible recovery. Death ends the match immediately; misses
 resolve at scenery impact or flight expiry, with one outcome per shot.
 
@@ -208,10 +209,40 @@ cleanup removes any live wound with its character. Droplet size, quantity and
 the prototype two-second emission remain provisional visual settings for VR
 review, separate from final blood/stain art.
 
+## Foot motion and support
+
+Use the free generated MotionSmith right-foot performance on both Humanoid rigs.
+Mirror its anatomical rotation deltas for the left foot. Keep the healthy boot
+planted throughout the balance and land the injured boot before returning to
+stance. Fit both boots to the visible skin and retain measured limb lengths.
+
+Quest 2 review accepted both revised reactions. Keep the 1.1-second recoil,
+two-second balance and 0.8-second recovery. Shooting stays locked until standing
+recovery finishes. Moving first-person eye comfort remains tracked by #35.
+
+## D022 — Fitted tissue geometry and finite arrow penetration
+
+Use the free BodyParts3D 4.3 tissue atlas for both prepared archers, preserving
+unchanged original files, pinned digests and the publisher's current CC BY 4.0
+credit. Fit real separate tissue meshes against each rig's eyes, hips and
+interior body envelope. Brain depth uses the visible cranial skin rather than
+the face-inclusive hit volume. Keep native derivatives under `_Game/Models`.
+
+Trace from the actual body entry along the recorded direction to the embedded
+visual tip. The 25 cm penetration is a provisional gameplay depth, not a
+ballistics or clinical claim. Exact finite triangle/closed-tissue queries avoid
+inventing contacts from organ bounding boxes; cache immutable geometry and prune
+triangle batches. Bone-bound contacts follow subsequent motion. Anatomy never
+applies another health outcome. The finishing presentation listens to the
+confirmed lethal-shot gate, not the general per-arrow analysis event.
+
+Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
+bone/fracture rules and X-ray rendering remain separate work. Preserve source
+filenames, mesh GUIDs and native subasset identities when regenerating.
+
 ## Open questions and provisional values
 
-- Chest playback keeps the reviewed fall and the agreed three-second hold.
-  The get-up takes 3.6 seconds for the next pace review.
+- The 1.5-second chest hold and 3.6-second get-up remain provisional for visual review.
 
 - Additional archer variants and later visual refinements remain open. The current
   prototype uses English Archer and Erika; local full-body rendering is outside

@@ -6,10 +6,12 @@ namespace BowMan
 {
     public sealed class ArcherReactionAnimation : MonoBehaviour
     {
+        private const float FootRecoveryDuration = 0.8f;
         private const float ChestRecoveryDuration = 3.6f;
 
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
+        [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
         [SerializeField] private AnimationClip[] deathFinishers = new AnimationClip[15];
         private DuelTurnFlow flow;
         private ArcherHealth health;
@@ -25,6 +27,10 @@ namespace BowMan
         private Transform[] deathBlendBones;
         private Vector3[] deathBlendPositions;
         private Quaternion[] deathBlendRotations;
+        private Animator poseAnimator;
+        private Transform woundAnchor;
+        private Vector3 woundPoint;
+        private Vector3 woundOutward;
 
         // Requires an exact entry and, for surviving regions, an authored recovery.
         public bool Supports(BodyRegion value) => Entry(value) != null &&
@@ -35,6 +41,9 @@ namespace BowMan
 
         // Returns the matching recovery from that region's injured resting pose.
         public AnimationClip Recovery(BodyRegion value) => recoveries[(int)value];
+
+        // Returns optional supported-balance motion sampled during the flow's injured hold.
+        public AnimationClip Hold(BodyRegion value) => holds[(int)value];
 
         // Returns the collapse authored from this region's injured pose, separate from its surviving recovery.
         public AnimationClip DeathFinisher(BodyRegion value) => deathFinishers[(int)value];
@@ -47,12 +56,13 @@ namespace BowMan
             deathFinishers[(int)value] = clip;
         }
 
-        // Stores an authored entry and its optional recovery.
-        public void SetSequence(BodyRegion value, AnimationClip entry, AnimationClip recovery)
+        // Stores an authored entry, optional recovery and optional supported-balance hold.
+        public void SetSequence(BodyRegion value, AnimationClip entry, AnimationClip recovery, AnimationClip hold = null)
         {
             if (entry == null) throw new ArgumentException("An injury entry is required.");
             entries[(int)value] = entry;
             recoveries[(int)value] = recovery;
+            holds[(int)value] = hold;
         }
 
         // Connects this character's authored sequences to the existing shot-token and recovery contract.
@@ -73,8 +83,6 @@ namespace BowMan
         private void OnReaction(int target, BodyImpact hit, bool lethal, int shotId)
         {
             if (target != archerIndex || Entry(hit.Region) == null) return;
-            if (lethal && hit.Region is not BodyRegion.Head and not BodyRegion.Neck &&
-                DeathFinisher(hit.Region) == null) return;
             region = hit.Region;
             token = shotId;
             recovering = false;
@@ -83,6 +91,13 @@ namespace BowMan
             injured = true;
             elapsed = 0f;
             playing = Entry(region);
+            if (region == BodyRegion.Neck)
+            {
+                poseAnimator = GetComponentInChildren<Animator>();
+                woundAnchor = hit.Collider.transform;
+                woundPoint = woundAnchor.InverseTransformPoint(hit.Point);
+                woundOutward = woundAnchor.InverseTransformDirection(-hit.Direction);
+            }
             playing.SampleAnimation(gameObject, 0f);
         }
 
@@ -90,6 +105,8 @@ namespace BowMan
         private void OnRecovery(int target, int shotId)
         {
             if (target != archerIndex || shotId != token || !Supports(region) || health.IsDefeated) return;
+            var hold = Hold(region);
+            if (hold != null) hold.SampleAnimation(gameObject, hold.length);
             recovering = true;
             elapsed = 0f;
             playing = Recovery(region);
@@ -98,9 +115,24 @@ namespace BowMan
         // Advances the authored bones and reports completion only after sampling the final frame.
         private void LateUpdate()
         {
-            if (playing == null || health == null || (health.IsDefeated && !fatalPlayback)) return;
-            var recoverySpeed = recovering && region == BodyRegion.Chest
-                ? playing.length / ChestRecoveryDuration : 1f;
+            if (health == null || (health.IsDefeated && !fatalPlayback)) return;
+            if (playing == null)
+            {
+                var hold = Hold(region);
+                if (injured && flow.Phase == DuelPhase.Holding && hold != null)
+                {
+                    var holdSpeed = hold.length / DuelTurnFlow.InjuredHoldDuration(region);
+                    elapsed = Mathf.Min(elapsed + Time.deltaTime * holdSpeed, hold.length);
+                    hold.SampleAnimation(gameObject, elapsed);
+                }
+                return;
+            }
+            var recoverySpeed = recovering ? region switch
+            {
+                BodyRegion.Chest => playing.length / ChestRecoveryDuration,
+                BodyRegion.LeftFoot or BodyRegion.RightFoot => playing.length / FootRecoveryDuration,
+                _ => 1f
+            } : 1f;
             elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
             if (finishingDeath && elapsed < 0.15f)
@@ -112,6 +144,9 @@ namespace BowMan
                     deathBlendBones[i].localRotation = Quaternion.Slerp(deathBlendRotations[i], deathBlendBones[i].localRotation, blend);
                 }
             }
+            if (fatalPlayback && region == BodyRegion.Neck && woundAnchor != null)
+                ArcherLimbIK.ReachNeck(poseAnimator, woundAnchor.TransformPoint(woundPoint),
+                    woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
             if (elapsed < playing.length) return;
             playing = null;
             if (fatalPlayback)
@@ -142,6 +177,7 @@ namespace BowMan
         private void BeginDeathFinisher()
         {
             var clip = DeathFinisher(region);
+            if (clip == null) throw new InvalidOperationException("Missing death collapse for " + region);
             deathBlendBones = GetComponentsInChildren<SkinnedMeshRenderer>().SelectMany(s => s.bones)
                 .Where(t => t != null).Distinct().ToArray();
             deathBlendPositions = deathBlendBones.Select(t => t.localPosition).ToArray();
@@ -157,7 +193,7 @@ namespace BowMan
         private void OnFlowChanged()
         {
             if (flow.Phase != DuelPhase.Finished || fatalPlayback) return;
-            if (health.IsDefeated && injured && DeathFinisher(region) != null) BeginDeathFinisher();
+            if (health.IsDefeated && injured) BeginDeathFinisher();
             else playing = null;
         }
 

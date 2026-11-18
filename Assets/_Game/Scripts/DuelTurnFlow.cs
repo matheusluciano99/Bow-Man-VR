@@ -21,6 +21,7 @@ namespace BowMan
         public event Action<int, BodyImpact, bool, int> ReactionRequested;
         public event Action<int, int> RecoveryRequested;
         public event Action<int> MatchFinished;
+        public event Action<int, AnatomicalImpact> FatalityRequested;
 
         // Starts a duel with two distinct living archers and invalidates callbacks from any earlier match.
         public void Initialize(ArcherHealth first, ArcherHealth second)
@@ -57,11 +58,18 @@ namespace BowMan
             return true;
         }
 
-        // Starts the agreed hold only when the current reaction has actually reached its injured resting pose.
+        // Sets the hold from the end of the region's entry to the start of its recovery.
+        internal static float InjuredHoldDuration(BodyRegion region) => region switch
+        {
+            BodyRegion.Chest => 1.5f,
+            BodyRegion.LeftFoot or BodyRegion.RightFoot => 2f,
+            _ => 3f
+        };
+
+        // Starts the hold only when the current reaction has reached its injured resting pose.
         public void MarkInjuredPose(int shotId)
         {
             if (shotId != ShotId || Phase != DuelPhase.Reacting) return;
-            holdRemaining = 3f;
             SetPhase(DuelPhase.Holding);
         }
 
@@ -72,7 +80,7 @@ namespace BowMan
             NextTurn();
         }
 
-        // Requests recovery after three seconds in the supported pose, excluding entry and get-up time.
+        // Requests recovery after the region’s full hold, excluding entry and get-up time.
         private void Update()
         {
             if (Phase != DuelPhase.Holding) return;
@@ -91,9 +99,13 @@ namespace BowMan
             if (target != archers[targetIndex]) { OnExpired(); return; }
             ClearArrow();
             var token = ShotId;
+            holdRemaining = InjuredHoldDuration(impact.Region);
             SetPhase(DuelPhase.Reacting);
             target.TakeDamage(impact.Region is BodyRegion.Head or BodyRegion.Neck ? int.MaxValue : bodyDamage);
-            if (token == ShotId) ReactionRequested?.Invoke(targetIndex, impact, target.IsDefeated, token);
+            if (token != ShotId) return;
+            if (target.IsDefeated && target.TryGetComponent<ArcherAnatomy>(out var anatomy))
+                FatalityRequested?.Invoke(targetIndex, anatomy.Trace(impact));
+            ReactionRequested?.Invoke(targetIndex, impact, target.IsDefeated, token);
         }
 
         // Resolves the first scenery contact as a miss without applying body damage.

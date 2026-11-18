@@ -138,13 +138,14 @@ Use GitHub's Assignees field to record task responsibility.
   button to aim at that volume. The panel reports the actual region, anatomical
   side, impact point and direction. The default shot targets Erika's chest;
   no headset is required for this test.
-- `Assets/_Game/Prefabs/TestArrow.prefab` uses its root as the arrow tip and local +Z
+- `Assets/_Game/Prefabs/TestArrow.prefab` uses its root as the flying arrow tip and local +Z
   as forward. Instantiate it and call `ArrowFlight.Launch(velocity, owner)`;
   subscribe to `Hit` before launching to receive the first solid impact.
   Pass the firing archer's root to ignore its colliders. Trigger colliders are
   ignored. Flight uses gravity and a swept tip ray each fixed step. The arrow
-  stops at impact. Body arrows retain their world pose and become children of
-  the struck volume, following its animated bone until the character is removed.
+  stops at impact. Embedded roots anchor the entry on the struck volume while
+  the visible tip penetrates along the recorded finite path (provisional 25 cm).
+  Both follow the animated bone until the character is removed.
 - `ArrowFlight.BodyHit` reports one anatomical `BodyImpact` before the existing
   generic `Hit` event. Use only one event to apply a shot outcome. Details,
   authoring instructions and validation are in [Docs/BodyHits.md](Docs/BodyHits.md).
@@ -224,11 +225,19 @@ Use GitHub's Assignees field to record task responsibility.
   knockdown and recovery behavior.
 - Show where the arrow hit the body and the internal damage it caused, including
   organs struck and bones broken when applicable.
+- Present internal injury only after a confirmed fatal arrow hit, as a brief
+  X-ray finishing sequence inside the defeated archer. Surviving hits must not
+  trigger this view; their normal blood and regional reactions still apply.
+  Highlight the actual arrow path and affected anatomy; duration and rendering
+  treatment remain provisional until VR review.
 - The shared arrow emits blood at the actual wound and follows its hit volume.
   Spilled droplets move in world space. See [wound blood](Docs/BloodEffects.md)
   for rebuild controls and provisional visual settings.
 - Sniper Elite is the reference for anatomical hit visualization and damage
-  feedback. These are requested features, not implemented systems.
+  feedback. Organ analysis uses fitted BodyParts3D tissue and the actual finite
+  arrow path; see [Docs/Anatomy.md](Docs/Anatomy.md). Bone analysis and X-ray
+  rendering retain their separate tasks. The duel publishes `FatalityRequested`
+  only for its lethal arrow, after health confirms death.
 
 ## Body-specific injury sequences
 
@@ -239,8 +248,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
-- Chest hit: fall backward and land with the back on the ground, remain down
-  briefly, then get up if the hit was not lethal.
+- Chest hit: fall backward and land with the back on the ground. After the
+  hold, return to relaxed standing with both arms lowered if alive.
 - Left-leg hit: kneel on the injured left leg, place the left hand on the ground
   for support, then recover and get up if still alive.
 - Right-leg hit: kneel on the injured right leg, place the right hand on the ground
@@ -273,8 +282,9 @@ Use GitHub's Assignees field to record task responsibility.
   viewpoint on Quest 2 before claiming comfort acceptance.
 - The region inventory, reaction table and review cases are in
   [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
-- For surviving hits, hold the injured resting pose for three seconds, excluding
-  the initial reaction and recovery animation. Block shooting until recovery
+- For surviving hits, hold for 1.5 seconds after a chest fall, two seconds
+  after a foot hit, and three seconds for the other regions. The foot recovery lasts 0.8 seconds after the hold.
+  Keep the original foot recoil. Block shooting until recovery
   finishes, then give the injured archer the next turn. A lethal hit ends the
   match immediately. A miss passes the turn after scenery impact or flight expiry.
 - Resolve each shot outcome once; arrow cleanup must not advance the turn again.

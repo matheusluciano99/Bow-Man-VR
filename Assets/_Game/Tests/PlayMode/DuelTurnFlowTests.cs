@@ -60,7 +60,7 @@ public class DuelTurnFlowTests
         return arrow;
     }
 
-    // Keeps shooting locked through entry, the full three-second hold, and unfinished recovery.
+    // Keeps shooting locked through entry, the full chest hold, and unfinished recovery.
     [UnityTest]
     public IEnumerator SurvivingHitWaitsForBothAnimationCallbacksAndHandsOverOnce()
     {
@@ -74,9 +74,9 @@ public class DuelTurnFlowTests
         flow.MarkInjuredPose(token - 1);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Reacting));
         flow.MarkInjuredPose(token);
-        yield return new WaitForSeconds(2.8f);
+        yield return new WaitForSeconds(1.25f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.4f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         Assert.That(flow.CanShoot(1), Is.False);
         flow.CompleteRecovery(token);

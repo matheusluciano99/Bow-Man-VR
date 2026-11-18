@@ -4,6 +4,31 @@ namespace BowMan
 {
     public static class ArcherLimbIK
     {
+        // Holds the wound early in the neck sequence and releases the arm before landing.
+        public static float NeckReachWeight(float time) => Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.45f)) *
+            (1f - Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((time - 1.1f) / 0.7f)));
+
+        // Fits the palm to the specific neck surface point as the struck archer falls.
+        public static void ReachNeck(Animator animator, Vector3 point, Vector3 outward, float weight)
+        {
+            if (weight <= 0f) return;
+            var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
+            var wrist = animator.GetBoneTransform(HumanBodyBones.RightHand);
+            var target = point - neck.up * 0.045f + outward * 0.025f;
+            Solve(animator, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
+                Vector3.Lerp(wrist.position, target, weight), animator.transform.right - neck.up * 0.3f + outward * 0.5f);
+            PointHand(animator, false, neck.up, weight);
+        }
+
+        // Aims the open fingers toward the contact direction without translating the supported wrist.
+        public static void PointHand(Animator animator, bool left, Vector3 direction, float progress)
+        {
+            var hand = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+            var finger = animator.GetBoneTransform(left ? HumanBodyBones.LeftMiddleDistal : HumanBodyBones.RightMiddleDistal);
+            var rotation = Quaternion.FromToRotation(finger.position - hand.position, direction) * hand.rotation;
+            hand.rotation = Quaternion.Slerp(hand.rotation, rotation, progress);
+        }
+
         // Places a two-bone chain using its measured lengths and a projected bend hint, without changing bone lengths.
         public static void Solve(Animator animator, HumanBodyBones upperId, HumanBodyBones lowerId,
             HumanBodyBones endId, Vector3 target, Vector3 hint)
@@ -29,5 +54,6 @@ namespace BowMan
             upper.rotation = Quaternion.FromToRotation(lower.position - upper.position, joint - upper.position) * upper.rotation;
             lower.rotation = Quaternion.FromToRotation(end.position - lower.position, upper.position + direction * distance - lower.position) * lower.rotation;
         }
+
     }
 }
