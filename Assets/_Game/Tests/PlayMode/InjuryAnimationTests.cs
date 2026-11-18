@@ -491,6 +491,43 @@ public class InjuryAnimationTests
         }
     }
 
+    // Checks the moving forearms and hands against the fitted torso volumes across each hand sequence.
+    [Test]
+    public void HandSequencesClearTorsoThroughRecoilRecoveryAndCollapse()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        foreach (var region in new[] { BodyRegion.LeftHand, BodyRegion.RightHand })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var animator = root.GetComponentInChildren<Animator>();
+            var forearms = new[] { animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
+                animator.GetBoneTransform(HumanBodyBones.RightLowerArm) };
+            var regions = root.GetComponentsInChildren<BodyHitRegion>();
+            var limbs = regions.Where(r => r.Region is BodyRegion.LeftHand or BodyRegion.RightHand ||
+                forearms.Contains(r.transform.parent)).Select(r => r.GetComponent<Collider>()).ToArray();
+            var torso = regions.Where(r => r.Region is BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis)
+                .Select(r => r.GetComponent<Collider>()).ToArray();
+            Assert.That(limbs, Has.Length.EqualTo(4));
+            Assert.That(torso, Has.Length.EqualTo(3));
+
+            foreach (var clip in new[] { actor.Entry(region), actor.Recovery(region), actor.DeathFinisher(region) })
+            for (var sample = 0; sample <= 120; sample++)
+            {
+                var time = clip.length * sample / 120f;
+                clip.SampleAnimation(root, time);
+                foreach (var limb in limbs)
+                foreach (var body in torso)
+                {
+                    if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
+                        body, body.transform.position, body.transform.rotation, out _, out var depth))
+                        Assert.That(depth, Is.LessThanOrEqualTo(0.002f), $"{name} {clip.name} {limb.name} / {body.name} at {time:F3}s");
+                }
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
     // Verifies left-hand hit identity, attached arrow and automatic completion without borrowing the arm sequence.
     [UnityTest]
     public IEnumerator LeftHandUsesItsOwnSupportedRecovery()

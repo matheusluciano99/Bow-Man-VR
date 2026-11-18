@@ -75,6 +75,7 @@ public static class InjuryAnimationBuilder
         if (region != BodyRegion.LeftHand && region != BodyRegion.RightHand)
             throw new ArgumentException("A hand region is required.");
         Rebuild(region);
+        MotionInjuryBuilder.RebuildDeathFinishers(region);
     }
 
     // Authors shoulder support independently of the lower arm and wrist reactions.
@@ -181,7 +182,7 @@ public static class InjuryAnimationBuilder
             Restore(bones, positions, rotations);
             var progress = Mathf.SmoothStep(0f, 1f, sample / 27f);
             var amount = recovery ? 1f - progress : progress;
-            if (amount > 0f) ApplyPose(root, region, amount, kneeHeights, seatHeight);
+            if (amount > 0f) ApplyPose(root, region, amount, kneeHeights, seatHeight, recovery);
             for (var i = 0; i < bones.Length; i++)
             {
                 var p = bones[i].localPosition;
@@ -221,7 +222,7 @@ public static class InjuryAnimationBuilder
     }
 
     // Dispatches to the exact region's authoring motion instead of substituting a generic body reaction.
-    private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights, float seatHeight)
+    private static void ApplyPose(GameObject root, BodyRegion region, float progress, Vector2 kneeHeights, float seatHeight, bool recovery)
     {
         switch (region)
         {
@@ -241,7 +242,7 @@ public static class InjuryAnimationBuilder
                 ShoulderPose(root, region == BodyRegion.LeftShoulder, progress);
                 break;
             case BodyRegion.LeftHand: case BodyRegion.RightHand:
-                HandPose(root, region == BodyRegion.LeftHand, progress);
+                HandPose(root, region == BodyRegion.LeftHand, progress, recovery);
                 break;
             default: throw new ArgumentException("This region has no authored motion.");
         }
@@ -494,27 +495,33 @@ public static class InjuryAnimationBuilder
         PointHand(a, !left, shoulder.position + root.transform.forward * 0.055f - healthyHand.position, progress);
     }
 
-    // Jerks the injured hand back with open fingers while the opposite palm supports its wrist.
-    private static void HandPose(GameObject root, bool left, float progress)
+    // Moves the injured hand first and brings the other palm around the torso to support its wrist.
+    private static void HandPose(GameObject root, bool left, float progress, bool recovery)
     {
         var a = root.GetComponentInChildren<Animator>();
+        var forward = root.transform.forward;
+        var up = root.transform.up;
+        var side = root.transform.right * (left ? -1f : 1f);
+        var reachArc = Mathf.Sin(Mathf.PI * progress);
+        var supportProgress = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(recovery ? 0.65f : 0.58f, 1f, progress));
         var hips = a.GetBoneTransform(HumanBodyBones.Hips);
         var chest = a.GetBoneTransform(HumanBodyBones.UpperChest);
-        chest.rotation = Quaternion.AngleAxis((left ? 8f : -8f) * progress, root.transform.up) * chest.rotation;
+        chest.rotation = Quaternion.AngleAxis((left ? 8f : -8f) * progress, up) * chest.rotation;
         var injured = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
         var healthy = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
-        var target = hips.position + root.transform.up * 0.38f + root.transform.forward * 0.20f
-            + root.transform.right * (left ? -0.08f : 0.08f);
+        var target = hips.position + up * 0.33f + forward * 0.341f + side * 0.035f;
         Solve(a, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
             left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
             left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
-            Vector3.Lerp(injured.position, target, progress), root.transform.right * (left ? -1f : 1f) + root.transform.forward * 0.3f);
-        PointHand(a, left, root.transform.up + root.transform.forward * 0.1f, progress);
-        var support = injured.position - root.transform.up * 0.06f - root.transform.forward * 0.015f;
+            Vector3.Lerp(injured.position, target, progress) + forward * (0.264f * reachArc),
+            side + forward * 0.28f);
+        PointHand(a, left, up + forward * 0.2f + side * 0.26f, progress);
+        var support = injured.position - up * 0.005f + forward * 0.065f;
         Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
             left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
             left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
-            Vector3.Lerp(healthy.position, support, progress), root.transform.forward - root.transform.up * 0.4f);
+            Vector3.Lerp(healthy.position, support, supportProgress) + forward * (0.14f * reachArc),
+            -side * 1.59f + forward * 0.35f - up * 0.23f);
         var elbow = a.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
         PointHand(a, !left, elbow.position - healthy.position, progress);
     }
