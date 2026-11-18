@@ -345,6 +345,7 @@ MonoBehaviour:
   second: {fileID: 93934442}
   arrowPrefab: {fileID: 7838939950186234352, guid: 58dd95bcc9cb81c4388189dfa3343d77, type: 3}
   useAI: 0
+  animationPractice: 1
   selectedRegion: 13
 --- !u!114 &255871226
 MonoBehaviour:

@@ -14,6 +14,7 @@ namespace BowMan
         private Transform owner;
         private bool launched;
         private bool flying;
+        private bool useGravity;
         private float remainingLifetime;
 
         public event Action<RaycastHit> Hit;
@@ -23,7 +24,7 @@ namespace BowMan
 
         // Starts one timed flight with the given velocity, ignoring the firing archer.
         // In flight the root is the tip; an embedded root anchors the entry while geometry penetrates ahead.
-        public void Launch(Vector3 initialVelocity, Transform firingArcher = null)
+        public void Launch(Vector3 initialVelocity, Transform firingArcher = null, bool useGravity = true)
         {
             var speedSquared = initialVelocity.sqrMagnitude;
             if (float.IsNaN(speedSquared) || float.IsInfinity(speedSquared) || speedSquared <= 0f)
@@ -35,12 +36,13 @@ namespace BowMan
 
             owner = firingArcher;
             velocity = initialVelocity;
+            this.useGravity = useGravity;
             launched = flying = true;
             transform.rotation = Quaternion.LookRotation(velocity);
             remainingLifetime = lifetime;
         }
 
-        // Applies gravity each physics step, sweeps the tip's path, and stops at the first valid hit.
+        // Sweeps the arrow's tip along its trajectory and stops at the first valid hit.
         private void FixedUpdate()
         {
             if (!flying) return;
@@ -57,8 +59,9 @@ namespace BowMan
             Physics.SyncTransforms();
 
             var dt = Time.fixedDeltaTime;
-            var displacement = velocity * dt + Physics.gravity * (0.5f * dt * dt);
-            velocity += Physics.gravity * dt;
+            var gravity = useGravity ? Physics.gravity : Vector3.zero;
+            var displacement = velocity * dt + gravity * (0.5f * dt * dt);
+            velocity += gravity * dt;
             var distance = displacement.magnitude;
             var nearest = new RaycastHit { distance = float.PositiveInfinity };
             if (distance > 0f)
