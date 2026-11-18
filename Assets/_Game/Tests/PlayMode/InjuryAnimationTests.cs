@@ -482,9 +482,9 @@ public class InjuryAnimationTests
             Assert.That(clip.length, Is.LessThan(1.1f));
             clip.SampleAnimation(root, 0.2f);
             Assert.That(head.position.y, Is.LessThan(standing.y - 0.05f));
-            for (var frame = 0; frame <= 30; frame++)
+            for (var frame = 0; frame <= 120; frame++)
             {
-                clip.SampleAnimation(root, clip.length * frame / 30f);
+                clip.SampleAnimation(root, clip.length * frame / 120f);
                 Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + frame);
             }
             Assert.That(head.position.y, Is.LessThan(0.4f));
