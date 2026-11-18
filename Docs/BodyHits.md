@@ -19,6 +19,7 @@ collision response moving the archer.
 - `Direction`: the normalized world-space travel direction at impact.
 - `Normal`: the actual world-space collision surface normal used for wound emission.
 - `Collider` and `Volume`: the struck collider and its bone-bound marker.
+- `PenetrationDepth` and `PathEnd`: the finite internal path, with a provisional 25 cm depth.
 
 The existing `Hit` event still reports every solid impact, including scenery.
 Body impacts emit `BodyHit` first, then `Hit`, for the same stopped arrow and
@@ -72,8 +73,10 @@ they are excluded from standalone test players.
 
 ## Embedded arrows
 
-At a body hit, the arrow keeps its actual world-space tip and rotation while
-becoming a child of the struck volume. Its resulting local position/orientation
+At a body hit, the arrow root anchors the actual world-space entry and rotation
+while becoming a child of the struck volume. Direct visual children move forward
+by the recorded penetration depth; the visible tip reaches `PathEnd`. In flight
+the root remains the swept tip. The embedded root's local position/orientation
 follow that bone through animation and root movement. It does not snap to a
 named wound socket or the volume's centre. Attachment happens before either
 impact event, so consumers observe the final impact pose.
@@ -88,3 +91,7 @@ The attachment test checks the same local impact through fall, kneel and recover
 transforms, waits beyond the eight-second flight timer, and verifies hierarchy
 destruction removes the arrow. Per-region injury clips still need their own
 contact review. Damage rules, injury selection and recovery remain separate tasks.
+
+See [Anatomy.md](Anatomy.md) for finite-path organ analysis. Internal injury
+presentation is reserved for confirmed lethal arrows; surviving shots keep
+their normal wound and regional reactions.

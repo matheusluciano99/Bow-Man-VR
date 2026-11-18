@@ -121,3 +121,7 @@ Physical viewpoint acceptance belongs to
 - Keep arrows/wounds aligned with their actual body locations during every pose.
   Verify local eye/head tracking and the full motion on Quest 2 under #35; desktop
   animation checks cannot establish comfort acceptance.
+
+Internal X-ray presentation is a finishing sequence for a confirmed lethal arrow
+only. A surviving hit never starts it; ordinary wound blood and the agreed
+regional entry, hold and recovery still apply. See [Anatomy.md](Anatomy.md).

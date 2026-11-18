@@ -131,3 +131,18 @@ knees buckle. The match ends on impact and the archer stays down once the
 collapse completes. Use **Bow Man VR > Injuries > Rebuild Neck Collapse** to
 regenerate the clips, then choose **Neck** in **DuelTurnTest**. First-person
 headset comfort is tracked in #35.
+
+## Internal anatomical tissue
+
+Both active archer prefabs contain fitted BodyParts3D 4.3 tissue, without runtime
+renderers or extra collision targets. The 166 unchanged OBJ originals and full
+credit live under `Assets/ThirdParty/BodyParts3D/`; native fitted derivatives are
+under `Assets/_Game/Models/Anatomy/`. Sources, pinned SHA-256 values and rebuild
+steps are in [SourceAssets/BodyParts3D](../../SourceAssets/BodyParts3D/README.md).
+
+BodyParts3D, © The Database Center for Life Science licensed under CC Attribution
+4.0 International. The [current publisher README](https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/README_e.html)
+records the February 2025 license update; a copy is preserved with the imported
+assets, including the older redistribution's license context. Axes/units and
+per-rig fitting are documented modifications. These are game registration
+approximations, not subject-specific clinical anatomy.

@@ -19,10 +19,12 @@ namespace BowMan
         public Vector3 Point { get; }
         public Vector3 Direction { get; }
         public Vector3 Normal { get; }
+        public float PenetrationDepth { get; }
+        public Vector3 PathEnd => Point + Direction * PenetrationDepth;
         public Collider Collider { get; }
 
         // Captures the actual struck volume, entry point, surface normal and arrow travel direction.
-        public BodyImpact(BodyHitRegion region, RaycastHit hit, Vector3 direction)
+        public BodyImpact(BodyHitRegion region, RaycastHit hit, Vector3 direction, float penetrationDepth)
         {
             Volume = region;
             Region = region.Region;
@@ -30,6 +32,7 @@ namespace BowMan
             Point = hit.point;
             Direction = direction.normalized;
             Normal = hit.normal;
+            PenetrationDepth = penetrationDepth;
             Collider = hit.collider;
         }
     }

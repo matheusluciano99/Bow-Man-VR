@@ -21,6 +21,7 @@ namespace BowMan
         public event Action<int, BodyImpact, bool, int> ReactionRequested;
         public event Action<int, int> RecoveryRequested;
         public event Action<int> MatchFinished;
+        public event Action<int, AnatomicalImpact> FatalityRequested;
 
         // Starts a duel with two distinct living archers and invalidates callbacks from any earlier match.
         public void Initialize(ArcherHealth first, ArcherHealth second)
@@ -97,7 +98,10 @@ namespace BowMan
             holdRemaining = InjuredHoldDuration(impact.Region);
             SetPhase(DuelPhase.Reacting);
             target.TakeDamage(impact.Region is BodyRegion.Head or BodyRegion.Neck ? int.MaxValue : bodyDamage);
-            if (token == ShotId) ReactionRequested?.Invoke(targetIndex, impact, target.IsDefeated, token);
+            if (token != ShotId) return;
+            if (target.IsDefeated && target.TryGetComponent<ArcherAnatomy>(out var anatomy))
+                FatalityRequested?.Invoke(targetIndex, anatomy.Trace(impact));
+            ReactionRequested?.Invoke(targetIndex, impact, target.IsDefeated, token);
         }
 
         // Resolves the first scenery contact as a miss without applying body damage.
