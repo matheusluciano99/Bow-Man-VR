@@ -74,7 +74,7 @@ public static class MotionInjuryBuilder
                         }
                         FitChestRecoveryLimbs(animator, pelvis, time);
                         Ground(root, hips, mesh, 0f);
-                    }, 30f);
+                    });
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
                 clip.name = "Chest Recovery";
@@ -599,10 +599,10 @@ public static class MotionInjuryBuilder
         if (floor < groundedHeight) hips.position += Vector3.up * (groundedHeight - floor);
     }
 
-    // Bakes local pose curves at the clip's intended sample rate.
-    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose,
-        float sampleRate = 60f)
+    // Bakes complete local position/quaternion groups at sixty samples per second on the actual target hierarchy.
+    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose)
     {
+        const float sampleRate = 60f;
         var clip = new AnimationClip { frameRate = sampleRate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
         var frames = Mathf.RoundToInt(duration * sampleRate);
