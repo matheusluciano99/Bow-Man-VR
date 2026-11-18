@@ -280,6 +280,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1158410821472227283}
   - component: {fileID: 2485440425683305889}
+  - component: {fileID: 956488499937504348}
   m_Layer: 0
   m_Name: ErikaArcher
   m_TagString: Untagged
@@ -1643,3 +1644,47 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8069032694317455793, guid: 8130e568c1876fc48941f2dd61422c3a, type: 3}
   m_PrefabInstance: {fileID: 7326695642948071059}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &956488499937504348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5125899312878103343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f207d6928c83624e8b8ee4508b966b0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherReactionAnimation
+  entries:
+  - {fileID: 7400000, guid: f65a01033d204f54b8a491f9aa4603d3, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  recoveries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

@@ -90,3 +90,13 @@ shooting plane, and scaled to a provisional 1.53 m limb height. The source FBX
 is unchanged. Its separate static string is omitted from this prefab and replaced
 with a project-authored moving line. Credit count_zero under the English Archer's
 CC BY 4.0 license; source attribution remains alongside that model.
+
+## Headshot collapse
+
+The one-second headshot collapse is baked separately for English Archer and
+Erika from Adobe Mixamo’s Dying Backwards motion. The source FBX is kept with
+the third-party motion assets. Use **Bow Man VR > Injuries > Rebuild Head
+Collapse** to regenerate the clips. Open the existing desktop DuelTurnTest,
+select Head and fire. A headshot resolves defeat at impact while the defeated
+archer completes its collapse. The runtime retains the instant-kill rule for
+neck hits and their separate animation task.
