@@ -8,7 +8,9 @@ Retain the captured Mixamo death/chest motions as the visual comparison.
 
 24 individual Cosindra MotionSmith FBXs (29,541,344 bytes total) and the right-foot
 GLB reference are cached locally under `SourceAssets/Downloads/Cosindra/`.
-They are not imported into the active Unity characters. Original filenames are
+The selected right-foot source and its prepared Humanoid derivative are now
+versioned under `Assets/ThirdParty/CosindraAnimations/`; foot replacement fitting
+is in progress. Other candidates remain unimported. Original filenames are
 preserved; `manifest.json` in that cache records byte counts and SHA-256 hashes.
 
 These are AI-generated catalog motions, not human motion capture. Each selected
@@ -52,6 +54,31 @@ Humanoid-ready solely from the Blender file check.
 | [Stand up from the floor](https://cosindra.ai/motionsmith/motions/stand-up-floor) | 150 | `MotionSmith_stand_up_floor_take1.fbx` |
 | [Stand up from a kneel](https://cosindra.ai/motionsmith/motions/stand-up-kneel) | 90 | `MotionSmith_stand_up_kneel_take1.fbx` |
 
+## Additional captured candidates acquired
+
+Eleven free Adobe Mixamo clips are cached under
+`SourceAssets/Downloads/Mixamo/Motions/` (6,631,008 bytes total): Injured Idle,
+Injured Hurting Idle, Falling Down, Stumble Backwards, Kneeling Down, Standing,
+Arm Stretching, Injured Walking, Standing Draw Arrow, Standing Aim Idle 01 and
+Standing Aim Recoil. Original filenames are retained. These are captured motion
+candidates, distinct from MotionSmith's generated performances. Adobe's
+[Mixamo FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) covers free
+use of animations in games; raw-source resale/redistribution is outside that use.
+
+All eleven files were inspected: 67 bones and finite sampled motion at 30 fps.
+File identities and native tracks are recorded in the local
+`Artifacts/FootReview/captured-motion-inspection.json`. The captured skinned Erika
+reference in the ignored `Preview/` cache is for inspection, not another playable
+character. These clips have not yet replaced regional gameplay animations.
+
+`Falling Down` lands seated with both palms braced behind and is a promising
+pelvis entry. `Kneeling Down`/`Standing` provide a right-knee descent/return pair.
+`Injured Hurting Idle` holds the upper thigh; it is not a raised-foot reaction.
+`Injured Idle` does not supply the required forearm cradle. Arm Stretching and
+Injured Walking contain useful support movement but do not by themselves complete
+the agreed arm/wrist sequences. The three bow sources cover reload/aim/recoil;
+they are alternatives to the unavailable itch archives, not injury replacements.
+
 ## Coverage against the agreed reactions
 
 These are source candidates and adaptation requirements, not completed replacement
@@ -63,7 +90,7 @@ sequences. All fifteen regions retain the behavior in [InjuryReactions.md](../In
 | Neck | Choking plus Fall to the knees and die candidates. | Actual neck-wound reach, knee buckle and fatal transition need one coherent sequence; no recovery. |
 | Chest | Existing captured back fall and Getting Up; downloaded backward fall/get-up alternatives. | Retain the back-down landing and full hold; do not replace an accepted motion simply to use a new source. |
 | Abdomen | Hit in the stomach, Collapse to the knees, kneel/get-up sources. | Both hands must hold the wound and both knees must reach the ground; separate clips do not yet provide this complete sequence. |
-| Pelvis | Hip recoil and seated/get-up candidates. | Sit on the floor is cross-legged and does not meet the supported seated-fall requirement. A matching fall remains a source gap. |
+| Pelvis | Hip recoil and seated/get-up candidates. | Sit on the floor is cross-legged and does not meet the supported seated-fall requirement. Captured Mixamo Falling Down provides the supported landing candidate; full entry/recovery and contacts still need fitting. |
 | Left shoulder | Shot in the shoulder (left). | Fit the right palm to the left shoulder and preserve standing balance. |
 | Right shoulder | Shot in the right shoulder. | Fit the left palm to the right shoulder; check full motion and recovery. |
 | Left arm | Left arm flinch. | Opposite-hand cradling is absent from the catalog description; seek a suitable injured idle/support source. |
@@ -72,7 +99,7 @@ sequences. All fifteen regions retain the behavior in [InjuryReactions.md](../In
 | Right hand | Hit on the right hand. | Actual opposite-hand wrist support is not established by this download. |
 | Left leg | Kneel down / stand up from a kneel, potential mirrored source. | The downloaded kneel is right-sided. Left knee and left palm support need their own fitted result. |
 | Right leg | Kneel down / stand up from a kneel. | Source kneels on the right knee but does not establish right-palm ground support. |
-| Left foot | Left foot pain; potential mirrored right-foot source. | Left take travels about 1.6 m: unsuitable as supplied for the stationary reaction. No mirrored replacement is authored. |
+| Left foot | Left foot pain; potential mirrored right-foot source. | Left take travels about 1.6 m: unsuitable as supplied for the stationary reaction. The selected right-foot performance is being mirrored on each target skeleton; acceptance is pending. |
 | Right foot | Right foot pain. | Inspect withdrawal, balance and landing; fit the full three-second hold and neutral recovery without pose snaps. |
 
 Fatal hits outside head/neck still require the regional reaction followed by a
@@ -84,8 +111,8 @@ these properties.
 ## Additional free sources
 
 - [Adobe Mixamo](https://www.mixamo.com/): existing captured death/chest clips are
-  already retained. Additional injured-idle and recovery candidates require the
-  official signed-in catalog download, then full-motion inspection.
+  already retained. The eleven additional captured candidates above were downloaded
+  through the official signed-in catalog and inspected; regional fitting remains pending.
 - [Kevin Iglesias Human Archer Animations FREE](https://kevdev.itch.io/human-archer-animations-free):
   publisher lists 136 files, masculine/feminine bow idles, load/hold/release and
   other transitions. This is a candidate for normal archery movement, not a

@@ -215,12 +215,19 @@ Fit support contacts against the visible skin, clothing and equipment footprint;
 a joint origin is not the surface that touches the ground. Keep palm orientation
 tied to anatomical handedness through the motion.
 
-Foot reactions separate load transfer, recoil, withdrawal, supported balance and
-landing. Adapt the existing captured torso recoil while fitting limb contacts to
-each rig; do not present this as dedicated foot-injury motion capture. An optional
-hold clip adds motion during the existing three-second hold without changing turn
-ownership. Land the foot before returning weight to it, and preserve continuous
-entry/hold/recovery boundaries. Visual fluidity still requires headset review.
+Foot reactions retain the selected free MotionSmith right-foot performance across
+the whole body, mirrored anatomically on each target skeleton for the left side.
+This generated source replaces the procedural limb pose/torso-recoil adaptation;
+it is not human motion capture. Source preparation adds a neutral reference
+without changing the original animated joint transforms, and excludes that
+reference frame from playback. Preserve a natural ankle-to-toe reference slope.
+
+Fit entry, planted boot contact, constrained boot toe flexion and final landing
+against each visible mesh; keep the measured limb lengths and stationary support
+joint. A three-second segment of the original motion supplies the injured hold
+without changing turn ownership. Land before shifting weight back, preserve
+continuous entry/hold/recovery boundaries and rebuild the regional fatal
+continuation. Visual fluidity and moving-eye comfort still require headset review.
 
 Wound-reaching motions retain the actual impact and approach direction in the
 struck volume’s bone-local space. Fit their hands after sampling the authored

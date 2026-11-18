@@ -17,10 +17,25 @@ All fifteen agreed regions have model-specific entry clips under Assets/_Game/An
 | Right hand | Jerk the right hand back, keep its fingers open and support the wrist with the left hand. | Independent hand/wrist clips and contact checks on both models; headset review pending. |
 | Left leg | Kneel on the left knee, plant the left palm, hold, then regain standing. | Own kneeling clips, distinct from lifted-foot reactions; headset review pending. |
 | Right leg | Kneel on the right knee, plant the right palm, hold, then regain standing. | Independent side-fitted clips with the healthy left foot planted; headset review pending. |
-| Left foot | Recoil, unload onto the right leg, withdraw the left foot, brace and balance, then land before shifting weight back. | Revised contact/continuity and automatic-flow checks pass on both archers; fresh headset review pending. |
-| Right foot | Recoil, unload onto the left leg, withdraw the right foot, brace and balance, then land before shifting weight back. | Previous headset review rejected fluidity; revised contact/continuity and flow checks pass, fresh headset review pending. |
+| Left foot | Recoil, unload onto the right leg, withdraw the left foot, brace and balance, then land before shifting weight back. | Source-based replacement on both archers passes contact, continuity and flow checks; fresh headset acceptance remains pending. |
+| Right foot | Recoil, unload onto the left leg, withdraw the right foot, brace and balance, then land before shifting weight back. | Previous headset review rejected fluidity; source-based replacement prepared, with fresh headset acceptance pending. |
 
-The editor authoring tool uses the skeleton’s measured segment lengths and two-bone IK to keep the healthy foot planted. Foot entry adapts torso recoil from the existing Mixamo chest-fall source (0.45–0.8 seconds) while fitting the legs and arms to the measured rig. It is not a dedicated foot-injury motion capture. Load transfer, withdrawal and bracing have independent timings; recovery lands the foot before recentering instead of reversing the entry. Both entry and return last a provisional 0.9 seconds; a separate three-second balance clip supplies small supported motion during the injured hold owned by DuelTurnFlow. A foot hit therefore cannot hand over at entry or while returning to stance.
+The foot authoring tool retargets the complete free MotionSmith right-foot
+performance, with an anatomical mirrored result for the left foot on each actual
+archer. These are generated source movements, not human motion capture. The
+original 120-frame performance is preserved when preparing its neutral Humanoid
+reference; frame zero is reference-only. See [source preparation](../../SourceAssets/CosindraAnimations/README.md)
+and [provenance](AnimationSources.md).
+
+The fitted entry lasts 1.1 seconds: load transfer begins before withdrawal, then
+the original performance supplies the full-body movement. The next three seconds
+of source motion form the injured hold. Recovery plays the source tail, places
+the boot down, then returns to the exact neutral stance; it lasts about 1.067
+seconds. These durations are provisional. The support ankle stays planted and a
+small fitted ankle pitch keeps its visible sole grounded. Toe flexion inside
+boots is constrained. Contact fitting does not replace the source torso/arm
+performance. Shooting stays blocked through the existing full hold/recovery,
+and a foot hit cannot hand over at entry or while returning to stance.
 
 ArcherReactionAnimation plays only the exact configured region. It reports the final entry frame to MarkInjuredPose and the final recovery frame to CompleteRecovery, using the current shot token. Death cancels surviving recovery; authored fatal head/neck entries can finish visually after the immediate match result. Embedded arrows remain children of the moving hit volume throughout. Fatal body hits play their own regional entry and then its authored full-collapse finisher, without a surviving hold or recovery.
 

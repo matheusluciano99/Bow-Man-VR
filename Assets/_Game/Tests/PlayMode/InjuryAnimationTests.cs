@@ -73,6 +73,7 @@ public class InjuryAnimationTests
                     Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
                 }
                 Assert.That(injured.position.y - initial.y, Is.GreaterThan(0.13f));
+                actor.Hold(region).SampleAnimation(root, actor.Hold(region).length);
                 var rest = injured.position;
                 var recovery = actor.Recovery(region);
                 recovery.SampleAnimation(root, 0f);
@@ -86,6 +87,37 @@ public class InjuryAnimationTests
                 Assert.That(Vector3.Distance(injured.position, initial), Is.LessThan(0.001f));
             }
             Object.DestroyImmediate(root);
+        }
+    }
+
+    // Confirms the held reaction retains the imported full-body performance rather than substituting limb poses.
+    [Test]
+    public void FootHoldPreservesTheDownloadedBodyMotion()
+    {
+        var source = AssetDatabase.LoadAllAssetsAtPath("Assets/ThirdParty/CosindraAnimations/Derived/RightFootPain_Humanoid.fbx")
+            .OfType<AnimationClip>().Single(c => c.name == "Right Foot Pain");
+        Assert.That(source.isHumanMotion, Is.True);
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var reference = Character(name);
+            var actual = Character(name);
+            var sourceAnimator = reference.GetComponentInChildren<Animator>();
+            var actualAnimator = actual.GetComponentInChildren<Animator>();
+            foreach (var time in new[] { 0f, 0.4f, 1.5f, 3f })
+            {
+                source.SampleAnimation(sourceAnimator.gameObject, 0.8f + time);
+                actual.GetComponent<ArcherReactionAnimation>().Hold(BodyRegion.RightFoot).SampleAnimation(actual, time);
+                foreach (var bone in new[] { HumanBodyBones.Spine, HumanBodyBones.Chest, HumanBodyBones.UpperChest,
+                    HumanBodyBones.Neck, HumanBodyBones.Head, HumanBodyBones.LeftUpperArm, HumanBodyBones.RightUpperArm,
+                    HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm, HumanBodyBones.LeftHand, HumanBodyBones.RightHand,
+                    HumanBodyBones.LeftUpperLeg, HumanBodyBones.RightUpperLeg, HumanBodyBones.LeftLowerLeg, HumanBodyBones.RightLowerLeg })
+                {
+                    var from = sourceAnimator.GetBoneTransform(bone);
+                    var to = actualAnimator.GetBoneTransform(bone);
+                    if (from != null) Assert.That(Quaternion.Angle(from.localRotation, to.localRotation),
+                        Is.LessThan(0.1f), name + " source motion " + bone);
+                }
+            }
         }
     }
 
@@ -110,7 +142,7 @@ public class InjuryAnimationTests
             Assert.That(Vector3.Distance(injured.position, rest), Is.LessThan(0.001f), name + " must unload before lifting");
             actor.Entry(region).SampleAnimation(root, actor.Entry(region).length);
             var loaded = Vector3.Dot(hips.position - hipStart, root.transform.right) * side;
-            actor.Recovery(region).SampleAnimation(root, 0.63f);
+            actor.Recovery(region).SampleAnimation(root, actor.Recovery(region).length - 0.5f);
             Assert.That(Vector3.Distance(injured.position, rest), Is.LessThan(0.001f), name + " must land before recentering");
             Assert.That(Vector3.Dot(hips.position - hipStart, root.transform.right) * side, Is.GreaterThan(loaded * 0.5f));
             actor.Recovery(region).SampleAnimation(root, actor.Recovery(region).length);
@@ -208,7 +240,7 @@ public class InjuryAnimationTests
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Reacting));
         var parent = arrow.transform.parent;
         var localTip = arrow.transform.localPosition;
-        yield return new WaitForSeconds(1.05f);
+        yield return new WaitForSeconds(target.GetComponent<ArcherReactionAnimation>().Entry(BodyRegion.LeftFoot).length + 0.1f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         Assert.That(flow.CanShoot(1), Is.False);
         Assert.That(Vector3.Distance(arrow.transform.position, parent.TransformPoint(localTip)), Is.LessThan(0.0001f));
@@ -216,7 +248,7 @@ public class InjuryAnimationTests
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         yield return new WaitForSeconds(0.6f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(target.GetComponent<ArcherReactionAnimation>().Recovery(BodyRegion.LeftFoot).length);
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
@@ -244,11 +276,14 @@ public class InjuryAnimationTests
         var support = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
         var initial = injured.position;
         var planted = support.position;
-        yield return new WaitForSeconds(1.1f);
+        var actor = target.GetComponent<ArcherReactionAnimation>();
+        var elapsed = actor.Entry(BodyRegion.RightFoot).length + 0.1f;
+        yield return new WaitForSeconds(elapsed);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         Assert.That(injured.position.y - initial.y, Is.GreaterThan(0.13f));
         Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f));
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(actor.Entry(BodyRegion.RightFoot).length + 3f
+            + actor.Recovery(BodyRegion.RightFoot).length - elapsed + 0.15f);
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(Vector3.Distance(injured.position, initial), Is.LessThan(0.002f));
     }

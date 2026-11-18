@@ -87,7 +87,16 @@ Free replacement candidates, actual downloads, provenance and remaining coverage
 gaps are tracked in [AnimationSources.md](AnimationSources.md). Downloaded
 candidates are separate from the active gameplay clips.
 
-Foot reactions reuse torso rotation deltas from the existing **Dying Backwards** source at 0.45–0.8 seconds. Foot withdrawal, measured leg support, bracing and recovery are authored adaptations; no dedicated foot-injury capture was acquired. The unchanged source and its terms below also cover this use.
+Foot reactions use the free generated **MotionSmith pain right foot, take 1**
+performance across the body, anatomically mirrored for the left foot on each
+archer. This replaces the procedural adaptation of chest-fall torso deltas.
+The unchanged original is `Assets/ThirdParty/CosindraAnimations/Motions/MotionSmith_pain_right_foot_take1.fbx`
+(1,255,020 bytes; SHA-256 `e49bfb9c5c4ac2a8bcc5945c07d19a881f91718d98ff390e198ab9d918b95e7d`).
+A prepared neutral reference preserves every source frame; final native clips
+fit boot contact and standing transitions at 60 Hz. This is AI-generated catalog
+motion, not human motion capture. See [asset provenance](../../Assets/ThirdParty/CosindraAnimations/Attribution.md)
+and [rebuild instructions](../../SourceAssets/CosindraAnimations/README.md).
+Fresh visual acceptance remains pending.
 
 Chest fall uses Adobe Mixamo **Dying Backwards**, catalog description “Shot To The Chest Falling Backwards”, downloaded on Erika Archer through the official catalog. Export: FBX Binary, Without Skin, 30 fps, no key reduction. The unchanged source is `Assets/ThirdParty/MixamoAnimations/Motions/Dying Backwards.fbx` (678,592 bytes; SHA-256 `612a2981bf1c2382d78085f79d89bd4670649e6f1dd3871ba52b8e01211cb2e8`). [Mixamo terms/FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) permit use in games with an Adobe ID; the source belongs to this game project, not a standalone asset pack.
 
