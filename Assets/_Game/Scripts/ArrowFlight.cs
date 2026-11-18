@@ -62,20 +62,7 @@ namespace BowMan
             var gravity = useGravity ? Physics.gravity : Vector3.zero;
             var displacement = velocity * dt + gravity * (0.5f * dt * dt);
             velocity += gravity * dt;
-            var distance = displacement.magnitude;
-            var nearest = new RaycastHit { distance = float.PositiveInfinity };
-            if (distance > 0f)
-            {
-                foreach (var hit in Physics.RaycastAll(transform.position, displacement / distance,
-                    distance, hitLayers, QueryTriggerInteraction.Ignore))
-                {
-                    if (owner != null && hit.collider.transform.IsChildOf(owner)) continue;
-                    if (hit.collider.transform.IsChildOf(transform)) continue;
-                    if (hit.distance < nearest.distance ||
-                        hit.distance == nearest.distance && hit.collider.GetInstanceID() < nearest.collider.GetInstanceID())
-                        nearest = hit;
-                }
-            }
+            var nearest = FirstImpact(transform.position, displacement, owner);
 
             if (nearest.collider != null)
             {
@@ -95,6 +82,25 @@ namespace BowMan
 
             transform.position += displacement;
             if (velocity.sqrMagnitude > 0f) transform.rotation = Quaternion.LookRotation(velocity);
+        }
+
+        // Finds the first solid impact with the same filtering for preview aim and live flight.
+        internal RaycastHit FirstImpact(Vector3 origin, Vector3 displacement, Transform firingArcher)
+        {
+            var nearest = new RaycastHit { distance = float.PositiveInfinity };
+            var distance = displacement.magnitude;
+            if (distance <= 0f) return nearest;
+
+            foreach (var hit in Physics.RaycastAll(origin, displacement / distance,
+                distance, hitLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (firingArcher != null && hit.collider.transform.IsChildOf(firingArcher)) continue;
+                if (hit.collider.transform.IsChildOf(transform)) continue;
+                if (hit.distance < nearest.distance ||
+                    hit.distance == nearest.distance && hit.collider.GetInstanceID() < nearest.collider.GetInstanceID())
+                    nearest = hit;
+            }
+            return nearest;
         }
     }
 }

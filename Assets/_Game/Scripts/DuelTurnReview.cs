@@ -6,6 +6,7 @@ namespace BowMan
 {
     public sealed class DuelTurnReview : MonoBehaviour
     {
+        private static readonly float[] AimOffsets = { 0f, -0.45f, 0.45f, -0.8f, 0.8f };
         [SerializeField] private DuelTurnFlow flow;
         [SerializeField] private ArcherHealth first;
         [SerializeField] private ArcherHealth second;
@@ -84,12 +85,15 @@ namespace BowMan
             if (!flow.CanShoot(shooter)) return;
             var owner = shooter == 0 ? first : second;
             var target = shooter == 0 ? second : first;
+            if (animationPractice) Physics.SyncTransforms();
             foreach (var region in target.GetComponentsInChildren<BodyHitRegion>())
             {
                 if (region.Region != selectedRegion) continue;
                 var start = owner.transform.position + Vector3.up * 1.4f + owner.transform.forward;
-                var aim = region.GetComponent<Collider>().bounds.center;
-                if (animationPractice) start.y = aim.y;
+                var bounds = region.GetComponent<Collider>().bounds;
+                var aim = bounds.center;
+                if (animationPractice && !TryAimAtExposedRegion(owner.transform, target.transform, bounds, ref start, out aim))
+                    continue;
                 var velocity = (aim - start) / 0.8f;
                 if (!animationPractice) velocity -= Physics.gravity * 0.4f;
                 var arrow = Instantiate(arrowPrefab, start, Quaternion.identity);
@@ -97,6 +101,24 @@ namespace BowMan
                 if (!flow.TryTrackShot(shooter, arrow)) Destroy(arrow.gameObject);
                 return;
             }
+            if (animationPractice) lastReaction = $"No clear shot at {selectedRegion}";
+        }
+
+        // Keeps the review shot horizontal and checks the intended region is its first contact.
+        private bool TryAimAtExposedRegion(Transform shooter, Transform target, Bounds bounds, ref Vector3 start, out Vector3 aim)
+        {
+            foreach (var x in AimOffsets)
+            foreach (var y in AimOffsets)
+            {
+                aim = bounds.center + new Vector3(bounds.extents.x * x, bounds.extents.y * y, 0f);
+                start.y = aim.y;
+                var hit = arrowPrefab.FirstImpact(start, aim - start, shooter).collider;
+                if (hit != null && hit.transform.IsChildOf(target) &&
+                    hit.TryGetComponent<BodyHitRegion>(out var body) && body.Region == selectedRegion)
+                    return true;
+            }
+            aim = bounds.center;
+            return false;
         }
 
         // Exposes shot and explicit animation callbacks so reviewers can verify the state contract without clips.
