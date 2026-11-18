@@ -1,0 +1,8 @@
+{
+  "name": "BowMan.Menu",
+  "rootNamespace": "BowMan.Menu",
+  "references": [
+    "Unity.InputSystem",
+    "BowMan.Networking"
+  ]
+}

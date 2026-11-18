@@ -17,6 +17,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `Assets/ThirdParty/<asset>/` | Imported models, textures, and attribution grouped by asset. |
 | `Assets/_Game/Tests/Editor/`, `Assets/_Game/Tests/PlayMode/` | Unity EditMode and PlayMode tests. |
 | `Assets/_Game/Scripts/Networking/`, `Assets/_Game/Tests/Networking/` | Online PvP connection code, its scene generator and its EditMode tests. |
+| `Assets/_Game/Scripts/Menu/`, `Assets/_Game/Tests/Menu/` | Mode menu, return-to-menu navigation and their tests. |
 | `Assets/_Game/Settings/` | Game render-pipeline configuration. |
 | `Assets/XR/` | Package-managed XR configuration; OpenXR expects this location. |
 | `Assets/TutorialInfo/` | Unity template help content. |
@@ -29,7 +30,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `SourceAssets/` | Authoring originals such as Blender scenes or layered texture files. |
 | `SourceAssets/Downloads/` | Local download archives; ignored by Git and never imported by Unity. |
 | `Artifacts/` | Local screenshots and validation reports; ignored by Git. |
-| `Builds/PCVR/`, `Builds/PCVRCharacterReview/`, `Builds/PCVRDuel/`, `Builds/PCVRPvP/` | Generated Windows tracking, character review, duel and PvP connection players; ignored by Git. |
+| `Builds/PCVR/`, `Builds/PCVRCharacterReview/`, `Builds/PCVRDuel/`, `Builds/PCVRPvP/`, `Builds/PCVRGame/` | Generated Windows tracking, character review, duel, PvP connection and full game players; ignored by Git. |
 
 Keep project-owned Unity assets under `Assets/_Game` and imported assets under
 `Assets/ThirdParty`. Package-managed XR configuration stays at `Assets/XR`;

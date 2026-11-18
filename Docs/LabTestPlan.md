@@ -19,6 +19,7 @@ blood feedback have their own tasks and must be verified in a cut containing the
 | Aim | Both tracked hand positions | Arrow keys |
 | Switch bow hand | Right B during your aiming turn | H during your aiming turn |
 | Restart finished match | Right A | R |
+| Back to the mode menu | Left Menu | Esc |
 | Return to VR input | — | Tab |
 
 The initial bow hand is left for a right-handed archer; right-bow/left-draw is

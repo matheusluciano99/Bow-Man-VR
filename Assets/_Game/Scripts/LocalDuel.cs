@@ -113,7 +113,7 @@ namespace BowMan
                 Flow.CanShoot(0) ? "Your turn" : Flow.Phase == DuelPhase.Aiming ? "Opponent aiming" : Flow.Phase.ToString();
             feedback.text = $"{status}     You {LocalArcher.CurrentHealth}  |  Opponent {Opponent.CurrentHealth}\n" +
                 $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}\n" +
-                (Flow.Phase == DuelPhase.Finished ? "A / R: restart" :
+                (Flow.Phase == DuelPhase.Finished ? "A / R: restart   Menu / Esc: modes" :
                 desktopMode ? "Arrow keys: aim   Hold/release Space: shoot   Tab: VR" :
                 "Grip: hold bow   Trigger: draw/release   B: switch bow hand");
         }

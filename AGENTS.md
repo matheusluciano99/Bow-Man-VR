@@ -84,8 +84,9 @@ Use GitHub's Assignees field to record task responsibility.
   for left and orange for right. The rig requests floor-level tracking; check
   floor alignment and comfortable reach on the headset.
 - Run the `BowMan.VR.EditorTests` EditMode tests in Test Runner before a PR.
-- Build the enabled tracking scene for Windows x86_64 through Build Profiles.
-  Put generated builds under `Builds/PCVR/`, which is excluded from Git.
+- Build the tracking scene alone for Windows x86_64 through Build Profiles (the
+  build list now starts with the game menu, see "Starting the game"). Put
+  generated builds under `Builds/PCVR/`, which is excluded from Git.
 - A successful Quest 2 test in both the Editor and Windows player satisfies
   the hardware acceptance criterion in task #2.
 
@@ -167,6 +168,24 @@ Use GitHub's Assignees field to record task responsibility.
   have no health target. Body-region damage, death animations, turn handoff,
   and match outcomes belong to later tasks.
 
+## Starting the game
+
+- `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Two panels offer
+  **PvE — vs AI archer** (opens `LocalDuel`) and **PvP — online duel** (opens
+  `PvPConnectionTest`). Point the right controller's ray at a panel and pull the
+  trigger; without a headset press 1 / 2 or click a panel.
+- In either mode, the left controller's Menu button or Esc returns to the menu.
+  Leaving the PvP scene ends the online session. Health, turn and the
+  VICTORY/DEFEAT result stay on the local duel's headset text (#8).
+- Run **Bow Man VR > Build Mode Menu And Game Scenes** after changing the menu,
+  duel or PvP generators. It regenerates the three scenes and puts MainMenu,
+  LocalDuel and PvPConnectionTest first in the build list (D022).
+- **Bow Man VR > Build Windows Game Player** writes `Builds/PCVRGame/BowManVR.exe`
+  with those three scenes; add `-desktop` to run it without a headset.
+- PvP still stops at the connection test until duel synchronization (#12) lands.
+  Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
+  (PlayMode) before a menu PR.
+
 ## Testing PvP connectivity
 
 - One-time setup: in the Unity Cloud dashboard for the linked project
@@ -235,7 +254,7 @@ Use GitHub's Assignees field to record task responsibility.
   preserving live local head/controller poses. A neutral frame adds no extra
   standing height; restart restores the floor origin without restarting XR.
 - Build this scene explicitly for Windows x86_64 under `Builds/PCVRDuel/`.
-  Shared tracking-scene build settings remain unchanged. Run the lab checklist in
+  The game player from "Starting the game" also contains it. Run the lab checklist in
   [Docs/LabTestPlan.md](Docs/LabTestPlan.md); physical eye alignment, comfort,
   grip offsets and draw calibration remain pending on Quest 2.
 

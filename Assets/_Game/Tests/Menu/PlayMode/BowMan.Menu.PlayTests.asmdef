@@ -1,0 +1,6 @@
+{
+  "name": "BowMan.Menu.PlayTests",
+  "references": ["BowMan.Menu", "Unity.InputSystem"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

@@ -1,4 +1,5 @@
 using BowMan;
+using BowMan.Menu;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -69,6 +70,7 @@ public static class LocalDuelBuilder
         Set(duel, "injuryView", view);
         Set(duel, "arrowPrefab", AssetDatabase.LoadAssetAtPath<ArrowFlight>("Assets/_Game/Prefabs/TestArrow.prefab"));
         Set(duel, "feedback", label);
+        host.AddComponent<ReturnToMenu>();
         EditorSceneManager.SaveScene(scene, "Assets/_Game/Scenes/LocalDuel.unity");
     }
 

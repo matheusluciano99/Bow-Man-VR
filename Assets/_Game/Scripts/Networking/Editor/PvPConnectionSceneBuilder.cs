@@ -1,4 +1,5 @@
 using System.IO;
+using BowMan.Menu;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEditor;
@@ -19,6 +20,7 @@ namespace BowMan.Networking.Editor
         private const string PlayerPath = "Builds/PCVRPvP/BowManVR-PvP.exe";
 
         // Rebuilds the presence prefab and the PvP connection test scene, replacing earlier output.
+        // The menu builder calls this too when it regenerates every game scene.
         [MenuItem("Bow Man VR/PvP/Build Connection Test Scene")]
         public static void BuildScene()
         {
@@ -31,6 +33,7 @@ namespace BowMan.Networking.Editor
             var spawns = CreateSpawns();
             var label = CreateRig(spawns);
             CreateNetwork(presence, label);
+            new GameObject("Return to menu").AddComponent<ReturnToMenu>();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             Debug.Log($"PvP connection test scene written to {ScenePath}");
