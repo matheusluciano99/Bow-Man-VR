@@ -21,7 +21,8 @@ red URP material; there are no downloaded textures or additional packages. Blood
 pools, spreading stains and final art polish are outside this emitter's scope.
 
 Use **Bow Man VR > Injuries > Rebuild Wound Blood** to reproduce the effect and
-its shared-arrow reference. Existing asset GUIDs are preserved. Review the actual
+its shared-arrow reference. Existing asset GUIDs are preserved. In DuelArena, use
+the region picker and test arrow to inspect different wounds. Review the actual
 wound position and visibility during standing, kneeling and falling in the
 integrated duel and close injury scene. Stereo readability and perceived amount
 remain part of [the lab test](LabTestPlan.md).
