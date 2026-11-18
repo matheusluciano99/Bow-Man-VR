@@ -598,7 +598,8 @@ public static class MotionInjuryBuilder
                     var targetPositions = bones.Select(t => t.localPosition).ToArray();
                     var targetRotations = bones.Select(t => t.localRotation).ToArray();
                     var fitBothArms = region is BodyRegion.LeftArm or BodyRegion.RightArm or
-                        BodyRegion.LeftHand or BodyRegion.RightHand or BodyRegion.Abdomen;
+                        BodyRegion.LeftHand or BodyRegion.RightHand or BodyRegion.Abdomen or
+                        BodyRegion.LeftLeg or BodyRegion.RightLeg;
                     var supportLeft = region is BodyRegion.RightShoulder or BodyRegion.RightArm;
                     Collider[] supportVolumes = null;
                     Collider[] injuredVolumes = null;

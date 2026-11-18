@@ -73,6 +73,11 @@ Use Bow Man VR > Injuries > Rebuild Left Leg for the left-knee and same-side gro
 
 Use Bow Man VR > Injuries > Rebuild Right Leg for the independent right-knee sequence. It fits the right kneepad and right glove to the ground on each actual model while preserving the planted left foot. It does not reuse the left clip or substitute the right-foot lift.
 
+Both kneels keep the support palm outside the torso and route the free arm
+along the healthy knee. Both rebuild commands record the supported motions at
+60 Hz and update their separate fatal continuations. The collision check samples
+hand, forearm, shin and boot volumes against the core at 120 Hz on both models.
+
 Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. The archer folds and reaches for the wound, then shifts weight with the captured descent into a fitted double kneel. After the three-second hold, the archer plants a boot and pushes through a captured rise. Runtime fitting keeps the hands near the actual bone-local wound through the hold and releases them during recovery.
 
 The kneeling pose fits each visible kneepad and angles the boots away from the hips. The rebuild also updates the fatal continuation from the kneel. PlayMode checks sample the forearms, hands, and boots against the body volumes on both archers.

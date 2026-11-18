@@ -645,45 +645,66 @@ public class InjuryAnimationTests
         }
     }
 
-    // Checks the fitted hand and boot paths between animation samples on both target rigs.
+    // Checks the fitted chest get-up against the core on both target rigs.
     [Test]
     public void ChestRecoveryClearsTheCoreWithoutWristJumps()
     {
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
         {
             var root = Character(name);
-            var rig = root.GetComponentInChildren<Animator>();
             var clip = root.GetComponent<ArcherReactionAnimation>().Recovery(BodyRegion.Chest);
-            var volumes = root.GetComponentsInChildren<BodyHitRegion>();
-            var core = volumes.Where(h => h.Region is BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis
-                or BodyRegion.Head or BodyRegion.Neck).Select(h => h.GetComponent<Collider>()).ToArray();
-            var distalBones = new[] { HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm,
-                HumanBodyBones.LeftHand, HumanBodyBones.RightHand, HumanBodyBones.LeftLowerLeg,
-                HumanBodyBones.RightLowerLeg, HumanBodyBones.LeftFoot, HumanBodyBones.RightFoot }
-                .Select(rig.GetBoneTransform).ToArray();
-            var limbs = volumes.Where(h => distalBones.Contains(h.transform.parent))
-                .Select(h => h.GetComponent<Collider>()).ToArray();
-            var frames = Mathf.CeilToInt(120f * clip.length);
-            clip.SampleAnimation(root, 0f);
-            var previous = distalBones.Select(t => t.position).ToArray();
-
-            for (var frame = 0; frame <= frames; frame++)
-            {
-                clip.SampleAnimation(root, clip.length * frame / frames);
-                foreach (var limb in limbs)
-                foreach (var torso in core)
-                    if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
-                        torso, torso.transform.position, torso.transform.rotation, out _, out var depth))
-                        Assert.That(depth, Is.LessThan(0.003f), $"{name} {limb.name}/{torso.name} frame {frame}");
-
-                for (var joint = 0; joint < 4; joint++)
-                {
-                    Assert.That(Vector3.Distance(previous[joint], distalBones[joint].position),
-                        Is.LessThan(0.04f), $"{name} {distalBones[joint].name} frame {frame}");
-                    previous[joint] = distalBones[joint].position;
-                }
-            }
+            RequireCoreClearance(root, clip, 0.04f);
             Object.DestroyImmediate(root);
+        }
+    }
+
+    // Checks both supported kneels, their stand-up and the continuation used on defeat.
+    [Test]
+    public void LegMotionClearsTheCoreWithoutWristJumps()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            foreach (var region in new[] { BodyRegion.LeftLeg, BodyRegion.RightLeg })
+            foreach (var clip in new[] { actor.Entry(region), actor.Recovery(region), actor.DeathFinisher(region) })
+                RequireCoreClearance(root, clip, 0.06f);
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Samples distal limb colliders against the nonadjacent core and bounds wrist movement.
+    private static void RequireCoreClearance(GameObject root, AnimationClip clip, float maximumWristStep)
+    {
+        var rig = root.GetComponentInChildren<Animator>();
+        var volumes = root.GetComponentsInChildren<BodyHitRegion>();
+        var core = volumes.Where(h => h.Region is BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis
+            or BodyRegion.Head or BodyRegion.Neck).Select(h => h.GetComponent<Collider>()).ToArray();
+        var distalBones = new[] { HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm,
+            HumanBodyBones.LeftHand, HumanBodyBones.RightHand, HumanBodyBones.LeftLowerLeg,
+            HumanBodyBones.RightLowerLeg, HumanBodyBones.LeftFoot, HumanBodyBones.RightFoot }
+            .Select(rig.GetBoneTransform).ToArray();
+        var limbs = volumes.Where(h => distalBones.Contains(h.transform.parent))
+            .Select(h => h.GetComponent<Collider>()).ToArray();
+        var frames = Mathf.CeilToInt(120f * clip.length);
+        clip.SampleAnimation(root, 0f);
+        var previous = distalBones.Select(t => t.position).ToArray();
+
+        for (var frame = 0; frame <= frames; frame++)
+        {
+            clip.SampleAnimation(root, clip.length * frame / frames);
+            foreach (var limb in limbs)
+            foreach (var torso in core)
+                if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
+                    torso, torso.transform.position, torso.transform.rotation, out _, out var depth))
+                    Assert.That(depth, Is.LessThan(0.003f), $"{root.name} {clip.name} {limb.name}/{torso.name} frame {frame}");
+
+            for (var joint = 0; joint < 4; joint++)
+            {
+                Assert.That(Vector3.Distance(previous[joint], distalBones[joint].position),
+                    Is.LessThan(maximumWristStep), $"{root.name} {clip.name} {distalBones[joint].name} frame {frame}");
+                previous[joint] = distalBones[joint].position;
+            }
         }
     }
 

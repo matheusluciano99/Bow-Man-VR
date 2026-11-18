@@ -31,6 +31,7 @@ public static class InjuryAnimationBuilder
         if (region != BodyRegion.LeftLeg && region != BodyRegion.RightLeg)
             throw new ArgumentException("A leg region is required.");
         Rebuild(region);
+        MotionInjuryBuilder.RebuildDeathFinishers(region);
     }
 
     // Rebuilds the left-foot entry/recovery on both prepared character prefabs.
@@ -154,7 +155,7 @@ public static class InjuryAnimationBuilder
     {
         const float duration = 0.9f;
         var rate = region is BodyRegion.LeftArm or BodyRegion.RightArm or BodyRegion.LeftHand or BodyRegion.RightHand
-            ? 60f : 30f;
+            or BodyRegion.LeftLeg or BodyRegion.RightLeg ? 60f : 30f;
         var samples = Mathf.RoundToInt(duration * rate);
         var clip = new AnimationClip { name = region + (recovery ? " Recovery" : " Entry"), frameRate = rate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
@@ -369,22 +370,24 @@ public static class InjuryAnimationBuilder
         healthy.rotation = healthyRotation;
         if (!left)
             healthy.rotation = Quaternion.AngleAxis(-4f * progress, root.transform.right) * healthyRotation;
-        GroundPalm(root, a, left, progress, 0.08f);
+        GroundPalm(root, a, left, progress, 0.08f, 0.105f);
         var other = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+        var outward = root.transform.right * (left ? 1f : -1f);
         var rest = a.GetBoneTransform(left ? HumanBodyBones.RightLowerLeg : HumanBodyBones.LeftLowerLeg).position +
-            root.transform.up * 0.08f + root.transform.forward * 0.025f;
+            root.transform.up * 0.08f + root.transform.forward * 0.025f + outward * 0.105f;
         Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
             left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
             left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
-            Vector3.Lerp(other.position, rest, progress), root.transform.right * (left ? 1f : -1f));
+            Vector3.Lerp(other.position, rest, progress), outward);
     }
 
     // Places a fitted support palm on the floor in front of or behind its shoulder.
-    private static void GroundPalm(GameObject root, Animator a, bool left, float progress, float forwardOffset)
+    private static void GroundPalm(GameObject root, Animator a, bool left, float progress, float forwardOffset,
+        float sideOffset = 0.06f)
     {
         var hand = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
         var shoulder = a.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
-        var support = shoulder.position + root.transform.right * (left ? -0.06f : 0.06f) + root.transform.forward * forwardOffset;
+        var support = shoulder.position + root.transform.right * (left ? -sideOffset : sideOffset) + root.transform.forward * forwardOffset;
         support.y = root.transform.position.y + 0.03f;
         Solve(a, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
             left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
