@@ -28,6 +28,7 @@ namespace BowMan
         private Vector3[] deathBlendPositions;
         private Quaternion[] deathBlendRotations;
         private Animator poseAnimator;
+        private BodyImpact entryImpact;
         private Transform woundAnchor;
         private Vector3 woundPoint;
         private Vector3 woundOutward;
@@ -76,6 +77,7 @@ namespace BowMan
             flow = match;
             health = actor;
             archerIndex = index;
+            poseAnimator = GetComponentInChildren<Animator>();
             flow.ReactionRequested += OnReaction;
             flow.RecoveryRequested += OnRecovery;
             flow.Changed += OnFlowChanged;
@@ -93,9 +95,9 @@ namespace BowMan
             injured = true;
             elapsed = 0f;
             playing = Entry(region);
+            entryImpact = hit;
             if (region is BodyRegion.Neck or BodyRegion.Abdomen)
             {
-                poseAnimator = GetComponentInChildren<Animator>();
                 woundAnchor = hit.Collider.transform;
                 woundPoint = woundAnchor.InverseTransformPoint(hit.Point);
                 woundOutward = woundAnchor.InverseTransformDirection(-hit.Direction);
@@ -137,6 +139,7 @@ namespace BowMan
             } : 1f;
             elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
+            if (!recovering && !finishingDeath) ArcherHitRecoil.Apply(poseAnimator, entryImpact, elapsed);
             if (finishingDeath && elapsed < 0.15f)
             {
                 var blend = Mathf.SmoothStep(0f, 1f, elapsed / 0.15f);

@@ -235,6 +235,11 @@ Wound-reaching motions retain the actual impact and approach direction in the
 struck volume’s bone-local space. Fit their hands after sampling the authored
 pose so the contact follows the moving wound rather than a fixed world point.
 
+Apply the arrow’s incoming direction during the first contact response for
+abdomen, shoulder, arm, hand, and leg hits so the archer visibly reacts when
+the arrow lands. Blend into the region’s authored entry, preserve floor
+support, and keep the shared hold, recovery and defeat timing.
+
 ## D016 — Brief in-body X-ray injury presentation
 
 Show internal injury only for the arrow that confirms an archer's death, as a

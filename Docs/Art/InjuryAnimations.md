@@ -61,6 +61,11 @@ Use Bow Man VR > Injuries > Rebuild Left Hand or Rebuild Right Hand for the inde
 
 The injured hand withdraws and opens first as the archer looks toward it. The opposite palm cups the wrist from underneath, flexes its fingers for support, and releases before the injured hand lowers. Hand rebuilds also update the fatal continuation from the final supported pose. The PlayMode clearance check samples the forearms and hands against the torso volumes on both models in all three clips.
 
+Runtime uses the incoming arrow direction to add a brief initial torso flinch,
+struck-side limb recoil, or supported knee buckle for abdomen, shoulder, arm,
+hand, and leg hits. The blend ends within 0.22 seconds and joins the existing
+entry. The peak and duration remain provisional for visual review.
+
 Use Bow Man VR > Injuries > Rebuild Chest Fall for the Mixamo-backed chest entry. It trims source time 0.5–3.2 seconds, blends the first 0.18 seconds from neutral, bakes sampled root motion into the hips and raises penetrating samples using actual visible skin vertices. The 2.7-second entry ends face-up with ground contact before the three-second hold begins. It never substitutes the rejected face-down motion. An entry can run before its recovery is authored; the review panel keeps separate manual callbacks for whichever half is missing. See [motion provenance](CharacterAssets.md#injury-motion-sources).
 
 Use Bow Man VR > Injuries > Rebuild Chest Recovery after building the fall. It samples the get-up source from 2.0–6.8 seconds and blends the first 0.35 seconds from the exact landed bone pose. The archer lowers both arms after pushing off the ground and continues directly into the prefab’s relaxed standing pose. The planar motion is fitted between the fallen pelvis and the standing origin; this may need further foot-slide polish during visual review. Per-sample visible-skin ground correction prevents penetration. The 5.4-second authored get-up plays in 3.6 seconds after the full three-second ground hold. The fit guides the wrists and boot around the pelvis and head. The standing pose grants the turn, and defeat cancels recovery. The faster rate remains provisional for wearer review.

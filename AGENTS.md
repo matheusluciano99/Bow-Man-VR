@@ -287,6 +287,9 @@ Use GitHub's Assignees field to record task responsibility.
   abdomen, pelvis, left/right shoulders, left/right arms, left/right hands,
   left/right legs and left/right feet. Each needs its own reaction. Back hits
   are outside the bow-duel scope; sword duels are only a future idea.
+- Abdomen, shoulder, arm, hand, and leg hits show a distinct flinch at first
+  contact before continuing to their authored injury pose. Preserve floor
+  support and limb clearance through the transition.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
