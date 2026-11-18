@@ -104,3 +104,20 @@ neck hits and their separate animation task.
 The clips are baked at 60 Hz. Floor fitting uses the visible skin and a
 4 mm allowance between the grounded start and end poses. The English rig
 keeps its separate equipment and omits the loose baked display arrow.
+
+## Chest reactions
+
+Chest fall uses Adobe Mixamo **Dying Backwards**, catalog description “Shot To The Chest Falling Backwards”, downloaded on Erika Archer through the official catalog. Export: FBX Binary, Without Skin, 30 fps, no key reduction. The unchanged source is `Assets/ThirdParty/MixamoAnimations/Motions/Dying Backwards.fbx` (678,592 bytes; SHA-256 `612a2981bf1c2382d78085f79d89bd4670649e6f1dd3871ba52b8e01211cb2e8`). [Mixamo terms/FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) permit use in games with an Adobe ID; the source belongs to this game project, not a standalone asset pack.
+
+The source is retargeted using the original Erika T-pose in metres; the prepared derivative uses centimetre bone coordinates and cannot supply this motion importer’s reference skeleton unchanged. Per-model native clips preserve prefab roots and correct visible floor penetration. The earlier “Standing Death Backward 01” candidate ended face-down and was rejected for chest hits.
+
+Chest recovery uses Mixamo **Getting Up**, the first catalog variant described as “Getting Up From Back”, downloaded on Erika Archer with the same export settings. Unchanged source: `Assets/ThirdParty/MixamoAnimations/Motions/Getting Up.fbx` (999,888 bytes; SHA-256 `2413541e9b26256399ab8793f33630d783462b04d205e4a29ebf73e4bd43a21a`). The same Mixamo game-use terms apply.
+
+The fall remains 2.7 seconds. A surviving archer stays down for three
+seconds and takes 3.6 seconds to get up at the current playback speed. The
+get-up bake guides the supporting limbs around the pelvis and head while
+keeping the original rig lengths and grounding the posed skin. A fatal
+chest hit ends the match at impact and plays its grounded collapse without
+starting the get-up. Use **Bow Man VR > Injuries > Rebuild Chest Fall**
+and **Rebuild Chest Recovery** to regenerate the clips. Select **Chest**
+in **DuelTurnTest** to review the motion.

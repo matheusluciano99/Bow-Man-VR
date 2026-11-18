@@ -8,14 +8,21 @@ public static class MotionInjuryBuilder
 {
     private const string MotionFolder = "Assets/ThirdParty/MixamoAnimations/Motions/";
 
+    // Retargets the chest fall onto each owned skeleton and preserves its other injury clips.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Chest Fall")]
+    public static void RebuildChestFall()
+    {
+        RebuildFall(BodyRegion.Chest, 0.5f, 2.7f, 1f);
+        RebuildChestFinisher();
+    }
+
     // Authors a rapid loss of posture and relaxed head separately from the surviving chest sequence.
     [MenuItem("Bow Man VR/Injuries/Rebuild Head Collapse")]
-    public static void RebuildHeadCollapse()
+    public static void RebuildHeadCollapse() => RebuildFall(BodyRegion.Head, 0.8f, 1f, 2.5f);
+
+    // Bakes the region's own fall timing and head posture onto each target skeleton.
+    private static void RebuildFall(BodyRegion region, float sourceStart, float duration, float speed)
     {
-        const BodyRegion region = BodyRegion.Head;
-        const float sourceStart = 0.8f;
-        const float duration = 1f;
-        const float speed = 2.5f;
         var source = ImportMotion("Dying Backwards");
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
         {
@@ -43,14 +50,15 @@ public static class MotionInjuryBuilder
                         Restore(bones, positions, rotations);
                         Sample(animator, source, sourceStart + time * speed, modelPosition, modelRotation);
                         hips.position += offset;
-                        var blend = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.06f));
+                        var blend = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / (region == BodyRegion.Head ? 0.06f : 0.18f)));
                         for (var i = 0; i < bones.Length; i++)
                         {
                             bones[i].localPosition = Vector3.Lerp(positions[i], bones[i].localPosition, blend);
                             bones[i].localRotation = Quaternion.Slerp(rotations[i], bones[i].localRotation, blend);
                         }
-                        animator.GetBoneTransform(HumanBodyBones.Head).localRotation *= Quaternion.Euler(12f * blend, 0f, 35f * blend);
-                        var clearance = time > 0f && time < duration ? 0.004f : 0f;
+                        if (region == BodyRegion.Head)
+                            animator.GetBoneTransform(HumanBodyBones.Head).localRotation *= Quaternion.Euler(12f * blend, 0f, 35f * blend);
+                        var clearance = region == BodyRegion.Head && time > 0f && time < duration ? 0.004f : 0f;
                         Ground(root, hips, mesh, clearance);
                     });
                 }
@@ -69,6 +77,161 @@ public static class MotionInjuryBuilder
                 finally { PrefabUtility.UnloadPrefabContents(prefab); }
             }
             finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    // Fits a back-to-standing motion from the exact landing pose before restoring the archer's ready stance.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Chest Recovery")]
+    public static void RebuildChestRecovery()
+    {
+        var source = ImportMotion("Getting Up");
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            try
+            {
+                var animator = root.GetComponentInChildren<Animator>();
+                var bones = animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var neutralPositions = bones.Select(t => t.localPosition).ToArray();
+                var neutralRotations = bones.Select(t => t.localRotation).ToArray();
+                var modelPosition = animator.transform.localPosition;
+                var modelRotation = animator.transform.localRotation;
+                var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var pelvis = root.GetComponentsInChildren<BodyHitRegion>()
+                    .Single(part => part.Region == BodyRegion.Pelvis).transform;
+                var neutralHips = hips.position;
+                var player = root.GetComponent<ArcherReactionAnimation>();
+                var entry = player.Entry(BodyRegion.Chest);
+                if (entry == null) throw new InvalidOperationException("Build the chest fall before its recovery.");
+                entry.SampleAnimation(root, entry.length);
+                var fallenPositions = bones.Select(t => t.localPosition).ToArray();
+                var fallenRotations = bones.Select(t => t.localRotation).ToArray();
+                var fallenHips = hips.position;
+                Sample(animator, source, 2f, modelPosition, modelRotation);
+                var startOffset = Vector3.ProjectOnPlane(fallenHips - hips.position, Vector3.up);
+                Sample(animator, source, 6.8f, modelPosition, modelRotation);
+                var endOffset = Vector3.ProjectOnPlane(neutralHips - hips.position, Vector3.up);
+                var mesh = new Mesh();
+                AnimationClip clip;
+                try
+                {
+                    clip = Record(root, bones, 5.4f, time =>
+                    {
+                        Restore(bones, neutralPositions, neutralRotations);
+                        Sample(animator, source, Mathf.Min(time + 2f, 6.8f), modelPosition, modelRotation);
+                        hips.position += Vector3.Lerp(startOffset, endOffset, Mathf.SmoothStep(0f, 1f, time / 4.8f));
+                        var arrival = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.35f));
+                        var ready = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((time - 4.8f) / 0.6f));
+                        for (var i = 0; i < bones.Length; i++)
+                        {
+                            bones[i].localPosition = Vector3.Lerp(fallenPositions[i], bones[i].localPosition, arrival);
+                            bones[i].localRotation = Quaternion.Slerp(fallenRotations[i], bones[i].localRotation, arrival);
+                            bones[i].localPosition = Vector3.Lerp(bones[i].localPosition, neutralPositions[i], ready);
+                            bones[i].localRotation = Quaternion.Slerp(bones[i].localRotation, neutralRotations[i], ready);
+                        }
+                        FitChestRecoveryLimbs(animator, pelvis, time);
+                        Ground(root, hips, mesh, 0f);
+                    });
+                }
+                finally { UnityEngine.Object.DestroyImmediate(mesh); }
+                clip.name = "Chest Recovery";
+                clip = SaveClip(clip, $"Assets/_Game/Animations/Injuries/{name}/Chest_Recovery.anim");
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    player = prefab.GetComponent<ArcherReactionAnimation>();
+                    player.SetSequence(BodyRegion.Chest, player.Entry(BodyRegion.Chest), clip);
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    // Guides the supporting limbs around the torso without shortening their measured bone lengths.
+    private static void FitChestRecoveryLimbs(Animator animator, Transform pelvis, float time)
+    {
+        Move(HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand,
+            -pelvis.right * (0.155f * Weight(0.16f, 0.275f, 0.53f, 0.79f)));
+        Move(HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot,
+            (pelvis.root.right * .018f + pelvis.root.forward * .028f) * Weight(2.52f, 2.67f, 2.87f, 3.04f));
+        Move(HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
+            (pelvis.root.right * .030f + pelvis.root.forward * .040f) * Weight(3.68f, 3.82f, 4.04f, 4.22f));
+
+        // Eases in and out on the authored contact interval.
+        float Weight(float start, float enter, float leave, float end) =>
+            Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(start, enter, time)) *
+            Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(leave, end, time));
+
+        // Shifts the wrist or ankle while preserving the captured palm or boot rotation.
+        void Move(HumanBodyBones upperId, HumanBodyBones lowerId, HumanBodyBones endId, Vector3 offset)
+        {
+            if (offset == Vector3.zero) return;
+            var upper = animator.GetBoneTransform(upperId);
+            var lower = animator.GetBoneTransform(lowerId);
+            var end = animator.GetBoneTransform(endId);
+            var rotation = end.rotation;
+            ArcherLimbIK.Solve(animator, upperId, lowerId, endId, end.position + offset, lower.position - upper.position);
+            end.rotation = rotation;
+        }
+    }
+
+    // Relaxes the grounded archer from the chest landing into the final back-down pose.
+    private static void RebuildChestFinisher()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            var mesh = new Mesh();
+            try
+            {
+                var animator = root.GetComponentInChildren<Animator>();
+                var bones = animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var player = root.GetComponent<ArcherReactionAnimation>();
+                var entry = player.Entry(BodyRegion.Chest);
+                entry.SampleAnimation(root, entry.length);
+                var positions = bones.Select(t => t.localPosition).ToArray();
+                var rotations = bones.Select(t => t.localRotation).ToArray();
+                var start = hips.position;
+
+                var collapse = player.Entry(BodyRegion.Head);
+                collapse.SampleAnimation(root, collapse.length);
+                hips.position = new Vector3(start.x, hips.position.y, start.z);
+                Ground(root, hips, mesh, 0f);
+                var targetPositions = bones.Select(t => t.localPosition).ToArray();
+                var targetRotations = bones.Select(t => t.localRotation).ToArray();
+                const float duration = 0.8f;
+                var clip = Record(root, bones, duration, time =>
+                {
+                    var progress = Mathf.SmoothStep(0f, 1f, time / duration);
+                    for (var i = 0; i < bones.Length; i++)
+                    {
+                        bones[i].localPosition = Vector3.Lerp(positions[i], targetPositions[i], progress);
+                        bones[i].localRotation = Quaternion.Slerp(rotations[i], targetRotations[i], progress);
+                    }
+                    if (time > 0f) Ground(root, hips, mesh, 0f);
+                });
+                clip.name = "Chest Death";
+                clip = SaveClip(clip, $"Assets/_Game/Animations/Injuries/{name}/Chest_Death.anim");
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    prefab.GetComponent<ArcherReactionAnimation>().SetDeathFinisher(BodyRegion.Chest, clip);
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(mesh);
+                UnityEngine.Object.DestroyImmediate(root);
+            }
         }
         AssetDatabase.SaveAssets();
     }
