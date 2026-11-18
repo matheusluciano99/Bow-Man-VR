@@ -133,3 +133,17 @@ records the February 2025 license update; a copy is preserved with the imported
 assets, including the older redistribution's license context. Axes/units and
 per-rig fitting are documented modifications. These are game registration
 approximations, not subject-specific clinical anatomy.
+
+## Headshot collapse
+
+The one-second headshot collapse is baked separately for English Archer and
+Erika from Adobe Mixamo’s Dying Backwards motion. The source FBX is kept with
+the third-party motion assets. Use **Bow Man VR > Injuries > Rebuild Head
+Collapse** to regenerate the clips. Open the existing desktop DuelTurnTest,
+select Head and fire. A headshot resolves defeat at impact while the defeated
+archer completes its collapse. The runtime retains the instant-kill rule for
+neck hits and their separate animation task.
+
+The clips are baked at 60 Hz. Floor fitting uses the visible skin and a
+4 mm allowance between the grounded start and end poses. The English rig
+keeps its separate equipment and omits the loose baked display arrow.

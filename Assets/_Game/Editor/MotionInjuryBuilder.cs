@@ -787,7 +787,8 @@ public static class MotionInjuryBuilder
                             ArcherLimbIK.ReachNeck(animator, neck.position + root.transform.forward * 0.08f,
                                 root.transform.forward, ArcherLimbIK.NeckReachWeight(time));
                         }
-                        Ground(root, hips, mesh);
+                        var clearance = region == BodyRegion.Head && time > 0f && time < duration ? 0.004f : 0f;
+                        Ground(root, hips, mesh, clearance);
                     });
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
@@ -902,8 +903,8 @@ public static class MotionInjuryBuilder
         hips.SetPositionAndRotation(hipPosition, hipRotation);
     }
 
-    // Raises only penetrating samples against the visible skin, including the model's attached equipment.
-    private static void Ground(GameObject root, Transform hips, Mesh mesh)
+    // Fits the sampled visible skin and equipment to the floor, with a small margin during headshot interpolation.
+    private static void Ground(GameObject root, Transform hips, Mesh mesh, float clearance = 0f)
     {
         var floor = float.PositiveInfinity;
         foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -912,7 +913,8 @@ public static class MotionInjuryBuilder
             foreach (var vertex in mesh.vertices) floor = Mathf.Min(floor, skin.transform.TransformPoint(vertex).y);
             mesh.Clear();
         }
-        if (floor < root.transform.position.y) hips.position += Vector3.up * (root.transform.position.y - floor);
+        var groundedHeight = root.transform.position.y + clearance;
+        if (floor < groundedHeight) hips.position += Vector3.up * (groundedHeight - floor);
     }
 
     // Bakes complete transform groups at sixty Hz to retain fitted contacts between source frames.
