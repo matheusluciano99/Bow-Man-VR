@@ -125,8 +125,8 @@ the facing-archer bow duel; sword combat remains a conditional future idea.
 
 The full motions and implementation cards are in the
 [injury reaction table](InjuryReactions.md). Head and neck hits always kill.
-Surviving hits hold the injured pose for three seconds, then complete recovery
-before the injured archer receives the next turn. This keeps turn ownership
+Surviving hits hold the injured pose for three seconds, or two for foot hits.
+The injured archer receives the next turn after completing recovery. This keeps turn ownership
 consistent with the visible recovery. Death ends the match immediately; misses
 resolve at scenery impact or flight expiry, with one outcome per shot.
 
@@ -183,7 +183,7 @@ must remove the old character hierarchy or clear its embedded arrows.
 ## D013 — Resolve a shot once and wait for actual recovery completion
 
 The duel controller owns damage and turn resolution for one registered arrow.
-Separate reaction entry, the agreed three-second injured hold and recovery;
+Separate reaction entry, the hold duration for the struck region, and recovery;
 animation callbacks identify the current shot so stale completion cannot grant
 a turn. End the match immediately on defeat, including fatal head/neck damage.
 Keep explicit manual callbacks in the desktop state-review scene until the
@@ -224,8 +224,9 @@ reference frame from playback. Preserve a natural ankle-to-toe reference slope.
 
 Fit entry, planted boot contact, constrained boot toe flexion and final landing
 against each visible mesh; keep the measured limb lengths and stationary support
-joint. A three-second segment of the original motion supplies the injured hold
-without changing turn ownership. Land before shifting weight back, preserve
+joint. Both foot reactions keep their 1.1-second entry and play the full authored
+balance in two seconds and the full standing recovery in 0.8 seconds. This
+pacing was accepted in a right-foot headset preview. Land before shifting weight back, preserve
 continuous entry/hold/recovery boundaries and rebuild the regional fatal
 continuation. Visual fluidity and moving-eye comfort still require headset review.
 

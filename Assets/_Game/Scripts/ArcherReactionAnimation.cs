@@ -6,6 +6,8 @@ namespace BowMan
 {
     public sealed class ArcherReactionAnimation : MonoBehaviour
     {
+        private const float FootRecoveryDuration = 0.8f;
+
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
@@ -104,6 +106,8 @@ namespace BowMan
         private void OnRecovery(int target, int shotId)
         {
             if (target != archerIndex || shotId != token || !Supports(region) || health.IsDefeated) return;
+            var hold = Hold(region);
+            if (hold != null) hold.SampleAnimation(gameObject, hold.length);
             recovering = true;
             elapsed = 0f;
             playing = Recovery(region);
@@ -118,12 +122,15 @@ namespace BowMan
                 var hold = Hold(region);
                 if (injured && flow.Phase == DuelPhase.Holding && hold != null)
                 {
-                    elapsed = Mathf.Min(elapsed + Time.deltaTime, hold.length);
+                    var holdSpeed = hold.length / DuelTurnFlow.InjuredHoldDuration(region);
+                    elapsed = Mathf.Min(elapsed + Time.deltaTime * holdSpeed, hold.length);
                     hold.SampleAnimation(gameObject, elapsed);
                 }
                 return;
             }
-            elapsed = Mathf.Min(elapsed + Time.deltaTime, playing.length);
+            var recoverySpeed = recovering && (region is BodyRegion.LeftFoot or BodyRegion.RightFoot)
+                ? playing.length / FootRecoveryDuration : 1f;
+            elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
             if (finishingDeath && elapsed < 0.15f)
             {

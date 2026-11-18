@@ -28,10 +28,10 @@ reference; frame zero is reference-only. See [source preparation](../../SourceAs
 and [provenance](AnimationSources.md).
 
 The fitted entry lasts 1.1 seconds: load transfer begins before withdrawal, then
-the original performance supplies the full-body movement. The next three seconds
-of source motion form the injured hold. Recovery plays the source tail, places
-the boot down, then returns to the exact neutral stance; it lasts about 1.067
-seconds. These durations are provisional. The support ankle stays planted and a
+the original performance supplies the full-body movement. Playback fits the next three
+seconds of source motion into a two-second hold. It plays the full authored recovery
+in 0.8 seconds, placing the boot down before returning to neutral. The support ankle
+stays planted and a
 small fitted ankle pitch keeps its visible sole grounded. Toe flexion inside
 boots is constrained. Contact fitting does not replace the source torso/arm
 performance. Shooting stays blocked through the existing full hold/recovery,

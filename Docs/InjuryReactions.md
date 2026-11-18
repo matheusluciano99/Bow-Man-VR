@@ -61,11 +61,10 @@ sword combat is not an agreed game mode.
 
 ## Recovery, lethality and turn flow
 
-For a surviving hit, the three-second timer starts after reaching the injured
-resting pose: on the ground, kneeling, seated, supporting an arm/hand/shoulder,
-or balancing on the healthy foot. The initial reaction and recovery animation
-are additional time. The three-second hold is an agreed prototype value;
-validate the complete sequence on the rigged models and target headset.
+For a surviving hit, the hold timer starts after reaching the injured resting
+pose. It lasts three seconds for most regions and two seconds for feet.
+Foot reactions preserve their 1.1-second recoil and return to standing in 0.8
+seconds after the hold. Other reactions retain their authored recovery speeds.
 
 1. A releases one arrow on their turn. Lock further shooting while that shot resolves.
 2. Apply its one resolved hit or miss. A head/neck hit kills immediately regardless
@@ -76,7 +75,7 @@ validate the complete sequence on the rigged models and target headset.
    hit outside the head/neck plays its own region/side reaction, then collapses
    fully and remains down. Head and neck retain their separate fatal sequences.
 4. If B survives a hit, play B's region/side reaction, hold the injured pose for
-   three seconds, then complete the recovery animation. Give B the next turn only
+   the region’s full hold duration, then complete the recovery animation. Give B the next turn only
    after recovery finishes. Standing reactions recover from their supported pose;
    they do not invent an extra fall/get-up.
 5. A miss resolves at the arrow's first scenery impact or flight expiry, then

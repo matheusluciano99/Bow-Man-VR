@@ -55,7 +55,7 @@ inspection aid, not acceptance of the final duel distance.
 Use `InjuryAnimationTest.unity` for close outside views and the integrated duel
 for live local-eye checks. Record **both** the visible opponent and local view;
 an outside-camera pass does not establish VR acceptance. A surviving entry must
-reach its own injured pose, hold three seconds, then finish its own recovery
+reach its own injured pose, hold for three seconds (two for a foot hit), then finish its own recovery
 before that archer receives a turn. Head/neck never recover. Fatal body hits
 play their own reaction then collapse fully, with an immediate match result.
 

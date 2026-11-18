@@ -278,6 +278,8 @@ public class InjuryAnimationTests
     public IEnumerator FootAnimationCompletesOnlyAfterEntryHoldAndRecovery()
     {
         var flow = BodyShot(out var target, out var arrow);
+        var phaseTimes = new Dictionary<DuelPhase, float>();
+        flow.Changed += () => phaseTimes[flow.Phase] = Time.time;
         yield return new WaitForFixedUpdate();
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Reacting));
         var parent = arrow.transform.parent;
@@ -286,12 +288,16 @@ public class InjuryAnimationTests
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         Assert.That(flow.CanShoot(1), Is.False);
         Assert.That(Vector3.Distance(arrow.transform.position, parent.TransformPoint(localTip)), Is.LessThan(0.0001f));
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(1.6f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         yield return new WaitForSeconds(0.6f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
-        yield return new WaitForSeconds(target.GetComponent<ArcherReactionAnimation>().Recovery(BodyRegion.LeftFoot).length);
+        Assert.That(flow.CanShoot(1), Is.False);
+        yield return new WaitForSeconds(0.8f);
         Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(phaseTimes[DuelPhase.Holding] - phaseTimes[DuelPhase.Reacting], Is.EqualTo(1.1f).Within(0.1f));
+        Assert.That(phaseTimes[DuelPhase.Recovering] - phaseTimes[DuelPhase.Holding], Is.EqualTo(2f).Within(0.1f));
+        Assert.That(phaseTimes[DuelPhase.Aiming] - phaseTimes[DuelPhase.Recovering], Is.EqualTo(0.8f).Within(0.1f));
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
 
@@ -324,8 +330,7 @@ public class InjuryAnimationTests
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
         Assert.That(injured.position.y - initial.y, Is.GreaterThan(0.13f));
         Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f));
-        yield return new WaitForSeconds(actor.Entry(BodyRegion.RightFoot).length + 3f
-            + actor.Recovery(BodyRegion.RightFoot).length - elapsed + 0.15f);
+        yield return new WaitForSeconds(2f + 0.8f + 0.05f);
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(Vector3.Distance(injured.position, initial), Is.LessThan(0.002f));
     }
@@ -1136,7 +1141,8 @@ public class InjuryAnimationTests
                 Assert.That(target.CurrentHealth, Is.EqualTo(75), name + " " + region);
                 Assert.That(recoveries, Is.EqualTo(1));
                 Assert.That(landed, Is.GreaterThan(0f));
-                Assert.That(recovery - landed, Is.GreaterThanOrEqualTo(2.995f));
+                var holdDuration = region is BodyRegion.LeftFoot or BodyRegion.RightFoot ? 2f : 3f;
+                Assert.That(recovery - landed, Is.GreaterThanOrEqualTo(holdDuration - 0.005f));
                 Assert.That(readyError, Is.LessThan(0.005f), name + " " + region);
                 Assert.That(readyRotationError, Is.LessThan(0.2f), name + " " + region);
                 Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(region));
