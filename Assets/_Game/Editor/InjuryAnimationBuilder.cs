@@ -15,11 +15,7 @@ public static class InjuryAnimationBuilder
 
     // Rebuilds the abdomen-specific wound brace, both-knee descent and standing recovery.
     [MenuItem("Bow Man VR/Injuries/Rebuild Abdomen")]
-    public static void RebuildAbdomen()
-    {
-        Rebuild(BodyRegion.Abdomen);
-        MotionInjuryBuilder.RebuildDeathFinishers(BodyRegion.Abdomen);
-    }
+    public static void RebuildAbdomen() => MotionInjuryBuilder.RebuildAbdomen();
 
     // Rebuilds a left-knee injury with left-palm ground support and a standing recovery.
     [MenuItem("Bow Man VR/Injuries/Rebuild Left Leg")]
@@ -132,16 +128,6 @@ public static class InjuryAnimationBuilder
                         kneeHeights[side] -= NearbyFloor(root, knee.position) - root.transform.position.y;
                     }
                 }
-                if (region == BodyRegion.Abdomen)
-                {
-                    for (var fit = 0; fit < 3; fit++)
-                    {
-                        Restore(bones, positions, rotations);
-                        AbdomenPose(root, 1f, kneeHeights);
-                        kneeHeights.x -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position) - root.transform.position.y;
-                        kneeHeights.y -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position) - root.transform.position.y;
-                    }
-                }
                 var entry = BuildClip(root, bones, positions, rotations, region, false, kneeHeights);
                 var recovery = BuildClip(root, bones, positions, rotations, region, true, kneeHeights);
                 entry = SaveClip(entry, $"{folder}/{region}_Entry.anim");
@@ -167,7 +153,8 @@ public static class InjuryAnimationBuilder
         Quaternion[] rotations, BodyRegion region, bool recovery, Vector2 kneeHeights)
     {
         const float duration = 0.9f;
-        var rate = region is BodyRegion.LeftArm or BodyRegion.RightArm ? 60f : 30f;
+        var rate = region is BodyRegion.LeftArm or BodyRegion.RightArm or BodyRegion.LeftHand or BodyRegion.RightHand
+            ? 60f : 30f;
         var samples = Mathf.RoundToInt(duration * rate);
         var clip = new AnimationClip { name = region + (recovery ? " Recovery" : " Entry"), frameRate = rate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
@@ -220,9 +207,6 @@ public static class InjuryAnimationBuilder
     {
         switch (region)
         {
-            case BodyRegion.Abdomen:
-                AbdomenPose(root, progress, kneeHeights);
-                break;
             case BodyRegion.LeftLeg: case BodyRegion.RightLeg:
                 LegPose(root, region == BodyRegion.LeftLeg, progress, kneeHeights[region == BodyRegion.LeftLeg ? 0 : 1]);
                 break;
@@ -277,8 +261,24 @@ public static class InjuryAnimationBuilder
         GroundPalm(root, a, false, 1f, -0.08f);
     }
 
+    // Fits each kneepad to the floor and leaves the model in its supported end pose.
+    internal static void FitAbdomenKneel(GameObject root, Transform[] bones, Vector3[] positions, Quaternion[] rotations)
+    {
+        var animator = root.GetComponentInChildren<Animator>();
+        var kneeHeights = Vector2.one * 0.08f;
+        for (var fit = 0; fit < 3; fit++)
+        {
+            Restore(bones, positions, rotations);
+            AbdomenKneel(root, kneeHeights);
+            kneeHeights.x -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position) - root.transform.position.y;
+            kneeHeights.y -= NearbyFloor(root, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position) - root.transform.position.y;
+        }
+        Restore(bones, positions, rotations);
+        AbdomenKneel(root, kneeHeights);
+    }
+
     // Folds over the abdominal wound while placing both visible knees on their fitted support surfaces.
-    private static void AbdomenPose(GameObject root, float progress, Vector2 kneeHeights)
+    private static void AbdomenKneel(GameObject root, Vector2 kneeHeights)
     {
         var a = root.GetComponentInChildren<Animator>();
         var hips = a.GetBoneTransform(HumanBodyBones.Hips);
@@ -286,7 +286,6 @@ public static class InjuryAnimationBuilder
         var thighs = new[] { a.GetBoneTransform(HumanBodyBones.LeftUpperLeg), a.GetBoneTransform(HumanBodyBones.RightUpperLeg) };
         var knees = new[] { a.GetBoneTransform(HumanBodyBones.LeftLowerLeg), a.GetBoneTransform(HumanBodyBones.RightLowerLeg) };
         var feet = new[] { a.GetBoneTransform(HumanBodyBones.LeftFoot), a.GetBoneTransform(HumanBodyBones.RightFoot) };
-        var starts = feet.Select(t => t.position).ToArray();
         var rotations = feet.Select(t => t.rotation).ToArray();
         var upperLengths = Enumerable.Range(0, 2).Select(i => Vector3.Distance(thighs[i].position, knees[i].position)).ToArray();
         var lowerLengths = Enumerable.Range(0, 2).Select(i => Vector3.Distance(knees[i].position, feet[i].position)).ToArray();
@@ -310,22 +309,22 @@ public static class InjuryAnimationBuilder
                 * new Vector3(0f, ankleRise, -ankleBack);
             targets[i] = kneeTargets[i] + ankleOffset;
         }
-        hips.position = Vector3.Lerp(hipStart, finalHip, progress);
-        hips.rotation = Quaternion.AngleAxis(20f * progress, root.transform.right) * hips.rotation;
+        hips.position = finalHip;
+        hips.rotation = Quaternion.AngleAxis(20f, root.transform.right) * hips.rotation;
         var spine = a.GetBoneTransform(HumanBodyBones.Spine);
-        spine.rotation = Quaternion.AngleAxis(25f * progress, root.transform.right) * spine.rotation;
+        spine.rotation = Quaternion.AngleAxis(25f, root.transform.right) * spine.rotation;
         for (var i = 0; i < 2; i++)
         {
             Solve(a, i == 0 ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg,
                 i == 0 ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg,
                 i == 0 ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot,
-                Vector3.Lerp(starts[i], targets[i], progress) + root.transform.up * (0.03f * Mathf.Sin(progress * Mathf.PI)),
+                targets[i],
                 kneeTargets[i] - thighs[i].position);
-            feet[i].rotation = Quaternion.AngleAxis(45f * progress, root.transform.right) * rotations[i];
+            feet[i].rotation = Quaternion.AngleAxis(45f, root.transform.right) * rotations[i];
         }
         var volume = root.GetComponentsInChildren<BodyHitRegion>().Single(r => r.Region == BodyRegion.Abdomen).GetComponent<BoxCollider>();
         var point = volume.transform.TransformPoint(volume.center + Vector3.forward * (volume.size.z * 0.5f));
-        ArcherLimbIK.ReachAbdomen(a, point, volume.transform.forward, progress);
+        ArcherLimbIK.ReachAbdomen(a, point, volume.transform.forward, 1f);
     }
 
     // Lowers the injured knee while the other foot stays planted and the same-side palm supports the bent torso.
@@ -563,35 +562,50 @@ public static class InjuryAnimationBuilder
         healthyHand.rotation = Quaternion.Slerp(healthyHand.rotation, handRotation, reach);
     }
 
-    // Moves the injured hand first and brings the other palm around the torso to support its wrist.
+    // Pulls the injured wrist back before the opposite palm cups it.
     private static void HandPose(GameObject root, bool left, float progress, bool recovery)
     {
-        var a = root.GetComponentInChildren<Animator>();
+        var animator = root.GetComponentInChildren<Animator>();
         var forward = root.transform.forward;
         var up = root.transform.up;
         var side = root.transform.right * (left ? -1f : 1f);
-        var reachArc = Mathf.Sin(Mathf.PI * progress);
-        var supportProgress = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(recovery ? 0.65f : 0.58f, 1f, progress));
-        var hips = a.GetBoneTransform(HumanBodyBones.Hips);
-        var chest = a.GetBoneTransform(HumanBodyBones.UpperChest);
-        chest.rotation = Quaternion.AngleAxis((left ? 8f : -8f) * progress, up) * chest.rotation;
-        var injured = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
-        var healthy = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
-        var target = hips.position + up * 0.33f + forward * 0.341f + side * 0.035f;
-        Solve(a, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+        var flinch = recovery ? 0f : Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.2f, progress)) *
+            (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.2f, 0.6f, progress)));
+        var lift = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.12f, 0.90f, progress));
+        var support = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(recovery ? 0.6f : 0.49f, 1f, progress));
+        var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+        var chest = animator.GetBoneTransform(HumanBodyBones.UpperChest);
+        var head = animator.GetBoneTransform(HumanBodyBones.Head);
+        chest.rotation = Quaternion.AngleAxis((left ? 1f : -1f) * (5f * flinch + 5f * lift), up) * chest.rotation;
+        head.rotation = Quaternion.AngleAxis(15f * lift, root.transform.right) * head.rotation;
+        var wrist = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+        var healthy = animator.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+        var target = hips.position + up * 0.32f + forward * 0.369f + side * 0.075f;
+        var wristArc = Mathf.Sin(Mathf.PI * lift);
+        Solve(animator, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
             left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
             left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
-            Vector3.Lerp(injured.position, target, progress) + forward * (0.264f * reachArc),
-            side + forward * 0.28f);
-        PointHand(a, left, up + forward * 0.2f + side * 0.26f, progress);
-        var support = injured.position - up * 0.005f + forward * 0.065f;
-        Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
+            Vector3.Lerp(wrist.position, target, lift) + (forward * 0.22f + side * 0.09f) * wristArc
+                + (side * 0.13f + up * 0.105f - forward * 0.04f) * flinch,
+            side * 0.59f - up * 0.95f + forward * (0.46f + 0.65f * wristArc));
+        PointHand(animator, left, up + side * 0.18f + forward * 0.24f, Mathf.Max(lift, flinch * 0.64f));
+        var middle = animator.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
+        var index = animator.GetBoneTransform(left ? HumanBodyBones.RightIndexProximal : HumanBodyBones.LeftIndexProximal);
+        var little = animator.GetBoneTransform(left ? HumanBodyBones.RightLittleProximal : HumanBodyBones.LeftLittleProximal);
+        var fingers = middle.position - healthy.position;
+        var palm = Vector3.Cross(fingers, index.position - little.position) * (left ? -1f : 1f);
+        var turn = Quaternion.LookRotation(side + up * 0.35f + forward * 0.42f, up) *
+            Quaternion.Inverse(Quaternion.LookRotation(fingers, palm));
+        var rotation = turn * healthy.rotation;
+        var hold = wrist.position - up * 0.020f + forward * 0.035f - turn * fingers * 0.47f;
+        var supportArc = Mathf.Sin(Mathf.PI * support);
+        Solve(animator, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
             left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
             left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
-            Vector3.Lerp(healthy.position, support, supportProgress) + forward * (0.14f * reachArc),
-            -side * 1.59f + forward * 0.35f - up * 0.23f);
-        var elbow = a.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
-        PointHand(a, !left, elbow.position - healthy.position, progress);
+            Vector3.Lerp(healthy.position, hold, support) + (forward * 0.23f + up * 0.03f) * supportArc,
+            -side * 0.7f - up * 0.46f + forward * (1.2f + 0.6f * supportArc));
+        healthy.rotation = Quaternion.Slerp(healthy.rotation, rotation, support);
+        CurlFingers(animator, !left, 28f * support);
     }
 
     // Replaces clip contents without changing existing asset GUIDs when authoring is rerun.

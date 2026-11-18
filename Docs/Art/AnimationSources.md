@@ -73,7 +73,7 @@ character.
 
 `Falling Down` drives the pelvis stagger and drop. The builder blends out its
 late floor penetration into a fitted, two-palm seat. `Standing` drives the rise
-after an authored pivot to one knee. `Kneeling Down` remains a descent candidate.
+after an authored pivot to one knee. `Kneeling Down` drives the abdominal weight transfer into the fitted double kneel. `Standing` also drives its planted-foot rise.
 `Injured Hurting Idle` holds the upper thigh; it is not a raised-foot reaction.
 `Injured Idle` does not supply the required forearm cradle. Arm Stretching and
 Injured Walking contain useful support movement but do not by themselves complete
@@ -90,7 +90,7 @@ sequences. All fifteen regions retain the behavior in [InjuryReactions.md](../In
 | Head | Existing captured collapse; downloaded Headshot collapse for comparison. | Compare complete movement before choosing any replacement. |
 | Neck | Choking plus Fall to the knees and die candidates. | Actual neck-wound reach, knee buckle and fatal transition need one coherent sequence; no recovery. |
 | Chest | Existing captured back fall and Getting Up; downloaded backward fall/get-up alternatives. | Retain the back-down landing and full hold; do not replace an accepted motion simply to use a new source. |
-| Abdomen | Hit in the stomach, Collapse to the knees, kneel/get-up sources. | Both hands must hold the wound and both knees must reach the ground; separate clips do not yet provide this complete sequence. |
+| Abdomen | Captured Mixamo Kneeling Down and Standing. | Both rigs combine the captured weight transfer with a fitted double kneel and wound brace. Visual acceptance in the review scene remains open. |
 | Pelvis | Captured Mixamo Falling Down and Standing. | Both rigs use the fitted seat and a half-kneel rise. Visual acceptance in the review scene remains open. |
 | Left shoulder | Shot in the shoulder (left). | Fit the right palm to the left shoulder and preserve standing balance. |
 | Right shoulder | Shot in the right shoulder. | Fit the left palm to the right shoulder; check full motion and recovery. |

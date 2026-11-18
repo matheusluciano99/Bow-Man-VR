@@ -482,8 +482,10 @@ public class InjuryAnimationTests
                 player.Entry(region).SampleAnimation(root, player.Entry(region).length);
                 var wrist = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
                 var support = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var supportKnuckle = a.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
                 var fingertip = a.GetBoneTransform(left ? HumanBodyBones.LeftMiddleDistal : HumanBodyBones.RightMiddleDistal);
-                Assert.That(Vector3.Distance(support.position, wrist.position), Is.LessThan(0.09f), name + " " + region);
+                var palm = Vector3.Lerp(support.position, supportKnuckle.position, 0.65f);
+                Assert.That(Vector3.Distance(palm, wrist.position), Is.LessThan(0.05f), name + " " + region);
                 Assert.That(Vector3.Distance(fingertip.position, wrist.position), Is.GreaterThan(0.12f));
                 Assert.That(fingertip.position.y - wrist.position.y, Is.GreaterThan(0.12f));
                 for (var i = 0; i < feet.Length; i++) Assert.That(Vector3.Distance(feet[i].position, planted[i]), Is.LessThan(0.002f));
@@ -501,6 +503,7 @@ public class InjuryAnimationTests
     [TestCase(BodyRegion.RightShoulder)]
     [TestCase(BodyRegion.LeftArm)]
     [TestCase(BodyRegion.RightArm)]
+    [TestCase(BodyRegion.Abdomen)]
     [TestCase(BodyRegion.Pelvis)]
     public void UpperBodySequencesClearTorsoThroughRecoilRecoveryAndCollapse(BodyRegion region)
     {
@@ -512,7 +515,7 @@ public class InjuryAnimationTests
             var forearms = new[] { animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
                 animator.GetBoneTransform(HumanBodyBones.RightLowerArm) };
             var regions = root.GetComponentsInChildren<BodyHitRegion>();
-            var includeBoots = region == BodyRegion.Pelvis;
+            var includeBoots = region is BodyRegion.Pelvis or BodyRegion.Abdomen;
             var limbs = regions.Where(r => r.Region is BodyRegion.LeftHand or BodyRegion.RightHand ||
                 forearms.Contains(r.transform.parent) ||
                 includeBoots && r.Region is (BodyRegion.LeftFoot or BodyRegion.RightFoot))
@@ -941,11 +944,14 @@ public class InjuryAnimationTests
             var point = box.transform.TransformPoint(box.center + Vector3.forward * (box.size.z * 0.5f));
             var right = a.GetBoneTransform(HumanBodyBones.RightHand);
             var left = a.GetBoneTransform(HumanBodyBones.LeftHand);
-            Assert.That(Vector3.Distance(right.position, point), Is.LessThan(0.08f));
-            Assert.That(Vector3.Distance(left.position, point), Is.LessThan(0.1f));
+            Assert.That(Vector3.Distance(a.GetBoneTransform(HumanBodyBones.RightMiddleProximal).position, point), Is.LessThan(0.1f));
+            Assert.That(Vector3.Distance(a.GetBoneTransform(HumanBodyBones.LeftMiddleProximal).position, point), Is.LessThan(0.1f));
+            var supportedRight = right.position;
+            var supportedLeft = left.position;
             var recovery = actor.Recovery(BodyRegion.Abdomen);
             recovery.SampleAnimation(root, 0f);
-            Assert.That(Vector3.Distance(right.position, point), Is.LessThan(0.08f));
+            Assert.That(Vector3.Distance(right.position, supportedRight), Is.LessThan(0.001f));
+            Assert.That(Vector3.Distance(left.position, supportedLeft), Is.LessThan(0.001f));
             for (var frame = 0; frame <= 81; frame++)
             {
                 recovery.SampleAnimation(root, recovery.length * frame / 81f);
@@ -993,6 +999,7 @@ public class InjuryAnimationTests
         foreach (var offset in new[] { -0.08f, 0.08f })
         {
             var flow = BodyShot(out var target, out var arrow, BodyRegion.Abdomen);
+            var actor = target.GetComponent<ArcherReactionAnimation>();
             arrow.transform.position += Vector3.right * offset;
             var landed = -1f;
             var recoveryStarted = -1f;
@@ -1003,19 +1010,19 @@ public class InjuryAnimationTests
                 if (flow.Phase == DuelPhase.Recovering) recoveryStarted = Time.time;
                 if (flow.Phase == DuelPhase.Aiming) ready = Time.time;
             };
-            yield return new WaitForSeconds(1.1f);
+            yield return new WaitForSeconds(actor.Entry(BodyRegion.Abdomen).length + 0.18f);
             Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
             Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Abdomen));
             var a = target.GetComponentInChildren<Animator>();
             var spine = a.GetBoneTransform(HumanBodyBones.Spine);
             var right = a.GetBoneTransform(HumanBodyBones.RightHand);
             var left = a.GetBoneTransform(HumanBodyBones.LeftHand);
-            var expected = arrow.transform.position + spine.right * 0.05f - arrow.transform.forward * 0.03f;
+            var expected = arrow.transform.position + spine.right * 0.079f - arrow.transform.forward * 0.068f + spine.up * 0.062f;
             Assert.That(Vector3.Distance(right.position, expected), Is.LessThan(0.008f));
-            expected = arrow.transform.position - spine.right * 0.05f - spine.up * 0.04f - arrow.transform.forward * 0.03f;
+            expected = arrow.transform.position - spine.right * 0.079f - arrow.transform.forward * 0.068f + spine.up * 0.05f;
             Assert.That(Vector3.Distance(left.position, expected), Is.LessThan(0.008f));
             Assert.That(flow.CanShoot(1), Is.False);
-            yield return new WaitForSeconds(4.1f);
+            yield return new WaitForSeconds(3f + actor.Recovery(BodyRegion.Abdomen).length + 0.1f);
             Assert.That(flow.CanShoot(1), Is.True);
             Assert.That(landed, Is.GreaterThan(0f));
             Assert.That(recoveryStarted - landed, Is.GreaterThanOrEqualTo(2.995f));
@@ -1030,7 +1037,8 @@ public class InjuryAnimationTests
     public IEnumerator DeathInterruptsAbdominalRecovery()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Abdomen);
-        yield return new WaitForSeconds(4.1f);
+        var actor = target.GetComponent<ArcherReactionAnimation>();
+        yield return new WaitForSeconds(actor.Entry(BodyRegion.Abdomen).length + 3.2f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         target.TakeDamage(100);
         var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);

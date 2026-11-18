@@ -4,8 +4,13 @@ namespace BowMan
 {
     public static class ArcherLimbIK
     {
+        // Reaches early in the descent and keeps the wound covered until standing is underway.
+        public static float AbdomenReachWeight(float progress, bool recovering) => recovering
+            ? 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.4f, 0.85f, progress))
+            : Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.04f, 0.34f, progress));
+
         // Braces the actual abdominal wound with both hands while retaining the character's measured arm lengths.
-        public static void ReachAbdomen(Animator animator, Vector3 point, Vector3 outward, float weight)
+        public static void ReachAbdomen(Animator animator, Vector3 point, Vector3 outward, float weight, float passAround = 0f)
         {
             if (weight <= 0f) return;
             var spine = animator.GetBoneTransform(HumanBodyBones.Spine);
@@ -13,13 +18,20 @@ namespace BowMan
             {
                 var left = handIndex == 1;
                 var wrist = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
-                var target = point + spine.right * (left ? -0.05f : 0.05f) + outward * 0.03f;
-                if (left) target -= spine.up * 0.04f;
+                var side = spine.right * (left ? -1f : 1f);
+                var target = point + side * 0.079f + outward * 0.068f + spine.up * (left ? 0.05f : 0.062f);
                 Solve(animator, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
                     left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
                     left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
-                    Vector3.Lerp(wrist.position, target, weight), spine.right * (left ? -1f : 1f) + outward * 0.3f);
-                PointHand(animator, left, spine.right * (left ? 1f : -1f), weight);
+                    Vector3.Lerp(wrist.position, target, weight) + (side * 0.12f + outward * 0.21f) * passAround,
+                    side - spine.up * 0.6f + outward * (0.85f + 0.3f * passAround));
+                var middle = animator.GetBoneTransform(left ? HumanBodyBones.LeftMiddleProximal : HumanBodyBones.RightMiddleProximal);
+                var index = animator.GetBoneTransform(left ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal);
+                var little = animator.GetBoneTransform(left ? HumanBodyBones.LeftLittleProximal : HumanBodyBones.RightLittleProximal);
+                var fingers = middle.position - wrist.position;
+                var palm = Vector3.Cross(fingers, index.position - little.position) * (left ? 1f : -1f);
+                var turn = Quaternion.LookRotation(-side, -outward) * Quaternion.Inverse(Quaternion.LookRotation(fingers, palm));
+                wrist.rotation = Quaternion.Slerp(wrist.rotation, turn * wrist.rotation, weight);
             }
         }
 

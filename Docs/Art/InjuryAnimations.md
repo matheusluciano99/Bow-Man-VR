@@ -59,7 +59,7 @@ The wrist target is derived from the point where the palm reaches the shoulder. 
 
 Use Bow Man VR > Injuries > Rebuild Left Hand or Rebuild Right Hand for the independent hand/wrist sequences. Its clip explicitly binds the injured fingers to their open pose so another animation cannot leave them clenched. It is independent of shoulder cupping and arm cradling.
 
-The injured hand recoils first. The support hand approaches from in front of the torso and releases earlier during recovery. Hand rebuilds also update the fatal continuation from the final supported pose. The PlayMode clearance check samples the forearms and hands against the torso volumes on both models in all three clips.
+The injured hand withdraws and opens first as the archer looks toward it. The opposite palm cups the wrist from underneath, flexes its fingers for support, and releases before the injured hand lowers. Hand rebuilds also update the fatal continuation from the final supported pose. The PlayMode clearance check samples the forearms and hands against the torso volumes on both models in all three clips.
 
 Use Bow Man VR > Injuries > Rebuild Chest Fall for the Mixamo-backed chest entry. It trims source time 0.5–3.2 seconds, blends the first 0.18 seconds from neutral, bakes sampled root motion into the hips and raises penetrating samples using actual visible skin vertices. The 2.7-second entry ends face-up with ground contact before the three-second hold begins. It never substitutes the rejected face-down motion. An entry can run before its recovery is authored; the review panel keeps separate manual callbacks for whichever half is missing. See [motion provenance](CharacterAssets.md#injury-motion-sources).
 
@@ -73,9 +73,9 @@ Use Bow Man VR > Injuries > Rebuild Left Leg for the left-knee and same-side gro
 
 Use Bow Man VR > Injuries > Rebuild Right Leg for the independent right-knee sequence. It fits the right kneepad and right glove to the ground on each actual model while preserving the planted left foot. It does not reuse the left clip or substitute the right-foot lift.
 
-Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. It fits each visible kneepad separately, folds the torso and braces the front abdominal surface. Runtime fitting moves both hands to the actual bone-local wound/arrow approach, retaining that pose through the three-second hold and releasing it during recovery. The pelvis keeps a separate seated-fall reaction.
+Use Bow Man VR > Injuries > Rebuild Abdomen for the abdominal sequence. The archer folds and reaches for the wound, then shifts weight with the captured descent into a fitted double kneel. After the three-second hold, the archer plants a boot and pushes through a captured rise. Runtime fitting keeps the hands near the actual bone-local wound through the hold and releases them during recovery.
 
-The kneeling pose angles the boots outward to clear the pelvis while both knees keep their ground contacts. The rebuild also updates the fatal continuation from the new kneeling pose. PlayMode checks measure boot and pelvis clearance throughout entry, recovery and collapse on both archers.
+The kneeling pose fits each visible kneepad and angles the boots away from the hips. The rebuild also updates the fatal continuation from the kneel. PlayMode checks sample the forearms, hands, and boots against the body volumes on both archers.
 
 Use Bow Man VR > Injuries > Rebuild Pelvis to retarget the recorded stagger and fall into the fitted seated pose. Both palms brace behind the hips during the three-second hold. The return moves through a half-kneel with one palm supporting the pivot. The captured rise bears weight on the planted lead boot before returning to the archer's ready stance.
 

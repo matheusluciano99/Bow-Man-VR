@@ -198,6 +198,173 @@ public static class MotionInjuryBuilder
         AssetDatabase.SaveAssets();
     }
 
+    // Blends captured weight transfer with a fitted double kneel and keeps the hands at the wound.
+    internal static void RebuildAbdomen()
+    {
+        var drop = ImportMotion("Kneeling Down");
+        var rise = ImportMotion("Standing");
+        const float entryLength = 1.25f;
+        const float recoveryLength = 1.65f;
+        const float standFromKneel = 0.45f;
+        const float sourceRiseEnd = 2.12f;
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            var mesh = new Mesh();
+            try
+            {
+                var animator = root.GetComponentInChildren<Animator>();
+                var bones = animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var neutral = bones.Select(t => t.localRotation).ToArray();
+                var positions = bones.Select(t => t.localPosition).ToArray();
+                var modelPosition = animator.transform.localPosition;
+                var modelRotation = animator.transform.localRotation;
+                var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var neutralHip = hips.position;
+                var spine = animator.GetBoneTransform(HumanBodyBones.Spine);
+                var head = animator.GetBoneTransform(HumanBodyBones.Head);
+                var front = root.transform.forward;
+                var up = root.transform.up;
+                var right = root.transform.right;
+                var hitRegions = root.GetComponentsInChildren<BodyHitRegion>();
+                var abdomen = hitRegions.Single(hit => hit.Region == BodyRegion.Abdomen).GetComponent<BoxCollider>();
+                var hipVolume = hitRegions.Single(hit => hit.Region == BodyRegion.Pelvis).GetComponent<Collider>();
+                var bodyVolumes = CoreVolumes(hitRegions);
+                var leftElbow = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+                var rightElbow = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
+                var leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+                var rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+                var leftVolumes = ForearmVolumes(hitRegions, leftElbow, leftHand);
+                var rightVolumes = ForearmVolumes(hitRegions, rightElbow, rightHand);
+                var bootVolumes = hitRegions.Where(hit => hit.Region is BodyRegion.LeftFoot or BodyRegion.RightFoot)
+                    .Select(hit => hit.GetComponent<Collider>()).ToArray();
+                var leadFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+                var neutralLeadFoot = leadFoot.position;
+
+                InjuryAnimationBuilder.FitAbdomenKneel(root, bones, positions, neutral);
+                FitContacts(1f, false);
+                var kneeling = bones.Select(t => t.localRotation).ToArray();
+                var kneelPositions = bones.Select(t => t.localPosition).ToArray();
+
+                SampleLowerBody(drop, 0f);
+                var dropOffset = Vector3.ProjectOnPlane(neutralHip - hips.position, up);
+                SampleLowerBody(rise, sourceRiseEnd);
+                var riseOffset = Vector3.ProjectOnPlane(neutralHip - hips.position, up);
+                SampleLowerBody(rise, 0f);
+                var plantedLead = leadFoot.position + riseOffset;
+                plantedLead.y = neutralLeadFoot.y;
+                var leadRotation = leadFoot.rotation;
+                var weightBearing = new[] { HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot };
+
+                var entry = Record(root, bones, entryLength, time =>
+                {
+                    if (time <= 0f) { Restore(bones, positions, neutral); return; }
+                    if (time >= entryLength) { Restore(bones, kneelPositions, kneeling); return; }
+                    var sourceTime = Mathf.Lerp(0.12f, 2.15f, Mathf.InverseLerp(0.18f, entryLength, time));
+                    SampleLowerBody(drop, sourceTime);
+                    hips.position += dropOffset;
+                    var fold = Ease(time, 0.03f, 0.36f);
+                    spine.rotation = Quaternion.AngleAxis(23f * fold, right) * spine.rotation;
+                    head.rotation = Quaternion.AngleAxis(12f * fold, right) * head.rotation;
+                    BlendFrom(positions, neutral, Ease(time, 0f, 0.22f));
+                    BlendFrom(kneelPositions, kneeling, 1f - Ease(time, 0.73f, entryLength));
+                    FitContacts(time / entryLength, false);
+                });
+                var recovery = Record(root, bones, recoveryLength, time =>
+                {
+                    if (time <= 0f) { Restore(bones, kneelPositions, kneeling); return; }
+                    if (time >= recoveryLength) { Restore(bones, positions, neutral); return; }
+                    var sourceTime = Mathf.Lerp(0f, sourceRiseEnd, Mathf.InverseLerp(standFromKneel, recoveryLength, time));
+                    SampleLowerBody(rise, sourceTime);
+                    hips.position += riseOffset;
+                    var fold = 1f - Ease(time, 0.58f, 1.22f);
+                    spine.rotation = Quaternion.AngleAxis(21f * fold, right) * spine.rotation;
+                    head.rotation = Quaternion.AngleAxis(11f * fold, right) * head.rotation;
+                    BlendFrom(kneelPositions, kneeling, Ease(time, 0f, standFromKneel));
+                    BlendFrom(positions, neutral, 1f - Ease(time, 1.35f, recoveryLength));
+                    var plant = Ease(time, 0.18f, standFromKneel) * (1f - Ease(sourceTime, 1.2f, 1.55f));
+                    if (plant > 0f)
+                    {
+                        var rotation = leadFoot.rotation;
+                        ArcherLimbIK.Solve(animator, weightBearing[0], weightBearing[1], weightBearing[2],
+                            Vector3.Lerp(leadFoot.position, plantedLead, plant), front);
+                        leadFoot.rotation = Quaternion.Slerp(rotation, leadRotation, plant);
+                    }
+                    FitContacts(time / recoveryLength, true);
+                });
+
+                entry.name = "Abdomen Entry";
+                recovery.name = "Abdomen Recovery";
+                var folder = $"Assets/_Game/Animations/Injuries/{name}";
+                entry = InjuryAnimationBuilder.SaveClip(entry, $"{folder}/Abdomen_Entry.anim");
+                recovery = InjuryAnimationBuilder.SaveClip(recovery, $"{folder}/Abdomen_Recovery.anim");
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    prefab.GetComponent<ArcherReactionAnimation>().SetSequence(BodyRegion.Abdomen, entry, recovery);
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+
+                // Keeps captured hip and leg motion while restoring the upper-body reference.
+                void SampleLowerBody(AnimationClip source, float time)
+                {
+                    Restore(bones, positions, neutral);
+                    Sample(animator, source, time, modelPosition, modelRotation);
+                    for (var i = 0; i < bones.Length; i++)
+                    {
+                        if (bones[i] == hips) continue;
+                        bones[i].localPosition = positions[i];
+                        if (bones[i] == spine || bones[i].IsChildOf(spine)) bones[i].localRotation = neutral[i];
+                    }
+                }
+
+                // Transitions from an exact neutral or fitted kneeling pose to the current sampled pose.
+                void BlendFrom(Vector3[] startPositions, Quaternion[] startRotations, float weight)
+                {
+                    for (var i = 0; i < bones.Length; i++)
+                    {
+                        bones[i].localPosition = Vector3.Lerp(startPositions[i], bones[i].localPosition, weight);
+                        bones[i].localRotation = Quaternion.Slerp(startRotations[i], bones[i].localRotation, weight);
+                    }
+                }
+
+                // Maintains the wound reach and prevents the boots from tucking through the hips.
+                void FitContacts(float progress, bool recovering)
+                {
+                    var point = abdomen.transform.TransformPoint(abdomen.center + Vector3.forward * (abdomen.size.z * 0.5f));
+                    var reach = ArcherLimbIK.AbdomenReachWeight(progress, recovering);
+                    ArcherLimbIK.ReachAbdomen(animator, point, abdomen.transform.forward, reach, Mathf.Sin(Mathf.PI * reach));
+                    ArcherLimbIK.ClearForearm(animator, true, leftVolumes, bodyVolumes);
+                    ArcherLimbIK.ClearForearm(animator, false, rightVolumes, bodyVolumes);
+                    foreach (var boot in bootVolumes)
+                    {
+                        if (!Physics.ComputePenetration(boot, boot.transform.position, boot.transform.rotation,
+                            hipVolume, hipVolume.transform.position, hipVolume.transform.rotation, out var away, out var depth)) continue;
+                        var left = boot.GetComponent<BodyHitRegion>().Region == BodyRegion.LeftFoot;
+                        var thigh = left ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg;
+                        var knee = left ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg;
+                        var foot = left ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot;
+                        var ankle = animator.GetBoneTransform(foot);
+                        var rotation = ankle.rotation;
+                        ArcherLimbIK.Solve(animator, thigh, knee, foot, ankle.position + away * (depth + 0.006f),
+                            animator.GetBoneTransform(knee).position - animator.GetBoneTransform(thigh).position);
+                        ankle.rotation = rotation;
+                    }
+                    Ground(root, hips, mesh);
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(mesh);
+                UnityEngine.Object.DestroyImmediate(root);
+            }
+        }
+        RebuildDeathFinishers(BodyRegion.Abdomen);
+        AssetDatabase.SaveAssets();
+    }
+
     // Eases into the next contact without changing the sampled motion's time.
     private static float Ease(float time, float start, float end) =>
         Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(start, end, time));
@@ -430,16 +597,17 @@ public static class MotionInjuryBuilder
                     Ground(root, hips, mesh);
                     var targetPositions = bones.Select(t => t.localPosition).ToArray();
                     var targetRotations = bones.Select(t => t.localRotation).ToArray();
-                    var isArm = region is BodyRegion.LeftArm or BodyRegion.RightArm;
+                    var fitBothArms = region is BodyRegion.LeftArm or BodyRegion.RightArm or
+                        BodyRegion.LeftHand or BodyRegion.RightHand or BodyRegion.Abdomen;
                     var supportLeft = region is BodyRegion.RightShoulder or BodyRegion.RightArm;
                     Collider[] supportVolumes = null;
                     Collider[] injuredVolumes = null;
-                    if (isArm || region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
+                    if (fitBothArms || region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
                     {
                         var elbow = animator.GetBoneTransform(supportLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
                         var wrist = animator.GetBoneTransform(supportLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
                         supportVolumes = ForearmVolumes(hitRegions, elbow, wrist);
-                        if (isArm)
+                        if (fitBothArms)
                         {
                             var injuredElbow = animator.GetBoneTransform(supportLeft ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm);
                             var injuredWrist = animator.GetBoneTransform(supportLeft ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);

@@ -146,9 +146,9 @@ namespace BowMan
                     woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
             if (region == BodyRegion.Abdomen && woundAnchor != null && !finishingDeath)
             {
-                var progress = Mathf.SmoothStep(0f, 1f, elapsed / playing.length);
+                var reach = ArcherLimbIK.AbdomenReachWeight(elapsed / playing.length, recovering);
                 ArcherLimbIK.ReachAbdomen(poseAnimator, woundAnchor.TransformPoint(woundPoint),
-                    woundAnchor.TransformDirection(woundOutward).normalized, recovering ? 1f - progress : progress);
+                    woundAnchor.TransformDirection(woundOutward).normalized, reach);
             }
             if (elapsed < playing.length) return;
             playing = null;

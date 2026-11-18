@@ -107,6 +107,8 @@ Chest recovery uses Mixamo **Getting Up**, the first catalog variant described a
 Fatal body finishers also use the final prone pose from Mixamo **Standing Death Backward 01** (first catalog variant, “Death Reaction Falling Backwards With Bow”), exported on Erika Archer as FBX Binary/Without Skin/30 fps/no key reduction. Source: `Assets/ThirdParty/MixamoAnimations/Motions/Standing Death Backward 01.fbx` (517,904 bytes; SHA-256 `98c135fac460ec4b9ea8c410fb54ce0f214bc32200eac6d4f2ef7ea190f725ad`). The earlier chest rejection still applies: this motion ends face-down. Only its retargeted final pose is used for front-collapse body finishers, with the head oriented forward. Chest/pelvis finishers retain a back-down target. All use the same recorded Mixamo game-use terms.
 
 The pelvis reaction uses Mixamo **Falling Down** and **Standing**, captured on Erika Archer at 30 fps. The original FBXs are kept in `Assets/ThirdParty/MixamoAnimations/Motions/`. The SHA-256 hashes are `baa0e7451f8161bfd566cff42b6a419cce5a0f1199bde8b6ad81c5b2a999d112` and `295427037bff5e957010eeb335a218ab659872e26b2441fce0163bde86ab9e60`, respectively. The same Mixamo game-use terms apply.
+
+The abdomen reaction uses Mixamo **Kneeling Down** and **Standing**. The original 30 fps `Kneeling Down.fbx` is kept in the same source folder. Its SHA-256 is `13e46cc752262d443bb9567443484ff2bb62deda5c3fc36b588bb9c757f3f06c`.
 ## Interactive bow
 
 `Assets/_Game/Prefabs/Bow.prefab` references the English Archer FBX's existing
