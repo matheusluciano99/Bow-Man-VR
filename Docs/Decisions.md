@@ -239,6 +239,7 @@ match result immediately; the visual sequence does not delay the result or run
 a surviving hold, recovery or turn handoff. Death during an existing reaction
 or recovery interrupts getting up and finishes the collapse from the current
 pose. Preserve the independent head and neck fatal sequences.
+
 ## D020 — Keep one XR session and one shot authority for the local duel
 
 Use the existing tracked bow and AI with DuelTurnFlow; every released arrow
