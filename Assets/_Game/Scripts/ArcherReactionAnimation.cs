@@ -7,6 +7,7 @@ namespace BowMan
     public sealed class ArcherReactionAnimation : MonoBehaviour
     {
         private const float FootRecoveryDuration = 0.8f;
+        private const float ChestRecoveryDuration = 3.6f;
 
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
@@ -128,8 +129,12 @@ namespace BowMan
                 }
                 return;
             }
-            var recoverySpeed = recovering && (region is BodyRegion.LeftFoot or BodyRegion.RightFoot)
-                ? playing.length / FootRecoveryDuration : 1f;
+            var recoverySpeed = recovering ? region switch
+            {
+                BodyRegion.Chest => playing.length / ChestRecoveryDuration,
+                BodyRegion.LeftFoot or BodyRegion.RightFoot => playing.length / FootRecoveryDuration,
+                _ => 1f
+            } : 1f;
             elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
             if (finishingDeath && elapsed < 0.15f)

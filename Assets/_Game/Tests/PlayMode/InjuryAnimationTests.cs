@@ -645,6 +645,48 @@ public class InjuryAnimationTests
         }
     }
 
+    // Checks the fitted hand and boot paths between animation samples on both target rigs.
+    [Test]
+    public void ChestRecoveryClearsTheCoreWithoutWristJumps()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var rig = root.GetComponentInChildren<Animator>();
+            var clip = root.GetComponent<ArcherReactionAnimation>().Recovery(BodyRegion.Chest);
+            var volumes = root.GetComponentsInChildren<BodyHitRegion>();
+            var core = volumes.Where(h => h.Region is BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis
+                or BodyRegion.Head or BodyRegion.Neck).Select(h => h.GetComponent<Collider>()).ToArray();
+            var distalBones = new[] { HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm,
+                HumanBodyBones.LeftHand, HumanBodyBones.RightHand, HumanBodyBones.LeftLowerLeg,
+                HumanBodyBones.RightLowerLeg, HumanBodyBones.LeftFoot, HumanBodyBones.RightFoot }
+                .Select(rig.GetBoneTransform).ToArray();
+            var limbs = volumes.Where(h => distalBones.Contains(h.transform.parent))
+                .Select(h => h.GetComponent<Collider>()).ToArray();
+            var frames = Mathf.CeilToInt(120f * clip.length);
+            clip.SampleAnimation(root, 0f);
+            var previous = distalBones.Select(t => t.position).ToArray();
+
+            for (var frame = 0; frame <= frames; frame++)
+            {
+                clip.SampleAnimation(root, clip.length * frame / frames);
+                foreach (var limb in limbs)
+                foreach (var torso in core)
+                    if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
+                        torso, torso.transform.position, torso.transform.rotation, out _, out var depth))
+                        Assert.That(depth, Is.LessThan(0.003f), $"{name} {limb.name}/{torso.name} frame {frame}");
+
+                for (var joint = 0; joint < 4; joint++)
+                {
+                    Assert.That(Vector3.Distance(previous[joint], distalBones[joint].position),
+                        Is.LessThan(0.04f), $"{name} {distalBones[joint].name} frame {frame}");
+                    previous[joint] = distalBones[joint].position;
+                }
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
     // Grants the surviving archer a turn only after landing, three seconds down and the complete get-up.
     [UnityTest]
     public IEnumerator ChestRecoveryFinishesBeforeGrantingTheNextTurn()
@@ -657,10 +699,10 @@ public class InjuryAnimationTests
         yield return new WaitForSeconds(0.7f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         Assert.That(flow.CanShoot(1), Is.False);
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(3f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         Assert.That(flow.CanShoot(1), Is.False);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.55f);
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));

@@ -328,6 +328,9 @@ waiting for unrelated attacks while comparing regional motion.
 
 ## Open questions and provisional values
 
+- Chest playback keeps the reviewed fall and the agreed three-second hold.
+  The get-up takes 3.6 seconds for the next pace review.
+
 - Additional archer variants and later visual refinements remain open. The current
   prototype uses English Archer and Erika; local full-body rendering is outside
   the agreed hands/controllers presentation.

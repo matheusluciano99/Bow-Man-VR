@@ -680,6 +680,8 @@ public static class MotionInjuryBuilder
                 var modelPosition = animator.transform.localPosition;
                 var modelRotation = animator.transform.localRotation;
                 var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var pelvis = root.GetComponentsInChildren<BodyHitRegion>()
+                    .Single(part => part.Region == BodyRegion.Pelvis).transform;
                 var neutralHips = hips.position;
                 var player = root.GetComponent<ArcherReactionAnimation>();
                 var entry = player.Entry(BodyRegion.Chest);
@@ -710,7 +712,8 @@ public static class MotionInjuryBuilder
                             bones[i].localPosition = Vector3.Lerp(bones[i].localPosition, neutralPositions[i], ready);
                             bones[i].localRotation = Quaternion.Slerp(bones[i].localRotation, neutralRotations[i], ready);
                         }
-                        Ground(root, hips, mesh);
+                        FitChestRecoveryLimbs(animator, pelvis, time);
+                        Ground(root, hips, mesh, 0f);
                     });
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
@@ -728,6 +731,34 @@ public static class MotionInjuryBuilder
             finally { UnityEngine.Object.DestroyImmediate(root); }
         }
         AssetDatabase.SaveAssets();
+    }
+
+    // Guides the supporting limbs around the torso without shortening their measured bone lengths.
+    private static void FitChestRecoveryLimbs(Animator animator, Transform pelvis, float time)
+    {
+        Move(HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand,
+            -pelvis.right * (0.155f * Weight(0.16f, 0.275f, 0.53f, 0.79f)));
+        Move(HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot,
+            (pelvis.root.right * .018f + pelvis.root.forward * .028f) * Weight(2.52f, 2.67f, 2.87f, 3.04f));
+        Move(HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
+            (pelvis.root.right * .030f + pelvis.root.forward * .040f) * Weight(3.68f, 3.82f, 4.04f, 4.22f));
+
+        // Eases in and out on the authored contact interval.
+        float Weight(float start, float enter, float leave, float end) =>
+            Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(start, enter, time)) *
+            Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(leave, end, time));
+
+        // Shifts the wrist or ankle while preserving the captured palm or boot rotation.
+        void Move(HumanBodyBones upperId, HumanBodyBones lowerId, HumanBodyBones endId, Vector3 offset)
+        {
+            if (offset == Vector3.zero) return;
+            var upper = animator.GetBoneTransform(upperId);
+            var lower = animator.GetBoneTransform(lowerId);
+            var end = animator.GetBoneTransform(endId);
+            var rotation = end.rotation;
+            ArcherLimbIK.Solve(animator, upperId, lowerId, endId, end.position + offset, lower.position - upper.position);
+            end.rotation = rotation;
+        }
     }
 
     // Retargets the chest fall onto each owned skeleton and preserves its other injury clips.
