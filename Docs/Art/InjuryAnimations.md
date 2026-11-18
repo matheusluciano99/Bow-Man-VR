@@ -49,7 +49,9 @@ Tests sample entry and recovery across both visible skins, require the healthy f
 
 The pose/skin/contact checks establish desktop prototype readiness, not final animation polish or Quest 2 comfort. The local eye-view integration and headset acceptance for each reaction remain separate. See [the agreed table](../InjuryReactions.md), [turn contract](../TurnFlow.md) and [rig preparation](RigPreparation.md).
 
-Use Bow Man VR > Injuries > Rebuild Left Arm or Rebuild Right Arm for the independent arm sequences. Its opposite-hand wrist support is fitted to the injured forearm; both feet remain in their neutral planted positions. The arm reaction is independent of shoulder and hand reactions.
+Use Bow Man VR > Injuries > Rebuild Left Arm or Rebuild Right Arm for the independent arm sequences. The injured arm flinches first. The archer looks toward the wound as the opposite palm cups the forearm from underneath. The support fingers curl around the forearm and release before the injured arm lowers. Both feet stay planted.
+
+The arm rebuild fits both forearms against the head, neck and torso volumes through recoil, recovery and collapse. The final clips use the character's own arm lengths and anatomical palm orientation.
 
 Use Bow Man VR > Injuries > Rebuild Left Shoulder or Rebuild Right Shoulder for the independent shoulder sequences. The opposite palm reaches the shoulder cap; it does not reuse the forearm cradle or the hand/wrist reaction.
 

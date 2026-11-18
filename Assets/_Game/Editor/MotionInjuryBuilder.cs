@@ -430,13 +430,21 @@ public static class MotionInjuryBuilder
                     Ground(root, hips, mesh);
                     var targetPositions = bones.Select(t => t.localPosition).ToArray();
                     var targetRotations = bones.Select(t => t.localRotation).ToArray();
-                    var supportLeft = region == BodyRegion.RightShoulder;
+                    var isArm = region is BodyRegion.LeftArm or BodyRegion.RightArm;
+                    var supportLeft = region is BodyRegion.RightShoulder or BodyRegion.RightArm;
                     Collider[] supportVolumes = null;
-                    if (region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
+                    Collider[] injuredVolumes = null;
+                    if (isArm || region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
                     {
                         var elbow = animator.GetBoneTransform(supportLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
                         var wrist = animator.GetBoneTransform(supportLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
                         supportVolumes = ForearmVolumes(hitRegions, elbow, wrist);
+                        if (isArm)
+                        {
+                            var injuredElbow = animator.GetBoneTransform(supportLeft ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm);
+                            var injuredWrist = animator.GetBoneTransform(supportLeft ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                            injuredVolumes = ForearmVolumes(hitRegions, injuredElbow, injuredWrist);
+                        }
                     }
                     var clip = Record(root, bones, 0.8f, time =>
                     {
@@ -449,6 +457,8 @@ public static class MotionInjuryBuilder
                         if (time <= 0f) return;
                         if (supportVolumes != null)
                             ArcherLimbIK.ClearForearm(animator, supportLeft, supportVolumes, bodyVolumes);
+                        if (injuredVolumes != null)
+                            ArcherLimbIK.ClearForearm(animator, !supportLeft, injuredVolumes, bodyVolumes);
                         Ground(root, hips, mesh);
                     });
                     clip.name = region + " Death";
@@ -475,12 +485,12 @@ public static class MotionInjuryBuilder
     }
 
     // Returns the central colliders used to check nonadjacent arm penetration.
-    private static Collider[] CoreVolumes(BodyHitRegion[] regions) =>
+    internal static Collider[] CoreVolumes(BodyHitRegion[] regions) =>
         regions.Where(hit => hit.Region is BodyRegion.Head or BodyRegion.Neck or BodyRegion.Chest or
             BodyRegion.Abdomen or BodyRegion.Pelvis).Select(hit => hit.GetComponent<Collider>()).ToArray();
 
     // Returns the hand and forearm colliders attached to the two distal joints.
-    private static Collider[] ForearmVolumes(BodyHitRegion[] regions, Transform elbow, Transform wrist) =>
+    internal static Collider[] ForearmVolumes(BodyHitRegion[] regions, Transform elbow, Transform wrist) =>
         regions.Where(hit => hit.transform.parent == elbow || hit.transform.parent == wrist)
             .Select(hit => hit.GetComponent<Collider>()).ToArray();
 

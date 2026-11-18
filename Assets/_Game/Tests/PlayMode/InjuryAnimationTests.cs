@@ -353,13 +353,16 @@ public class InjuryAnimationTests
                 var leftStart = leftFoot.position;
                 var rightStart = rightFoot.position;
                 var entry = actor.Entry(region);
-                entry.SampleAnimation(root, entry.length);
                 var elbow = animator.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
                 var wrist = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
                 var support = animator.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                entry.SampleAnimation(root, entry.length * 0.25f);
+                Assert.That(Vector3.Distance(wrist.position, support.position), Is.GreaterThan(0.2f), name + " recoil " + region);
+                entry.SampleAnimation(root, entry.length);
                 var segment = wrist.position - elbow.position;
                 var closest = elbow.position + segment * Mathf.Clamp01(Vector3.Dot(support.position - elbow.position, segment) / segment.sqrMagnitude);
                 Assert.That(Vector3.Distance(support.position, closest), Is.LessThan(0.07f), name + " " + region);
+                Assert.That(PalmNormal(animator, !left).y, Is.GreaterThan(0.85f), name + " support " + region);
                 Assert.That(wrist.position.y, Is.GreaterThan(1.1f));
                 Assert.That(Vector3.Distance(leftFoot.position, leftStart), Is.LessThan(0.002f));
                 Assert.That(Vector3.Distance(rightFoot.position, rightStart), Is.LessThan(0.002f));
@@ -496,6 +499,8 @@ public class InjuryAnimationTests
     [TestCase(BodyRegion.RightHand)]
     [TestCase(BodyRegion.LeftShoulder)]
     [TestCase(BodyRegion.RightShoulder)]
+    [TestCase(BodyRegion.LeftArm)]
+    [TestCase(BodyRegion.RightArm)]
     [TestCase(BodyRegion.Pelvis)]
     public void UpperBodySequencesClearTorsoThroughRecoilRecoveryAndCollapse(BodyRegion region)
     {
