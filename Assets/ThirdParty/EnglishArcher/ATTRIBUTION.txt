@@ -3,3 +3,6 @@ Source: https://sketchfab.com/3d-models/english-archer-8571c31e9c934458be2e434de
 License: Creative Commons Attribution 4.0 International
 https://creativecommons.org/licenses/by/4.0/
 Original GLB preserved locally. Unity preview converted to FBX with extracted textures using Blender 4.5.16. No rig or animation added.
+EnglishArcher_Rigged.fbx is a prepared derivative with fitted skinning, a T-pose, seam-weight/boot alignment and separate detached props. Original textures/UVs are retained; the original source FBX is unchanged. Bone hierarchy/orientation references use the existing Adobe Mixamo Erika asset. Rebuild source: SourceAssets/EnglishArcher/.
+
+Assets/_Game/Prefabs/Bow.prefab reuses the grip and limbs at prototype scale with a separate moving string. The source FBX is unchanged.

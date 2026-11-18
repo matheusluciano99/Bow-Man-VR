@@ -1,0 +1,151 @@
+using System;
+using UnityEngine;
+
+namespace BowMan
+{
+    public sealed class Bow : MonoBehaviour
+    {
+        [SerializeField] private ArrowFlight arrowPrefab;
+        [SerializeField] private Transform stringTop;
+        [SerializeField] private Transform stringRest;
+        [SerializeField] private Transform stringBottom;
+        [SerializeField] private LineRenderer bowString;
+        [SerializeField] private Transform firingArcher;
+        [SerializeField, Min(0.01f)] private float maximumDrawDistance = 0.70f;
+        [SerializeField, Min(0.001f)] private float minimumDrawDistance = 0.03f;
+        [SerializeField, Min(0.01f)] private float maximumLaunchSpeed = 25f;
+        [SerializeField, Min(0.01f)] private float stringGrabRadius = 0.12f;
+        [SerializeField, Min(0.01f)] private float arrowLength = 0.70f;
+
+        private ArrowFlight nockedArrow;
+        private Vector3 handPosition;
+
+        public bool IsHeld { get; private set; }
+        public bool IsDrawing { get; private set; }
+        public bool ShotAllowed { get; private set; } = true;
+        public float MaximumDrawDistance => maximumDrawDistance;
+        public Vector3 RestPosition => stringRest.position;
+        public float DrawDistance => IsDrawing
+            ? Mathf.Clamp(Vector3.Dot(stringRest.position - DrawPosition, transform.forward), 0f, maximumDrawDistance)
+            : 0f;
+        public float DrawStrength => DrawDistance / maximumDrawDistance;
+
+        private Vector3 DrawPosition => stringRest.position +
+            Vector3.ClampMagnitude(handPosition - stringRest.position, maximumDrawDistance);
+
+        public event Action<ArrowFlight> Fired;
+
+        // Locks all input paths during another turn, injury, flight or defeat and discards any pending draw.
+        public void SetShotAllowed(bool allowed)
+        {
+            ShotAllowed = allowed;
+            if (!allowed) SetHeld(false);
+        }
+
+        // Refreshes the string and nocked arrow after the hand poses have moved.
+        private void LateUpdate() => RefreshVisuals();
+
+        // Cancels any unfinished draw when the bow is disabled.
+        private void OnDisable() => SetHeld(false);
+
+        // Equips or unequips the bow and cancels a nocked shot when unequipped.
+        public void SetHeld(bool held)
+        {
+            IsHeld = held && ShotAllowed;
+            if (!IsHeld) CancelDraw();
+        }
+
+        // Nocks an arrow only when the held bow's resting string is within reach.
+        public bool TryBeginDraw(Vector3 position)
+        {
+            if (!ShotAllowed || !IsHeld || IsDrawing || arrowPrefab == null || stringRest == null ||
+                !IsFinite(position) || !IsFinite(stringRest.position) ||
+                !IsPositiveFinite(maximumDrawDistance) || !IsPositiveFinite(maximumLaunchSpeed) ||
+                Vector3.Distance(position, stringRest.position) > stringGrabRadius)
+                return false;
+
+            handPosition = position;
+            nockedArrow = Instantiate(arrowPrefab, transform);
+            IsDrawing = true;
+            RefreshVisuals();
+            return true;
+        }
+
+        // Moves the drawn string with the hand, cancelling invalid tracking positions.
+        public void PullTo(Vector3 position)
+        {
+            if (!IsDrawing) return;
+            if (!IsFinite(position))
+            {
+                CancelDraw();
+                return;
+            }
+            handPosition = position;
+            RefreshVisuals();
+        }
+
+        // Launches one nocked arrow using the current aim and backward draw strength.
+        public ArrowFlight Release()
+        {
+            if (!IsDrawing) return null;
+            var distance = DrawDistance;
+            var direction = stringRest.position - DrawPosition;
+            var arrow = nockedArrow;
+            nockedArrow = null;
+            IsDrawing = false;
+            RefreshVisuals();
+
+            if (!ShotAllowed || !IsHeld || arrow == null || distance < minimumDrawDistance ||
+                !IsFinite(direction) || direction.sqrMagnitude <= 0f)
+            {
+                if (arrow != null) Destroy(arrow.gameObject);
+                return null;
+            }
+
+            arrow.transform.SetParent(null, true);
+            arrow.Launch(direction.normalized * (maximumLaunchSpeed * distance / maximumDrawDistance), firingArcher);
+            Fired?.Invoke(arrow);
+            return arrow;
+        }
+
+        // Removes the nocked arrow and restores the resting string without firing.
+        public void CancelDraw()
+        {
+            IsDrawing = false;
+            if (nockedArrow != null) Destroy(nockedArrow.gameObject);
+            nockedArrow = null;
+            RefreshVisuals();
+        }
+
+        // Draws the string through its nock and keeps the preview arrow's tail on it.
+        public void RefreshVisuals()
+        {
+            if (stringRest == null) return;
+            var position = IsDrawing ? DrawPosition : stringRest.position;
+            if (bowString != null && stringTop != null && stringBottom != null)
+            {
+                bowString.useWorldSpace = true;
+                bowString.positionCount = 3;
+                bowString.SetPosition(0, stringTop.position);
+                bowString.SetPosition(1, position);
+                bowString.SetPosition(2, stringBottom.position);
+            }
+            if (nockedArrow == null) return;
+            var direction = stringRest.position - position;
+            if (direction.sqrMagnitude < 0.000001f) direction = transform.forward;
+            direction.Normalize();
+            nockedArrow.transform.SetPositionAndRotation(position + direction * arrowLength,
+                Quaternion.LookRotation(direction, transform.up));
+        }
+
+        // Rejects nonfinite pose coordinates before they reach the arrow or string geometry.
+        private static bool IsFinite(Vector3 value) =>
+            !float.IsNaN(value.x) && !float.IsInfinity(value.x) &&
+            !float.IsNaN(value.y) && !float.IsInfinity(value.y) &&
+            !float.IsNaN(value.z) && !float.IsInfinity(value.z);
+
+        // Checks that draw and launch settings can produce a finite nonzero velocity.
+        private static bool IsPositiveFinite(float value) =>
+            value > 0f && !float.IsNaN(value) && !float.IsInfinity(value);
+    }
+}
