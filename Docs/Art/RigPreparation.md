@@ -7,7 +7,7 @@ derivative with the original textures/materials.
 
 | Character | Runtime model | Unity vertices / triangles | Skin / bone bindings |
 | --- | --- | --- | --- |
-| English Archer | `Assets/ThirdParty/EnglishArcher/Models/EnglishArcher_Rigged.fbx` | 17,929 / 30,761 | One skin, 54 deform bones |
+| English Archer | `Assets/ThirdParty/EnglishArcher/Models/EnglishArcher_Rigged.fbx` | 17,645 / 30,409 | One skin, 54 deform bones |
 | Erika Archer | `Assets/ThirdParty/ErikaArcher/Models/ErikaArcher_Rigged.fbx` | 11,971 / 20,526 | Four skins, 67 source bones |
 
 Both Avatars explicitly map all 54 Humanoid bones supported by these skeletons,
@@ -35,8 +35,8 @@ from the same surface position. Skinning uses at most four normalized influences
 Opposite-leg influences are removed from the lower legs, and the left boot sole
 is levelled by about 1.5 cm with a smooth ankle transition for the neutral stance.
 
-The original detached bow/arrow meshes stay in the source FBX and are omitted
-from the rigged body. This preserves the mesh references used by the separate
+Detached bow and arrow meshes stay in the source FBX. The rigged body omits
+the display arrow that would prop up the archer during a back fall. This preserves the mesh references used by the separate
 interactive bow. Original UVs, textures and material names are retained.
 
 Authoring files are under `SourceAssets/EnglishArcher/`: `EnglishArcherRig.blend`
