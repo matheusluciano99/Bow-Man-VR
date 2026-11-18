@@ -17,8 +17,8 @@ All fifteen agreed regions have model-specific entry clips under Assets/_Game/An
 | Right hand | Jerk the right hand back, keep its fingers open and support the wrist with the left hand. | Independent hand/wrist clips and contact checks on both models; headset review pending. |
 | Left leg | Kneel on the left knee, plant the left palm, hold, then regain standing. | Own kneeling clips, distinct from lifted-foot reactions; headset review pending. |
 | Right leg | Kneel on the right knee, plant the right palm, hold, then regain standing. | Independent side-fitted clips with the healthy left foot planted; headset review pending. |
-| Left foot | Recoil, unload onto the right leg, withdraw the left foot, brace and balance, then land before shifting weight back. | Source-based replacement on both archers passes contact, continuity and flow checks; fresh headset acceptance remains pending. |
-| Right foot | Recoil, unload onto the left leg, withdraw the right foot, brace and balance, then land before shifting weight back. | Previous headset review rejected fluidity; source-based replacement prepared, with fresh headset acceptance pending. |
+| Left foot | Recoil, unload onto the right leg, withdraw the left foot, brace and balance, then land before shifting weight back. | Source-based replacement passes contact, continuity and flow checks on both archers. Quest 2 review accepted the motion and timing. |
+| Right foot | Recoil, unload onto the left leg, withdraw the right foot, brace and balance, then land before shifting weight back. | Source-based replacement passes contact, continuity and flow checks on both archers. Quest 2 review accepted the motion and timing. |
 
 The foot authoring tool retargets the complete free MotionSmith right-foot
 performance, with an anatomical mirrored result for the left foot on each actual
@@ -47,7 +47,7 @@ Use Bow Man VR > Injuries > Rebuild Left Foot or Rebuild Right Foot to reproduce
 
 Tests sample entry and recovery across both visible skins, require the healthy foot within 2 mm of its planted position, visible supporting-floor contact within 6 mm, correct lifted side and a continuous return to the neutral pose. Runtime checks include the full hold, delayed turn handoff, actual arrow alignment and death cancellation. The resting pose was also rendered and inspected in the real review scene.
 
-The pose/skin/contact checks establish desktop prototype readiness, not final animation polish or Quest 2 comfort. The local eye-view integration and headset acceptance for each reaction remain separate. See [the agreed table](../InjuryReactions.md), [turn contract](../TurnFlow.md) and [rig preparation](RigPreparation.md).
+The pose and skin checks cover fitted contacts in the desktop review. Both foot reactions have headset acceptance. Comfort of the moving local eye view remains tracked separately. See [the agreed table](../InjuryReactions.md), [turn contract](../TurnFlow.md) and [rig preparation](RigPreparation.md).
 
 Use Bow Man VR > Injuries > Rebuild Left Arm or Rebuild Right Arm for the independent arm sequences. The injured arm flinches first. The archer looks toward the wound as the opposite palm cups the forearm from underneath. The support fingers curl around the forearm and release before the injured arm lowers. Both feet stay planted.
 

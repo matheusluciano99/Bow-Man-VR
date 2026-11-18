@@ -96,7 +96,7 @@ A prepared neutral reference preserves every source frame; final native clips
 fit boot contact and standing transitions at 60 Hz. This is AI-generated catalog
 motion, not human motion capture. See [asset provenance](../../Assets/ThirdParty/CosindraAnimations/Attribution.md)
 and [rebuild instructions](../../SourceAssets/CosindraAnimations/README.md).
-Fresh visual acceptance remains pending.
+Both replacement foot reactions and their timing were accepted in Quest 2.
 
 Chest fall uses Adobe Mixamo **Dying Backwards**, catalog description “Shot To The Chest Falling Backwards”, downloaded on Erika Archer through the official catalog. Export: FBX Binary, Without Skin, 30 fps, no key reduction. The unchanged source is `Assets/ThirdParty/MixamoAnimations/Motions/Dying Backwards.fbx` (678,592 bytes; SHA-256 `612a2981bf1c2382d78085f79d89bd4670649e6f1dd3871ba52b8e01211cb2e8`). [Mixamo terms/FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) permit use in games with an Adobe ID; the source belongs to this game project, not a standalone asset pack.
 

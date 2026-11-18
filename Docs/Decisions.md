@@ -226,9 +226,10 @@ Fit entry, planted boot contact, constrained boot toe flexion and final landing
 against each visible mesh; keep the measured limb lengths and stationary support
 joint. Both foot reactions keep their 1.1-second entry and play the full authored
 balance in two seconds and the full standing recovery in 0.8 seconds. This
-pacing was accepted in a right-foot headset preview. Land before shifting weight back, preserve
-continuous entry/hold/recovery boundaries and rebuild the regional fatal
-continuation. Visual fluidity and moving-eye comfort still require headset review.
+pacing and both revised foot reactions were accepted in Quest 2. Land before
+shifting weight back, preserve continuous entry, hold and recovery boundaries,
+and rebuild the regional fatal continuation. Moving-eye comfort remains tracked
+by [#35](https://github.com/matheusluciano99/Bow-Man-VR/issues/35).
 
 Wound-reaching motions retain the actual impact and approach direction in the
 struck volume’s bone-local space. Fit their hands after sampling the authored

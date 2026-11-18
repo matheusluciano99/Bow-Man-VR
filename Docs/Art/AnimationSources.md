@@ -9,8 +9,8 @@ Retain the captured Mixamo death/chest motions as the visual comparison.
 24 individual Cosindra MotionSmith FBXs (29,541,344 bytes total) and the right-foot
 GLB reference are cached locally under `SourceAssets/Downloads/Cosindra/`.
 The selected right-foot source and its prepared Humanoid derivative are now
-versioned under `Assets/ThirdParty/CosindraAnimations/`; foot replacement fitting
-is in progress. Other candidates remain unimported. Original filenames are
+versioned under `Assets/ThirdParty/CosindraAnimations/`. Both fitted foot reactions
+passed Quest 2 review. Other MotionSmith candidates remain unimported. Original filenames are
 preserved; `manifest.json` in that cache records byte counts and SHA-256 hashes.
 
 These are AI-generated catalog motions, not human motion capture. Each selected
@@ -100,8 +100,8 @@ sequences. All fifteen regions retain the behavior in [InjuryReactions.md](../In
 | Right hand | Hit on the right hand. | Actual opposite-hand wrist support is not established by this download. |
 | Left leg | Kneel down / stand up from a kneel, potential mirrored source. | The downloaded kneel is right-sided. Left knee and left palm support need their own fitted result. |
 | Right leg | Kneel down / stand up from a kneel. | Source kneels on the right knee but does not establish right-palm ground support. |
-| Left foot | Left foot pain; potential mirrored right-foot source. | Left take travels about 1.6 m: unsuitable as supplied for the stationary reaction. The selected right-foot performance is being mirrored on each target skeleton; acceptance is pending. |
-| Right foot | Right foot pain. | Inspect withdrawal, balance and landing; fit the full three-second hold and neutral recovery without pose snaps. |
+| Left foot | Left foot pain; potential mirrored right-foot source. | Left take travels about 1.6 m: unsuitable as supplied for the stationary reaction. The mirrored right-foot performance passed Quest 2 review. |
+| Right foot | Right foot pain. | Withdrawal, balance and landing passed Quest 2 review with a two-second hold and 0.8-second return to stance. |
 
 Fatal hits outside head/neck still require the regional reaction followed by a
 complete collapse. Capture-based existing finishers remain the comparison.

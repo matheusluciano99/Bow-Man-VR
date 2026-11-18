@@ -29,8 +29,8 @@ wounds, organ/bone damage and blood throughout the sequence.
 | Pelvis | Hips buckle into a seated fall; both hands support the body from behind. | Hold seated pose for 3 s, then stand if alive. | [#56](https://github.com/matheusluciano99/Bow-Man-VR/issues/56) |
 | Left leg | Kneel on the injured left leg and support the body with the left hand on the ground. | Hold for 3 s, then stand if alive. | [#24](https://github.com/matheusluciano99/Bow-Man-VR/issues/24) |
 | Right leg | Kneel on the injured right leg and support the body with the right hand on the ground. | Hold for 3 s, then stand if alive. | [#25](https://github.com/matheusluciano99/Bow-Man-VR/issues/25) |
-| Left foot | Lift the injured left foot and balance on the right leg. | Hold for 3 s, then lower the left foot and regain stance if alive. | [#57](https://github.com/matheusluciano99/Bow-Man-VR/issues/57) |
-| Right foot | Lift the injured right foot and balance on the left leg. | Hold for 3 s, then lower the right foot and regain stance if alive. | [#58](https://github.com/matheusluciano99/Bow-Man-VR/issues/58) |
+| Left foot | Lift the injured left foot and balance on the right leg. | Hold for 2 s, then lower the left foot and regain stance if alive. | [#57](https://github.com/matheusluciano99/Bow-Man-VR/issues/57) |
+| Right foot | Lift the injured right foot and balance on the left leg. | Hold for 2 s, then lower the right foot and regain stance if alive. | [#58](https://github.com/matheusluciano99/Bow-Man-VR/issues/58) |
 
 ## Region boundaries
 
