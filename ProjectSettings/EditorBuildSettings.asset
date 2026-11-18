@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Game/Scenes/MainMenu.unity
+    guid: 3b36ea3310955a5419ca84728b0d37ef
+  - enabled: 1
+    path: Assets/_Game/Scenes/LocalDuel.unity
+    guid: 8d8bf93059f1aa540b60eefaa9c1bfd9
+  - enabled: 1
+    path: Assets/_Game/Scenes/PvPConnectionTest.unity
+    guid: ac73770bc9b7abe4ba91cd60331e2508
+  - enabled: 1
     path: Assets/_Game/Scenes/VRTrackingTest.unity
     guid: 237248f26c9a20e4aaa5fd517c29437a
   m_configObjects:
