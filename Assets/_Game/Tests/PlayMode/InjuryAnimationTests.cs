@@ -629,10 +629,19 @@ public class InjuryAnimationTests
                 Assert.That(Vector3.Distance(bones[i].position, landing[i]), Is.LessThan(0.001f), name + " " + bones[i].name);
                 Assert.That(Quaternion.Angle(bones[i].rotation, rotations[i]), Is.LessThan(0.1f));
             }
+            var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+            var leftHand = a.GetBoneTransform(HumanBodyBones.LeftHand);
+            var rightHand = a.GetBoneTransform(HumanBodyBones.RightHand);
             for (var frame = 0; frame <= 162; frame++)
             {
-                recovery.SampleAnimation(root, recovery.length * frame / 162f);
+                var time = recovery.length * frame / 162f;
+                recovery.SampleAnimation(root, time);
                 Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + frame);
+                if (time >= 3.8f)
+                {
+                    Assert.That(leftHand.position.y - hips.position.y, Is.LessThan(0.12f), name + " left hand at " + time);
+                    Assert.That(rightHand.position.y - hips.position.y, Is.LessThan(0.12f), name + " right hand at " + time);
+                }
             }
             for (var i = 0; i < bones.Length; i++)
             {

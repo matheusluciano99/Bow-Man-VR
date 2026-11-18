@@ -104,7 +104,7 @@ The source is retargeted using the original Erika T-pose in metres; the prepared
 
 Chest recovery uses Mixamo **Getting Up**, the first catalog variant described as “Getting Up From Back”, downloaded on Erika Archer with the same export settings. Unchanged source: `Assets/ThirdParty/MixamoAnimations/Motions/Getting Up.fbx` (999,888 bytes; SHA-256 `2413541e9b26256399ab8793f33630d783462b04d205e4a29ebf73e4bd43a21a`). The same Mixamo game-use terms apply.
 
-The get-up guides the supporting limbs around the pelvis and head. The 2.7-second fall and three-second hold lead into a provisional 3.6-second get-up.
+The get-up guides the supporting limbs around the pelvis and head, then lowers both arms during the rise to a relaxed stance. The 2.7-second fall and three-second hold lead into a provisional 3.6-second get-up.
 
 Fatal body finishers also use the final prone pose from Mixamo **Standing Death Backward 01** (first catalog variant, “Death Reaction Falling Backwards With Bow”), exported on Erika Archer as FBX Binary/Without Skin/30 fps/no key reduction. Source: `Assets/ThirdParty/MixamoAnimations/Motions/Standing Death Backward 01.fbx` (517,904 bytes; SHA-256 `98c135fac460ec4b9ea8c410fb54ce0f214bc32200eac6d4f2ef7ea190f725ad`). The earlier chest rejection still applies: this motion ends face-down. Only its retargeted final pose is used for front-collapse body finishers, with the head oriented forward. Chest/pelvis finishers retain a back-down target. All use the same recorded Mixamo game-use terms.
 

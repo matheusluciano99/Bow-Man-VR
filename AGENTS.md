@@ -290,8 +290,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
-- Chest hit: fall backward and land with the back on the ground, remain down
-  briefly, then get up if the hit was not lethal.
+- Chest hit: fall backward and land with the back on the ground. If the hit
+  was survivable, get up into a relaxed standing pose with the arms lowered.
 - Left-leg hit: kneel on the injured left leg, place the left hand on the ground
   for support, then recover and get up if still alive.
 - Right-leg hit: kneel on the injured right leg, place the right hand on the ground

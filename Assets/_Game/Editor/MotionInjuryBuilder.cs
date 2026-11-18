@@ -676,6 +676,9 @@ public static class MotionInjuryBuilder
             {
                 var animator = root.GetComponentInChildren<Animator>();
                 var bones = animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var leftShoulder = animator.GetBoneTransform(HumanBodyBones.LeftShoulder);
+                var rightShoulder = animator.GetBoneTransform(HumanBodyBones.RightShoulder);
+                var armBones = bones.Select(bone => bone.IsChildOf(leftShoulder) || bone.IsChildOf(rightShoulder)).ToArray();
                 var neutralPositions = bones.Select(t => t.localPosition).ToArray();
                 var neutralRotations = bones.Select(t => t.localRotation).ToArray();
                 var modelPosition = animator.transform.localPosition;
@@ -705,13 +708,16 @@ public static class MotionInjuryBuilder
                         Sample(animator, source, Mathf.Min(time + 2f, 6.8f), modelPosition, modelRotation);
                         hips.position += Vector3.Lerp(startOffset, endOffset, Mathf.SmoothStep(0f, 1f, time / 4.8f));
                         var arrival = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.35f));
-                        var ready = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((time - 4.8f) / 0.6f));
+                        var ready = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(3.72f, 5.4f, time));
+                        // Let both arms drop after the ground push, before the source raises its guard.
+                        var relaxArms = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(2.95f, 3.8f, time));
                         for (var i = 0; i < bones.Length; i++)
                         {
                             bones[i].localPosition = Vector3.Lerp(fallenPositions[i], bones[i].localPosition, arrival);
                             bones[i].localRotation = Quaternion.Slerp(fallenRotations[i], bones[i].localRotation, arrival);
-                            bones[i].localPosition = Vector3.Lerp(bones[i].localPosition, neutralPositions[i], ready);
-                            bones[i].localRotation = Quaternion.Slerp(bones[i].localRotation, neutralRotations[i], ready);
+                            var neutralWeight = armBones[i] ? Mathf.Max(ready, relaxArms) : ready;
+                            bones[i].localPosition = Vector3.Lerp(bones[i].localPosition, neutralPositions[i], neutralWeight);
+                            bones[i].localRotation = Quaternion.Slerp(bones[i].localRotation, neutralRotations[i], neutralWeight);
                         }
                         FitChestRecoveryLimbs(animator, pelvis, time);
                         Ground(root, hips, mesh, 0f);
