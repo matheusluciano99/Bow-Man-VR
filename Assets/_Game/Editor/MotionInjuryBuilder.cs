@@ -213,8 +213,9 @@ public static class MotionInjuryBuilder
                             ArcherLimbIK.ReachNeck(animator, neck.position + root.transform.forward * 0.08f,
                                 root.transform.forward, ArcherLimbIK.NeckReachWeight(time));
                         }
-                        Ground(root, hips, mesh);
-                    });
+                        var clearance = region == BodyRegion.Head && time > 0f && time < duration ? 0.004f : 0f;
+                        Ground(root, hips, mesh, clearance);
+                    }, region == BodyRegion.Head ? 60f : 30f);
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
                 clip.name = region + " Entry";
@@ -273,8 +274,8 @@ public static class MotionInjuryBuilder
         hips.SetPositionAndRotation(hipPosition, hipRotation);
     }
 
-    // Raises only penetrating samples against the visible skin, including the model's attached equipment.
-    private static void Ground(GameObject root, Transform hips, Mesh mesh)
+    // Grounds the visible skin and equipment with the requested interpolation clearance.
+    private static void Ground(GameObject root, Transform hips, Mesh mesh, float clearance = 0f)
     {
         var floor = float.PositiveInfinity;
         foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -283,18 +284,19 @@ public static class MotionInjuryBuilder
             foreach (var vertex in mesh.vertices) floor = Mathf.Min(floor, skin.transform.TransformPoint(vertex).y);
             mesh.Clear();
         }
-        if (floor < root.transform.position.y) hips.position += Vector3.up * (root.transform.position.y - floor);
+        var groundedHeight = root.transform.position.y + clearance;
+        if (floor < groundedHeight) hips.position += Vector3.up * (groundedHeight - floor);
     }
 
-    // Bakes complete local position/quaternion groups at thirty samples per second on the actual target hierarchy.
-    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose)
+    // Bakes local position and rotation curves at the requested sample rate.
+    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose, float rate = 30f)
     {
-        var clip = new AnimationClip { frameRate = 30f };
+        var clip = new AnimationClip { frameRate = rate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
-        var frames = Mathf.RoundToInt(duration * 30f);
+        var frames = Mathf.RoundToInt(duration * rate);
         for (var frame = 0; frame <= frames; frame++)
         {
-            var time = frame / 30f;
+            var time = frame / rate;
             pose(time);
             for (var i = 0; i < bones.Length; i++)
             {

@@ -90,6 +90,7 @@ The source is retargeted using the original Erika T-pose in metres; the prepared
 Chest recovery uses Mixamo **Getting Up**, the first catalog variant described as “Getting Up From Back”, downloaded on Erika Archer with the same export settings. Unchanged source: `Assets/ThirdParty/MixamoAnimations/Motions/Getting Up.fbx` (999,888 bytes; SHA-256 `2413541e9b26256399ab8793f33630d783462b04d205e4a29ebf73e4bd43a21a`). The same Mixamo game-use terms apply.
 
 Fatal body finishers also use the final prone pose from Mixamo **Standing Death Backward 01** (first catalog variant, “Death Reaction Falling Backwards With Bow”), exported on Erika Archer as FBX Binary/Without Skin/30 fps/no key reduction. Source: `Assets/ThirdParty/MixamoAnimations/Motions/Standing Death Backward 01.fbx` (517,904 bytes; SHA-256 `98c135fac460ec4b9ea8c410fb54ce0f214bc32200eac6d4f2ef7ea190f725ad`). The earlier chest rejection still applies: this motion ends face-down. Only its retargeted final pose is used for front-collapse body finishers, with the head oriented forward. Chest/pelvis finishers retain a back-down target. All use the same recorded Mixamo game-use terms.
+
 ## Interactive bow
 
 `Assets/_Game/Prefabs/Bow.prefab` references the English Archer FBX's existing
@@ -99,3 +100,16 @@ shooting plane, and scaled to a provisional 1.53 m limb height. The source FBX
 is unchanged. Its separate static string is omitted from this prefab and replaced
 with a project-authored moving line. Credit count_zero under the English Archer's
 CC BY 4.0 license; source attribution remains alongside that model.
+
+## Headshot collapse
+
+The one-second headshot collapse is baked separately for English Archer and
+Erika from Adobe Mixamo’s Dying Backwards motion. The source FBX is kept with
+the third-party motion assets. Use **Bow Man VR > Injuries > Rebuild Head
+Collapse** to regenerate the clips. Open the existing desktop DuelTurnTest,
+select Head and fire. A headshot resolves defeat at impact while the defeated
+archer completes its collapse.
+
+The clips are baked at 60 Hz. Floor fitting uses the visible skin and a
+4 mm allowance between the grounded start and end poses. The English rig
+keeps its separate equipment and omits the loose baked display arrow.

@@ -60,7 +60,8 @@ Prepared Humanoid models, the desktop movement check and reproducible Blender
 work are documented in [rig preparation](Docs/Art/RigPreparation.md).
 
 Anatomical hit volumes, the arena test controls and impact events are documented
-in [body-region hit detection](Docs/BodyHits.md).
+in [body-region hit detection](Docs/BodyHits.md). For the impact effect, see
+[wound blood](Docs/BloodEffects.md).
 
 Shot ownership, defeat and injury/recovery handoff are documented in
 [duel turn flow](Docs/TurnFlow.md).

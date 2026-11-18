@@ -14,6 +14,7 @@ public class BowTests
 {
     private readonly List<GameObject> objects = new List<GameObject>();
     private readonly List<InputDevice> devices = new List<InputDevice>();
+    private readonly List<InputDevice> disabledControllers = new List<InputDevice>();
     private readonly Dictionary<InputDevice, int> pressedButtons = new Dictionary<InputDevice, int>();
     private static readonly Vector3 Origin = new Vector3(1000f, 1000f, 1000f);
 
@@ -58,15 +59,17 @@ public class BowTests
         foreach (var obj in objects) if (obj != null) Object.Destroy(obj);
         yield return null;
         foreach (var device in devices) if (device.added) InputSystem.RemoveDevice(device);
+        foreach (var device in disabledControllers) if (device.added) InputSystem.EnableDevice(device);
+        disabledControllers.Clear();
         devices.Clear();
         pressedButtons.Clear();
         objects.Clear();
         InputSystem.RemoveLayout("BowTestController");
     }
 
-    // Requires a held bow and a hand close enough to the resting string before nocking.
+    // Requires an equipped bow and a hand close enough to the resting string before nocking.
     [Test]
-    public void NockingRequiresGripAndNearbyString()
+    public void NockingRequiresEquippedBowAndNearbyString()
     {
         var bow = CreateBow();
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.False);
@@ -193,6 +196,12 @@ public class BowTests
     // Verifies handed bindings, one release, tracking loss, focus loss and component cleanup.
     private IEnumerator CheckControllerInput(bool leftBow)
     {
+        foreach (var device in InputSystem.devices)
+            if (device is UnityEngine.InputSystem.XR.XRController && device.enabled)
+            {
+                disabledControllers.Add(device);
+                InputSystem.DisableDevice(device);
+            }
         InputSystem.RegisterLayout(@"{""name"":""BowTestController"",""extend"":""XRController"",""controls"":[{""name"":""gripPressed"",""layout"":""Button""},{""name"":""triggerPressed"",""layout"":""Button""}]}");
         var left = InputSystem.AddDevice("BowTestController");
         var right = InputSystem.AddDevice("BowTestController");
@@ -205,6 +214,8 @@ public class BowTests
         var bow = CreateBow();
         var leftPose = Create("Left controller").transform;
         var rightPose = Create("Right controller").transform;
+        var holdingPose = leftBow ? leftPose : rightPose;
+        holdingPose.rotation = Quaternion.Euler(10f, 25f, 15f);
         var drawPose = leftBow ? rightPose : leftPose;
         var inputObject = Create("VR bow input");
         inputObject.SetActive(false);
@@ -217,22 +228,43 @@ public class BowTests
         bow.Fired += _ => shots++;
         inputObject.SetActive(true);
         input.SetBowHand(leftBow);
+        input.SendMessage("OnApplicationFocus", true);
         Button(left, "isTracked", true);
         Button(right, "isTracked", true);
-        Button(holding, "gripPressed", true);
         yield return null;
         yield return null;
         Assert.That(bow.IsHeld, Is.True);
+        Assert.That(Vector3.Distance(bow.transform.position, holdingPose.position), Is.LessThan(0.0001f));
+        Assert.That(Vector3.Dot(bow.transform.up, holdingPose.forward), Is.GreaterThan(0.9999f));
+        Assert.That(Vector3.Dot(bow.transform.forward, -holdingPose.up), Is.GreaterThan(0.9999f));
         Button(drawing, "triggerPressed", true);
         yield return null;
         yield return null;
         Assert.That(bow.IsDrawing, Is.True);
-        drawPose.position = bow.RestPosition + Vector3.back * 0.7f;
+        Button(holding, "gripPressed", true);
+        yield return null;
+        Button(holding, "gripPressed", false);
+        yield return null;
+        Assert.That(bow.IsDrawing, Is.True, "Grip is not an equip or release control");
+        drawPose.position = bow.RestPosition - bow.transform.forward * 0.7f;
         yield return null;
         Button(drawing, "triggerPressed", false);
         yield return null;
         yield return null;
         Assert.That(shots, Is.EqualTo(1));
+
+        bow.SetShotAllowed(false);
+        holdingPose.position += Vector3.right * 0.1f;
+        yield return null;
+        Assert.That(bow.IsHeld, Is.False);
+        Assert.That(Vector3.Distance(bow.transform.position, holdingPose.position), Is.LessThan(0.0001f));
+        Button(drawing, "triggerPressed", true);
+        yield return null;
+        Assert.That(bow.IsDrawing, Is.False);
+        Assert.That(shots, Is.EqualTo(1));
+        Button(drawing, "triggerPressed", false);
+        bow.SetShotAllowed(true);
+        yield return null;
 
         drawPose.position = bow.RestPosition;
         Button(drawing, "triggerPressed", true);
@@ -244,6 +276,8 @@ public class BowTests
         Assert.That(bow.IsHeld, Is.False);
         Assert.That(shots, Is.EqualTo(1));
         input.SetBowHand(leftBow);
+        // Restores simulated application focus after the input actions rebind.
+        input.SendMessage("OnApplicationFocus", true);
         Button(drawing, "triggerPressed", false);
         yield return null;
         yield return null;
@@ -251,7 +285,7 @@ public class BowTests
         Button(drawing, "triggerPressed", true);
         yield return null;
         yield return null;
-        drawPose.position = bow.RestPosition + Vector3.back * 0.7f;
+        drawPose.position = bow.RestPosition - bow.transform.forward * 0.7f;
         Assert.That(bow.IsDrawing, Is.True);
         yield return null;
         Button(drawing, "isTracked", false);

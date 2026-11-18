@@ -51,7 +51,7 @@ public static class LocalDuelBuilder
         label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         label.fontSize = 64;
         label.characterSize = 0.02f;
-        label.text = "Your turn     You 100  |  Opponent 100\nBow: left hand   Draw: 0%\nGrip: hold bow   Trigger: draw/release   B: switch bow hand";
+        label.text = "Your turn     You 100  |  Opponent 100\nBow: left hand   Draw: 0%\nTrigger: draw/release   B: switch bow hand";
         var renderer = label.GetComponent<MeshRenderer>();
         renderer.sharedMaterial = label.font.material;
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
