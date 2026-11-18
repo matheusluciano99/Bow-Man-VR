@@ -49,6 +49,48 @@ public class InjuryAnimationTests
         yield return null;
     }
 
+    // Keeps the measured arm lengths and reaches a valid target even when the supplied bend hint is parallel.
+    [Test]
+    public void LimbSolverReachesTargetWithParallelBendHint()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            root.transform.SetPositionAndRotation(new Vector3(13f, 2f, -7f), Quaternion.Euler(0f, 37f, 0f));
+            var a = root.GetComponentInChildren<Animator>();
+            var upper = a.GetBoneTransform(HumanBodyBones.RightUpperArm);
+            var lower = a.GetBoneTransform(HumanBodyBones.RightLowerArm);
+            var hand = a.GetBoneTransform(HumanBodyBones.RightHand);
+            var upperLength = Vector3.Distance(upper.position, lower.position);
+            var lowerLength = Vector3.Distance(lower.position, hand.position);
+            var target = upper.position + root.transform.forward * (upperLength + lowerLength) * 0.6f;
+            ArcherLimbIK.Solve(a, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm,
+                HumanBodyBones.RightHand, target, root.transform.forward);
+            Assert.That(Vector3.Distance(hand.position, target), Is.LessThan(0.0001f), name);
+            Assert.That(Vector3.Distance(upper.position, lower.position), Is.EqualTo(upperLength).Within(0.0001f));
+            Assert.That(Vector3.Distance(lower.position, hand.position), Is.EqualTo(lowerLength).Within(0.0001f));
+        }
+    }
+
+    // Chooses a finite closest reachable position when an end-effector target coincides with its upper joint.
+    [Test]
+    public void LimbSolverHandlesTargetAtTheUpperJoint()
+    {
+        var root = Character("ErikaArcher");
+        var a = root.GetComponentInChildren<Animator>();
+        var upper = a.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+        var lower = a.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+        var hand = a.GetBoneTransform(HumanBodyBones.LeftHand);
+        var upperLength = Vector3.Distance(upper.position, lower.position);
+        var lowerLength = Vector3.Distance(lower.position, hand.position);
+        ArcherLimbIK.Solve(a, HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm,
+            HumanBodyBones.LeftHand, upper.position, Vector3.zero);
+        Assert.That(Vector3.Distance(hand.position, upper.position),
+            Is.EqualTo(Mathf.Abs(upperLength - lowerLength) + 0.00001f).Within(0.0001f));
+        Assert.That(Vector3.Distance(upper.position, lower.position), Is.EqualTo(upperLength).Within(0.0001f));
+        Assert.That(Vector3.Distance(lower.position, hand.position), Is.EqualTo(lowerLength).Within(0.0001f));
+    }
+
     // Checks actual foot lift, planted support and continuous floor contact across entry and recovery on both skins.
     [Test]
     public void FootClipsPreserveTheCorrectSupportAndReturnToNeutral()
