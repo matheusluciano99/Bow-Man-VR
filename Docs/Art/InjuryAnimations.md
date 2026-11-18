@@ -53,6 +53,8 @@ Use Bow Man VR > Injuries > Rebuild Left Arm or Rebuild Right Arm for the indepe
 
 Use Bow Man VR > Injuries > Rebuild Left Shoulder or Rebuild Right Shoulder for the independent shoulder sequences. The opposite palm reaches the shoulder cap; it does not reuse the forearm cradle or the hand/wrist reaction.
 
+The wrist target is derived from the point where the palm reaches the shoulder. The support hand travels in front of the chest and releases earlier on the return. During the fatal continuation, the builder checks the fitted body volumes and swivels the support elbow away from penetration before fitting floor contact.
+
 Use Bow Man VR > Injuries > Rebuild Left Hand or Rebuild Right Hand for the independent hand/wrist sequences. Its clip explicitly binds the injured fingers to their open pose so another animation cannot leave them clenched. It is independent of shoulder cupping and arm cradling.
 
 The injured hand recoils first. The support hand approaches from in front of the torso and releases earlier during recovery. Hand rebuilds also update the fatal continuation from the final supported pose. The PlayMode clearance check samples the forearms and hands against the torso volumes on both models in all three clips.

@@ -48,6 +48,66 @@ namespace BowMan
             hand.rotation = Quaternion.Slerp(hand.rotation, rotation, progress);
         }
 
+        // Swivels the elbow around its wrist target and nudges the wrist away only when needed for clearance.
+        public static void ClearForearm(Animator animator, bool left, Collider[] armVolumes, Collider[] bodyVolumes)
+        {
+            const float clearanceTolerance = 0.0002f;
+            var bestDepth = DeepestOverlap(armVolumes, bodyVolumes, out var away);
+            if (bestDepth <= clearanceTolerance) return;
+
+            var upperId = left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm;
+            var lowerId = left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm;
+            var wristId = left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand;
+            var upper = animator.GetBoneTransform(upperId);
+            var lower = animator.GetBoneTransform(lowerId);
+            var wrist = animator.GetBoneTransform(wristId);
+            var upperStart = upper.localRotation;
+            var lowerStart = lower.localRotation;
+            var wristRotation = wrist.rotation;
+            var target = wrist.position;
+            var axis = (target - upper.position).normalized;
+            var bend = lower.position - upper.position;
+            var bestUpper = upperStart;
+            var bestLower = lowerStart;
+
+            for (var push = 0; push <= 5 && bestDepth > clearanceTolerance; push++)
+            for (var swivel = 0; swivel <= 24 && bestDepth > clearanceTolerance; swivel++)
+            {
+                var angle = (swivel + 1) / 2 * 3f * (swivel % 2 == 0 ? -1f : 1f);
+                upper.localRotation = upperStart;
+                lower.localRotation = lowerStart;
+                Solve(animator, upperId, lowerId, wristId, target + away * (push * 0.008f),
+                    Quaternion.AngleAxis(angle, axis) * bend);
+                wrist.rotation = wristRotation;
+                var depth = DeepestOverlap(armVolumes, bodyVolumes, out _);
+                if (depth >= bestDepth) continue;
+                bestDepth = depth;
+                bestUpper = upper.localRotation;
+                bestLower = lower.localRotation;
+            }
+
+            upper.localRotation = bestUpper;
+            lower.localRotation = bestLower;
+            wrist.rotation = wristRotation;
+        }
+
+        // Finds the deepest penetration and its separating direction using the current bone poses.
+        private static float DeepestOverlap(Collider[] armVolumes, Collider[] bodyVolumes, out Vector3 away)
+        {
+            var deepest = 0f;
+            away = Vector3.zero;
+            foreach (var arm in armVolumes)
+            foreach (var body in bodyVolumes)
+            {
+                if (!Physics.ComputePenetration(arm, arm.transform.position, arm.transform.rotation,
+                        body, body.transform.position, body.transform.rotation, out var direction, out var depth) ||
+                    depth <= deepest) continue;
+                deepest = depth;
+                away = direction;
+            }
+            return deepest;
+        }
+
         // Places a two-bone chain using its measured lengths and a projected bend hint, without changing bone lengths.
         public static void Solve(Animator animator, HumanBodyBones upperId, HumanBodyBones lowerId,
             HumanBodyBones endId, Vector3 target, Vector3 hint)

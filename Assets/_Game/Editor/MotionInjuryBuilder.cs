@@ -207,6 +207,10 @@ public static class MotionInjuryBuilder
                 var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
                 var player = root.GetComponent<ArcherReactionAnimation>();
                 var clips = new AnimationClip[15];
+                var hitRegions = root.GetComponentsInChildren<BodyHitRegion>();
+                var bodyVolumes = hitRegions.Where(hit => hit.Region is BodyRegion.Head or BodyRegion.Neck or
+                    BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis)
+                    .Select(hit => hit.GetComponent<Collider>()).ToArray();
                 foreach (BodyRegion region in Enum.GetValues(typeof(BodyRegion)))
                 {
                     if (onlyRegion.HasValue && region != onlyRegion.Value) continue;
@@ -234,6 +238,15 @@ public static class MotionInjuryBuilder
                     Ground(root, hips, mesh);
                     var targetPositions = bones.Select(t => t.localPosition).ToArray();
                     var targetRotations = bones.Select(t => t.localRotation).ToArray();
+                    var supportLeft = region == BodyRegion.RightShoulder;
+                    Collider[] supportVolumes = null;
+                    if (region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
+                    {
+                        var elbow = animator.GetBoneTransform(supportLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
+                        var wrist = animator.GetBoneTransform(supportLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                        supportVolumes = hitRegions.Where(hit => hit.transform.parent == elbow || hit.transform.parent == wrist)
+                            .Select(hit => hit.GetComponent<Collider>()).ToArray();
+                    }
                     var clip = Record(root, bones, 0.8f, time =>
                     {
                         var progress = Mathf.SmoothStep(0f, 1f, time / 0.8f);
@@ -242,7 +255,10 @@ public static class MotionInjuryBuilder
                             bones[i].localPosition = Vector3.Lerp(positions[i], targetPositions[i], progress);
                             bones[i].localRotation = Quaternion.Slerp(rotations[i], targetRotations[i], progress);
                         }
-                        if (time > 0f) Ground(root, hips, mesh);
+                        if (time <= 0f) return;
+                        if (supportVolumes != null)
+                            ArcherLimbIK.ClearForearm(animator, supportLeft, supportVolumes, bodyVolumes);
+                        Ground(root, hips, mesh);
                     });
                     clip.name = region + " Death";
                     clips[(int)region] = InjuryAnimationBuilder.SaveClip(clip,

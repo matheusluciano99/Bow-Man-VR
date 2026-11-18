@@ -491,12 +491,14 @@ public class InjuryAnimationTests
         }
     }
 
-    // Checks the moving forearms and hands against the fitted torso volumes across each hand sequence.
-    [Test]
-    public void HandSequencesClearTorsoThroughRecoilRecoveryAndCollapse()
+    // Checks moving forearms and hands against the head, neck and torso through each sampled sequence.
+    [TestCase(BodyRegion.LeftHand)]
+    [TestCase(BodyRegion.RightHand)]
+    [TestCase(BodyRegion.LeftShoulder)]
+    [TestCase(BodyRegion.RightShoulder)]
+    public void UpperBodySequencesClearTorsoThroughRecoilRecoveryAndCollapse(BodyRegion region)
     {
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
-        foreach (var region in new[] { BodyRegion.LeftHand, BodyRegion.RightHand })
         {
             var root = Character(name);
             var actor = root.GetComponent<ArcherReactionAnimation>();
@@ -506,10 +508,10 @@ public class InjuryAnimationTests
             var regions = root.GetComponentsInChildren<BodyHitRegion>();
             var limbs = regions.Where(r => r.Region is BodyRegion.LeftHand or BodyRegion.RightHand ||
                 forearms.Contains(r.transform.parent)).Select(r => r.GetComponent<Collider>()).ToArray();
-            var torso = regions.Where(r => r.Region is BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis)
-                .Select(r => r.GetComponent<Collider>()).ToArray();
+            var bodyVolumes = regions.Where(r => r.Region is BodyRegion.Head or BodyRegion.Neck or BodyRegion.Chest or
+                BodyRegion.Abdomen or BodyRegion.Pelvis).Select(r => r.GetComponent<Collider>()).ToArray();
             Assert.That(limbs, Has.Length.EqualTo(4));
-            Assert.That(torso, Has.Length.EqualTo(3));
+            Assert.That(bodyVolumes, Has.Length.EqualTo(5));
 
             foreach (var clip in new[] { actor.Entry(region), actor.Recovery(region), actor.DeathFinisher(region) })
             for (var sample = 0; sample <= 120; sample++)
@@ -517,7 +519,7 @@ public class InjuryAnimationTests
                 var time = clip.length * sample / 120f;
                 clip.SampleAnimation(root, time);
                 foreach (var limb in limbs)
-                foreach (var body in torso)
+                foreach (var body in bodyVolumes)
                 {
                     if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
                         body, body.transform.position, body.transform.rotation, out _, out var depth))
