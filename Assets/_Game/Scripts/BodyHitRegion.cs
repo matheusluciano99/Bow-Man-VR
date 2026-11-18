@@ -18,9 +18,10 @@ namespace BowMan
         public BodySide Side { get; }
         public Vector3 Point { get; }
         public Vector3 Direction { get; }
+        public Vector3 Normal { get; }
         public Collider Collider { get; }
 
-        // Captures the struck volume and the arrow's world-space tip position and travel direction.
+        // Captures the actual struck volume, entry point, surface normal and arrow travel direction.
         public BodyImpact(BodyHitRegion region, RaycastHit hit, Vector3 direction)
         {
             Volume = region;
@@ -28,6 +29,7 @@ namespace BowMan
             Side = region.Side;
             Point = hit.point;
             Direction = direction.normalized;
+            Normal = hit.normal;
             Collider = hit.collider;
         }
     }

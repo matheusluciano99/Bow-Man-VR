@@ -60,7 +60,7 @@ Use GitHub's Assignees field to record task responsibility.
 - 1v1 PvP: online duels against another player over the internet, including
   players in different locations and on different networks. Players connect
   through Unity Relay with a host-issued join code; the host is Archer 1 and the
-  joining player is Archer 2 (see D021).
+  joining player is Archer 2 (see D024).
 - PvE: duel against an AI-controlled archer.
 
 ## Project scope
@@ -253,7 +253,9 @@ Use GitHub's Assignees field to record task responsibility.
   knockdown and recovery behavior.
 - Show where the arrow hit the body and the internal damage it caused, including
   organs struck and bones broken when applicable.
-- Show blood spilling from arrow wounds as part of the impact and injury effects.
+- The shared arrow emits blood at the actual wound and follows its hit volume.
+  Spilled droplets move in world space. See [wound blood](Docs/BloodEffects.md)
+  for rebuild controls and provisional visual settings.
 - Sniper Elite is the reference for anatomical hit visualization and damage
   feedback. These are requested features, not implemented systems.
 

@@ -198,7 +198,17 @@ recovery or defeat. Keep provisional difficulty values separate from the rules.
 The AI test host supplies explicit animation callbacks until the visual sequences
 are integrated; this does not complete the full PvE mode's anatomy/blood scope.
 
-## D021 — Unity Relay and Netcode for GameObjects for online PvP
+## D021 — Blood starts at the actual wound and follows its bone
+
+Use the existing typed body-impact event for wound emission without applying a
+second damage outcome. Anchor the emitter at the actual entry point on its
+bone-bound volume; let released droplets move in world space under gravity.
+Scenery hits create no blood. Emission finishes and removes itself, and match
+cleanup removes any live wound with its character. Droplet size, quantity and
+the prototype two-second emission remain provisional visual settings for VR
+review, separate from final blood/stain art.
+
+## D024 — Unity Relay and Netcode for GameObjects for online PvP
 
 Use Netcode for GameObjects 2.14.0 with Unity Gaming Services Multiplayer 2.5.0:
 anonymous Authentication plus a Unity Relay allocation for one opponent, joined
