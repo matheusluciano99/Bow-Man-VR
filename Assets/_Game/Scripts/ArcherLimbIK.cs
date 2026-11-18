@@ -54,5 +54,6 @@ namespace BowMan
             upper.rotation = Quaternion.FromToRotation(lower.position - upper.position, joint - upper.position) * upper.rotation;
             lower.rotation = Quaternion.FromToRotation(end.position - lower.position, upper.position + direction * distance - lower.position) * lower.rotation;
         }
+
     }
 }

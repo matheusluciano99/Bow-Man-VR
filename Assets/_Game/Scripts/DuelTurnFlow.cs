@@ -57,11 +57,14 @@ namespace BowMan
             return true;
         }
 
-        // Starts the agreed hold only when the current reaction has actually reached its injured resting pose.
+        // Uses the shorter support phase accepted for both foot reactions.
+        internal static float InjuredHoldDuration(BodyRegion region) =>
+            region is BodyRegion.LeftFoot or BodyRegion.RightFoot ? 2f : 3f;
+
+        // Starts the hold only when the current reaction has reached its injured resting pose.
         public void MarkInjuredPose(int shotId)
         {
             if (shotId != ShotId || Phase != DuelPhase.Reacting) return;
-            holdRemaining = 3f;
             SetPhase(DuelPhase.Holding);
         }
 
@@ -72,7 +75,7 @@ namespace BowMan
             NextTurn();
         }
 
-        // Requests recovery after three seconds in the supported pose, excluding entry and get-up time.
+        // Requests recovery after the region’s full hold, excluding entry and get-up time.
         private void Update()
         {
             if (Phase != DuelPhase.Holding) return;
@@ -91,6 +94,7 @@ namespace BowMan
             if (target != archers[targetIndex]) { OnExpired(); return; }
             ClearArrow();
             var token = ShotId;
+            holdRemaining = InjuredHoldDuration(impact.Region);
             SetPhase(DuelPhase.Reacting);
             target.TakeDamage(impact.Region is BodyRegion.Head or BodyRegion.Neck ? int.MaxValue : bodyDamage);
             if (token == ShotId) ReactionRequested?.Invoke(targetIndex, impact, target.IsDefeated, token);
