@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Relay;
@@ -7,7 +7,7 @@ using Unity.Services.Relay.Models;
 
 namespace BowMan.Networking
 {
-    // Signs in to Unity Gaming Services and points the transport at a Unity Relay allocation.
+    // Signs in to Unity Gaming Services and creates or joins a Unity Relay allocation.
     public sealed class RelayConnector
     {
         private const string Protocol = "dtls";
@@ -23,20 +23,19 @@ namespace BowMan.Networking
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
 
-        // Creates a one-opponent Relay allocation, configures the host transport and returns its join code.
-        public async Task<string> HostAsync(UnityTransport transport)
+        // Returns a one-opponent Relay endpoint and its join code.
+        public async Task<(RelayServerData Data, string Code)> HostAsync()
         {
             var allocation = await RelayService.Instance.CreateAllocationAsync(RemotePlayers);
             var code = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            transport.SetRelayServerData(allocation.ToRelayServerData(Protocol));
-            return code;
+            return (allocation.ToRelayServerData(Protocol), code);
         }
 
-        // Joins the Relay allocation behind the code and configures the client transport.
-        public async Task JoinAsync(UnityTransport transport, string code)
+        // Returns the Relay endpoint for the allocation behind the join code.
+        public async Task<RelayServerData> JoinAsync(string code)
         {
             var allocation = await RelayService.Instance.JoinAllocationAsync(code);
-            transport.SetRelayServerData(allocation.ToRelayServerData(Protocol));
+            return allocation.ToRelayServerData(Protocol);
         }
     }
 }

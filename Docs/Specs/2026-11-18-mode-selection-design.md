@@ -61,7 +61,7 @@ the VICTORY/DEFEAT result are already shown in the headset by the local duel
   (menu scene, LocalDuel and PvP scenes, build list) and
   `Bow Man VR/Build Windows Game Player` (`Builds/PCVRGame/BowManVR.exe`).
   `LocalDuelBuilder` and the PvP builder add `ReturnToMenu`.
-- Docs: AGENTS "Starting the game" section; decision D022 (menu as the entry
+- Docs: AGENTS "Starting the game" section; decision D025 (menu as the entry
   scene in the build list).
 
 ## Left to the builder

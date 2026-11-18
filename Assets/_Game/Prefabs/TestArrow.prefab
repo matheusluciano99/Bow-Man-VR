@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3173664783276324591}
   - component: {fileID: 7838939950186234352}
+  - component: {fileID: 1493939777696725963}
   m_Layer: 0
   m_Name: TestArrow
   m_TagString: Untagged
@@ -51,6 +52,19 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 4294967291
+--- !u!114 &1493939777696725963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2177841892840778058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5d3fd3748a668c4288694b98848f26d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArrowWoundBlood
+  woundPrefab: {fileID: 59166593224491489, guid: b874ad857d625ff40a05bbf1707854a8, type: 3}
 --- !u!1 &6659333918546554959
 GameObject:
   m_ObjectHideFlags: 0

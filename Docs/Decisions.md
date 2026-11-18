@@ -255,7 +255,17 @@ floor-level tracking. Restore the origin on restart. This implements the chosen
 eye-following presentation; physical height alignment and motion comfort still
 require the Quest 2 checklist.
 
-## D021 — Unity Relay and Netcode for GameObjects for online PvP
+## D021 — Blood starts at the actual wound and follows its bone
+
+Use the existing typed body-impact event for wound emission without applying a
+second damage outcome. Anchor the emitter at the actual entry point on its
+bone-bound volume; let released droplets move in world space under gravity.
+Scenery hits create no blood. Emission finishes and removes itself, and match
+cleanup removes any live wound with its character. Droplet size, quantity and
+the prototype two-second emission remain provisional visual settings for VR
+review, separate from final blood/stain art.
+
+## D024 — Unity Relay and Netcode for GameObjects for online PvP
 
 Use Netcode for GameObjects 2.14.0 with Unity Gaming Services Multiplayer 2.5.0:
 anonymous Authentication plus a Unity Relay allocation for one opponent, joined
@@ -271,7 +281,7 @@ one PC can connect. Online play therefore depends on UGS availability, the free
 Relay quota and Relay being enabled for the project. Lobby/matchmaking, dedicated
 servers and duel synchronization are outside this choice (#12, #13).
 
-## D022 — The mode menu is the game's entry scene
+## D025 — The mode menu is the game's entry scene
 
 Start the game on `MainMenu`, where a right-controller ray and trigger choose
 PvE (local duel against the AI) or PvP (online connection). Pointing at world

@@ -64,9 +64,10 @@ namespace BowMan.Networking
             networkManager.OnServerStopped += HandleStopped;
         }
 
-        // Stops listening to network events.
+        // Invalidates pending attempts and stops listening to network events.
         private void OnDisable()
         {
+            session++;
             if (networkManager == null) return;
             networkManager.OnConnectionEvent -= HandleConnectionEvent;
             networkManager.OnTransportFailure -= HandleTransportFailure;
@@ -85,9 +86,10 @@ namespace BowMan.Networking
                 await relay.EnsureSignedInAsync(Profile());
                 if (attempt != session) return;
                 SetStatus(ConnectionPhase.CreatingMatch);
-                var code = await relay.HostAsync(transport);
+                var allocation = await relay.HostAsync();
                 if (attempt != session) return;
-                joinCode = code;
+                transport.SetRelayServerData(allocation.Data);
+                joinCode = allocation.Code;
                 if (!networkManager.StartHost()) throw new InvalidOperationException("Could not start the host");
                 localRole = Seats.RoleOf(NetworkManager.ServerClientId);
                 SetStatus(ConnectionPhase.WaitingForOpponent);
@@ -115,8 +117,9 @@ namespace BowMan.Networking
                 await relay.EnsureSignedInAsync(Profile());
                 if (attempt != session) return;
                 SetStatus(ConnectionPhase.Joining);
-                await relay.JoinAsync(transport, code);
+                var allocation = await relay.JoinAsync(code);
                 if (attempt != session) return;
+                transport.SetRelayServerData(allocation);
                 if (!networkManager.StartClient()) throw new InvalidOperationException("Could not start the client");
             }
             catch (Exception ex)
