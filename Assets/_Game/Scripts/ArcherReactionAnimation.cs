@@ -26,6 +26,10 @@ namespace BowMan
         private Transform[] deathBlendBones;
         private Vector3[] deathBlendPositions;
         private Quaternion[] deathBlendRotations;
+        private Animator poseAnimator;
+        private Transform woundAnchor;
+        private Vector3 woundPoint;
+        private Vector3 woundOutward;
 
         // Requires an exact entry and, for surviving regions, an authored recovery.
         public bool Supports(BodyRegion value) => Entry(value) != null &&
@@ -86,6 +90,13 @@ namespace BowMan
             injured = true;
             elapsed = 0f;
             playing = Entry(region);
+            if (region == BodyRegion.Neck)
+            {
+                poseAnimator = GetComponentInChildren<Animator>();
+                woundAnchor = hit.Collider.transform;
+                woundPoint = woundAnchor.InverseTransformPoint(hit.Point);
+                woundOutward = woundAnchor.InverseTransformDirection(-hit.Direction);
+            }
             playing.SampleAnimation(gameObject, 0f);
         }
 
@@ -128,6 +139,9 @@ namespace BowMan
                     deathBlendBones[i].localRotation = Quaternion.Slerp(deathBlendRotations[i], deathBlendBones[i].localRotation, blend);
                 }
             }
+            if (fatalPlayback && region == BodyRegion.Neck && woundAnchor != null)
+                ArcherLimbIK.ReachNeck(poseAnimator, woundAnchor.TransformPoint(woundPoint),
+                    woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
             if (elapsed < playing.length) return;
             playing = null;
             if (fatalPlayback)
