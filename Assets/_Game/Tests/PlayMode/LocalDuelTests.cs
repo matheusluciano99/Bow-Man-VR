@@ -76,6 +76,34 @@ public class LocalDuelTests
         return arrow;
     }
 
+    // Moves the string under manual control, holds tension, then cancels before release.
+    [UnityTest]
+    public IEnumerator DrawCreakFollowsMotionAndCancelStaysQuiet()
+    {
+        Time.timeScale = 1f;
+        Find<VRBowInput>().enabled = false;
+        Find<DesktopBowTest>().enabled = false;
+        var sounds = Find<DuelAudio>();
+        var bow = Find<Bow>();
+        var creak = sounds.transform.Find("Draw").GetComponent<AudioSource>();
+        bow.SetHeld(true);
+        Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
+        yield return null;
+        Assert.That(sounds.transform.Find("Nock"), Is.Not.Null);
+        for (int i = 1; i <= 5; i++)
+        {
+            bow.PullTo(bow.RestPosition - bow.transform.forward * (i * 0.08f));
+            yield return null;
+        }
+        Assert.That(creak.volume, Is.GreaterThan(0.02f));
+        yield return new WaitForSeconds(0.3f);
+        Assert.That(creak.volume, Is.Zero);
+        bow.CancelDraw();
+        yield return null;
+        Assert.That(sounds.transform.Find("Release"), Is.Null);
+        Assert.That(Find<LocalDuel>().Flow.CanShoot(0), Is.True);
+    }
+
     // Renders the imported breath on each side of the actual player listener and compares stereo output.
     [UnityTest]
     public IEnumerator HeadLevelEmitterPansAcrossTheDesktopListener()
@@ -353,6 +381,8 @@ public class LocalDuelTests
         var added = keyboard == null;
         if (added) keyboard = InputSystem.AddDevice<Keyboard>();
         var wasEnabled = keyboard.enabled;
+        var originalVolume = AudioListener.volume;
+        var savedVolume = PlayerPrefs.GetFloat("BowMan.DuelVolume", -1f);
         try
         {
             // Batch Mode has no focused Game view to receive keyboard events.
@@ -362,6 +392,12 @@ public class LocalDuelTests
             InputSystem.EnableDevice(keyboard);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
             yield return null;
+            AudioListener.volume = 1f;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.V));
+            yield return null;
+            yield return null;
+            Assert.That(AudioListener.volume, Is.Zero);
+            Assert.That(PlayerPrefs.GetFloat("BowMan.DuelVolume"), Is.Zero);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.R));
             yield return null;
             yield return null;
@@ -369,9 +405,14 @@ public class LocalDuelTests
             Assert.That(duel.LocalArcher.CurrentHealth, Is.EqualTo(100));
             Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(100));
             Assert.That(Find<TextMesh>().text, Does.Contain("Your turn"));
+            Assert.That(AudioListener.volume, Is.Zero, "The next round preserves mute");
         }
         finally
         {
+            AudioListener.volume = originalVolume;
+            if (savedVolume < 0f) PlayerPrefs.DeleteKey("BowMan.DuelVolume");
+            else PlayerPrefs.SetFloat("BowMan.DuelVolume", savedVolume);
+            PlayerPrefs.Save();
             if (added) InputSystem.RemoveDevice(keyboard);
             else
             {
