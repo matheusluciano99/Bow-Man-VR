@@ -12,8 +12,8 @@ These environment surfaces, skies and scenery models are supplied under [CC0 by 
 | [Plastered Wall 02](https://polyhaven.com/a/plastered_wall_02) | Charlotte Baglioni |
 | [Brown Mud 03](https://polyhaven.com/a/brown_mud_03) | Rob Tuytel |
 | [Forest Grove](https://polyhaven.com/a/forest_grove) | Dimitrios Savva, Jarod Guest |
-| [Kloppenheim 02 (Pure Sky)](https://polyhaven.com/a/kloppenheim_02_puresky) | Greg Zaal, Jarod Guest |
-| [Autumn Meadow](https://polyhaven.com/a/autumn_meadow) | Sergej Majboroda |
+| [Kloofendal 48d Partly Cloudy (Pure Sky)](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky) | Greg Zaal, Jarod Guest |
+| [Autumn Field](https://polyhaven.com/a/autumn_field) | Sergej Majboroda |
 | [Fir Sapling Medium](https://polyhaven.com/a/fir_sapling_medium) | Rob Tuytel, Rico Cilliers |
 | [Wine Barrel 01](https://polyhaven.com/a/wine_barrel_01) | James Ray Cock |
 | [Wooden Crate 01](https://polyhaven.com/a/wooden_crate_01) | James Ray Cock |

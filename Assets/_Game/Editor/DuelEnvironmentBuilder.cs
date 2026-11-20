@@ -84,9 +84,9 @@ public static class DuelEnvironmentBuilder
                 var component = new SerializedObject(root.AddComponent<DuelEnvironment>());
                 var sky = setting switch
                 {
-                    ArenaSetting.CastleCourtyard => "kloppenheim_02_puresky",
+                    ArenaSetting.CastleCourtyard => "kloofendal_48d_partly_cloudy_puresky",
                     ArenaSetting.WoodlandRange => "forest_grove",
-                    _ => "autumn_meadow"
+                    _ => "autumn_field"
                 };
                 var panorama = new Material(Shader.Find("Skybox/Panoramic")) { name = sky };
                 var skyPath = $"{Art}/{sky}/{sky}_2k.hdr";
@@ -97,6 +97,7 @@ public static class DuelEnvironmentBuilder
                     importer.SaveAndReimport();
                 }
                 panorama.SetTexture("_MainTex", Texture(sky, sky + "_2k.hdr"));
+                panorama.SetFloat("_Exposure", setting == ArenaSetting.WoodlandRange ? .72f : .88f);
                 panorama.SetFloat("_Rotation", setting == ArenaSetting.WoodlandRange ? 110f : 32f);
                 component.FindProperty("sky").objectReferenceValue = DuelEnvironmentBuilder.Save(panorama, $"{Surfaces}/{sky}.mat");
                 component.ApplyModifiedPropertiesWithoutUndo();
@@ -211,6 +212,26 @@ public static class DuelEnvironmentBuilder
                     Box(new Vector3(x*1.1f,1.96f,side*19),new Vector3(2.14f,3.9f,.36f),"medieval_wood",true);
                     Box(new Vector3(x*4.4f,2.8f,side*18.32f),new Vector3(.76f,2.6f,.045f),side==1?"red cloth":"blue cloth");
                 }
+                var gateFace = side * 18.28f;
+                for (var i = 0; i <= 12; i++)
+                {
+                    var angle = i * Mathf.PI / 12f;
+                    var offset = new Vector3(Mathf.Cos(angle) * 2.35f, 2.4f + Mathf.Sin(angle) * 2.35f, gateFace);
+                    Box(offset, new Vector3(.66f, .59f, .42f), "cobblestone_floor_02", false,
+                        Quaternion.AngleAxis(angle * Mathf.Rad2Deg - 90f, Vector3.forward));
+                }
+                for (var x = -1; x <= 1; x += 2)
+                {
+                    for (var course = 0; course < 4; course++)
+                        Box(new Vector3(x*2.35f,.31f+.6f*course,gateFace),new Vector3(.62f,.55f,.42f),"cobblestone_floor_02");
+                    for (var height = 1; height <= 3; height += 2)
+                        Box(new Vector3(x*1.09f,height,side*18.75f),new Vector3(1.95f,.13f,.12f),"iron");
+                    for (var z = 4; z <= 12; z += 8)
+                    {
+                        Box(new Vector3(x*11.27f,1.67f,side*z),new Vector3(.92f,3.34f,1.25f),stone);
+                        Box(new Vector3(x*11.35f,3.55f,side*z),new Vector3(.66f,.53f,.99f),"cobblestone_floor_02");
+                    }
+                }
                 Box(new Vector3(0,4.55f,side*19),new Vector3(4.7f,1.3f,1.25f),stone);
                 Prop("wine_barrel_01",side*8,side*15,1.25f,36);
                 Prop("wooden_crate_01",side*6.7f,side*15.5f,1.15f,16);
@@ -274,6 +295,19 @@ public static class DuelEnvironmentBuilder
                 Beam(front+new Vector3(-width*.47f,.65f,0),front+new Vector3(-width*.09f,2.24f,0),.14f);
                 Box(front+new Vector3(width*.24f,1.22f,side*.05f),new Vector3(1.06f,2.45f,.12f),"medieval_wood");
                 Box(front+new Vector3(-width*.24f,2.88f,side*.05f),new Vector3(.87f,.8f,.12f),"shadow");
+                var window = front + new Vector3(-width*.24f,2.88f,side*.13f);
+                Box(window, new Vector3(.075f,.83f,.06f),"medieval_wood");
+                Box(window, new Vector3(.91f,.07f,.06f),"medieval_wood");
+                for (var edge=-1;edge<=1;edge+=2)
+                    Box(window+Vector3.right*(edge*.57f),new Vector3(.22f,.85f,.1f),"medieval_wood");
+                Box(window+Vector3.down*.47f,new Vector3(1.24f,.12f,.24f),"medieval_wood");
+                var door = front + new Vector3(width*.24f,0,side*.14f);
+                Beam(door+new Vector3(-.47f,.25f,0),door+new Vector3(.47f,1.81f,0),.085f);
+                var hood = door + new Vector3(0,2.46f,side*.48f);
+                Box(hood,new Vector3(1.78f,.14f,1.19f),"clay_roof_tiles_02",false,
+                    Quaternion.AngleAxis(side*17f,Vector3.right));
+                for (var edge=-1;edge<=1;edge+=2)
+                    Beam(door+new Vector3(edge*.69f,1.81f,0),hood+new Vector3(edge*.69f,-.1f,side*.34f),.1f);
                 Box(c+new Vector3(side*width*.5f,2.3f,0),new Vector3(.18f,.17f,depth+.12f),"medieval_wood");
                 for(var k=-1;k<=1;k++) Box(c+new Vector3(side*width*.5f,1.8f,k*depth*.45f),new Vector3(.18f,eave,.2f),"medieval_wood");
                 var length=Mathf.Sqrt(width*width*.25f+rise*rise);
