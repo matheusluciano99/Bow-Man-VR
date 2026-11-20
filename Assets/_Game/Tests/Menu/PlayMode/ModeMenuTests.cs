@@ -106,7 +106,8 @@ public class ModeMenuTests
             Assert.That(string.Concat(read.Where(c => !char.IsWhiteSpace(c))),
                 Is.EqualTo(string.Concat(notices.Where(c => !char.IsWhiteSpace(c)))));
             Click("Return to menu");
-            Assert.That(loaded, Is.Null);
+            pointer.Confirm();
+            Assert.That(loaded, Is.Null, "A second confirmation cannot select the hidden credits control");
             Click("Credits option");
             Assert.That(body.text, Does.Contain("Matheus"));
             Click("Return to menu");
