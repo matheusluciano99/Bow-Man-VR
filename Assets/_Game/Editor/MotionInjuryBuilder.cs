@@ -495,8 +495,28 @@ public static class MotionInjuryBuilder
                 float Ease(float time, float start, float end) => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(start, end, time));
 
                 const float entrySourceEnd = 0.8f;
+                var swingArm = animator.GetBoneTransform(left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm);
+                var otherArm = animator.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+                var swingHand = animator.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var otherHand = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var hasBeltGear = name == "EnglishArcher";
+
+                // Swings the arm from its shoulder while retaining the captured elbow bend.
+                void SwingAroundBelt(Transform arm, Transform hand, Vector3 offset)
+                {
+                    var reach = hand.position - arm.position;
+                    arm.rotation = Quaternion.FromToRotation(reach, reach + offset) * arm.rotation;
+                }
+
                 var entry = Record(root, bones, 0.3f + entrySourceEnd, time =>
-                    Pose(Mathf.Max(0f, time - 0.3f), Ease(time, 0f, 0.3f), Ease(time, 0.1f, 0.3f), 0f));
+                {
+                    Pose(Mathf.Max(0f, time - 0.3f), Ease(time, 0f, 0.3f), Ease(time, 0.1f, 0.3f), 0f);
+                    var arc = Ease(time, 0f, 0.22f) * (1f - Ease(time, 0.96f, 1.1f));
+                    var side = (swingArm.position - otherArm.position).normalized;
+                    var offset = hasBeltGear ? side * 0.18f + root.transform.forward * 0.08f : side * 0.12f;
+                    SwingAroundBelt(swingArm, swingHand, offset * arc);
+                    if (hasBeltGear && left) SwingAroundBelt(otherArm, otherHand, -side * (0.06f * arc));
+                });
                 var hold = Record(root, bones, 3f, time => Pose(entrySourceEnd + time, 1f, 1f, 0f));
                 var tail = source.length - entrySourceEnd - 3f;
                 var recovery = Record(root, bones, tail + 0.9f, time =>
