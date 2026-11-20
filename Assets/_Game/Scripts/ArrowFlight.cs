@@ -22,6 +22,9 @@ namespace BowMan
         public event Action<BodyImpact> BodyHit;
         public event Action Expired;
         public bool IsFlying => flying;
+        public Vector3 Velocity => velocity;
+        public float ShotStrength => shotStrength;
+        public float SceneryLifetime => Mathf.Min(impactLifetime, remainingLifetime);
 
         // Starts one timed flight with the given velocity, ignoring the firing archer.
         // In flight the root is the tip; an embedded root anchors the entry while geometry penetrates ahead.
@@ -75,17 +78,25 @@ namespace BowMan
                 transform.rotation = Quaternion.LookRotation(displacement);
                 if (nearest.collider.TryGetComponent<BodyHitRegion>(out var region))
                 {
-                    transform.SetParent(nearest.collider.transform, true);
-                    foreach (Transform visual in transform) visual.position += transform.forward * bodyPenetration;
-                    BodyHit?.Invoke(new BodyImpact(region, nearest, displacement, bodyPenetration, shotStrength));
+                    Embed(new BodyImpact(region, nearest, displacement, bodyPenetration, shotStrength));
                 }
-                else Destroy(gameObject, Mathf.Min(impactLifetime, remainingLifetime));
+                else Destroy(gameObject, SceneryLifetime);
                 Hit?.Invoke(nearest);
                 return;
             }
 
             transform.position += displacement;
             if (velocity.sqrMagnitude > 0f) transform.rotation = Quaternion.LookRotation(velocity);
+        }
+
+        // Anchors a local or replicated arrow and lets its wound effects use the confirmed entry.
+        public void Embed(BodyImpact impact)
+        {
+            flying = false;
+            transform.SetPositionAndRotation(impact.Point, Quaternion.LookRotation(impact.Direction));
+            transform.SetParent(impact.Volume.transform, true);
+            foreach (Transform visual in transform) visual.position += transform.forward * impact.PenetrationDepth;
+            BodyHit?.Invoke(impact);
         }
 
         // Finds the first solid impact with the same filtering for preview aim and live flight.

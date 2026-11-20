@@ -359,6 +359,178 @@ Transform:
   m_Children: []
   m_Father: {fileID: 245063400}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &625193088
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4328571955236022000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7912497509924983781, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+      propertyPath: m_Name
+      value: Bow
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+--- !u!114 &625193089 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7741270113072431188, guid: 23d8091eff0c2914b95b7925c505cf22, type: 3}
+  m_PrefabInstance: {fileID: 625193088}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee707ea22a1d96459e10e5230ddde0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.Bow
+--- !u!1 &721863562
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 721863567}
+  - component: {fileID: 721863566}
+  - component: {fileID: 721863565}
+  - component: {fileID: 721863564}
+  - component: {fileID: 721863563}
+  m_Layer: 0
+  m_Name: Online duel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &721863563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721863562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b95904a216142d04dbcbc5464e0692e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.VRInjuryView
+  trackingOrigin: {fileID: 245063401}
+--- !u!114 &721863564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721863562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf2abc99309f0149abe03149c64d19f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.DesktopBowTest
+  bow: {fileID: 625193089}
+  vrInput: {fileID: 721863565}
+  showPanel: 0
+--- !u!114 &721863565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721863562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df5fb4453f35f6c4789ed665a84647c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BowMan.Gameplay::BowMan.VRBowInput
+  bow: {fileID: 625193089}
+  leftController: {fileID: 245063403}
+  rightController: {fileID: 245063402}
+  bowInLeftHand: 1
+  gripPositionOffset: {x: 0, y: 0, z: 0}
+  gripRotationOffset: {x: 90, y: 0, z: 0}
+--- !u!114 &721863566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721863562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c41f6bf773c545828b75e2fbcf6c6045, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BowMan.Networking::BowMan.Networking.PvPDuel
+  firstPrefab: {fileID: 667351378350635231, guid: b7ce9265358c2a24ba76b5469a63dfeb, type: 3}
+  secondPrefab: {fileID: 5125899312878103343, guid: acd6c09ad0d3bae4588d6d1c26bb50c7, type: 3}
+  arrowPrefab: {fileID: 7838939950186234352, guid: 58dd95bcc9cb81c4388189dfa3343d77, type: 3}
+  bow: {fileID: 625193089}
+  vrInput: {fileID: 721863565}
+  desktop: {fileID: 721863564}
+  injuryView: {fileID: 721863563}
+  rig: {fileID: 245063405}
+  spawns: {fileID: 782748347}
+  connection: {fileID: 1599415875}
+  feedback: {fileID: 384713777}
+--- !u!4 &721863567
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721863562}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &782748346
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,3 +964,5 @@ SceneRoots:
   - {fileID: 782748348}
   - {fileID: 245063399}
   - {fileID: 1599415878}
+  - {fileID: 721863567}
+  - {fileID: 625193088}
