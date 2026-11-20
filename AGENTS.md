@@ -209,9 +209,11 @@ Use GitHub's Assignees field to record task responsibility.
 - Cross-network acceptance for #11 needs two PCs on different networks, for
   example one on a phone hotspot. Editor plus a `-desktop` player on one PC is a
   quick smoke test only.
-- Only presence and roles are synchronized. Shots, hits, health and turns
-  belong to #12; leaving and rematch to #13. Run `BowMan.Networking.EditorTests`
-  in EditMode before a networking PR.
+- When the joiner receives the second seat, the host starts a duel. Each player
+  sees the opponent's archer and their own bow. The host resolves shots, health,
+  injuries, death and turn handoff. Both peers show the same wound and anatomy.
+  Host and join controls, test setup and acceptance are in [Online duel](Docs/OnlineDuel.md).
+  Run `BowMan.Networking.EditorTests` and the two-Editor Relay test before a networking PR.
 
 ## Bow interaction
 
