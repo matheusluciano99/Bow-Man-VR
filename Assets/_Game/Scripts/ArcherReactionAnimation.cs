@@ -166,7 +166,8 @@ namespace BowMan
             if (fatalPlayback && region == BodyRegion.Neck && woundAnchor != null)
                 ArcherLimbIK.ReachNeck(poseAnimator, woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
-            if (!recovering && !finishingDeath)
+            var completeFatalEntry = fatalPlayback && playing == FatalEntry(region);
+            if (!recovering && !finishingDeath && !completeFatalEntry)
                 ArcherHitRecoil.Apply(poseAnimator, entryImpact, elapsed);
             if (region == BodyRegion.Abdomen && woundAnchor != null && !finishingDeath && abdomenContact != null)
             {
@@ -175,7 +176,6 @@ namespace BowMan
                     woundAnchor.TransformDirection(woundOutward).normalized, reach);
             }
             if (elapsed < playing.length) return;
-            var completeFatalEntry = fatalPlayback && playing == FatalEntry(region);
             playing = null;
             if (fatalPlayback)
             {

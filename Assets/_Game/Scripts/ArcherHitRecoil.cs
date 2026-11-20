@@ -24,6 +24,16 @@ namespace BowMan
                 case BodyRegion.Abdomen:
                     Lean(rig.GetBoneTransform(HumanBodyBones.Spine), incoming, up, 7f * amount);
                     break;
+                case BodyRegion.LeftShoulder:
+                case BodyRegion.RightShoulder:
+                    Lean(rig.GetBoneTransform(HumanBodyBones.UpperChest), incoming, up, 3f * amount);
+                    Deflect(rig, left ? HumanBodyBones.LeftShoulder : HumanBodyBones.RightShoulder,
+                        left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+                        (incoming * 0.037f + outside * 0.024f - up * 0.006f) * amount, 14f * amount);
+                    Deflect(rig, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,
+                        left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
+                        (outside * 0.095f + incoming * 0.012f) * amount, 18f * amount);
+                    break;
                 case BodyRegion.LeftArm:
                 case BodyRegion.RightArm:
                     Deflect(rig, left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm,

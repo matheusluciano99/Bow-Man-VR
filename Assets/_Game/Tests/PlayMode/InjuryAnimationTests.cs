@@ -1294,5 +1294,98 @@ public class InjuryAnimationTests
             Object.DestroyImmediate(root);
         }
     }
+
+    // Checks that a shoulder hit reaches the actual opposite-hand shoulder contact, rather than the arm cradle.
+    [Test]
+    public void ShoulderClipsCupTheCorrectShoulderWithPlantedFeet()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var player = root.GetComponent<ArcherReactionAnimation>();
+            Assert.That(player.Supports(BodyRegion.LeftShoulder), Is.True);
+            var a = root.GetComponentInChildren<Animator>();
+            foreach (var region in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder }.Where(player.Supports))
+            {
+                var left = region == BodyRegion.LeftShoulder;
+                var feet = new[] { a.GetBoneTransform(HumanBodyBones.LeftFoot), a.GetBoneTransform(HumanBodyBones.RightFoot) };
+                var planted = feet.Select(t => t.position).ToArray();
+                var chest = a.GetBoneTransform(HumanBodyBones.UpperChest);
+                var start = chest.rotation;
+                player.Entry(region).SampleAnimation(root, player.Entry(region).length);
+                var shoulder = a.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+                var support = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var finger = a.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
+                var palm = Vector3.Lerp(support.position, finger.position, 0.5f);
+                Assert.That(Vector3.Distance(palm, shoulder.position), Is.LessThan(0.12f), name + " " + region);
+                var elbow = a.GetBoneTransform(left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm);
+                Assert.That(root.transform.InverseTransformPoint(elbow.position).z, Is.GreaterThan(0.10f), "Support elbow must clear the chest");
+                Assert.That(support.position.y, Is.GreaterThan(1.35f));
+                Assert.That(Quaternion.Angle(chest.rotation, start), Is.GreaterThan(15f));
+                for (var i = 0; i < feet.Length; i++) Assert.That(Vector3.Distance(feet[i].position, planted[i]), Is.LessThan(0.002f));
+                Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+                player.Recovery(region).SampleAnimation(root, player.Recovery(region).length);
+                Assert.That(Quaternion.Angle(chest.rotation, start), Is.LessThan(0.01f));
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Checks the recorded reach and release meet the moving hold at the same wrist and finger poses.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void StandingShoulderTransitionsKeepHandsContinuous(string model)
+    {
+        var root = Character(model);
+        var actor = root.GetComponent<ArcherReactionAnimation>();
+        var rig = root.GetComponentInChildren<Animator>();
+        var joints = new[] { HumanBodyBones.LeftHand, HumanBodyBones.RightHand,
+            HumanBodyBones.LeftMiddleDistal, HumanBodyBones.RightMiddleDistal,
+            HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm }.Select(rig.GetBoneTransform).ToArray();
+        foreach (var side in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder })
+        {
+            var clips = new[] { actor.Entry(side), actor.Hold(side), actor.Recovery(side) };
+            Assert.That(clips[1], Is.Not.Null, side.ToString());
+            foreach (var clip in clips) RequireCoreClearance(root, clip, 0.06f);
+            for (var join = 1; join < clips.Length; join++)
+            {
+                clips[join - 1].SampleAnimation(root, clips[join - 1].length);
+                var positions = joints.Select(j => j.position).ToArray();
+                var rotations = joints.Select(j => j.rotation).ToArray();
+                clips[join].SampleAnimation(root, 0f);
+                for (var i = 0; i < joints.Length; i++)
+                {
+                    Assert.That(Vector3.Distance(positions[i], joints[i].position), Is.LessThan(0.001f), joints[i].name);
+                    Assert.That(Quaternion.Angle(rotations[i], joints[i].rotation), Is.LessThan(0.25f), joints[i].name);
+                }
+            }
+        }
+    }
+
+    // Verifies a real left-shoulder hit uses its separate automatic sequence and preserves impact identity.
+    [UnityTest]
+    public IEnumerator LeftShoulderUsesItsOwnRecoveryAndImpactIdentity()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.LeftShoulder);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.LeftShoulder));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Keeps a right-shoulder impact distinct through its own supported hold and complete recovery.
+    [UnityTest]
+    public IEnumerator RightShoulderUsesItsOwnRecoveryAndImpactIdentity()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightShoulder);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightShoulder));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
 }
 #endif

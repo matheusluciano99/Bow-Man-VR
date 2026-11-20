@@ -165,3 +165,7 @@ Use **Bow Man VR > Injuries > Rebuild Captured Arm Reactions** to bake both side
 ### Supported leg injuries
 
 The weight shift in **Kneeling Down** and **Standing** times the descent and rise. Each archer plants the healthy boot and braces the same-side palm and knee on the floor. Left and right retain independent bindings, impact recoil and fatal continuations. **Bow Man VR > Injuries > Rebuild Captured Leg Reactions** regenerates both rigs.
+
+### Standing shoulder reach
+
+A surviving shoulder hit uses the reach before the fall in **Shoulder Hit And Fall**. The injured shoulder recoils, the opposite hand cups it and both boots remain planted. The three-second hold follows the captured shoulder movement. On release the hand clears the body and the archer resumes the duel stance. A lethal shoulder hit still plays the complete recorded fall. **Bow Man VR > Injuries > Rebuild Surviving Shoulders** regenerates the standing reactions on both rigs.
