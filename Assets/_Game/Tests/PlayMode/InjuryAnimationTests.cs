@@ -508,7 +508,15 @@ public class InjuryAnimationTests
             var recoveries = 0;
             flow.MatchFinished += _ => results++;
             flow.RecoveryRequested += (_, __) => recoveries++;
-            yield return new WaitForSeconds(0.65f);
+            var rig = target.GetComponentInChildren<Animator>();
+            var elbow = rig.GetBoneTransform(HumanBodyBones.RightLowerArm);
+            var hand = rig.GetBoneTransform(HumanBodyBones.RightHand);
+            var regions = target.GetComponentsInChildren<BodyHitRegion>();
+            var arm = regions.Where(p => p.transform.parent == elbow || p.transform.parent == hand)
+                .Select(p => p.GetComponent<Collider>()).ToArray();
+            var core = regions.Where(p => p.Region is BodyRegion.Head or BodyRegion.Neck or BodyRegion.Chest
+                or BodyRegion.Abdomen or BodyRegion.Pelvis).Select(p => p.GetComponent<Collider>()).ToArray();
+            yield return CheckClearance(0.65f);
             Assert.That(target.CurrentHealth, Is.Zero);
             Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
             Assert.That(arrow.transform.parent, Is.Not.Null, character + " wound " + offset);
@@ -516,15 +524,20 @@ public class InjuryAnimationTests
             var a = target.GetComponentInChildren<Animator>();
             var neck = a.GetBoneTransform(HumanBodyBones.Neck);
             var wrist = a.GetBoneTransform(HumanBodyBones.RightHand);
-            var expected = arrow.transform.position - neck.up * 0.045f - arrow.transform.forward * 0.025f;
-            Assert.That(Vector3.Distance(wrist.position, expected), Is.LessThan(0.008f), "Actual wound side " + offset);
+            var knuckle = a.GetBoneTransform(HumanBodyBones.RightMiddleProximal);
+            var palm = Vector3.Lerp(wrist.position, knuckle.position, 0.55f);
+            var fromWound = palm - arrow.transform.position;
+            Assert.That(Vector3.ProjectOnPlane(fromWound, arrow.transform.forward).magnitude, Is.LessThan(0.035f),
+                character + " palm aligned with wound " + offset);
+            Assert.That(Vector3.Distance(palm, arrow.transform.position), Is.LessThan(0.075f),
+                character + " glove covering wound " + offset);
             var across = a.GetBoneTransform(HumanBodyBones.LeftUpperArm).position
                 - a.GetBoneTransform(HumanBodyBones.RightUpperArm).position;
             var fingers = a.GetBoneTransform(HumanBodyBones.RightMiddleDistal).position - wrist.position;
             Assert.That(Vector3.Angle(fingers, Vector3.ProjectOnPlane(across, arrow.transform.forward)),
                 Is.LessThan(8f), character + " fingers across neck");
             var anchored = arrow.transform.localPosition;
-            yield return new WaitForSeconds(2f);
+            yield return CheckClearance(2f);
             Assert.That(arrow.transform.localPosition, Is.EqualTo(anchored));
             Assert.That(flow.CanShoot(0), Is.False);
             Assert.That(a.GetBoneTransform(HumanBodyBones.Head).position.y - target.transform.position.y, Is.LessThan(0.35f));
@@ -532,6 +545,18 @@ public class InjuryAnimationTests
             Assert.That(results, Is.EqualTo(1));
             Assert.That(recoveries, Is.Zero);
             yield return CleanUp();
+
+            // Samples the retargeted arm during the fall for this actual wound position.
+            IEnumerator CheckClearance(float seconds)
+            {
+                var end = Time.time + seconds;
+                while (Time.time < end)
+                {
+                    yield return null;
+                    Assert.That(ArcherLimbIK.DeepestOverlap(arm, core, out _), Is.LessThan(0.003f),
+                        character + " moving neck contact " + offset);
+                }
+            }
         }
     }
 
@@ -1456,6 +1481,15 @@ public class InjuryAnimationTests
         yield return new WaitForSeconds(4f);
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Samples each saved neck entry between keys so the glove and forearm cannot pass through the face.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void NeckGloveAndForearmClearTheHeadDuringCollapse(string model)
+    {
+        var root = Character(model);
+        RequireCoreClearance(root, root.GetComponent<ArcherReactionAnimation>().Entry(BodyRegion.Neck), 0.115f);
     }
 
     // Drives the support arm into the fitted chest and verifies the solver clears it without stretching either bone.

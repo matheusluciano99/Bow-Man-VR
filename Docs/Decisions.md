@@ -240,6 +240,12 @@ Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
 bone/fracture rules and X-ray rendering remain separate work. Preserve source
 filenames, mesh GUIDs and native subasset identities when regenerating.
 
+## D015 — Fit recorded injury performances on both game archers
+
+Each body region has its own entry. Surviving reactions use the actual entry, hold and recovery completion to hand over the turn. Fatal hits lock the result immediately and allow the visible collapse to finish.
+
+Use free human performance recordings with verified game-use terms. Review the full source on both rigs, then select the short movement that matches the wound. Preserve the impact recoil and measured limb lengths when fitting the hand or boot. For live wound contact, use the baked pose as a cleared starting point and limit the change against the model’s fitted colliders. This keeps the glove near the actual arrow while the archer moves. The per-region sources, timings and authoring commands are in [Injury reactions](InjuryReactions.md).
+
 ## D018 — Fatal body hits finish with a full collapse
 
 A fatal hit outside the head or neck first plays the reaction for the actual
