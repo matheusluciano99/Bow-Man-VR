@@ -1,0 +1,10 @@
+{
+  "name": "BowMan.Networking.Editor",
+  "rootNamespace": "BowMan.Networking.Editor",
+  "references": [
+    "BowMan.Networking",
+    "Unity.Netcode.Runtime",
+    "Unity.Networking.Transport"
+  ],
+  "includePlatforms": ["Editor"]
+}

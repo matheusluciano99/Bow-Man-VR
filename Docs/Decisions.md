@@ -312,6 +312,22 @@ without healing the target or resetting its pose. Keep the actual trigger,
 tracking, focus and injury gates; exercise AI combat separately. This avoids
 waiting for unrelated attacks while comparing regional motion.
 
+## D024 — Unity Relay and Netcode for GameObjects for online PvP
+
+Use Netcode for GameObjects 2.14.0 with Unity Gaming Services Multiplayer 2.5.0:
+anonymous Authentication plus a Unity Relay allocation for one opponent, joined
+with a short code. Relay traverses home and campus NATs without port forwarding,
+which the "different locations and networks" PvP requirement needs, and the
+project is already linked to Unity Cloud. Photon Fusion would add a separate
+account and API; direct-IP Mirror/FishNet would need port forwarding or a VPN.
+
+The host is Archer 1 and the first joining client Archer 2; the host's
+connection approval refuses any further client, and Relay allows one remote
+connection. Each process signs in with its own auth profile so two instances on
+one PC can connect. Online play therefore depends on UGS availability, the free
+Relay quota and Relay being enabled for the project. Lobby/matchmaking, dedicated
+servers and duel synchronization are outside this choice (#12, #13).
+
 ## Open questions and provisional values
 
 - The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.
