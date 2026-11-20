@@ -86,6 +86,7 @@ public class LocalDuelTests
         Assert.That(Find<TextMesh>().text, Does.Not.Contain("Grip: hold bow"));
         Assert.That(duel.LocalArcher.GetComponentsInChildren<Renderer>().All(r => !r.enabled), Is.True);
         Assert.That(duel.Opponent.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r => r.enabled), Is.True);
+        var cutaway = Find<FatalCutaway>();
         var fatalities = 0;
         AnatomicalImpact lastFatality = null;
         duel.Flow.FatalityRequested += (target, report) =>
@@ -100,6 +101,7 @@ public class LocalDuelTests
         while (duel.Opponent.CurrentHealth == 100 && Time.time < deadline) yield return null;
         Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(75));
         Assert.That(fatalities, Is.Zero);
+        Assert.That(cutaway.IsVisible, Is.False);
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
         Assert.That(bow.ShotAllowed, Is.False);
         deadline = Time.time + 32f;
@@ -122,6 +124,18 @@ public class LocalDuelTests
         Assert.That(fatalities, Is.EqualTo(1));
         Assert.That(lastFatality.Entry.Region, Is.EqualTo(BodyRegion.Head));
         Assert.That(bow.ShotAllowed, Is.False);
+        Assert.That(cutaway.IsVisible, Is.True);
+        Assert.That(cutaway.Caption, Does.Contain("Head"));
+        var window = cutaway.transform.Find("Fatal cutaway");
+        Assert.That(window.Find("Arrow path"), Is.Not.Null);
+        Assert.That(window.childCount, Is.EqualTo(2 + lastFatality.Bones.Count +
+            lastFatality.Organs.Sum(h => h.Organ.Surfaces.Count)));
+        foreach (var organ in lastFatality.Organs)
+        {
+            Assert.That(cutaway.Caption, Does.Contain(organ.Organ.DisplayName));
+            Assert.That(window.Find(organ.Organ.DisplayName).GetComponent<MeshFilter>().sharedMesh,
+                Is.SameAs(organ.Organ.Surfaces[0]));
+        }
         var wounds = duel.Opponent.GetComponentsInChildren<ParticleSystem>();
         Assert.That(wounds.Length, Is.GreaterThan(0));
         var old = duel.Opponent;
@@ -131,6 +145,7 @@ public class LocalDuelTests
         duel.RestartMatch();
         yield return null;
         Assert.That(old == null, Is.True);
+        Assert.That(cutaway.IsVisible, Is.False);
         Assert.That(wounds.All(w => w == null), Is.True, "Restart must remove wounds still emitting on the old actor");
         Assert.That(duel.LocalArcher.CurrentHealth, Is.EqualTo(100));
         Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(100));
@@ -150,6 +165,10 @@ public class LocalDuelTests
         Assert.That(results, Is.EqualTo(2));
         Assert.That(fatalities, Is.EqualTo(2));
         Assert.That(lastFatality.Entry.Region, Is.EqualTo(BodyRegion.Neck));
+        Assert.That(cutaway.IsVisible, Is.True);
+        yield return new WaitForSecondsRealtime(3.1f);
+        Assert.That(cutaway.IsVisible, Is.False);
+        Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
     }
 
     // Plays a sided injury and an AI victory in the saved scene, then restarts through the player's keyboard binding.

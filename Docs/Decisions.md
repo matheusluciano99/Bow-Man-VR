@@ -250,7 +250,7 @@ applies another health outcome. The finishing presentation listens to the
 confirmed lethal-shot gate, not the general per-arrow analysis event.
 
 Keep rigid tissue binding as a prototype limit. Deforming anatomical motion
-and X-ray rendering remain separate work. Preserve source
+remains separate work. Preserve source
 filenames, mesh GUIDs and native subasset identities when regenerating.
 
 ## D015 — Fit recorded injury performances on both game archers
@@ -258,6 +258,14 @@ filenames, mesh GUIDs and native subasset identities when regenerating.
 Each body region has its own entry. Surviving reactions use the actual entry, hold and recovery completion to hand over the turn. Fatal hits lock the result immediately and allow the visible collapse to finish.
 
 Use free human performance recordings with verified game-use terms. Review the full source on both rigs, then select the short movement that matches the wound. Preserve the impact recoil and measured limb lengths when fitting the hand or boot. For live wound contact, use the baked pose as a cleared starting point and limit the change against the model’s fitted colliders. This keeps the glove near the actual arrow while the archer moves. The per-region sources, timings and authoring commands are in [Injury reactions](InjuryReactions.md).
+
+## D016 — Brief in-body X-ray injury presentation
+
+Show the struck interior only after the match confirms a fatal arrow. A
+camera-relative stereo close-up keeps the headset wearer in control of their
+view while the injury geometry follows the defeated archer. Reveal the finite
+path through the contacted surfaces and show the matching result in the HUD.
+Three seconds, display size and colors are provisional pending Quest 2 review.
 
 ## D017 — Bone fracture depends on shot strength
 
