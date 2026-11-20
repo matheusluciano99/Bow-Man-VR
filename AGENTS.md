@@ -275,7 +275,9 @@ Use GitHub's Assignees field to record task responsibility.
 
 - Use free animations only, with no purchase or paid subscription required to
   download and use the selected clips in this game. Verify each source license
-  and preview the motion before selecting a replacement.
+  and preview the motion before selecting a replacement. For revised injury
+  reactions, start with a recorded human performance. Show the full take on
+  the game archers before selecting it or fitting contacts to a wound.
 
 - Authored clip availability and model/contact checks are in
   [Docs/Art/InjuryAnimations.md](Docs/Art/InjuryAnimations.md). The close desktop

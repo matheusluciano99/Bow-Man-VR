@@ -217,6 +217,11 @@ Fit support contacts against the visible skin, clothing and equipment footprint;
 a joint origin is not the surface that touches the ground. Keep palm orientation
 tied to anatomical handedness through the motion.
 
+Use a free human motion-capture take as the starting point for revised injury
+reactions. The timing of the impact, weight shift and recovery should come
+from the performer. Compare the full take on the actual archers against the
+current reaction before choosing a take or adjusting its hand and foot contacts.
+
 Foot reactions retain the selected free MotionSmith right-foot performance across
 the whole body, mirrored anatomically on each target skeleton for the left side.
 This generated source replaces the procedural limb pose/torso-recoil adaptation;

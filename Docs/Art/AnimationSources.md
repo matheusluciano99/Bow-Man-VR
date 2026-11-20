@@ -80,6 +80,23 @@ Injured Walking contain useful support movement but do not by themselves complet
 the agreed arm/wrist sequences. The three bow sources cover reload/aim/recoil;
 they are alternatives to the unavailable itch archives, not injury replacements.
 
+### Recorded shoulder impact candidates
+
+Mixamo's bow catalog supplied **Standing React Large From Left** and **Standing
+React Large From Right**, exported on Erika Archer as FBX Binary, without skin,
+at 30 fps with no key reduction. The originals are in the local
+`SourceAssets/Downloads/Mixamo/Motions/` cache. The left file's SHA-256 is
+`2859c39a3af154b567589ad06a8ff8aa4f20f471e536ede765ffd4d2a5e6afdf`.
+The right file's SHA-256 is
+`20b933bf698cbd461f1447c93deb38e6270fe31096f6af7209ef06e561e503a5`.
+Both one-second takes were retargeted on Erika and the English Archer and
+compared with the current entry at 30 fps. The performer recoils, steps, and
+returns to the bow stance. Neither take includes the opposite hand cupping
+the injured shoulder. Evaluate them for impact only. The comparison video is
+local at `Artifacts/PRReview/CapturedShoulders/Shoulder comparison.mp4`.
+[Mixamo catalog](https://www.mixamo.com/#/?query=react%20bow&type=Motion%2CMotionPack)
+and [Adobe's game-use terms](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html).
+
 ## Coverage against the agreed reactions
 
 These are source candidates and adaptation requirements, not completed replacement
