@@ -128,7 +128,7 @@ public class LocalDuelTests
         Assert.That(cutaway.Caption, Does.Contain("Head"));
         var window = cutaway.transform.Find("Fatal cutaway");
         Assert.That(window.Find("Arrow path"), Is.Not.Null);
-        Assert.That(window.childCount, Is.EqualTo(1 + lastFatality.Bones.Count +
+        Assert.That(window.childCount, Is.EqualTo(2 + lastFatality.Bones.Count +
             lastFatality.Organs.Sum(h => h.Organ.Surfaces.Count)));
         foreach (var organ in lastFatality.Organs)
         {

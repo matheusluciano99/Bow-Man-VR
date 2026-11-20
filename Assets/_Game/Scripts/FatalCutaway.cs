@@ -13,6 +13,8 @@ namespace BowMan
         private static readonly int Ink = Shader.PropertyToID("_Color");
         private readonly List<(Transform source, Transform copy, Vector3 center, Vector3 size)> parts = new();
         private Material material;
+        private Material pathMaterial;
+        private Material backgroundMaterial;
         private Transform window;
         private Transform anchor;
         private Transform path;
@@ -28,7 +30,12 @@ namespace BowMan
         public void Show(AnatomicalImpact report)
         {
             Clear();
-            if (material == null) material = new Material(Resources.Load<Shader>("FatalCutaway"));
+            if (material == null)
+            {
+                material = new Material(Resources.Load<Shader>("FatalCutaway"));
+                backgroundMaterial = new Material(material) { renderQueue = 2990 };
+                pathMaterial = new Material(material) { renderQueue = 3010 };
+            }
             anchor = report.Entry.Volume.transform;
             localStart = anchor.InverseTransformPoint(report.Entry.Point);
             localEnd = anchor.InverseTransformPoint(report.Entry.PathEnd);
@@ -40,6 +47,10 @@ namespace BowMan
             window.SetParent(transform, false);
             window.localPosition = new Vector3(0f, 0.04f, 1.25f);
 
+            var background = Box("Cutaway background", new Color(0.035f, 0.065f, 0.1f, 0.97f));
+            background.GetComponent<MeshRenderer>().sharedMaterial = backgroundMaterial;
+            background.localPosition = new Vector3(0f, -0.17f, 0.32f);
+            background.localScale = new Vector3(1.3f, 0.93f, 0.002f);
             foreach (var hit in report.Organs)
                 foreach (var mesh in hit.Organ.Surfaces)
                 {
@@ -52,15 +63,19 @@ namespace BowMan
             foreach (var hit in report.Bones)
             {
                 var color = hit.Fractured ? new Color(1f, 0.35f, 0.18f, 0.75f) : new Color(0.79f, 0.85f, 0.93f, 0.42f);
-                var bone = Box(Readable(hit.Bone), color);
+                var bone = Box(BoneName(hit.Bone), color);
                 parts.Add((hit.Frame, bone, hit.LocalBounds.center, hit.LocalBounds.size));
             }
             path = Box("Arrow path", new Color(1f, 0.85f, 0.22f));
+            path.GetComponent<MeshRenderer>().sharedMaterial = pathMaterial;
             var organs = report.Organs.Select(h => h.Organ.DisplayName);
-            var fractures = report.Bones.Where(h => h.Fractured).Select(h => Readable(h.Bone));
+            var fractures = report.Bones.Where(h => h.Fractured).Select(h => BoneName(h.Bone));
             Caption = $"X-ray   {Readable(report.Entry.Region)}\nOrgans: {Names(organs)}\nFractures: {Names(fractures)}";
             LateUpdate();
         }
+
+        // Labels the head bone as the skull and preserves rig granularity for grouped segments.
+        private static string BoneName(HumanBodyBones bone) => bone == HumanBodyBones.Head ? "Skull" : Readable(bone);
 
         // Separates the words of a Humanoid bone or region for the match feedback.
         private static string Readable(System.Enum value) => Regex.Replace(value.ToString(), "(?<=[a-z])(?=[A-Z])", " ");
@@ -130,6 +145,8 @@ namespace BowMan
         {
             Clear();
             if (material != null) Destroy(material);
+            if (pathMaterial != null) Destroy(pathMaterial);
+            if (backgroundMaterial != null) Destroy(backgroundMaterial);
         }
     }
 }
