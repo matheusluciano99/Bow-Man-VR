@@ -18,7 +18,11 @@ ordinary injury view. Use the same revision for the two-network test.
 | Hold bow | Automatically attached to selected hand | Tab enables desktop input |
 | Grab/draw/release string | Opposite trigger near string; hold, pull, release | Hold/release Space |
 | Aim | Both tracked hand positions | Arrow keys |
-| Switch bow hand | Right B during your aiming turn | H during your aiming turn |
+| Choose bow hand before entering a match | Select the hand panel with the right trigger | Click the hand panel or press H |
+| Switch bow hand during your aiming turn | Right B | H |
+| Cycle game volume, including mute | Left X | V |
+| Read credits and source notices | Point at Credits, then Notices | Click or press C, use arrows to turn pages |
+| Return from credits | Select Menu | Esc or click Menu |
 | Restart finished match | Right A | R |
 | Return to VR input | — | Tab |
 
@@ -27,11 +31,14 @@ also available. Bow hand preference survives match restart.
 
 ## Match and comfort checks
 
-- [ ] Head motion and both controller markers track correctly; floor and body scale match the real room.
+- [ ] Head and both rendered hands follow the controllers. Floor level and archer scale match the room.
 - [ ] Grip alignment, nearby-string grab, short/half/full draw and release feel natural with each bow hand.
 - [ ] The bow stays in hand without gripping, including other turns and injury; grip release does not cancel a draw.
 - [ ] Losing tracking or app focus cancels without an accidental shot.
-- [ ] The full opposing archer is textured and correctly scaled; the local view shows controllers/bow only.
+- [ ] The opponent breathes, nocks, draws and releases. Check both the local bow grip and drawing fingers, including a cancelled draw.
+- [ ] Try a short draw and then cross 60%. Listen for the stretch at the bow, its steady full-draw sound and silence when the string relaxes. Listen for the release, arrow passing and impact at the contact. Check mute and comfortable levels.
+- [ ] Across matches, inspect the castle courtyard, woodland range and village yard. Record the arena encountered, audible ambience, floor contact and clarity of the opponent against the scenery.
+- [ ] Have a first-time player choose a hand and mode, nock and fire, recognize the result and start another duel using the visible guidance. Check the credits and notices in both eyes, then return to the menu.
 - [ ] Both health values, turn state and draw feedback are readable in stereo.
 - [ ] One released arrow locks shooting until its outcome and any living recovery finish; misses pass the turn.
 - [ ] The AI takes one legal turn and cannot shoot during another arrow, injured hold or recovery.
@@ -101,6 +108,7 @@ controller's Menu button or Esc.
 
 For the online pass, host on one network and join from a second network.
 Record the two PCs, network types, participant observations and build revision.
+Confirm that both seats see the same arena and hear the remote archer’s draw.
 Alternate shooters and repeat the region table above in both modes. For each
 hit, compare health, region and side, arrow placement, wound and anatomy on
 both peers. Confirm each living recovery precedes the next turn. Test a fatal
