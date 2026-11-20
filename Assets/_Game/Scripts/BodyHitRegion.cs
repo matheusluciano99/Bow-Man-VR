@@ -20,20 +20,27 @@ namespace BowMan
         public Vector3 Direction { get; }
         public Vector3 Normal { get; }
         public float PenetrationDepth { get; }
+        public float ShotStrength { get; }
         public Vector3 PathEnd => Point + Direction * PenetrationDepth;
         public Collider Collider { get; }
 
         // Captures the actual struck volume, entry point, surface normal and arrow travel direction.
-        public BodyImpact(BodyHitRegion region, RaycastHit hit, Vector3 direction, float penetrationDepth)
+        public BodyImpact(BodyHitRegion region, RaycastHit hit, Vector3 direction, float penetrationDepth, float shotStrength = 0f)
+            : this(region, hit.point, hit.normal, direction, penetrationDepth, shotStrength) { Collider = hit.collider; }
+
+        // Restores a confirmed entry against the matching animated volume on another instance of the same actor.
+        public BodyImpact(BodyHitRegion region, Vector3 point, Vector3 normal, Vector3 direction,
+            float penetrationDepth, float shotStrength)
         {
             Volume = region;
             Region = region.Region;
             Side = region.Side;
-            Point = hit.point;
+            Point = point;
             Direction = direction.normalized;
-            Normal = hit.normal;
+            Normal = normal;
             PenetrationDepth = penetrationDepth;
-            Collider = hit.collider;
+            ShotStrength = shotStrength;
+            Collider = region.GetComponent<Collider>();
         }
     }
 

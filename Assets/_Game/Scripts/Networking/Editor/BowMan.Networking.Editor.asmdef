@@ -2,6 +2,7 @@
   "name": "BowMan.Networking.Editor",
   "rootNamespace": "BowMan.Networking.Editor",
   "references": [
+    "BowMan.Gameplay",
     "BowMan.Networking",
     "BowMan.Menu",
     "Unity.Netcode.Runtime",

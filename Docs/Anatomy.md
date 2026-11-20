@@ -21,6 +21,20 @@ Neither analysis component applies damage, changes turns or creates an X-ray.
 Immutable geometry is shared and prepared at actor spawn; bounded triangle
 batches prune exact queries. The cache clears before Play or an editor rebake.
 
+## Rig bone contacts
+
+Each physical hit volume contains a smaller box fixed to its Humanoid bone.
+The boxes represent the game skeleton at rig granularity, including a single
+forearm bone per side. Each finite arrow segment is tested against every box
+in its current pose. `AnatomicalImpact.Bones` reports contacts in path order,
+once per rig bone, with side and a point bound to the animated volume. A shot
+can pass through a body hitbox without touching any bone box.
+
+The bow records normalized draw strength at release. Fixed-strength AI and
+review shots use full strength. At the provisional 75% cutoff, a contacted
+bone is marked fractured. Below the cutoff the same contact is still reported.
+This is a game feedback rule. Health and animation use the existing duel rules.
+
 ## Fatal finishing presentation
 
 The internal view is reserved for a confirmed lethal arrow, like a finishing
@@ -28,11 +42,17 @@ sequence. `DuelTurnFlow.FatalityRequested(targetIndex, impact)` publishes the
 actual anatomy after health confirms death and before regional death motion.
 Surviving hits, misses, and unrelated later deaths cannot request that view.
 The event does not delay the match result or alter the existing death sequence.
-The future view must subscribe to this fatal gate, not the general `Resolved`
-event. Normal blood and regional survivor reactions continue on ordinary hits.
+The local duel displays a stereoscopic close-up of the interior intersected by
+the fatal game arrow. Cyan surfaces are the contacted organ meshes. Orange
+volumes mark fractured rig bones and pale volumes show bone contact below the
+fracture threshold. The gold line reveals the actual finite path from entry to
+tip. All structures use their source frames through the fall. The HUD names
+the region, organs and fractures, including empty results.
 
-Rendering, timing and headset readability belong to the X-ray task. Fracture
-analysis and organ-specific health effects remain separate work.
+The cutaway lasts a provisional three seconds. Restart dismisses it immediately.
+Head and hand tracking continue throughout the presentation. Headset readability
+and comfort require the physical Quest 2 pass. Organ- and fracture-specific
+health effects remain separate work.
 
 ## Sources and authoring
 

@@ -16,19 +16,25 @@ namespace BowMan
         private bool flying;
         private bool useGravity;
         private float remainingLifetime;
+        private float shotStrength;
 
         public event Action<RaycastHit> Hit;
         public event Action<BodyImpact> BodyHit;
         public event Action Expired;
         public bool IsFlying => flying;
+        public Vector3 Velocity => velocity;
+        public float ShotStrength => shotStrength;
+        public float SceneryLifetime => Mathf.Min(impactLifetime, remainingLifetime);
 
         // Starts one timed flight with the given velocity, ignoring the firing archer.
         // In flight the root is the tip; an embedded root anchors the entry while geometry penetrates ahead.
-        public void Launch(Vector3 initialVelocity, Transform firingArcher = null, bool useGravity = true)
+        public void Launch(Vector3 initialVelocity, Transform firingArcher = null, bool useGravity = true, float shotStrength = 1f)
         {
             var speedSquared = initialVelocity.sqrMagnitude;
             if (float.IsNaN(speedSquared) || float.IsInfinity(speedSquared) || speedSquared <= 0f)
                 throw new ArgumentException("Launch velocity must be finite and nonzero.", nameof(initialVelocity));
+            if (!(shotStrength >= 0f && shotStrength <= 1f))
+                throw new ArgumentOutOfRangeException(nameof(shotStrength));
             if (launched)
                 throw new InvalidOperationException("An arrow can only be launched once.");
             if (!(bodyPenetration > 0f) || float.IsInfinity(bodyPenetration))
@@ -37,6 +43,7 @@ namespace BowMan
             owner = firingArcher;
             velocity = initialVelocity;
             this.useGravity = useGravity;
+            this.shotStrength = shotStrength;
             launched = flying = true;
             transform.rotation = Quaternion.LookRotation(velocity);
             remainingLifetime = lifetime;
@@ -71,17 +78,25 @@ namespace BowMan
                 transform.rotation = Quaternion.LookRotation(displacement);
                 if (nearest.collider.TryGetComponent<BodyHitRegion>(out var region))
                 {
-                    transform.SetParent(nearest.collider.transform, true);
-                    foreach (Transform visual in transform) visual.position += transform.forward * bodyPenetration;
-                    BodyHit?.Invoke(new BodyImpact(region, nearest, displacement, bodyPenetration));
+                    Embed(new BodyImpact(region, nearest, displacement, bodyPenetration, shotStrength));
                 }
-                else Destroy(gameObject, Mathf.Min(impactLifetime, remainingLifetime));
+                else Destroy(gameObject, SceneryLifetime);
                 Hit?.Invoke(nearest);
                 return;
             }
 
             transform.position += displacement;
             if (velocity.sqrMagnitude > 0f) transform.rotation = Quaternion.LookRotation(velocity);
+        }
+
+        // Anchors a local or replicated arrow and lets its wound effects use the confirmed entry.
+        public void Embed(BodyImpact impact)
+        {
+            flying = false;
+            transform.SetPositionAndRotation(impact.Point, Quaternion.LookRotation(impact.Direction));
+            transform.SetParent(impact.Volume.transform, true);
+            foreach (Transform visual in transform) visual.position += transform.forward * impact.PenetrationDepth;
+            BodyHit?.Invoke(impact);
         }
 
         // Finds the first solid impact with the same filtering for preview aim and live flight.

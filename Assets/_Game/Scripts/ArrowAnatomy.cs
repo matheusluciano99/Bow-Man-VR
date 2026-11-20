@@ -20,9 +20,16 @@ namespace BowMan
         // Resolves fitted anatomy if present; ordinary test colliders cannot fabricate internal organ damage.
         private void OnBodyHit(BodyImpact hit)
         {
+            if (LastImpact != null) return;
             var anatomy = hit.Collider.GetComponentInParent<ArcherAnatomy>();
             if (anatomy == null) return;
-            LastImpact = anatomy.Trace(hit);
+            SetReport(anatomy.Trace(hit));
+        }
+
+        // Publishes the authoritative analysis before presenting its wound on this archer.
+        public void SetReport(AnatomicalImpact report)
+        {
+            LastImpact = report;
             Resolved?.Invoke(LastImpact);
         }
 

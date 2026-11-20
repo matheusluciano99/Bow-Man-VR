@@ -56,6 +56,19 @@ Verify skeletons, skin weights and animation compatibility in actual files;
 a model title or a creator's rig claim does not establish Unity readiness.
 See [character sources and preparation status](Art/CharacterAssets.md).
 
+### Medieval duel presentation
+
+The planned arenas are a castle courtyard, a woodland archery range and a
+village training yard. Pick one setting at the start of each duel to give
+repeat matches variety while keeping the same floor and firing lane. The PvP
+host shares the choice with the joiner so both players see the same scene.
+
+Carry the archers’ visual style into the arrow and the player’s hands. Use one
+finished arrow from nock through impact so its visible tip stays aligned with
+the hit. The bow hand grips the bow and the drawing hand follows the string,
+with roles swapped for left-handed play. The current primitive arrow and
+controller markers are prototypes.
+
 ## D005 — PC VR on the classroom Quest 2
 
 Target Windows PC VR through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
@@ -236,8 +249,8 @@ triangle batches. Bone-bound contacts follow subsequent motion. Anatomy never
 applies another health outcome. The finishing presentation listens to the
 confirmed lethal-shot gate, not the general per-arrow analysis event.
 
-Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
-bone/fracture rules and X-ray rendering remain separate work. Preserve source
+Keep rigid tissue binding as a prototype limit. Deforming anatomical motion
+remains separate work. Preserve source
 filenames, mesh GUIDs and native subasset identities when regenerating.
 
 ## D015 — Fit recorded injury performances on both game archers
@@ -245,6 +258,23 @@ filenames, mesh GUIDs and native subasset identities when regenerating.
 Each body region has its own entry. Surviving reactions use the actual entry, hold and recovery completion to hand over the turn. Fatal hits lock the result immediately and allow the visible collapse to finish.
 
 Use free human performance recordings with verified game-use terms. Review the full source on both rigs, then select the short movement that matches the wound. Preserve the impact recoil and measured limb lengths when fitting the hand or boot. For live wound contact, use the baked pose as a cleared starting point and limit the change against the model’s fitted colliders. This keeps the glove near the actual arrow while the archer moves. The per-region sources, timings and authoring commands are in [Injury reactions](InjuryReactions.md).
+
+## D016 — Brief in-body X-ray injury presentation
+
+Show the struck interior only after the match confirms a fatal arrow. A
+camera-relative stereo close-up keeps the headset wearer in control of their
+view while the injury geometry follows the defeated archer. Reveal the finite
+path through the contacted surfaces and show the matching result in the HUD.
+Three seconds, display size and colors are provisional pending Quest 2 review.
+
+## D017 — Bone fracture depends on shot strength
+
+A shot reports each game bone its finite path intersects. A weak draw can
+contact the same bone as a strong draw. Only a draw at or above the prototype
+75% cutoff marks it fractured. The simplified volumes follow the Humanoid rig
+so the two players can share the same bone identities throughout animation.
+The cutoff and volume proportions are provisional game settings. Changes to
+health or recovery from a fracture require their own balance decision.
 
 ## D018 — Fatal body hits finish with a full collapse
 

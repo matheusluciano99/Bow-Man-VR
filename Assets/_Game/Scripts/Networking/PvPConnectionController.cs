@@ -90,6 +90,7 @@ namespace BowMan.Networking
                 if (attempt != session) return;
                 transport.SetRelayServerData(allocation.Data);
                 joinCode = allocation.Code;
+                if (!await ReadyToStartAsync(attempt)) return;
                 if (!networkManager.StartHost()) throw new InvalidOperationException("Could not start the host");
                 localRole = Seats.RoleOf(NetworkManager.ServerClientId);
                 SetStatus(ConnectionPhase.WaitingForOpponent);
@@ -120,6 +121,7 @@ namespace BowMan.Networking
                 var allocation = await relay.JoinAsync(code);
                 if (attempt != session) return;
                 transport.SetRelayServerData(allocation);
+                if (!await ReadyToStartAsync(attempt)) return;
                 if (!networkManager.StartClient()) throw new InvalidOperationException("Could not start the client");
             }
             catch (Exception ex)
@@ -185,11 +187,20 @@ namespace BowMan.Networking
             SetStatus(ConnectionPhase.Failed, string.IsNullOrEmpty(reason) ? "Unknown error" : reason);
         }
 
+        // Waits for any previous NGO shutdown before allowing callbacks from the new session.
+        private async Task<bool> ReadyToStartAsync(int attempt)
+        {
+            while (attempt == session && networkManager.ShutdownInProgress) await Task.Yield();
+            if (attempt != session) return false;
+            ignoreStopEvents = false;
+            return true;
+        }
+
         // Clears the previous session's state and returns the new attempt's number.
         private int BeginSession(string code)
         {
             session++;
-            ignoreStopEvents = false;
+            ignoreStopEvents = true;
             Seats.Clear();
             joinCode = code;
             localRole = ArcherRole.None;

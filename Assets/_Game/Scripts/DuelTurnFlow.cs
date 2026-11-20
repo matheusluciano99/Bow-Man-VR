@@ -13,6 +13,7 @@ namespace BowMan
         private float holdRemaining;
         private bool initialized;
         private bool alternateShooters;
+        private bool replica;
 
         public DuelPhase Phase { get; private set; } = DuelPhase.Finished;
         public int ActiveArcher { get; private set; }
@@ -25,7 +26,7 @@ namespace BowMan
         public event Action<int, AnatomicalImpact> FatalityRequested;
 
         // Starts a duel with two distinct living archers and invalidates callbacks from any earlier match.
-        public void Initialize(ArcherHealth first, ArcherHealth second, bool alternateShooters = true)
+        public void Initialize(ArcherHealth first, ArcherHealth second, bool alternateShooters = true, bool replica = false)
         {
             if (first == null || second == null || first == second || first.IsDefeated || second.IsDefeated)
                 throw new ArgumentException("A duel requires two distinct living archers.");
@@ -33,8 +34,12 @@ namespace BowMan
             Detach();
             archers[0] = first;
             archers[1] = second;
-            first.Defeated += FirstDefeated;
-            second.Defeated += SecondDefeated;
+            this.replica = replica;
+            if (!replica)
+            {
+                first.Defeated += FirstDefeated;
+                second.Defeated += SecondDefeated;
+            }
             initialized = true;
             this.alternateShooters = alternateShooters;
             ShotId++;
@@ -50,7 +55,7 @@ namespace BowMan
         // Registers an already launched arrow before its first physics step and locks both archers' shooting.
         public bool TryTrackShot(int shooter, ArrowFlight arrow)
         {
-            if (!CanShoot(shooter) || arrow == null || !arrow.IsFlying) return false;
+            if (replica || !CanShoot(shooter) || arrow == null || !arrow.IsFlying) return false;
             pendingArrow = arrow;
             ShotId++;
             arrow.BodyHit += OnBodyHit;
@@ -71,25 +76,53 @@ namespace BowMan
         // Starts the hold only when the current reaction has reached its injured resting pose.
         public void MarkInjuredPose(int shotId)
         {
-            if (shotId != ShotId || Phase != DuelPhase.Reacting) return;
+            if (replica || shotId != ShotId || Phase != DuelPhase.Reacting) return;
             SetPhase(DuelPhase.Holding);
         }
 
         // Hands over once after the matching get-up or standing recovery animation finishes.
         public void CompleteRecovery(int shotId)
         {
-            if (shotId != ShotId || Phase != DuelPhase.Recovering) return;
+            if (replica || shotId != ShotId || Phase != DuelPhase.Recovering) return;
             NextTurn();
         }
 
         // Requests recovery after the region’s full hold, excluding entry and get-up time.
         private void Update()
         {
-            if (Phase != DuelPhase.Holding) return;
+            if (replica || Phase != DuelPhase.Holding) return;
             holdRemaining -= Time.deltaTime;
             if (holdRemaining > 0f) return;
             SetPhase(DuelPhase.Recovering);
             if (Phase == DuelPhase.Recovering) RecoveryRequested?.Invoke(1 - ActiveArcher, ShotId);
+        }
+
+        // Mirrors the host's health and gates; local animation callbacks cannot advance a replica.
+        public void ApplyReplicaState(DuelPhase phase, int active, int winner, int shotId, int firstHealth, int secondHealth)
+        {
+            if (!replica || shotId < ShotId) return;
+            ActiveArcher = active;
+            Winner = winner;
+            ShotId = shotId;
+            var firstDamage = archers[0].CurrentHealth - firstHealth;
+            var secondDamage = archers[1].CurrentHealth - secondHealth;
+            if (firstDamage > 0) archers[0].TakeDamage(firstDamage);
+            if (secondDamage > 0) archers[1].TakeDamage(secondDamage);
+            var previous = Phase;
+            SetPhase(phase);
+            if (previous == phase) return;
+            if (phase == DuelPhase.Recovering) RecoveryRequested?.Invoke(1 - active, shotId);
+            if (phase == DuelPhase.Finished) MatchFinished?.Invoke(winner);
+        }
+
+        // Plays the host-confirmed regional injury once its matching health and shot have arrived.
+        public void ApplyReplicaImpact(int shotId, AnatomicalImpact report)
+        {
+            if (!replica || shotId != ShotId) return;
+            var target = 1 - ActiveArcher;
+            var lethal = archers[target].IsDefeated;
+            if (lethal) FatalityRequested?.Invoke(target, report);
+            ReactionRequested?.Invoke(target, report.Entry, lethal, shotId);
         }
 
         // Applies one anatomical outcome; fatal head/neck hits end the match before visual death motion finishes.

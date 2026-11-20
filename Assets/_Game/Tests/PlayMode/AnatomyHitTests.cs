@@ -54,7 +54,7 @@ public class AnatomyHitTests
     }
 
     // Fires the configured gameplay arrow through the selected real tissue point at controlled penetration.
-    private IEnumerator Shoot(GameObject root, Vector3 point, float penetration = 0.25f, DuelTurnFlow flow = null)
+    private IEnumerator Shoot(GameObject root, Vector3 point, float penetration = 0.25f, DuelTurnFlow flow = null, float strength = 1f)
     {
         var arrow = Object.Instantiate(AssetDatabase.LoadAssetAtPath<ArrowFlight>("Assets/_Game/Prefabs/TestArrow.prefab"),
             point + root.transform.forward * 0.8f, Quaternion.identity);
@@ -62,7 +62,7 @@ public class AnatomyHitTests
         lastArrow = arrow;
         typeof(ArrowFlight).GetField("bodyPenetration", BindingFlags.Instance | BindingFlags.NonPublic)
             .SetValue(arrow, penetration);
-        arrow.Launch(-root.transform.forward * 1000f);
+        arrow.Launch(-root.transform.forward * 1000f, shotStrength: strength);
         if (flow != null) Assert.That(flow.TryTrackShot(0, arrow), Is.True);
         var deadline = Time.time + 1f;
         while (arrow.GetComponent<ArrowAnatomy>().LastImpact == null && Time.time < deadline) yield return null;
@@ -113,6 +113,43 @@ public class AnatomyHitTests
             Assert.That(requests, Is.EqualTo(lethal ? 1 : 0));
             Object.Destroy(root);
             Object.Destroy(host);
+            yield return null;
+        }
+    }
+
+    // Sends weak, threshold and shallow shots through paired game bones on both animated rigs.
+    [UnityTest]
+    public IEnumerator BoneContactsRetainTheirSideAndRequireEnoughDrawToFracture()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var actor = Character(name, 30f);
+            var animator = actor.GetComponentInChildren<Animator>();
+            foreach (var bone in new[] { HumanBodyBones.LeftUpperLeg, HumanBodyBones.RightUpperLeg })
+            {
+                var frame = animator.GetBoneTransform(bone);
+                var side = bone == HumanBodyBones.LeftUpperLeg ? BodySide.Left : BodySide.Right;
+                var volume = frame.GetComponentsInChildren<BodyHitRegion>().Single(r => r.transform.parent == frame)
+                    .GetComponent<CapsuleCollider>();
+                var center = volume.transform.TransformPoint(volume.center);
+                foreach (var strength in new[] { 0.74f, 0.75f })
+                {
+                    yield return Shoot(actor, center, strength: strength);
+                    var report = lastArrow.GetComponent<ArrowAnatomy>().LastImpact;
+                    Assert.That(report.Entry.ShotStrength, Is.EqualTo(strength));
+                    var hit = report.Bones.Single(h => h.Bone == bone);
+                    Assert.That(hit.Side, Is.EqualTo(side));
+                    Assert.That(hit.Fractured, Is.EqualTo(strength >= 0.75f));
+                    Assert.That(report.Bones.All(h => h.Side == side), Is.True);
+                    var along = Vector3.Dot(hit.Point - report.Entry.Point, report.Entry.Direction);
+                    Assert.That(along, Is.InRange(0f, report.Entry.PenetrationDepth));
+                    Assert.That(Vector3.Distance(hit.Point, report.Entry.Point + report.Entry.Direction * along),
+                        Is.LessThan(0.001f));
+                }
+                yield return Shoot(actor, center, penetration: 0.001f);
+                Assert.That(lastArrow.GetComponent<ArrowAnatomy>().LastImpact.Bones, Is.Empty);
+            }
+            Object.Destroy(actor);
             yield return null;
         }
     }
@@ -236,6 +273,7 @@ public class AnatomyHitTests
             yield return Shoot(root, point);
             Assert.That(lastArrow.GetComponent<ArrowAnatomy>().LastImpact.Entry.Region, Is.EqualTo(BodyRegion.Chest));
             Assert.That(lastArrow.GetComponent<ArrowAnatomy>().LastImpact.Organs, Is.Empty);
+            Assert.That(lastArrow.GetComponent<ArrowAnatomy>().LastImpact.Bones, Is.Empty);
             var brain = root.GetComponentsInChildren<AnatomyOrgan>().Single(o => o.Kind == OrganKind.Brain);
             yield return Shoot(root, AimPoint(brain), 0.001f);
             Assert.That(lastArrow.GetComponent<ArrowAnatomy>().LastImpact.Entry.Region, Is.EqualTo(BodyRegion.Head));

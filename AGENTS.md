@@ -55,6 +55,18 @@ Use GitHub's Assignees field to record task responsibility.
   Record sources, licenses and actual preparation status in
   [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
 
+## Duel environment, arrow and hands
+
+- Choose a castle courtyard, woodland archery range or village training yard at
+  random for each new duel. Keep that setting for the entire match. In PvP the
+  host chooses the setting for both players. Preserve the clear firing lane.
+- Give the shared gameplay arrow a medieval head, wooden shaft, feather
+  fletching and nock. Use the same model from draw through impact and preserve
+  the tip origin and embedded wound position.
+- Replace the playable rig’s controller markers with visible archer hands that
+  follow the controllers. Support the bow grip, nock, draw and release with
+  either bow hand. Keep the diagnostic markers in the tracking test.
+
 ## Game modes
 
 - 1v1 PvP: online duels against another player over the internet, including
@@ -209,9 +221,11 @@ Use GitHub's Assignees field to record task responsibility.
 - Cross-network acceptance for #11 needs two PCs on different networks, for
   example one on a phone hotspot. Editor plus a `-desktop` player on one PC is a
   quick smoke test only.
-- Only presence and roles are synchronized. Shots, hits, health and turns
-  belong to #12; leaving and rematch to #13. Run `BowMan.Networking.EditorTests`
-  in EditMode before a networking PR.
+- When the joiner receives the second seat, the host starts a duel. Each player
+  sees the opponent's archer and their own bow. The host resolves shots, health,
+  injuries, death and turn handoff. Both peers show the same wound and anatomy.
+  Host and join controls, test setup and acceptance are in [Online duel](Docs/OnlineDuel.md).
+  Run `BowMan.Networking.EditorTests` and the two-Editor Relay test before a networking PR.
 
 ## Bow interaction
 
@@ -303,15 +317,17 @@ Use GitHub's Assignees field to record task responsibility.
 - Present internal injury only after a confirmed fatal arrow hit, as a brief
   X-ray finishing sequence inside the defeated archer. Surviving hits must not
   trigger this view; their normal blood and regional reactions still apply.
-  Highlight the actual arrow path and affected anatomy; duration and rendering
-  treatment remain provisional until VR review.
+  The local duel shows a stereo cutaway with the recorded path, contacted
+  organs and fractured rig bones. Its three-second duration and headset
+  readability remain provisional until VR review.
 - The shared arrow emits blood at the actual wound and follows its hit volume.
   Spilled droplets move in world space. See [wound blood](Docs/BloodEffects.md)
   for rebuild controls and provisional visual settings.
 - Sniper Elite is the reference for anatomical hit visualization and damage
   feedback. Organ analysis uses fitted BodyParts3D tissue and the actual finite
-  arrow path; see [Docs/Anatomy.md](Docs/Anatomy.md). Bone analysis and X-ray
-  rendering retain their separate tasks. The duel publishes `FatalityRequested`
+  arrow path; see [Docs/Anatomy.md](Docs/Anatomy.md). Bone contacts use the
+  animated game skeleton. A provisional 75% draw fractures contacted bones.
+  The duel publishes `FatalityRequested`
   only for its lethal arrow, after health confirms death.
 
 ## Body-specific injury sequences
@@ -384,8 +400,7 @@ Use GitHub's Assignees field to record task responsibility.
 - Exact per-model hitbox dimensions, calibrated from the region boundaries in
   the injury table and reviewed on the rigged archers.
 - Damage values and the gameplay effects of organ injuries and broken bones.
-- How to present internal injuries in VR, including whether to use an overlay,
-  an X-ray view, or another approach.
+- Duration, scale, contrast and headset readability of the fatal X-ray close-up.
 - Calibration and comfort of the agreed first-person animated-eye viewpoint
   during knockdown and recovery on the target headset.
 
