@@ -386,6 +386,110 @@ public static class MotionInjuryBuilder
             Vector3.Lerp(other.position, rest, progress), outward);
     }
 
+    // Uses the approved shoulder reach before the fall and keeps the surviving archer standing.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Surviving Shoulders")]
+    public static void RebuildCapturedShoulderReaches()
+    {
+        foreach (var region in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder })
+        foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{model}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            try
+            {
+                var actor = root.GetComponent<ArcherReactionAnimation>();
+                var take = actor.FatalEntry(region);
+                var rig = root.GetComponentInChildren<Animator>();
+                var bones = HumanoidBones(rig);
+                var stance = bones.Where(b => !b.IsChildOf(rig.GetBoneTransform(HumanBodyBones.Spine))).ToArray();
+                var stancePos = stance.Select(b => b.localPosition).ToArray();
+                var stanceRot = stance.Select(b => b.localRotation).ToArray();
+                var neutral = bones.Select(b => b.localRotation).ToArray();
+                var positions = bones.Select(b => b.localPosition).ToArray();
+                var left = region == BodyRegion.LeftShoulder;
+                var cap = rig.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+                var hitCollar = rig.GetBoneTransform(left ? HumanBodyBones.LeftShoulder : HumanBodyBones.RightShoulder);
+                var freeCollar = rig.GetBoneTransform(left ? HumanBodyBones.RightShoulder : HumanBodyBones.LeftShoulder);
+                var english = model == "EnglishArcher";
+                var upper = left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm;
+                var lower = left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm;
+                var end = left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand;
+                var hand = rig.GetBoneTransform(end);
+                var elbow = rig.GetBoneTransform(lower);
+                var shoulder = rig.GetBoneTransform(upper);
+                var knuckle = rig.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
+                var volumes = root.GetComponentsInChildren<BodyHitRegion>();
+                var core = CoreVolumes(volumes);
+                var support = ForearmVolumes(volumes, elbow, hand);
+                var chestBox = volumes.Single(v => v.Region == BodyRegion.Chest).GetComponent<BoxCollider>();
+                var torso = chestBox.transform;
+                var chest = rig.GetBoneTransform(HumanBodyBones.UpperChest);
+                var folder = $"Assets/_Game/Animations/Injuries/{model}/{region}";
+                var entry = Bake("Entry", 0.90f, t => Pose(t, 1f));
+                var hold = Bake("Hold", 0.30f, t => Pose(0.90f + t, 1f));
+                var recovery = Bake("Recovery", 0.95f, t => Pose(Mathf.Lerp(1.20f, 0.59f, Ease(t, 0f, 0.90f)),
+                    1f - Ease(t, 0.26f, 0.95f)));
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    var player = prefab.GetComponent<ArcherReactionAnimation>();
+                    player.SetSequence(region, entry, recovery, hold);
+                    player.SetDeathFinisher(region, player.Entry(BodyRegion.Head));
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+
+                // Saves the three continuous phases under the existing character GUID bindings.
+                AnimationClip Bake(string phase, float duration, Action<float> sampler)
+                {
+                    var clip = Record(root, bones, duration, sampler);
+                    clip.name = region + " " + phase;
+                    return SaveClip(clip, folder + "_" + phase + ".anim");
+                }
+
+                // Retains the performer's elbow and hand orientation when fitting the palm to the front of the shoulder.
+                void Pose(float t, float blend)
+                {
+                    Restore(bones, positions, neutral);
+                    if (blend <= 0f) return;
+                    take.SampleAnimation(root, t);
+                    Restore(stance, stancePos, stanceRot);
+                    var touch = Ease(t, 0.47f, 0.86f);
+                    chest.rotation = Quaternion.AngleAxis((left ? 10f : -10f) * touch, root.transform.up) * chest.rotation;
+                    var outward = torso.right * (left ? -1f : 1f);
+                    var recordedPalm = (hand.position + knuckle.position) * 0.5f;
+                    var recordedHandRotation = hand.rotation;
+                    var sign = left ? -1f : 1f;
+                    var shrug = Ease(t, 0.42f, 0.68f);
+                    hitCollar.rotation = Quaternion.AngleAxis(sign * 30f * shrug, torso.forward) *
+                        Quaternion.AngleAxis(-sign * 22.5f * shrug, torso.up) * hitCollar.rotation;
+                    freeCollar.rotation = Quaternion.AngleAxis(sign * 26f * shrug, torso.up) * freeCollar.rotation;
+                    hand.rotation = Quaternion.Slerp(recordedHandRotation, hand.rotation, touch);
+                    var fingerLine = knuckle.position - hand.position;
+                    var desired = english ? outward * 0.8f - torso.up * 0.5f - torso.forward * 0.5f : fingerLine;
+                    hand.rotation = Quaternion.Slerp(Quaternion.identity,
+                        Quaternion.FromToRotation(fingerLine, desired), touch) * hand.rotation;
+                    var palm = (hand.position + knuckle.position) * 0.5f;
+                    var target = cap.position + outward * 0.028f + torso.forward * (english ? 0.068f : 0.028f)
+                        + torso.up * (english ? 0.046f : 0.066f);
+                    var rotation = hand.rotation;
+                    var targetWrist = hand.position + Vector3.Lerp(recordedPalm, target, touch) - palm +
+                        torso.forward * (0.11f * Mathf.Sin(touch * Mathf.PI));
+                    var natural = elbow.position - shoulder.position;
+                    var guide = english ? torso.forward * Mathf.Cos(0.5f) + torso.up * Mathf.Sin(0.5f) : torso.forward;
+                    var pole = Vector3.Lerp(natural, guide - outward * 0.25f, shrug);
+                    ArcherLimbIK.Solve(rig, upper, lower, end, targetWrist, pole);
+                    hand.rotation = rotation;
+                    for (var i = 0; i < bones.Length; i++)
+                        bones[i].localRotation = Quaternion.Slerp(neutral[i], bones[i].localRotation, blend);
+                    ArcherLimbIK.ClearForearm(rig, !left, support, core, 0);
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+        AssetDatabase.SaveAssets();
+    }
+
     // Blends captured weight transfer with a fitted double kneel and keeps the hands at the wound.
     [MenuItem("Bow Man VR/Injuries/Rebuild Abdomen")]
     public static void RebuildAbdomen()
