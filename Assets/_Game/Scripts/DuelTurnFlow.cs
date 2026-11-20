@@ -53,6 +53,15 @@ namespace BowMan
         public bool CanShoot(int archer) => initialized && archer >= 0 && archer < 2 &&
             archer == ActiveArcher && Phase == DuelPhase.Aiming && !archers[archer].IsDefeated;
 
+        // Names the turn, incoming shot or recovery from the seated player's point of view.
+        public string StatusFor(int seat) => Phase switch
+        {
+            DuelPhase.Finished => Winner == seat ? "VICTORY" : "DEFEAT",
+            DuelPhase.Aiming => ActiveArcher == seat ? "Your turn" : "Opponent aiming",
+            DuelPhase.Flying => ActiveArcher == seat ? "Your arrow in flight" : "Incoming arrow",
+            _ => ActiveArcher == seat ? "Opponent recovering" : "You are recovering"
+        };
+
         // Registers an already launched arrow before its first physics step and locks both archers' shooting.
         public bool TryTrackShot(int shooter, ArrowFlight arrow)
         {

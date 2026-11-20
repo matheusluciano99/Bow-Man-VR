@@ -11,6 +11,10 @@ namespace BowMan.Menu
     {
         [SerializeField] private ControllerPointer pointer;
 
+        [SerializeField] private ModeOption handOption;
+        [SerializeField] private TextMesh handLabel;
+        [SerializeField] private MenuCredits credits;
+
         private Keyboard keyboard;
         private bool loading;
 
@@ -23,6 +27,7 @@ namespace BowMan.Menu
         private void OnEnable()
         {
             if (pointer != null) pointer.Selected += OnSelected;
+            RefreshHandLabel();
             keyboard = Keyboard.current;
             if (keyboard != null) keyboard.onTextInput += OnTextInput;
         }
@@ -46,18 +51,51 @@ namespace BowMan.Menu
         // Loads the mode's scene once; later choices are ignored while it loads.
         public bool Choose(GameMode mode)
         {
-            if (loading) return false;
+            if (loading || (credits != null && credits.IsOpen)) return false;
             loading = true;
             Loader(GameScenes.For(mode));
             return true;
         }
 
         // Chooses the mode of the panel the pointer confirmed.
-        private void OnSelected(ModeOption option) => Choose(option.Mode);
+        private void OnSelected(ModeOption option)
+        {
+            if (loading || (credits != null && credits.Select(option))) return;
+            if (option == handOption) SwitchHand();
+            else Choose(option.Mode);
+        }
 
-        // Chooses PvE or PvP from the typed digits 1 and 2.
+        // Switches which controller holds the bow and updates the visible menu choice.
+        private void SwitchHand()
+        {
+            if (loading) return;
+            VRBowInput.PreferredBowLeft = !VRBowInput.PreferredBowLeft;
+            RefreshHandLabel();
+        }
+
+        // Describes both hand roles so a first-time player can choose their drawing hand.
+        private void RefreshHandLabel()
+        {
+            if (handLabel != null) handLabel.text = VRBowInput.PreferredBowLeft
+                ? "Bow in left hand  •  Draw with right"
+                : "Bow in right hand  •  Draw with left";
+        }
+
+        // Navigates credits with the keyboard while the same panels remain available to the pointer.
+        private void Update()
+        {
+            if (credits == null || !credits.IsOpen || keyboard == null) return;
+            if (keyboard.escapeKey.wasPressedThisFrame) credits.Show(false);
+            else if (keyboard.leftArrowKey.wasPressedThisFrame) credits.Turn(-1);
+            else if (keyboard.rightArrowKey.wasPressedThisFrame) credits.Turn(1);
+        }
+
+        // Opens credits, switches bow hands or chooses a mode from the desktop shortcuts.
         private void OnTextInput(char key)
         {
+            if (loading || (credits != null && credits.IsOpen)) return;
+            if (credits != null && (key == 'c' || key == 'C')) { credits.Show(true); return; }
+            if (key == 'h' || key == 'H') SwitchHand();
             var mode = GameScenes.ModeForKey(key);
             if (mode.HasValue) Choose(mode.Value);
         }

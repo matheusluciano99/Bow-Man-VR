@@ -1,0 +1,100 @@
+Bow Man VR
+Artwork, performance and sound credits
+
+CHARACTERS AND EQUIPMENT
+
+English Archer by count_zero. Creative Commons Attribution 4.0 International.
+https://sketchfab.com/3d-models/english-archer-8571c31e9c934458be2e434de71f94f5
+https://creativecommons.org/licenses/by/4.0/
+The project prepared the rig, weights and poses. The bow limbs and grip, arrow shaft and feathers use parts of the model and its textures. The iron head, horn nock and animated string were made for this game.
+
+Erika Archer by Adobe Mixamo. Royalty-free game use under Adobe's Mixamo terms.
+https://www.mixamo.com/#/?page=1&query=Erika%20Archer&type=Character
+https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html
+Character rig and right-hand weights adapted for the game. The tracked first-person hands use the prepared Erika mesh and textures.
+
+ANATOMY
+
+BodyParts3D, © The Database Center for Life Science, licensed under CC Attribution 4.0 International.
+https://lifesciencedb.jp/bp3d/
+https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/README_e.html
+https://creativecommons.org/licenses/by/4.0/
+The game fits source surfaces to the archers, groups tissues by structure and attaches them to the animated rigs.
+
+PERFORMANCES
+
+Rokoko — Regular Light from the Idles Mocap Pack, performed by Sam Lazarus. Hawkeye Archery from the Superhero pack. The game retargets excerpts to both characters and mirrors the archery performance for the other hand. Used under Rokoko's free game-use terms.
+https://www.rokoko.com/resources/download-263-rokoko-motion-capture-assets
+https://www.rokoko.com/resources/rokoko-mocap-10-free-everyday-idle-animations
+
+Adobe Mixamo — Dying Backwards, Getting Up, Falling Down, Kneeling Down, Shoulder Hit And Fall, and Standing Death Backward 01. Retargeted and edited for regional reactions, falls, support contacts and recovery. Adobe Mixamo royalty-free game use.
+https://www.mixamo.com/
+https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html
+
+Azumi and Hamada — accident-05-damage right arm. © 2008–2009 Eyes, JAPAN Co. Ltd., mocapdata.com. Azumi's arm reaction and Hamada's wrist support were excerpted, converted, retargeted, mirrored and fitted. The source and adapted motions retain Creative Commons Attribution–ShareAlike 2.1 Japan.
+https://mocapdata.com/
+https://mocapdata.com/Terms_of_Use.html
+https://creativecommons.org/licenses/by-sa/2.1/jp/
+
+Cosindra MotionSmith — pain right foot, free take 1. Generated motion adapted to the archers and mirrored for the other foot. Used under the publisher's MotionSmith game-use license.
+https://cosindra.ai/motionsmith/motions/pain-right-foot
+https://cosindra.ai/license
+https://cosindra.ai/terms
+
+ENVIRONMENT ART
+
+Poly Haven. All listed scenery, surfaces and panoramas were released under CC0.
+https://polyhaven.com/license
+Materials, scanned props and panoramas were adapted for the three duel arenas.
+
+Castle Brick 01 — Rob Tuytel
+https://polyhaven.com/a/castle_brick_01
+Cobblestone Floor 02 — Rob Tuytel
+https://polyhaven.com/a/cobblestone_floor_02
+Forest Ground 04 — Rob Tuytel, Rico Cilliers
+https://polyhaven.com/a/forest_ground_04
+Medieval Wood — Rob Tuytel
+https://polyhaven.com/a/medieval_wood
+Clay Roof Tiles 02 — Amal Kumar
+https://polyhaven.com/a/clay_roof_tiles_02
+Plastered Wall 02 — Charlotte Baglioni
+https://polyhaven.com/a/plastered_wall_02
+Brown Mud 03 — Rob Tuytel
+https://polyhaven.com/a/brown_mud_03
+Forest Grove — Dimitrios Savva, Jarod Guest
+https://polyhaven.com/a/forest_grove
+Kloofendal 48d Partly Cloudy (Pure Sky) — Greg Zaal, Jarod Guest
+https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+Autumn Field — Sergej Majboroda
+https://polyhaven.com/a/autumn_field
+Fir Sapling Medium — Rob Tuytel, Rico Cilliers
+https://polyhaven.com/a/fir_sapling_medium
+Wine Barrel 01 — James Ray Cock
+https://polyhaven.com/a/wine_barrel_01
+Wooden Crate 01 — James Ray Cock
+https://polyhaven.com/a/wooden_crate_01
+Tree Stump 01 — Rob Tuytel
+https://polyhaven.com/a/tree_stump_01
+
+SOUND RECORDINGS
+
+The following recordings were released under CC0, trimmed, mixed and converted for playback in the game.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Ben Jaszczak and Brian Nelson — Medieval Sound Effects, Weapon Textures. English Longbow Draw, Nock Arrow and Shoot, and Scythian Recurve Arrow Passby.
+https://opengameart.org/content/medieval-sound-effects-weapon-textures
+
+Iwan “qubodup” Gabovitch — Impact. Meat 02, stone and wood impacts.
+https://opengameart.org/content/impact
+
+Vehicle — Fantasy Weapons and Apparel. Leather boot step used for soft ground contact.
+https://opengameart.org/content/fantasy-weapons-and-apparel-sfx-library
+
+mikeask — Breathing tired. Looped and pitched down at the archers' heads.
+https://opengameart.org/content/breathing-tired
+
+TinyWorlds — Forest Ambience. Woodland range.
+https://opengameart.org/content/forest-ambience
+
+Thimras — Park ambiences. Open-field wind and birds used in the castle courtyard and village yard.
+https://opengameart.org/content/park-ambiences
