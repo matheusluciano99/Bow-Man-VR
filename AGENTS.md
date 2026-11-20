@@ -265,6 +265,7 @@ Use GitHub's Assignees field to record task responsibility.
   stand if alive.
 - Shoulder hit: recoil on the injured side, turn the torso away and cup that
   shoulder with the opposite hand while standing; use separate left/right motion.
+  A lethal shoulder shot uses one recorded opposite-hand reach and fall, mirrored for the right shoulder.
 - Hand hit: jerk the injured hand back, open its fingers and support its wrist
   with the opposite hand; use separate left/right motion.
 - Pelvis hit: hips buckle into a seated fall with both hands supporting the body
