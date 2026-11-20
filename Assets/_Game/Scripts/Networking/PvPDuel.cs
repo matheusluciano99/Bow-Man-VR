@@ -24,6 +24,7 @@ namespace BowMan.Networking
         private FatalCutaway cutaway;
         private OpponentBowAction opponentBow;
         private ArrowFlight visualArrow;
+        private DuelAudio sounds;
         private Vector3 visualOrigin, visualVelocity;
         private float launchedAt;
         private int displayedShot = -1;
@@ -97,6 +98,8 @@ namespace BowMan.Networking
             Flow.Initialize(actors[0], actors[1], replica: !Net.IsServer);
             for (var i = 0; i < actors.Length; i++)
                 actors[i].GetComponent<ArcherReactionAnimation>().Connect(Flow, i, actors[i]);
+            sounds = match.gameObject.AddComponent<DuelAudio>();
+            sounds.Bind(Flow, bow, opponentBow, local, actors[1 - LocalIndex], setting, LocalIndex);
             Flow.Changed += Changed;
             Flow.ReactionRequested += React;
             Flow.FatalityRequested += Fatal;
@@ -212,7 +215,7 @@ namespace BowMan.Networking
             arrow.Hit += hit =>
             {
                 if (!hit.collider.TryGetComponent<BodyHitRegion>(out _))
-                    Seat.SceneryRpc(round, token, hit.point, arrow.transform.rotation, arrow.SceneryLifetime);
+                    Seat.SceneryRpc(round, token, hit.point, arrow.transform.rotation, arrow.SceneryLifetime, sounds.Surface(hit.collider));
             };
             if (!Flow.TryTrackShot(shooter, arrow)) { Destroy(arrow.gameObject); return; }
             if (shooter != LocalIndex) opponentBow.Release();
@@ -228,15 +231,17 @@ namespace BowMan.Networking
             if (Flow == null || receivedRound != round || shot != Flow.ShotId || visualArrow != null) return;
             if (Flow.ActiveArcher != LocalIndex) opponentBow.Release();
             visualArrow = Instantiate(arrowPrefab, origin, Quaternion.LookRotation(velocity), match);
+            sounds.Flight(shot, visualArrow);
             visualOrigin = origin;
             visualVelocity = velocity;
             launchedAt = Time.time;
         }
 
         // Keeps the scenery arrow at the host's contact while the turn passes to the other seat.
-        public void ShowScenery(int receivedRound, int shot, Vector3 point, Quaternion rotation, float lifetime)
+        public void ShowScenery(int receivedRound, int shot, Vector3 point, Quaternion rotation, float lifetime, ImpactSound surface)
         {
             if (Flow == null || receivedRound != round || shot != Flow.ShotId || visualArrow == null) return;
+            sounds.Impact(point, surface);
             visualArrow.transform.SetPositionAndRotation(point, rotation);
             Destroy(visualArrow.gameObject, lifetime);
             visualArrow = null;
@@ -264,6 +269,7 @@ namespace BowMan.Networking
             Flow.ApplyReplicaState(Flow.Phase, Flow.ActiveArcher, Flow.Winner, shot, hp1, hp2);
             if (visualArrow == null) visualArrow = Instantiate(arrowPrefab, match);
             visualArrow.GetComponent<ArrowAnatomy>().SetReport(report);
+            sounds.Impact(report.Entry.Point, ImpactSound.Body);
             visualArrow.Embed(report.Entry);
             visualArrow = null;
             Flow.ApplyReplicaImpact(shot, report);
@@ -352,7 +358,7 @@ namespace BowMan.Networking
             }
             var status = Flow.Phase == DuelPhase.Finished ? (Flow.Winner == LocalIndex ? "VICTORY" : "DEFEAT") :
                 Flow.Phase == DuelPhase.Aiming ? (Flow.CanShoot(LocalIndex) ? "Your turn" : "Opponent aiming") : Flow.Phase.ToString();
-            feedback.text = $"{status}    You {actors[LocalIndex].CurrentHealth}  |  Opponent {actors[1 - LocalIndex].CurrentHealth}\n" +
+            feedback.text = $"{status}    You {actors[LocalIndex].CurrentHealth}  |  Opponent {actors[1 - LocalIndex].CurrentHealth}    {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? (RematchRequested ? "Waiting for opponent" :
                     votes != 0 ? "Opponent wants a rematch — A / R: accept" : "A / R: rematch") +
                     (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : desktopMode ? "Arrow keys: aim    Space: draw/release" : "Trigger: draw/release");

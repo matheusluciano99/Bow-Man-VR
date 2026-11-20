@@ -20,6 +20,7 @@ namespace BowMan
         public int Winner { get; private set; } = -1;
         public int ShotId { get; private set; }
         public event Action Changed;
+        public event Action<ArrowFlight> ShotAccepted;
         public event Action<int, BodyImpact, bool, int> ReactionRequested;
         public event Action<int, int> RecoveryRequested;
         public event Action<int> MatchFinished;
@@ -62,6 +63,7 @@ namespace BowMan
             arrow.Hit += OnSceneryHit;
             arrow.Expired += OnExpired;
             SetPhase(DuelPhase.Flying);
+            ShotAccepted?.Invoke(arrow);
             return true;
         }
 
