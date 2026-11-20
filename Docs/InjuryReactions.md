@@ -161,3 +161,7 @@ and live turn flow. [Adobe Mixamo](https://www.mixamo.com/) and
 Both arm reactions use Azumi’s **accident-05-damage right arm** performance. The opposite palm catches the injured forearm while the archer looks down at the contact. The left-arm sequence mirrors the recording. Both boots stay planted. The captured hold plays throughout the three-second injury window, then the performer releases the arm. A lethal arm hit continues from the recoil into the recorded collapse. Attribution and the adaptation license are in [the source record](../Assets/ThirdParty/EyesJapan/Source.md).
 
 Use **Bow Man VR > Injuries > Rebuild Captured Arm Reactions** to bake both sides on both rigs. The injury Play Mode tests sample the fitted forearms against the head and torso, check the supporting palm and boots, and exercise the turn handoff after real arrows.
+
+### Supported leg injuries
+
+The weight shift in **Kneeling Down** and **Standing** times the descent and rise. Each archer plants the healthy boot and braces the same-side palm and knee on the floor. Left and right retain independent bindings, impact recoil and fatal continuations. **Bow Man VR > Injuries > Rebuild Captured Leg Reactions** regenerates both rigs.

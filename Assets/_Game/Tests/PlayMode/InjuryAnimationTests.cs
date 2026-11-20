@@ -719,7 +719,7 @@ public class InjuryAnimationTests
         try
         {
             foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
-            foreach (var region in new[] { BodyRegion.Chest, BodyRegion.Pelvis, BodyRegion.Abdomen, BodyRegion.LeftArm, BodyRegion.RightArm })
+            foreach (var region in new[] { BodyRegion.Chest, BodyRegion.Pelvis, BodyRegion.Abdomen, BodyRegion.LeftArm, BodyRegion.RightArm, BodyRegion.LeftLeg, BodyRegion.RightLeg })
             {
                 var flow = BodyShot(out var target, out var arrow, region, name);
                 target.TakeDamage(75);
@@ -1165,6 +1165,133 @@ public class InjuryAnimationTests
                 }
             }
             finally { Object.DestroyImmediate(root); }
+        }
+    }
+
+    // Samples distal limb colliders against the nonadjacent core and bounds wrist movement.
+    private static void RequireCoreClearance(GameObject root, AnimationClip clip, float maximumWristStep)
+    {
+        var rig = root.GetComponentInChildren<Animator>();
+        var volumes = root.GetComponentsInChildren<BodyHitRegion>();
+        var core = volumes.Where(h => h.Region is BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis
+            or BodyRegion.Head or BodyRegion.Neck).Select(h => h.GetComponent<Collider>()).ToArray();
+        var distalBones = new[] { HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm,
+            HumanBodyBones.LeftHand, HumanBodyBones.RightHand, HumanBodyBones.LeftLowerLeg,
+            HumanBodyBones.RightLowerLeg, HumanBodyBones.LeftFoot, HumanBodyBones.RightFoot }
+            .Select(rig.GetBoneTransform).ToArray();
+        var limbs = volumes.Where(h => distalBones.Contains(h.transform.parent))
+            .Select(h => h.GetComponent<Collider>()).ToArray();
+        var frames = Mathf.CeilToInt(120f * clip.length);
+        clip.SampleAnimation(root, 0f);
+        var previous = distalBones.Select(t => t.position).ToArray();
+
+        for (var frame = 0; frame <= frames; frame++)
+        {
+            clip.SampleAnimation(root, clip.length * frame / frames);
+            foreach (var limb in limbs)
+            foreach (var torso in core)
+                if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
+                    torso, torso.transform.position, torso.transform.rotation, out _, out var depth))
+                    Assert.That(depth, Is.LessThan(0.003f), $"{root.name} {clip.name} {limb.name}/{torso.name} frame {frame}");
+
+            for (var joint = 0; joint < 4; joint++)
+            {
+                Assert.That(Vector3.Distance(previous[joint], distalBones[joint].position),
+                    Is.LessThan(maximumWristStep), $"{root.name} {clip.name} {distalBones[joint].name} frame {frame}");
+                previous[joint] = distalBones[joint].position;
+            }
+        }
+    }
+
+    // Keeps a right-leg impact distinct through its own same-side supported kneeling and standing recovery.
+    [UnityTest]
+    public IEnumerator RightLegHitUsesItsOwnSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightLeg);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightLeg));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Uses a real left-leg impact through kneeling, the full hold and the complete standing recovery.
+    [UnityTest]
+    public IEnumerator LeftLegHitWaitsForItsSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.LeftLeg);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.LeftLeg));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Requires the injured knee and same-side glove on the ground while the healthy foot remains planted.
+    [Test]
+    public void LegClipsSupportTheCorrectKneeAndHandOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var a = root.GetComponentInChildren<Animator>();
+            Assert.That(actor.Supports(BodyRegion.LeftLeg), Is.True);
+            foreach (var region in new[] { BodyRegion.LeftLeg, BodyRegion.RightLeg }.Where(actor.Supports))
+            {
+                var left = region == BodyRegion.LeftLeg;
+                var support = a.GetBoneTransform(left ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot);
+                var knee = a.GetBoneTransform(left ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg);
+                var otherKnee = a.GetBoneTransform(left ? HumanBodyBones.RightLowerLeg : HumanBodyBones.LeftLowerLeg);
+                var hand = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var head = a.GetBoneTransform(HumanBodyBones.Head);
+                var standingHead = head.position;
+                var planted = support.position;
+                var entry = actor.Entry(region);
+                for (var frame = 0; frame <= 81; frame++)
+                {
+                    entry.SampleAnimation(root, entry.length * frame / 81f);
+                    Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f), name + " " + region);
+                    Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " " + region + " frame " + frame);
+                }
+                Assert.That(knee.position.y, Is.LessThan(otherKnee.position.y - 0.12f));
+                Assert.That(otherKnee.position.y, Is.GreaterThan(0.18f));
+                Assert.That(hand.position.y, Is.LessThan(0.1f));
+                Assert.That(ContactFloor(root, hand.position), Is.InRange(-0.006f, 0.01f));
+                Assert.That(PalmNormal(a, left).y, Is.GreaterThan(0.95f));
+                Assert.That(ContactFloor(root, knee.position), Is.LessThan(0.03f));
+                var restingHand = hand.position;
+                var recovery = actor.Recovery(region);
+                recovery.SampleAnimation(root, 0f);
+                Assert.That(Vector3.Distance(hand.position, restingHand), Is.LessThan(0.001f));
+                for (var frame = 0; frame <= 81; frame++)
+                {
+                    recovery.SampleAnimation(root, recovery.length * frame / 81f);
+                    Assert.That(Vector3.Distance(support.position, planted), Is.LessThan(0.002f));
+                    Assert.That(Floor(root), Is.GreaterThan(-0.006f));
+                }
+                Assert.That(Vector3.Distance(head.position, standingHead), Is.LessThan(0.001f));
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Checks both supported kneels, their stand-up and the continuation used on defeat.
+    [Test]
+    public void LegMotionClearsTheCoreWithoutWristJumps()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            foreach (var region in new[] { BodyRegion.LeftLeg, BodyRegion.RightLeg })
+            foreach (var clip in new[] { actor.Entry(region), actor.Recovery(region), actor.DeathFinisher(region) })
+                RequireCoreClearance(root, clip, 0.06f);
+            Object.DestroyImmediate(root);
         }
     }
 }
