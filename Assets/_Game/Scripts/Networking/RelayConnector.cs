@@ -13,8 +13,17 @@ namespace BowMan.Networking
         private const string Protocol = "dtls";
         private const int RemotePlayers = 1;
 
-        // Initializes services once with the given auth profile, then signs in anonymously if needed.
-        public async Task EnsureSignedInAsync(string profile)
+        private static Task signIn;
+
+        // Shares the process-wide sign-in with a retry made while the previous connection attempt is pending.
+        public Task EnsureSignedInAsync(string profile)
+        {
+            if (signIn == null || signIn.IsCompleted) signIn = SignInAsync(profile);
+            return signIn;
+        }
+
+        // Initializes services with the process profile and signs in when an account session is needed.
+        private static async Task SignInAsync(string profile)
         {
             while (UnityServices.State == ServicesInitializationState.Initializing) await Task.Yield();
             if (UnityServices.State != ServicesInitializationState.Initialized)
