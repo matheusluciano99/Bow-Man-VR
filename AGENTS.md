@@ -194,8 +194,8 @@ Use GitHub's Assignees field to record task responsibility.
   LocalDuel and PvPConnectionTest first in the build list (D025).
 - **Bow Man VR > Build Windows Game Player** writes `Builds/PCVRGame/BowManVR.exe`
   with those three scenes; add `-desktop` to run it without a headset.
-- PvP still stops at the connection test until duel synchronization (#12) lands.
-  Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
+- Both modes show health, turn and result. PvP supports rematch after both
+  seats accept with A / R. Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
   (PlayMode) before a menu PR.
 
 ## Testing PvP connectivity

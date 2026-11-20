@@ -4,13 +4,12 @@ Start Quest Link before launching the Editor scene or Windows player. Enable
 Unknown Sources in the Meta Link desktop app and keep Meta Link as the active
 OpenXR runtime. Use a clear standing play area and both Touch controllers.
 
-Open `Assets/_Game/Scenes/LocalDuel.unity`, or launch
-`Builds/PCVRDuel/BowManVR.exe`. This cut combines the tracked bow, real anatomical
-body hits, attached arrows, turn flow, AI, all fifteen regional injury entries,
-surviving recovery, fatal collapse, actual-wound blood and finite-path organ
-analysis. Organ analysis currently produces data; the finishing X-ray and bone
-visualization have their own tasks and must be verified in a cut containing them.
-Confirm the generated player's source revision in `Artifacts/LabBuild/manifest.json`.
+Start the shared build at MainMenu and choose PvE or online PvP. To review just
+the local scene, open `Assets/_Game/Scenes/LocalDuel.unity`. Both modes include
+the fifteen regional entries, recovery, fatal collapse, attached arrows and
+wound blood. After a confirmed fatal shot, check the region, organ and rig bone
+labels in the three-second cutaway from each eye. A surviving hit keeps the
+ordinary injury view. Use the same revision for the two-network test.
 
 ## Controls
 
@@ -84,10 +83,27 @@ Check seated/kneeling/fallen floor contact and eye height against your actual
 standing height; physical alignment and forced-motion comfort remain unaccepted
 until this headset session. Test head/neck at full and low health separately.
 
-When the anatomy tasks are integrated, also verify organ and bone marks,
+Verify organ and bone marks,
 strength-dependent fractures, the fatal-hit-only in-body X-ray and wound blood stay at the
 actual struck side/location during every motion. Record these results on #35;
 keep #15/#16 hardware acceptance open until their own criteria are met.
 
-Once the finishing view is implemented, verify a surviving hit never starts it;
+Verify a surviving hit never starts it;
 head/neck kills and other regions that reduce health to zero may request it once.
+
+## Shared PvE and PvP build
+
+Open the saved MainMenu scene in the Editor. Build both modes with **Bow Man VR
+> Build Windows Game Player**. Keep the entire resulting player folder together
+when copying it to either lab PC. Record the Git revision and use the same
+build on both PCs. Launch each mode from the menu and return with the left
+controller's Menu button or Esc.
+
+For the online pass, host on one network and join from a second network.
+Record the two PCs, network types, participant observations and build revision.
+Alternate shooters and repeat the region table above in both modes. For each
+hit, compare health, region and side, arrow placement, wound and anatomy on
+both peers. Confirm each living recovery precedes the next turn. Test a fatal
+hit, a mutual rematch, a departure during play and a fresh connection. Record
+the two developers' results and link the completed injury review from #35
+before accepting the shared build.
