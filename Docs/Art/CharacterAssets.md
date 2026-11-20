@@ -167,3 +167,7 @@ in **DuelTurnTest** to review the motion.
 ## Fatal shoulder reaction
 
 A lethal shoulder arrow plays Adobe Mixamo’s **Shoulder Hit And Fall** from impact to collapse. Its right hand reaches the left shoulder. The right-shoulder clip mirrors the take on the target rig. The fitted fall passed visual review in the Unity injury scene. Surviving hits use the reach from the same recording with planted feet and the opposite palm fitted to the struck shoulder. Rebuild the four model-specific clips with **Bow Man VR > Injuries > Rebuild Fatal Shoulders**. The source FBX is under `Assets/ThirdParty/MixamoAnimations/Motions/`. [Mixamo game-use FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html)
+
+### Standing wrist support
+
+The hand reactions use Hamada’s recorded opposite-hand wrist guard and finger extension from the bracing hand in Adobe Mixamo’s **Getting Up**. The full Humanoid body take, conversion credit and license are in [Eyes, JAPAN attribution](../../Assets/ThirdParty/EyesJapan/Source.md).

@@ -173,46 +173,8 @@ public static class MotionInjuryBuilder
                         (chest.forward * 0.27f + chest.right * (left ? 0.22f : -0.22f)) * Mathf.Sin(Mathf.PI * reach));
                     hand.rotation = rotation;
                 }
-                FitForearm(true, leftArm);
-                FitForearm(false, rightArm);
-            }
-
-            // Uses the smallest local arm swing that clears the fitted torso during the crossing reach.
-            void FitForearm(bool onLeft, Collider[] volumes)
-            {
-                ArcherLimbIK.ClearForearm(rig, onLeft, volumes, core, 14);
-                var depth = ArcherLimbIK.DeepestOverlap(volumes, core, out _);
-                if (depth <= 0.0002f) return;
-                var arm = rig.GetBoneTransform(onLeft ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
-                var elbow = rig.GetBoneTransform(onLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
-                var wrist = rig.GetBoneTransform(onLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
-                var handRotation = wrist.rotation;
-                var axes = new[] { chest.right, chest.up, chest.forward };
-                for (var step = 0; step < 18 && depth > 0.0002f; step++)
-                {
-                    Transform bestJoint = null;
-                    var bestRotation = Quaternion.identity;
-                    foreach (var joint in new[] { arm, elbow })
-                    {
-                        var original = joint.rotation;
-                        foreach (var axis in axes)
-                        foreach (var angle in new[] { -2f, 2f })
-                        {
-                            joint.rotation = Quaternion.AngleAxis(angle, axis) * original;
-                            wrist.rotation = handRotation;
-                            var candidate = ArcherLimbIK.DeepestOverlap(volumes, core, out _);
-                            if (candidate >= depth) continue;
-                            depth = candidate;
-                            bestJoint = joint;
-                            bestRotation = joint.rotation;
-                        }
-                        joint.rotation = original;
-                        wrist.rotation = handRotation;
-                    }
-                    if (bestJoint == null) break;
-                    bestJoint.rotation = bestRotation;
-                    wrist.rotation = handRotation;
-                }
+                FitForearm(rig, chest, core, true, leftArm);
+                FitForearm(rig, chest, core, false, rightArm);
             }
 
             // Moves the recorded cradle in front of the fitted clothing while preserving the elbow direction.
@@ -488,6 +450,199 @@ public static class MotionInjuryBuilder
             finally { UnityEngine.Object.DestroyImmediate(root); }
         }
         AssetDatabase.SaveAssets();
+    }
+
+    // Bakes Hamada's recorded wrist support with the finger extension from the bracing hand in Getting Up.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Captured Hand Reactions")]
+    public static void RebuildCapturedHands()
+    {
+        var body = AssetDatabase.LoadAllAssetsAtPath("Assets/ThirdParty/EyesJapan/accident-05-damage right arm-hamada.fbx")
+            .OfType<AnimationClip>().Single(c => !c.name.StartsWith("__"));
+        var fingers = ImportMotion("Getting Up");
+        foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
+        foreach (var region in new[] { BodyRegion.LeftHand, BodyRegion.RightHand })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{model}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            try
+            {
+                var rig = root.GetComponentInChildren<Animator>();
+                var bones = HumanoidBones(rig);
+                var positions = bones.Select(t => t.localPosition).ToArray();
+                var neutral = bones.Select(t => t.localRotation).ToArray();
+                var world = bones.Select(t => t.rotation).ToArray();
+                var hips = rig.GetBoneTransform(HumanBodyBones.Hips);
+                var start = hips.position;
+                var spine = rig.GetBoneTransform(HumanBodyBones.Spine);
+                var standing = bones.Where(b => !b.IsChildOf(spine)).ToArray();
+                var standPos = standing.Select(b => b.localPosition).ToArray();
+                var standRot = standing.Select(b => b.localRotation).ToArray();
+                var left = region == BodyRegion.LeftHand;
+                var opposite = OppositeBoneIndices(rig, bones);
+                var modelPos = rig.transform.localPosition;
+                var modelRot = rig.transform.localRotation;
+                var hurt = rig.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var other = rig.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var knuckle = rig.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
+                var digits = bones.Where(b => b != hurt && b.IsChildOf(hurt)).ToArray();
+                var volumes = root.GetComponentsInChildren<BodyHitRegion>();
+                var core = CoreVolumes(volumes);
+                foreach (var box in core.OfType<BoxCollider>())
+                    box.size += Vector3.one * 0.008f;
+                var torso = volumes.Single(v => v.Region == BodyRegion.Chest).transform;
+                var leftArm = ForearmVolumes(volumes, rig.GetBoneTransform(HumanBodyBones.LeftLowerArm), rig.GetBoneTransform(HumanBodyBones.LeftHand));
+                var rightArm = ForearmVolumes(volumes, rig.GetBoneTransform(HumanBodyBones.RightLowerArm), rig.GetBoneTransform(HumanBodyBones.RightHand));
+                var open = DigitPose(3.2667f);
+                var closed = DigitPose(5.80f);
+                var folder = $"Assets/_Game/Animations/Injuries/{model}/{region}";
+                Restore(bones, positions, neutral);
+                var joints = new[] { HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand,
+                    HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand }.Select(rig.GetBoneTransform).ToArray();
+                var rest = joints.Select(b => b.position).ToArray();
+                var restRotation = joints.Select(b => b.rotation).ToArray();
+                var entry = Bake("Entry", 0.95f, t => Transition(Mathf.Lerp(14.49f, 14.80f, t / 0.95f),
+                    Ease(t, 0f, 0.85f), Ease(t, 0.04f, 0.31f)));
+                var hold = Bake("Hold", 0.75f, t => Pose(14.80f + t, 1f, 1f));
+                var recovery = Bake("Recovery", 1f, t => Transition(15.55f + 0.32f * t,
+                    1f - Ease(t, 0.10f, 1f), 1f - Ease(t, 0.38f, 1f)));
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    var actor = prefab.GetComponent<ArcherReactionAnimation>();
+                    actor.SetSequence(region, entry, recovery, hold);
+                    actor.SetDeathFinisher(region, actor.Entry(BodyRegion.Head));
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+
+                // Guides each measured wrist around the torso as it enters and leaves the captured guard.
+                void Transition(float seconds, float weight, float spread)
+                {
+                    Pose(seconds, 1f, spread);
+                    if (weight >= 1f) return;
+                    var captured = joints.Select(b => b.position).ToArray();
+                    var rotation = joints.Select(b => b.rotation).ToArray();
+                    for (int i = 0; i < bones.Length; i++)
+                        bones[i].localRotation = Quaternion.Slerp(neutral[i], bones[i].localRotation, weight);
+                    if (weight <= 0f) return;
+                    var arc = Mathf.Sin(Mathf.PI * weight);
+                    for (var i = 0; i < joints.Length; i += 2)
+                    {
+                        var onLeft = i == 0;
+                        var upper = onLeft ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm;
+                        var lower = onLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm;
+                        var end = onLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand;
+                        var wrist = Vector3.Lerp(rest[i+1], captured[i+1], weight) + root.transform.forward * (0.205f * arc);
+                        var elbow = Vector3.Lerp(rest[i], captured[i], weight) + root.transform.forward * (0.205f * arc)
+                            + root.transform.right * ((onLeft ? -0.17f : 0.17f) * arc);
+                        ArcherLimbIK.Solve(rig, upper, lower, end, wrist, elbow - rig.GetBoneTransform(upper).position);
+                        joints[i+1].rotation = Quaternion.Slerp(restRotation[i+1], rotation[i+1], weight);
+                    }
+                }
+
+                // Reads the tracked right fingers and mirrors them for the other hand.
+                Quaternion[] DigitPose(float seconds)
+                {
+                    Restore(bones, positions, neutral);
+                    Sample(rig, fingers, seconds, modelPos, modelRot);
+                    if (left) MirrorBody(root.transform, hips, start, bones, positions, neutral, world, opposite);
+                    return digits.Select(b => b.localRotation).ToArray();
+                }
+
+                // Stores the phase directly on the character root for player playback.
+                AnimationClip Bake(string phase, float duration, Action<float> sample)
+                {
+                    var clip = Record(root, bones, duration, sample);
+                    clip.name = region + " " + phase;
+                    return SaveClip(clip, folder + "_" + phase + ".anim");
+                }
+
+                // Follows the recorded elbow and wrist paths while preserving the standing stance and guard contact.
+                void Pose(float seconds, float weight, float spread)
+                {
+                    Restore(bones, positions, neutral);
+                    if (weight <= 0f) return;
+                    Sample(rig, body, seconds, modelPos, modelRot);
+                    if (left) MirrorBody(root.transform, hips, start, bones, positions, neutral, world, opposite);
+                    Restore(standing, standPos, standRot);
+                    for (var i = 0; i < digits.Length; i++)
+                        digits[i].localRotation = Quaternion.Slerp(closed[i], open[i], spread);
+                    for (var i = 0; i < bones.Length; i++)
+                        bones[i].localRotation = Quaternion.Slerp(neutral[i], bones[i].localRotation, weight);
+                    var reach = weight * Ease(seconds, 13.90f, 14.73f) * (1f - Ease(seconds, 15.58f, 16.39f));
+                    var approach = weight * Ease(seconds, 13.73f, 14.20f) * (1f - Ease(seconds, 16.14f, 16.81f));
+                    var forward = torso.forward;
+                    var guard = (forward * 0.17f + torso.up * 0.09f) * approach;
+                    Move(left, hurt.position + guard, approach);
+                    var palm = Vector3.Lerp(other.position, knuckle.position, 0.65f);
+                    var target = hurt.position - torso.up * 0.026f + torso.forward * 0.013f;
+                    Move(!left, other.position + (target - palm) * reach + forward * (0.18f * Mathf.Sin(Mathf.Sqrt(reach) * Mathf.PI)), approach);
+                    FitForearm(rig, torso, core, true, leftArm);
+                    FitForearm(rig, torso, core, false, rightArm);
+                }
+
+                // Fits a measured wrist target without changing the performer's hand orientation.
+                void Move(bool onLeft, Vector3 target, float reach)
+                {
+                    var upper = onLeft ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm;
+                    var lower = onLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm;
+                    var hand = onLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand;
+                    var wrist = rig.GetBoneTransform(hand);
+                    var rotation = wrist.rotation;
+                    var upperJoint = rig.GetBoneTransform(upper);
+                    var bend = rig.GetBoneTransform(lower).position - upperJoint.position;
+                    var chestBox = (BoxCollider)core.Single(c => c.GetComponent<BodyHitRegion>().Region == BodyRegion.Chest);
+                    var size = Vector3.Scale(chestBox.size, chestBox.transform.lossyScale);
+                    var center = torso.TransformPoint(chestBox.center);
+                    var lateral = Vector3.Dot(target - center, torso.right);
+                    var nearFront = 1f - Ease(Mathf.Abs(lateral), size.x * 0.46f, size.x * 0.72f);
+                    var minDepth = size.z * 0.5f + 0.065f;
+                    target += torso.forward * (nearFront * Mathf.Max(0f, minDepth - Vector3.Dot(target - center, torso.forward)));
+                    ArcherLimbIK.Solve(rig, upper, lower, hand, target, Vector3.Lerp(bend, torso.forward * 0.50f + torso.right * (onLeft ? -0.33f : 0.33f) - torso.up * 0.18f, reach));
+                    wrist.rotation = rotation;
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    // Uses the smallest local arm swing that clears the fitted torso during the crossing reach.
+    private static void FitForearm(Animator rig, Transform chest, Collider[] core, bool onLeft, Collider[] volumes)
+    {
+        ArcherLimbIK.ClearForearm(rig, onLeft, volumes, core, 14);
+        var depth = ArcherLimbIK.DeepestOverlap(volumes, core, out _);
+        if (depth <= 0.0002f) return;
+        var arm = rig.GetBoneTransform(onLeft ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+        var elbow = rig.GetBoneTransform(onLeft ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
+        var wrist = rig.GetBoneTransform(onLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+        var handRotation = wrist.rotation;
+        var axes = new[] { chest.right, chest.up, chest.forward };
+        for (var step = 0; step < 18 && depth > 0.0002f; step++)
+        {
+            Transform bestJoint = null;
+            var bestRotation = Quaternion.identity;
+            foreach (var joint in new[] { arm, elbow })
+            {
+                var original = joint.rotation;
+                foreach (var axis in axes)
+                foreach (var angle in new[] { -2f, 2f })
+                {
+                    joint.rotation = Quaternion.AngleAxis(angle, axis) * original;
+                    wrist.rotation = handRotation;
+                    var candidate = ArcherLimbIK.DeepestOverlap(volumes, core, out _);
+                    if (candidate >= depth) continue;
+                    depth = candidate;
+                    bestJoint = joint;
+                    bestRotation = joint.rotation;
+                }
+                joint.rotation = original;
+                wrist.rotation = handRotation;
+            }
+            if (bestJoint == null) break;
+            bestJoint.rotation = bestRotation;
+            wrist.rotation = handRotation;
+        }
     }
 
     // Blends captured weight transfer with a fitted double kneel and keeps the hands at the wound.

@@ -1387,5 +1387,70 @@ public class InjuryAnimationTests
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
     }
+
+    // Checks the injured fingers extend while the opposite palm supports the wrist on both character skeletons.
+    [Test]
+    public void HandClipsOpenTheCorrectFingersAndSupportItsWrist()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var player = root.GetComponent<ArcherReactionAnimation>();
+
+            var a = root.GetComponentInChildren<Animator>();
+            foreach (var region in new[] { BodyRegion.LeftHand, BodyRegion.RightHand })
+            {
+                var left = region == BodyRegion.LeftHand;
+                var feet = new[] { a.GetBoneTransform(HumanBodyBones.LeftFoot), a.GetBoneTransform(HumanBodyBones.RightFoot) };
+                var planted = feet.Select(t => t.position).ToArray();
+
+                var wrist = a.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var support = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var supportKnuckle = a.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
+                var fingertip = a.GetBoneTransform(left ? HumanBodyBones.LeftMiddleDistal : HumanBodyBones.RightMiddleDistal);
+                Assert.That(player.Supports(region), Is.True);
+                foreach (var clip in new[] { player.Entry(region), player.Hold(region), player.Recovery(region) })
+                    RequireCoreClearance(root, clip, 0.065f);
+                player.Entry(region).SampleAnimation(root, player.Entry(region).length);
+                var palm = Vector3.Lerp(support.position, supportKnuckle.position, 0.65f);
+                Assert.That(Vector3.Distance(palm, wrist.position), Is.LessThan(0.06f), name + " " + region);
+                Assert.That(Vector3.Distance(fingertip.position, wrist.position), Is.GreaterThan(0.12f));
+                var knuckle = a.GetBoneTransform(left ? HumanBodyBones.LeftMiddleProximal : HumanBodyBones.RightMiddleProximal);
+                var middle = a.GetBoneTransform(left ? HumanBodyBones.LeftMiddleIntermediate : HumanBodyBones.RightMiddleIntermediate);
+                Assert.That(Vector3.Angle(middle.position - knuckle.position, fingertip.position - middle.position),
+                    Is.LessThan(45f), name + " " + region + " finger extension");
+                for (var i = 0; i < feet.Length; i++) Assert.That(Vector3.Distance(feet[i].position, planted[i]), Is.LessThan(0.002f));
+                Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+                player.Recovery(region).SampleAnimation(root, player.Recovery(region).length);
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Verifies left-hand hit identity, attached arrow and automatic completion without borrowing the arm sequence.
+    [UnityTest]
+    public IEnumerator LeftHandUsesItsOwnSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.LeftHand);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.LeftHand));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Verifies a right-hand hit uses its own wrist-support motion and only grants the turn after full recovery.
+    [UnityTest]
+    public IEnumerator RightHandUsesItsOwnSupportedRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightHand);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightHand));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
 }
 #endif
