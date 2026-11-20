@@ -132,8 +132,7 @@ namespace BowMan
                 woundOutward = woundAnchor.InverseTransformDirection(-hit.Direction);
             }
             BeginArmBlend();
-            playing.SampleAnimation(gameObject, 0f);
-            BlendArms(0f);
+            // LateUpdate samples the new pose after every hit listener has read the contacted bone.
         }
 
         // Starts the matching return motion only after the flow's complete injured-pose hold.
