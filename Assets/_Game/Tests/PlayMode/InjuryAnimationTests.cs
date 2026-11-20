@@ -719,7 +719,7 @@ public class InjuryAnimationTests
         try
         {
             foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
-            foreach (var region in new[] { BodyRegion.Chest, BodyRegion.Pelvis, BodyRegion.Abdomen })
+            foreach (var region in new[] { BodyRegion.Chest, BodyRegion.Pelvis, BodyRegion.Abdomen, BodyRegion.LeftArm, BodyRegion.RightArm })
             {
                 var flow = BodyShot(out var target, out var arrow, region, name);
                 target.TakeDamage(75);
@@ -1046,6 +1046,126 @@ public class InjuryAnimationTests
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
         Assert.That(flow.CanShoot(1), Is.False);
         Assert.That(head.position.y - target.transform.position.y, Is.LessThan(0.4f));
+    }
+
+    // Checks both planted feet and the opposite hand's actual forearm support on each implemented arm clip.
+    [Test]
+    public void ArmClipsCradleTheCorrectSideWithoutMovingEitherFoot()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            Assert.That(actor.Supports(BodyRegion.LeftArm), Is.True);
+            var animator = root.GetComponentInChildren<Animator>();
+            foreach (var region in new[] { BodyRegion.LeftArm, BodyRegion.RightArm }.Where(actor.Supports))
+            {
+                var left = region == BodyRegion.LeftArm;
+                var leftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+                var rightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
+                var leftStart = leftFoot.position;
+                var rightStart = rightFoot.position;
+                var entry = actor.Entry(region);
+                var elbow = animator.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
+                var wrist = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var support = animator.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                entry.SampleAnimation(root, entry.length * 0.25f);
+                Assert.That(Vector3.Distance(wrist.position, support.position), Is.GreaterThan(0.2f), name + " recoil " + region);
+                entry.SampleAnimation(root, entry.length);
+                var segment = wrist.position - elbow.position;
+                var closest = elbow.position + segment * Mathf.Clamp01(Vector3.Dot(support.position - elbow.position, segment) / segment.sqrMagnitude);
+                Assert.That(Vector3.Distance(support.position, closest), Is.LessThan(0.07f), name + " " + region);
+                Assert.That(PalmNormal(animator, !left).y, Is.GreaterThan(0.85f), name + " support " + region);
+                Assert.That(wrist.position.y, Is.GreaterThan(1.1f));
+                Assert.That(Vector3.Distance(leftFoot.position, leftStart), Is.LessThan(0.002f));
+                Assert.That(Vector3.Distance(rightFoot.position, rightStart), Is.LessThan(0.002f));
+                Assert.That(Mathf.Abs(Floor(root)), Is.LessThan(0.006f));
+                actor.Recovery(region).SampleAnimation(root, actor.Recovery(region).length);
+                Assert.That(Vector3.Distance(leftFoot.position, leftStart), Is.LessThan(0.002f));
+                Assert.That(Vector3.Distance(rightFoot.position, rightStart), Is.LessThan(0.002f));
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Exercises a real arm impact through the same automatic entry/hold/recovery lifecycle as the foot clips.
+    [UnityTest]
+    public IEnumerator LeftArmRecoveryKeepsTheShotLockedUntilStandingReady()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.LeftArm);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.LeftArm));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Keeps right-arm impact identity distinct while its own supported recovery completes automatically.
+    [UnityTest]
+    public IEnumerator RightArmRecoveryUsesItsOwnAnatomicalSequence()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.RightArm);
+        yield return new WaitForSeconds(1.1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.RightArm));
+        yield return new WaitForSeconds(4f);
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Samples both sides from recoil through handoff, including the recorded cradle during the hold.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void CapturedArmCradleClearsTheTorsoWhileBothFeetStayPlanted(string model)
+    {
+        foreach (var region in new[] { BodyRegion.LeftArm, BodyRegion.RightArm })
+        {
+            var root = Character(model);
+            try
+            {
+                var rig = root.GetComponentInChildren<Animator>();
+                var actor = root.GetComponent<ArcherReactionAnimation>();
+                var left = region == BodyRegion.LeftArm;
+                var elbow = rig.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
+                var wrist = rig.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var support = rig.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var middle = rig.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
+                var leftFoot = rig.GetBoneTransform(HumanBodyBones.LeftFoot);
+                var rightFoot = rig.GetBoneTransform(HumanBodyBones.RightFoot);
+                var startLeft = leftFoot.position;
+                var startRight = rightFoot.position;
+                var volumes = root.GetComponentsInChildren<BodyHitRegion>();
+                var limbBones = new[] { HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand,
+                    HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand }.Select(rig.GetBoneTransform).ToArray();
+                var limbs = volumes.Where(v => limbBones.Contains(v.transform.parent)).Select(v => v.GetComponent<Collider>()).ToArray();
+                var core = volumes.Where(v => v.Region is BodyRegion.Chest or BodyRegion.Abdomen or BodyRegion.Pelvis
+                    or BodyRegion.Neck or BodyRegion.Head).Select(v => v.GetComponent<Collider>()).ToArray();
+                foreach (var clip in new[] { actor.Entry(region), actor.Hold(region), actor.Recovery(region) })
+                {
+                    Assert.That(clip, Is.Not.Null);
+                    for (var frame = 0; frame <= Mathf.RoundToInt(clip.length * 120f); frame++)
+                    {
+                        clip.SampleAnimation(root, frame / 120f);
+                        Assert.That(Vector3.Distance(startLeft, leftFoot.position), Is.LessThan(0.002f));
+                        Assert.That(Vector3.Distance(startRight, rightFoot.position), Is.LessThan(0.002f));
+                        foreach (var limb in limbs)
+                        foreach (var body in core)
+                            if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
+                                body, body.transform.position, body.transform.rotation, out _, out var depth))
+                                Assert.That(depth, Is.LessThan(0.002f), $"{model} {clip.name} frame {frame}: {limb.name}/{body.name}");
+                        if (clip != actor.Hold(region)) continue;
+                        var palm = (support.position + middle.position) * 0.5f;
+                        var forearm = wrist.position - elbow.position;
+                        var nearest = elbow.position + Vector3.Project(palm - elbow.position, forearm);
+                        Assert.That(Vector3.Dot(nearest - elbow.position, forearm) / forearm.sqrMagnitude, Is.InRange(0f, 1f));
+                        Assert.That(Vector3.Distance(palm, nearest), Is.LessThan(0.07f));
+                    }
+                }
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
     }
 }
 #endif
