@@ -31,6 +31,21 @@ public class PvPRelayMatchTests
         return index < 0 || index + 1 >= args.Length ? null : args[index + 1];
     }
 
+    // Compares the host-selected environment and the instantiated scenery on each seat of this round.
+    private static IEnumerator SameEnvironment(PvPDuel duel, string folder, string role)
+    {
+        var setting = duel.Setting.ToString();
+        var scenery = duel.Flow.GetComponentInChildren<DuelEnvironment>();
+        Assert.That(scenery.name, Is.EqualTo(setting + "(Clone)"));
+        var prefix = Path.Combine(folder, "arena-" + duel.Round + "-");
+        var path = prefix + role;
+        File.WriteAllText(path + ".tmp", setting);
+        File.Move(path + ".tmp", path);
+        var peer = prefix + (role == "host" ? "join" : "host");
+        yield return Until(() => File.Exists(peer), "Peer loaded its arena");
+        Assert.That(File.ReadAllText(peer), Is.EqualTo(setting));
+    }
+
     // Exercises the shared bow in its assigned arena slot.
     private static void Fire(PvPDuel duel, Bow bow, int shooter, BodyRegion region)
     {
@@ -211,6 +226,7 @@ public class PvPRelayMatchTests
                 yield return Until(() => joining.IsCompleted, "Relay client allocation");
             }
             yield return Until(() => duel.Flow != null, $"Round start on {role}");
+            yield return SameEnvironment(duel, folder, role);
             var bow = Object.FindAnyObjectByType<Bow>();
             var hits = new List<string>();
             duel.Flow.ReactionRequested += (target, impact, lethal, token) =>
@@ -280,6 +296,7 @@ public class PvPRelayMatchTests
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
             Assert.That(duel.Flow.CanShoot(0), Is.True);
             Assert.That(duel.RematchRequested, Is.False);
+            yield return SameEnvironment(duel, folder, role);
             Assert.That(duel.Archer(1).GetComponentsInChildren<ArrowFlight>(), Is.Empty);
             if (host)
             {

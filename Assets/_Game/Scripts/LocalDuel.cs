@@ -64,6 +64,7 @@ namespace BowMan
             }
             matchRoot = new GameObject("Current match").transform;
             matchRoot.SetParent(transform, false);
+            DuelEnvironment.Place(DuelEnvironment.Choose(), matchRoot, localSpawn, opponentSpawn);
             LocalArcher = Spawn(localArcherPrefab, localSpawn);
             Opponent = Spawn(opponentPrefab, opponentSpawn);
             foreach (var renderer in LocalArcher.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
