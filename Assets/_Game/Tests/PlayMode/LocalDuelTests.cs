@@ -90,11 +90,13 @@ public class LocalDuelTests
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
         yield return null;
         Assert.That(sounds.transform.Find("Nock"), Is.Not.Null);
-        for (int i = 1; i <= 5; i++)
+        var started = Time.time;
+        do
         {
-            bow.PullTo(bow.RestPosition - bow.transform.forward * (i * 0.08f));
+            var distance = Mathf.Min(0.40f, (Time.time - started) * 2f);
+            bow.PullTo(bow.RestPosition - bow.transform.forward * distance);
             yield return null;
-        }
+        } while (Time.time - started < 0.2f);
         Assert.That(creak.volume, Is.GreaterThan(0.02f));
         yield return new WaitForSeconds(0.3f);
         Assert.That(creak.volume, Is.Zero);
