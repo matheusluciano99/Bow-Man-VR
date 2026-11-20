@@ -73,17 +73,20 @@ public static class ModeMenuBuilder
         floor.GetComponent<Renderer>().sharedMaterial = MenuMaterial(MaterialFolder + "/MenuFloor.mat", new Color(0.10f, 0.14f, 0.14f));
         var rightHand = rig.transform.Find("Camera Offset/Right Controller");
 
-        Label(null, "Bow Man VR", new Vector3(0f, 2.20f, 2.5f), 0.05f);
-        Label(null, "Point and pull the right trigger to select  •  Desktop: click or press 1 / 2",
+        var choices = new GameObject("Mode choices").transform;
+        Label(choices, "Bow Man VR", new Vector3(0f, 2.20f, 2.5f), 0.05f);
+        Label(choices, "Point and pull the right trigger to select  •  Desktop: click or press 1 / 2",
             new Vector3(0f, 1.93f, 2.5f), 0.018f);
         var panelMaterial = MenuMaterial(PanelMaterialPath, new Color(0.16f, 0.2f, 0.28f));
-        Panel(GameMode.PvE, new Vector3(-0.8f, 1.45f, 2.5f), panelMaterial);
-        Panel(GameMode.PvP, new Vector3(0.8f, 1.45f, 2.5f), panelMaterial);
-
-        var handPosition = new Vector3(0f, 0.78f, 2.5f);
-        var handOption = Panel(GameMode.PvE, handPosition, panelMaterial, true);
+        var modeSize = new Vector2(1.3f, 0.72f);
+        Panel(choices, "PvE option", GameScenes.Title(GameMode.PvE), -0.8f, 1.45f, modeSize, 0.032f, panelMaterial);
+        Panel(choices, "PvP option", GameScenes.Title(GameMode.PvP), 0.8f, 1.45f, modeSize, 0.032f, panelMaterial, GameMode.PvP);
+        var handOption = Panel(choices, "Bow hand option", "Bow in left hand  •  Draw with right", -0.49f, 0.78f,
+            new Vector2(1.92f, 0.34f), 0.018f, panelMaterial);
         var handLabel = handOption.GetComponentInChildren<TextMesh>();
-        Label(null, "Select the hand panel or press H to switch", new Vector3(0f, 0.53f, 2.5f), 0.019f);
+        var creditsOption = Panel(choices, "Credits option", "Credits", 1.02f, 0.78f,
+            new Vector2(0.86f, 0.34f), 0.024f, panelMaterial);
+        Label(choices, "H: switch bow hand   •   C: credits", new Vector3(0f, 0.53f, 2.5f), 0.019f);
 
         var pointer = rightHand.gameObject.AddComponent<ControllerPointer>();
         var line = rightHand.gameObject.AddComponent<LineRenderer>();
@@ -100,7 +103,10 @@ public static class ModeMenuBuilder
         pointerFields.ApplyModifiedPropertiesWithoutUndo();
 
         var menu = new GameObject("Mode menu").AddComponent<ModeMenu>();
+        var credits = menu.gameObject.AddComponent<MenuCredits>();
+        BuildCredits(credits, choices.gameObject, creditsOption, panelMaterial);
         var menuFields = new SerializedObject(menu);
+        menuFields.FindProperty("credits").objectReferenceValue = credits;
         menuFields.FindProperty("pointer").objectReferenceValue = pointer;
         menuFields.FindProperty("handOption").objectReferenceValue = handOption;
         menuFields.FindProperty("handLabel").objectReferenceValue = handLabel;
@@ -109,27 +115,48 @@ public static class ModeMenuBuilder
         EditorSceneManager.SaveScene(scene, MenuScenePath);
     }
 
-    // Creates one selectable panel: a solid board, its mode title and the highlight component.
-    private static ModeOption Panel(GameMode mode, Vector3 position, Material material, bool handChoice = false)
+    // Builds the credits at the same reading distance as the main menu and wires its pointer controls.
+    private static void BuildCredits(MenuCredits credits, GameObject choices, ModeOption entry, Material material)
     {
-        var root = new GameObject(handChoice ? "Bow hand option" : mode + " option");
-        root.transform.position = position;
+        var pages = new GameObject("Release credits").transform;
+        var heading = Label(pages, "Credits", new Vector3(0f, 2.20f, 2.5f), 0.035f);
+        heading.name = "Credit heading";
+        var body = Label(pages, "", new Vector3(0f, 1.55f, 2.5f), 0.022f);
+        body.name = "Credit text";
+        var number = Label(pages, "", new Vector3(0f, 0.99f, 2.5f), 0.017f);
+        number.name = "Credit page";
+        number.color = new Color(0.90f, 0.75f, 0.50f);
+        var size = new Vector2(0.64f, 0.30f);
+        var back = Panel(pages, "Return to menu", "Menu", -1.10f, 0.70f, size, 0.022f, material);
+        var prev = Panel(pages, "Previous credit page", "Previous", -0.37f, 0.70f, size, 0.020f, material);
+        var next = Panel(pages, "Next credit page", "Next", 0.37f, 0.70f, size, 0.022f, material);
+        var notices = Panel(pages, "Source notices", "Notices", 1.10f, 0.70f, size, 0.022f, material);
+        credits.Configure(choices, pages.gameObject, entry, prev, next, back, notices, heading, body, number,
+            AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/_Game/Content/ReleaseCredits.txt"));
+        pages.gameObject.SetActive(false);
+    }
+
+    // Creates a board selectable by either the tracked pointer or the desktop mouse.
+    private static ModeOption Panel(Transform parent, string name, string caption, float x, float y,
+        Vector2 size, float textSize, Material material, GameMode mode = GameMode.PvE)
+    {
+        var root = new GameObject(name);
+        root.transform.SetParent(parent, false);
+        root.transform.localPosition = new Vector3(x, y, 2.5f);
         var board = GameObject.CreatePrimitive(PrimitiveType.Cube);
         board.name = "Board";
         board.transform.SetParent(root.transform, false);
-        board.transform.localScale = handChoice ? new Vector3(2.9f, 0.34f, 0.05f) : new Vector3(1.3f, 0.72f, 0.05f);
+        board.transform.localScale = new Vector3(size.x, size.y, 0.05f);
         var renderer = board.GetComponent<Renderer>();
         renderer.sharedMaterial = material;
-        Label(root.transform, handChoice ? "Bow in left hand  •  Draw with right" : GameScenes.Title(mode),
-            new Vector3(0f, 0f, -0.04f), handChoice ? 0.024f : 0.032f);
+        Label(root.transform, caption, new Vector3(0f, 0f, -0.04f), textSize);
         var option = root.AddComponent<ModeOption>();
         option.Configure(mode, renderer);
-        EditorUtility.SetDirty(option);
         return option;
     }
 
     // Adds centered white text using the built-in font, readable from the player's side.
-    private static void Label(Transform parent, string text, Vector3 position, float characterSize)
+    private static TextMesh Label(Transform parent, string text, Vector3 position, float characterSize)
     {
         var label = new GameObject("Label").AddComponent<TextMesh>();
         var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -145,6 +172,7 @@ public static class ModeMenuBuilder
         label.characterSize = characterSize;
         label.color = Color.white;
         label.text = text;
+        return label;
     }
 
     // Loads or creates an unlit menu material with the given color.

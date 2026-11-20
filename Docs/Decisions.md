@@ -355,6 +355,10 @@ entering the other mode or returning on another day preserves it. The duel HUD
 shows the next step when the player can shoot and a waiting prompt during the
 opponent’s turn.
 
+Keep release credits inside the mode menu so the player can read them and return
+with the same controller or mouse. Source and license notices are also packaged
+as plain text in `StreamingAssets/BowMan-Credits.txt` for offline access.
+
 ## Standing archers between shots
 
 Use recorded breathing, shoulder movement and small weight shifts on both standing duel rigs. The visible opponent should still look alive while the player aims. Keep the feet planted and the local headset tracking origin steady. The hit reaction takes over on impact, the survivor returns to idle after recovery, and a defeated archer stays down. Both PvP seats use these rules. The [standing motion source and rebuild instructions](../Assets/ThirdParty/Rokoko/Attribution.md) accompany the recording.

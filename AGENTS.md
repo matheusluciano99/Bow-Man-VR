@@ -192,6 +192,9 @@ Use GitHub's Assignees field to record task responsibility.
 - Select the bow-hand panel or press H to choose which hand holds the bow and
   which hand draws. Both modes start with that saved choice. While aiming, the
   duel HUD shows the next action for the current hand and input method.
+- Open **Credits** with the pointer or C. Read the contributor pages or choose
+  **Notices** for the source and license text shipped with the player. Choose
+  **Menu** or press Esc to return. Arrow keys also turn pages.
 - In either mode, the left controller's Menu button or Esc returns to the menu.
   Leaving the PvP scene ends the online session. Health, turn and the
   VICTORY/DEFEAT result stay on the local duel's headset text (#8).

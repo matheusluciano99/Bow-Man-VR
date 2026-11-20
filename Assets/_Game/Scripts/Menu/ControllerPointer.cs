@@ -71,7 +71,7 @@ namespace BowMan.Menu
         // Reports the hovered panel as chosen; does nothing when no panel is hovered.
         public void Confirm()
         {
-            if (Hovered != null) Selected?.Invoke(Hovered);
+            if (Hovered != null && Hovered.isActiveAndEnabled) Selected?.Invoke(Hovered);
         }
     }
 }
