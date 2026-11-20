@@ -120,6 +120,66 @@ public class PvPRelayMatchTests
             var otherResults = Path.Combine(folder, (host ? "join" : "host") + "-hits.txt");
             yield return Until(() => File.Exists(otherResults), "Peer finished");
             Assert.That(File.ReadAllLines(otherResults), Is.EqualTo(hits));
+
+            var firstRound = duel.Round;
+            if (host)
+            {
+                duel.RequestRematch();
+                duel.RequestRematch();
+                Assert.That(duel.Round, Is.EqualTo(firstRound));
+                Assert.That(duel.RematchRequested, Is.True);
+                File.WriteAllText(Path.Combine(folder, "host-voted"), "");
+            }
+            else
+            {
+                yield return Until(() => File.Exists(Path.Combine(folder, "host-voted")), "Host offered rematch");
+                Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
+                duel.RequestRematch();
+            }
+            yield return Until(() => duel.Round == firstRound + 1, "Both votes started a new round");
+            Assert.That(duel.Archer(0).CurrentHealth, Is.EqualTo(100));
+            Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
+            Assert.That(duel.Flow.CanShoot(0), Is.True);
+            Assert.That(duel.RematchRequested, Is.False);
+            Assert.That(duel.Archer(1).GetComponentsInChildren<ArrowFlight>(), Is.Empty);
+            if (host)
+            {
+                bow.SetHeld(true);
+                Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
+                File.WriteAllText(Path.Combine(folder, "host-nocked"), "");
+                yield return Until(() => controller.Status.Phase == ConnectionPhase.WaitingForOpponent, "Seat reopened");
+                Assert.That(duel.Flow, Is.Null);
+                Assert.That(bow.IsDrawing, Is.False);
+                File.WriteAllText(Path.Combine(folder, "seat-free"), "");
+            }
+            else
+            {
+                yield return Until(() => File.Exists(Path.Combine(folder, "host-nocked")), "Active rematch");
+                controller.Leave();
+                Assert.That(controller.Status.CanStart, Is.True);
+                Assert.That(duel.Flow, Is.Null);
+                yield return Until(() => File.Exists(Path.Combine(folder, "seat-free")), "Remote seat freed");
+                var rejoin = controller.JoinAsync(File.ReadAllText(codePath));
+                yield return Until(() => rejoin.IsCompleted, "Rejoin request");
+                Assert.That(controller.Status.Phase, Is.Not.EqualTo(ConnectionPhase.Failed), controller.Status.Describe());
+            }
+            yield return Until(() => duel.Flow != null && duel.Round == firstRound + 2, "Fresh round after rejoin");
+            Assert.That(duel.Flow.CanShoot(0), Is.True);
+            Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
+            if (host)
+            {
+                yield return Until(() => File.Exists(Path.Combine(folder, "join-reentered")), "Peer rejoined");
+                controller.Leave();
+                Assert.That(controller.Status.CanStart, Is.True);
+            }
+            else
+            {
+                File.WriteAllText(Path.Combine(folder, "join-reentered"), "");
+                yield return Until(() => controller.Status.Phase == ConnectionPhase.Disconnected, "Host departure");
+                Assert.That(controller.Status.CanStart, Is.True);
+                Assert.That(duel.Flow, Is.Null);
+            }
+            File.WriteAllText(Path.Combine(folder, role + "-rematch.txt"), "Rematch, departure and rejoin passed.");
         }
         finally { controller.Leave(); }
     }

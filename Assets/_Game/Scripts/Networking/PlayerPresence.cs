@@ -85,6 +85,14 @@ namespace BowMan.Networking
         public void ReleaseRpc(int round, int turn, Vector3 origin, Vector3 direction, float strength) =>
             duel?.ReceiveRelease(OwnerClientId, round, turn, origin, direction, strength);
 
+        // Records a rematch vote for the authenticated owner of this player object.
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+        public void RematchRpc(int round) => duel?.ReceiveRematch(OwnerClientId, round);
+
+        // Shows both seats' rematch choices while the current result is still visible.
+        [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
+        public void VotesRpc(int round, int votes) => duel?.ShowVotes(round, votes);
+
         // Starts the joiner's replica after the host has created its match.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
         public void BeginRpc(int round) => duel?.Begin(round);
