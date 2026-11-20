@@ -1948,7 +1948,7 @@ public static class MotionInjuryBuilder
     }
 
     // Bakes complete transform curves at the requested sample rate on the target hierarchy.
-    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose, float sampleRate = 60f)
+    internal static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose, float sampleRate = 60f)
     {
         var clip = new AnimationClip { frameRate = sampleRate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
@@ -1992,7 +1992,7 @@ public static class MotionInjuryBuilder
         }
     }
     // Replaces clip contents without changing existing asset GUIDs when authoring is rerun.
-    private static AnimationClip SaveClip(AnimationClip clip, string path)
+    internal static AnimationClip SaveClip(AnimationClip clip, string path)
     {
         // Playback samples transform paths from the prefab root, above its Humanoid Animator.
         clip.legacy = true;

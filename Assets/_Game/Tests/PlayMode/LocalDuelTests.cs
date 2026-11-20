@@ -54,7 +54,12 @@ public class LocalDuelTests
     {
         Physics.SyncTransforms();
         var target = duel.Opponent.GetComponentsInChildren<BodyHitRegion>().First(v => v.Region == region);
-        var point = target.GetComponent<Collider>().bounds.center;
+        var volume = target.GetComponent<Collider>();
+        var point = volume.bounds.center;
+        // Aim at the outer shoulder visible beside the chest in the relaxed stance.
+        if (region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
+            point = volume.ClosestPoint(point + duel.Opponent.transform.right *
+                (region == BodyRegion.LeftShoulder ? -0.035f : 0.035f));
         var bow = Find<Bow>();
         var start = duel.LocalArcher.transform.position + Vector3.up * 1.4f + Vector3.forward * 0.6f;
         Assert.That(ArrowBallistics.TryVelocity(start, point, 25f, out var velocity), Is.True);
@@ -69,6 +74,28 @@ public class LocalDuelTests
         Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Flying));
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.False);
         return arrow;
+    }
+
+    // Checks visible breathing at duel distance while the local tracking origin stays still.
+    [UnityTest]
+    public IEnumerator StandingOpponentMovesWhileTrackingOriginStaysStill()
+    {
+        var duel = Find<LocalDuel>();
+        var shoulder = duel.Opponent.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.LeftShoulder);
+        var origin = Find<Camera>().transform.root;
+        var position = origin.position;
+        var rotation = origin.rotation;
+        var start = shoulder.localRotation;
+        var maxAngle = 0f;
+        var end = Time.time + 4f;
+        while (Time.time < end)
+        {
+            yield return null;
+            maxAngle = Mathf.Max(maxAngle, Quaternion.Angle(start, shoulder.localRotation));
+            Assert.That(Vector3.Distance(position, origin.position), Is.LessThan(0.001f));
+            Assert.That(Quaternion.Angle(rotation, origin.rotation), Is.LessThan(0.01f));
+        }
+        Assert.That(maxAngle, Is.GreaterThan(0.3f));
     }
 
     // Exercises a real twenty-metre bow hit, full recovery, an AI response, fatal victory and a clean same-session restart.

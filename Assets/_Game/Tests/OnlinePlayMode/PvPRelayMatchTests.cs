@@ -182,6 +182,11 @@ public class PvPRelayMatchTests
                 var bones = string.Join(",", report.Bones.Select(h => h.Bone + (h.Fractured ? "*" : "")));
                 hits.Add($"{token}/{target}/{impact.Region}/{impact.Side}/{point:F3}/{organs}/{bones}/{lethal}");
             };
+            var observer = duel.Archer(host ? 1 : 0).GetComponentInChildren<Animator>();
+            var shoulder = observer.GetBoneTransform(HumanBodyBones.LeftShoulder);
+            var standing = shoulder.rotation;
+            yield return Until(() => Quaternion.Angle(standing, shoulder.rotation) > 0.5f,
+                "Standing opponent moves on " + role, 8f);
             File.WriteAllText(Path.Combine(folder, role + "-ready"), "");
             yield return Until(() => File.Exists(Path.Combine(folder, (host ? "join" : "host") + "-ready")), "Peer entered match");
             var regions = new[] { BodyRegion.LeftLeg, BodyRegion.Chest, BodyRegion.Head };
