@@ -55,6 +55,18 @@ Use GitHub's Assignees field to record task responsibility.
   Record sources, licenses and actual preparation status in
   [Docs/Art/CharacterAssets.md](Docs/Art/CharacterAssets.md).
 
+## Duel environment, arrow and hands
+
+- Choose a castle courtyard, woodland archery range or village training yard at
+  random for each new duel. Keep that setting for the entire match. In PvP the
+  host chooses the setting for both players. Preserve the clear firing lane.
+- Give the shared gameplay arrow a medieval head, wooden shaft, feather
+  fletching and nock. Use the same model from draw through impact and preserve
+  the tip origin and embedded wound position.
+- Replace the playable rig’s controller markers with visible archer hands that
+  follow the controllers. Support the bow grip, nock, draw and release with
+  either bow hand. Keep the diagnostic markers in the tracking test.
+
 ## Game modes
 
 - 1v1 PvP: online duels against another player over the internet, including
