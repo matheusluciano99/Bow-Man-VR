@@ -46,6 +46,9 @@ Use GitHub's Assignees field to record task responsibility.
   opponent appears as a full archer. During injury, the local viewpoint follows
   the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
   Physical viewpoint validation remains task #35.
+- Between shots, both standing archers breathe and shift their weight with
+  planted boots. Preserve the local tracked view during idle. Give injuries
+  immediate control of the pose and resume idle only after a survivor recovers.
 - Front/side/back references, bow/hit-region design review and preparation
   boundaries are in [Docs/Art/ArcherDesign.md](Docs/Art/ArcherDesign.md).
 - Both active prefabs use prepared Humanoid derivatives with complete body,

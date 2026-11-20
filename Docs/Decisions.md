@@ -348,6 +348,10 @@ test players are still built explicitly. The left Menu button or Esc returns to
 the menu; leaving the PvP scene ends the session because the network object
 persists across scene loads.
 
+## Standing archers between shots
+
+Use recorded breathing, shoulder movement and small weight shifts on both standing duel rigs. The visible opponent should still look alive while the player aims. Keep the feet planted and the local headset tracking origin steady. The hit reaction takes over on impact, the survivor returns to idle after recovery, and a defeated archer stays down. Both PvP seats use these rules. The [standing motion source and rebuild instructions](../Assets/ThirdParty/Rokoko/Attribution.md) accompany the recording.
+
 ## Open questions and provisional values
 
 - The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.
