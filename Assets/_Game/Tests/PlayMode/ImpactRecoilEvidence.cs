@@ -30,7 +30,7 @@ public class ImpactRecoilEvidence
                 .Select(v => v.GetComponent<Collider>()).ToArray();
             var leftBoot = rig.GetBoneTransform(HumanBodyBones.LeftFoot);
             var rightBoot = rig.GetBoneTransform(HumanBodyBones.RightFoot);
-            var regions = new[] { BodyRegion.Abdomen, BodyRegion.LeftArm, BodyRegion.RightArm };
+            var regions = new[] { BodyRegion.Abdomen, BodyRegion.LeftArm, BodyRegion.RightArm, BodyRegion.LeftLeg, BodyRegion.RightLeg };
             var failures = new List<string>();
             foreach (var region in regions)
             {
@@ -78,7 +78,8 @@ public class ImpactRecoilEvidence
     {
         BodyRegion.Abdomen => HumanBodyBones.UpperChest,
         BodyRegion.LeftArm => HumanBodyBones.LeftLowerArm,
-        _ => HumanBodyBones.RightLowerArm
+        BodyRegion.RightArm => HumanBodyBones.RightLowerArm,
+        _ => HumanBodyBones.Hips
     };
 
     // Measures added nonadjacent limb and torso intersections during the blended contact phase.

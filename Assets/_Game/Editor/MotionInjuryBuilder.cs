@@ -238,6 +238,154 @@ public static class MotionInjuryBuilder
         finally { UnityEngine.Object.DestroyImmediate(root); }
     }
 
+    // Retargets the kneeling and standing recordings to the injured knee and same-side palm.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Captured Leg Reactions")]
+    public static void RebuildCapturedLegs()
+    {
+        var kneel = ImportMotion("Kneeling Down");
+        var stand = ImportMotion("Standing");
+        foreach (var side in new[] { BodyRegion.LeftLeg, BodyRegion.RightLeg })
+        {
+            foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+                BakeCapturedLeg(name, side, kneel, stand);
+            RebuildProneFinisher(side);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    // Preserves the captured weight transfer and torso movement while fitting the floor contacts.
+    private static void BakeCapturedLeg(string model, BodyRegion region, AnimationClip down, AnimationClip up)
+    {
+        var path = $"Assets/_Game/Prefabs/Characters/{model}.prefab";
+        var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+        try
+        {
+            var rig = root.GetComponentInChildren<Animator>();
+            var left = region == BodyRegion.LeftLeg;
+            var bones = HumanoidBones(rig);
+            var neutral = bones.Select(b => b.localRotation).ToArray();
+            var positions = bones.Select(b => b.localPosition).ToArray();
+            var world = bones.Select(b => b.rotation).ToArray();
+            var opposite = OppositeBoneIndices(rig, bones);
+            var hips = rig.GetBoneTransform(HumanBodyBones.Hips);
+            var start = hips.position;
+            var modelPosition = rig.transform.localPosition;
+            var modelRotation = rig.transform.localRotation;
+            var spine = rig.GetBoneTransform(HumanBodyBones.Spine);
+            var upper = bones.Where(b => b.IsChildOf(spine)).ToArray();
+            var knee = rig.GetBoneTransform(left ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg);
+            var regions = root.GetComponentsInChildren<BodyHitRegion>();
+            var core = CoreVolumes(regions);
+            var leftArm = ForearmVolumes(regions, rig.GetBoneTransform(HumanBodyBones.LeftLowerArm), rig.GetBoneTransform(HumanBodyBones.LeftHand));
+            var rightArm = ForearmVolumes(regions, rig.GetBoneTransform(HumanBodyBones.RightLowerArm), rig.GetBoneTransform(HumanBodyBones.RightHand));
+            var kneeHeight = 0.08f;
+            for (var pass = 0; pass < 3; pass++)
+            {
+                Restore(bones, positions, neutral);
+                LegPose(root, left, 1f, kneeHeight);
+                kneeHeight -= NearbyFloor(root, knee.position) - root.transform.position.y;
+            }
+            var folder = $"Assets/_Game/Animations/Injuries/{model}/{region}";
+            var entry = Bake(false);
+            var recovery = Bake(true);
+            var prefab = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                prefab.GetComponent<ArcherReactionAnimation>().SetSequence(region, entry, recovery);
+                PrefabUtility.SaveAsPrefabAsset(prefab, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(prefab); }
+
+            // Uses the performer's pelvis height to time the approach to the measured knee and palm contacts.
+            AnimationClip Bake(bool recovering)
+            {
+                var source = recovering ? up : down;
+                var first = recovering ? 0.45f : 0f;
+                var last = recovering ? 2.12f : Mathf.Min(1.5f, down.length);
+                Restore(bones, positions, neutral);
+                Sample(rig, source, first, modelPosition, modelRotation);
+                var firstHeight = hips.position.y;
+                Sample(rig, source, last, modelPosition, modelRotation);
+                var lastHeight = hips.position.y;
+                const float duration = 0.95f;
+                var clip = Record(root, bones, duration, time =>
+                {
+                    var u = Mathf.Clamp01(time / duration);
+                    Restore(bones, positions, neutral);
+                    Sample(rig, source, Mathf.Lerp(first, last, u), modelPosition, modelRotation);
+                    var heightPhase = Mathf.InverseLerp(firstHeight, lastHeight, hips.position.y);
+                    if (left) MirrorBody(root.transform, hips, start, bones, positions, neutral, world, opposite);
+                    var recorded = upper.Select(b => b.localRotation).ToArray();
+                    var progress = Mathf.Lerp(Mathf.SmoothStep(0f, 1f, u), heightPhase, 0.45f);
+                    if (recovering) progress = 1f - progress;
+                    Restore(bones, positions, neutral);
+                    LegPose(root, left, progress, kneeHeight);
+                    var weight = Ease(u, 0f, 0.20f) * (1f - Ease(u, 0.68f, 1f));
+                    for (var i = 0; i < upper.Length; i++)
+                        upper[i].localRotation = Quaternion.Slerp(upper[i].localRotation, recorded[i], 0.65f * weight);
+                    ArcherLimbIK.ClearForearm(rig, true, leftArm, core);
+                    ArcherLimbIK.ClearForearm(rig, false, rightArm, core);
+                });
+                clip.name = region + (recovering ? " Recovery" : " Entry");
+                return SaveClip(clip, folder + (recovering ? "_Recovery.anim" : "_Entry.anim"));
+            }
+        }
+        finally { UnityEngine.Object.DestroyImmediate(root); }
+    }
+
+    // Lowers the injured knee while the other foot stays planted and the same-side palm supports the bent torso.
+    private static void LegPose(GameObject root, bool left, float progress, float kneeHeight)
+    {
+        var a = root.GetComponentInChildren<Animator>();
+        var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+        var thigh = a.GetBoneTransform(left ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg);
+        var knee = a.GetBoneTransform(left ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg);
+        var injured = a.GetBoneTransform(left ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot);
+        var healthy = a.GetBoneTransform(left ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot);
+        var injuredStart = injured.position;
+        var healthyStart = healthy.position;
+        var injuredRotation = injured.rotation;
+        var healthyRotation = healthy.rotation;
+        var upperLength = Vector3.Distance(thigh.position, knee.position);
+        var lowerLength = Vector3.Distance(knee.position, injured.position);
+        const float kneeForward = 0.15f;
+        var thighOffset = thigh.position - hips.position;
+        var finalThighOffset = Quaternion.AngleAxis(40f, root.transform.right) * thighOffset;
+        var kneeReach = kneeForward + thighOffset.z - finalThighOffset.z;
+        var targetHeight = root.transform.position.y + kneeHeight +
+            Mathf.Sqrt(upperLength * upperLength - kneeReach * kneeReach) - finalThighOffset.y;
+        var kneeTarget = new Vector3(thigh.position.x, root.transform.position.y + kneeHeight,
+            thigh.position.z + kneeForward);
+        var footHeight = Mathf.Max(injuredStart.y + 0.09f, root.transform.position.y + 0.22f);
+        var footTarget = new Vector3(kneeTarget.x, footHeight,
+            kneeTarget.z - Mathf.Sqrt(lowerLength * lowerLength - Mathf.Pow(footHeight - kneeTarget.y, 2f)));
+        hips.position += root.transform.up * ((targetHeight - hips.position.y) * progress);
+        hips.rotation = Quaternion.AngleAxis(40f * progress, root.transform.right) * hips.rotation;
+        var spine = a.GetBoneTransform(HumanBodyBones.Spine);
+        spine.rotation = Quaternion.AngleAxis(60f * progress, root.transform.right) * spine.rotation;
+        ArcherLimbIK.Solve(a, left ? HumanBodyBones.LeftUpperLeg : HumanBodyBones.RightUpperLeg,
+            left ? HumanBodyBones.LeftLowerLeg : HumanBodyBones.RightLowerLeg,
+            left ? HumanBodyBones.LeftFoot : HumanBodyBones.RightFoot,
+            Vector3.Lerp(injuredStart, footTarget, progress) + root.transform.up * (0.025f * Mathf.Sin(progress * Mathf.PI)),
+            root.transform.forward);
+        ArcherLimbIK.Solve(a, left ? HumanBodyBones.RightUpperLeg : HumanBodyBones.LeftUpperLeg,
+            left ? HumanBodyBones.RightLowerLeg : HumanBodyBones.LeftLowerLeg,
+            left ? HumanBodyBones.RightFoot : HumanBodyBones.LeftFoot, healthyStart, root.transform.forward);
+        injured.rotation = Quaternion.AngleAxis(45f * progress, root.transform.right) * injuredRotation;
+        healthy.rotation = healthyRotation;
+        if (!left)
+            healthy.rotation = Quaternion.AngleAxis(-4f * progress, root.transform.right) * healthyRotation;
+        GroundPalm(root, a, left, progress, 0.08f, 0.105f);
+        var other = a.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+        var outward = root.transform.right * (left ? 1f : -1f);
+        var rest = a.GetBoneTransform(left ? HumanBodyBones.RightLowerLeg : HumanBodyBones.LeftLowerLeg).position +
+            root.transform.up * 0.08f + root.transform.forward * 0.025f + outward * 0.105f;
+        ArcherLimbIK.Solve(a, left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm,
+            left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm,
+            left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand,
+            Vector3.Lerp(other.position, rest, progress), outward);
+    }
+
     // Blends captured weight transfer with a fitted double kneel and keeps the hands at the wound.
     [MenuItem("Bow Man VR/Injuries/Rebuild Abdomen")]
     public static void RebuildAbdomen()
@@ -1376,7 +1524,7 @@ public static class MotionInjuryBuilder
                         bones[i].localPosition = Vector3.Lerp(positions[i], targetPositions[i], progress);
                         bones[i].localRotation = Quaternion.Slerp(rotations[i], targetRotations[i], progress);
                     }
-                    if (region == BodyRegion.Abdomen)
+                    if (region is BodyRegion.Abdomen or BodyRegion.LeftLeg or BodyRegion.RightLeg)
                     {
                         ArcherLimbIK.ClearForearm(animator, false, rightArm, core);
                         ArcherLimbIK.ClearForearm(animator, true, leftArm, core);

@@ -2557,8 +2557,8 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 2d927e9bc7cfcc34ba4d2a855fc6089c, type: 2}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: f6025bdc5473a4846aac399aa9a3c0d0, type: 2}
+  - {fileID: 7400000, guid: eed2d809ec71f3d4ab29a645531ab75c, type: 2}
   - {fileID: 7400000, guid: 66c8a354d4f21da44afeca079116fa2e, type: 2}
   - {fileID: 7400000, guid: b4bb5b685a08b0648a9d7f4eeae51260, type: 2}
   recoveries:
@@ -2573,8 +2573,8 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 5e589d102389870469e352e84ef8eb7b, type: 2}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 38a66170488ce6344ac868120ea5cb94, type: 2}
+  - {fileID: 7400000, guid: c0251c0b307cedd4193bb91aca287b84, type: 2}
   - {fileID: 7400000, guid: 540a9df8288c7d44a8c2434be169c0e0, type: 2}
   - {fileID: 7400000, guid: a06d57c870cbea3479318ca9eab9f80e, type: 2}
   holds:
@@ -2605,8 +2605,8 @@ MonoBehaviour:
   - {fileID: 7400000, guid: e74b07ff8bf52df41ab554d7c24a48f4, type: 2}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 83d2f141dfe94f545b7ed52a17c0af0c, type: 2}
+  - {fileID: 7400000, guid: 4ce73ea63e443624fb9c1f659f0fbe0e, type: 2}
   - {fileID: 7400000, guid: b6ebae3f48b968a42bbb7febf8484dab, type: 2}
   - {fileID: 7400000, guid: 2a073f4836be5574289c24b0bfcc5f90, type: 2}
   fatalEntries:

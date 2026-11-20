@@ -30,6 +30,10 @@ namespace BowMan
                         left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
                         (incoming * 0.055f + outside * 0.022f) * amount, 13f * amount);
                     break;
+                case BodyRegion.LeftLeg:
+                case BodyRegion.RightLeg:
+                    Buckle(rig, incoming, outside, amount);
+                    break;
             }
         }
 
@@ -50,5 +54,28 @@ namespace BowMan
             pivot.rotation = Quaternion.RotateTowards(Quaternion.identity, turn, maxAngle) * pivot.rotation;
         }
 
+
+        // Briefly shifts weight away from the injured leg and keeps both boots on the authored contacts.
+        private static void Buckle(Animator rig, Vector3 incoming, Vector3 outside, float amount)
+        {
+            var leftBoot = rig.GetBoneTransform(HumanBodyBones.LeftFoot);
+            var rightBoot = rig.GetBoneTransform(HumanBodyBones.RightFoot);
+            var leftPosition = leftBoot.position;
+            var rightPosition = rightBoot.position;
+            var leftRotation = leftBoot.rotation;
+            var rightRotation = rightBoot.rotation;
+            var leftBend = rig.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position -
+                rig.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position;
+            var rightBend = rig.GetBoneTransform(HumanBodyBones.RightLowerLeg).position -
+                rig.GetBoneTransform(HumanBodyBones.RightUpperLeg).position;
+            rig.GetBoneTransform(HumanBodyBones.Hips).position +=
+                (incoming * 0.022f - outside * 0.027f - rig.transform.up * 0.027f) * amount;
+            ArcherLimbIK.Solve(rig, HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg,
+                HumanBodyBones.LeftFoot, leftPosition, leftBend);
+            ArcherLimbIK.Solve(rig, HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg,
+                HumanBodyBones.RightFoot, rightPosition, rightBend);
+            leftBoot.rotation = leftRotation;
+            rightBoot.rotation = rightRotation;
+        }
     }
 }
