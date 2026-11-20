@@ -23,6 +23,8 @@ namespace BowMan
         public bool IsHeld { get; private set; }
         public bool IsDrawing { get; private set; }
         public bool ShotAllowed { get; private set; } = true;
+        internal float ArrowLength => arrowLength;
+        public Vector3 StringPosition => IsDrawing ? DrawPosition : RestPosition;
         public float MaximumDrawDistance => maximumDrawDistance;
         public float MaximumLaunchSpeed => maximumLaunchSpeed;
         public Vector3 RestPosition => stringRest.position;
@@ -44,6 +46,27 @@ namespace BowMan
         {
             ShotAllowed = allowed;
             if (!allowed) SetHeld(false);
+        }
+
+        // Copies the prop renderers and local string anchors without copying the firing component.
+        internal void CopyVisuals(Transform root, out LineRenderer line, out Vector3 top, out Vector3 rest, out Vector3 bottom)
+        {
+            foreach (Transform child in transform)
+                if (child.TryGetComponent<MeshFilter>(out _)) Instantiate(child.gameObject, root, false);
+            line = Instantiate(bowString, root, false);
+            top = transform.InverseTransformPoint(stringTop.position);
+            rest = transform.InverseTransformPoint(stringRest.position);
+            bottom = transform.InverseTransformPoint(stringBottom.position);
+        }
+
+        // Places the string's endpoints and its moving center in world space.
+        internal static void SetString(LineRenderer line, Vector3 top, Vector3 center, Vector3 bottom)
+        {
+            line.useWorldSpace = true;
+            line.positionCount = 3;
+            line.SetPosition(0, top);
+            line.SetPosition(1, center);
+            line.SetPosition(2, bottom);
         }
 
         // Refreshes the string and nocked arrow after the hand poses have moved.
@@ -128,13 +151,7 @@ namespace BowMan
             if (stringRest == null) return;
             var position = IsDrawing ? DrawPosition : stringRest.position;
             if (bowString != null && stringTop != null && stringBottom != null)
-            {
-                bowString.useWorldSpace = true;
-                bowString.positionCount = 3;
-                bowString.SetPosition(0, stringTop.position);
-                bowString.SetPosition(1, position);
-                bowString.SetPosition(2, stringBottom.position);
-            }
+                SetString(bowString, stringTop.position, position, stringBottom.position);
             if (nockedArrow == null) return;
             var direction = stringRest.position - position;
             if (direction.sqrMagnitude < 0.000001f) direction = transform.forward;

@@ -10,6 +10,8 @@ review uses English Archer and Erika Archer. Design is tracked in
 
 Both duel archers use an eight-second loop from Sam Lazarus’s standing motion capture. The boots stay planted while the shoulders, arms, spine and head follow the recording. The local tracking origin follows the headset during idle and the animated eyes during injury. Source and rebuild details are in the [Rokoko attribution](../../Assets/ThirdParty/Rokoko/Attribution.md).
 
+For a shot, the opposing archer reaches, draws and releases with an upper-body segment of the free Rokoko archery recording. Each model has separate left-bow and right-bow clips. The equipment follows the grip and the drawing fingers meet the active string. The source and Unity bake menu are documented in the [archery recording attribution](../../Assets/ThirdParty/Rokoko/Attribution.md#bow-action-recording).
+
 ## Retained Templar Knight
 
 - Creator: everlasting17th / everlastinggrey.

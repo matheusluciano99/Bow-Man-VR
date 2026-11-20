@@ -218,7 +218,8 @@ Use GitHub's Assignees field to record task responsibility.
   without a headset with `BowManVR-PvP.exe -desktop`.
 - Expected: the host reads "Connected as Archer 1", the joining player
   "Connected as Archer 2", each rig stands on its spawn, and each player sees
-  the opponent's head and hands as red markers. A third player is refused by
+  the opponent’s equipped archer during the match. The lobby uses head and hand
+  markers for connection diagnostics. A third player is refused by
   Relay's one-opponent limit ("Connection failed: …"); "Match is full" appears
   only if Netcode approval refuses it first.
 - Cross-network acceptance for #11 needs two PCs on different networks, for
@@ -240,6 +241,7 @@ Use GitHub's Assignees field to record task responsibility.
   arrow and turn authority. Animation callbacks remain explicitly manual in this
   review scene. Provisional aim error, thinking delay and speed need play tuning.
 
+- The visible opponent uses the recorded archery action on its aiming turn. Match the equipped bow hand and string to the shot in both PvE and PvP. Show a single flying projectile per accepted release. Injury and defeat take priority over the standing bow pose.
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
   provisional maximum draw of 0.70 m (70 cm).

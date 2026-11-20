@@ -3,6 +3,29 @@ using UnityEngine;
 
 namespace BowMan.Networking
 {
+    // One owner-authored sample for the remote body and bow, scoped to a single aiming turn.
+    public struct BowPose : INetworkSerializable
+    {
+        public int Round, Turn;
+        public bool Left;
+        public float Strength;
+        public Vector3 Grip, Pull;
+        public Quaternion Rotation;
+
+        // Sends the contact geometry only while this seat has an arrow on its string.
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref Round);
+            serializer.SerializeValue(ref Turn);
+            serializer.SerializeValue(ref Left);
+            serializer.SerializeValue(ref Strength);
+            if (Strength < 0f) return;
+            serializer.SerializeValue(ref Grip);
+            serializer.SerializeValue(ref Rotation);
+            serializer.SerializeValue(ref Pull);
+        }
+    }
+
     // Networked player: carries the server-assigned role and replicates head and hand poses as markers.
     public sealed class PlayerPresence : NetworkBehaviour
     {
@@ -19,6 +42,8 @@ namespace BowMan.Networking
         private readonly NetworkVariable<Vector3> rightPosition = OwnerVariable(Vector3.zero);
         private readonly NetworkVariable<Quaternion> rightRotation = OwnerVariable(Quaternion.identity);
 
+        private readonly NetworkVariable<BowPose> bowPose = OwnerVariable(default(BowPose));
+        public BowPose Draw => bowPose.Value;
         private LocalRigBinder rig;
         private PvPDuel duel;
         public Vector3 TrackedHead => IsOwner && rig != null ? rig.Head.position : headPosition.Value;
@@ -52,6 +77,7 @@ namespace BowMan.Networking
             if (!IsSpawned) return;
             if (IsOwner)
             {
+                if (duel != null && duel.Flow != null) bowPose.Value = duel.LocalBowPose();
                 if (rig == null) return;
                 Write(rig.Head, headPosition, headRotation);
                 Write(rig.LeftHand, leftPosition, leftRotation);
@@ -132,7 +158,7 @@ namespace BowMan.Networking
         }
 
         // Shows or hides the head and hand markers.
-        private void SetMarkersVisible(bool visible)
+        internal void SetMarkersVisible(bool visible)
         {
             foreach (var marker in new[] { headMarker, leftMarker, rightMarker })
                 if (marker != null) marker.gameObject.SetActive(visible);

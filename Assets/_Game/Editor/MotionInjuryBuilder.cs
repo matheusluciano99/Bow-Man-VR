@@ -1387,7 +1387,7 @@ public static class MotionInjuryBuilder
     }
 
     // Keeps mapped joints in parent-first order for anatomical reflection.
-    private static Transform[] HumanoidBones(Animator animator)
+    internal static Transform[] HumanoidBones(Animator animator)
     {
         var mapped = Enumerable.Range(0, (int)HumanBodyBones.LastBone)
             .Select(i => animator.GetBoneTransform((HumanBodyBones)i)).ToHashSet();
@@ -1395,7 +1395,7 @@ public static class MotionInjuryBuilder
     }
 
     // Pairs each joint with its opposite side, preserving midline joints.
-    private static int[] OppositeBoneIndices(Animator animator, Transform[] bones)
+    internal static int[] OppositeBoneIndices(Animator animator, Transform[] bones)
     {
         var ids = Enumerable.Range(0, (int)HumanBodyBones.LastBone).Select(i => (HumanBodyBones)i)
             .Where(id => animator.GetBoneTransform(id) != null).ToDictionary(animator.GetBoneTransform);
@@ -1408,7 +1408,7 @@ public static class MotionInjuryBuilder
     }
 
     // Reflects recorded motion around the character's sagittal plane in each joint's own neutral frame.
-    private static void MirrorBody(Transform root, Transform hips, Vector3 hipStart, Transform[] bones,
+    internal static void MirrorBody(Transform root, Transform hips, Vector3 hipStart, Transform[] bones,
         Vector3[] positions, Quaternion[] rotations, Quaternion[] worldRotations, int[] mirrored)
     {
         var sampled = bones.Select(t => t.rotation).ToArray();
@@ -1983,7 +1983,7 @@ public static class MotionInjuryBuilder
     }
 
     // Restores the target's neutral local bone values before an independent motion sample.
-    private static void Restore(Transform[] bones, Vector3[] positions, Quaternion[] rotations)
+    internal static void Restore(Transform[] bones, Vector3[] positions, Quaternion[] rotations)
     {
         for (var i = 0; i < bones.Length; i++)
         {
