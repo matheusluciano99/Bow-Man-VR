@@ -91,3 +91,20 @@ keep #15/#16 hardware acceptance open until their own criteria are met.
 
 Once the finishing view is implemented, verify a surviving hit never starts it;
 head/neck kills and other regions that reduce health to zero may request it once.
+
+## Shared PvE and PvP build
+
+Open the saved MainMenu scene in the Editor. Build both modes with **Bow Man VR
+> Build Windows Game Player**. Keep the entire resulting player folder together
+when copying it to either lab PC. Record the Git revision and use the same
+build on both PCs. Launch each mode from the menu and return with the left
+controller's Menu button or Esc.
+
+For the online pass, host on one network and join from a second network.
+Record the two PCs, network types, participant observations and build revision.
+Alternate shooters and repeat the region table above in both modes. For each
+hit, compare health, region and side, arrow placement, wound and anatomy on
+both peers. Confirm each living recovery precedes the next turn. Test a fatal
+hit, a mutual rematch, a departure during play and a fresh connection. Record
+the two developers' results and link the completed injury review from #35
+before accepting the shared build.

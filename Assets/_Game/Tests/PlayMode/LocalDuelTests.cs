@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BowMan;
@@ -239,6 +240,44 @@ public class LocalDuelTests
             InputSystem.settings.backgroundBehavior = background;
             InputSystem.settings.editorInputBehaviorInPlayMode = focus;
         }
+    }
+
+    // Runs all fifteen region cases through the saved PvE bow, wound, death and living recovery gates.
+    [UnityTest]
+    public IEnumerator EveryRegionResolvesInThePlayablePvEScene()
+    {
+        var duel = Find<LocalDuel>();
+        var failures = new List<string>();
+        foreach (BodyRegion region in System.Enum.GetValues(typeof(BodyRegion)))
+        {
+            duel.RestartMatch();
+            yield return null;
+            var arrow = Shoot(duel, region);
+            var deadline = Time.time + 3f;
+            while (duel.Flow.Phase == DuelPhase.Flying && Time.time < deadline) yield return null;
+            var report = arrow != null ? arrow.GetComponent<ArrowAnatomy>().LastImpact : null;
+            if (report == null || report.Entry.Region != region)
+            {
+                failures.Add($"{region} reached {report?.Entry.Region.ToString() ?? "scenery"}");
+                continue;
+            }
+            Assert.That(arrow.transform.parent, Is.SameAs(report.Entry.Volume.transform));
+            Assert.That(report.Entry.Volume.GetComponentsInChildren<ParticleSystem>(), Is.Not.Empty, region.ToString());
+            var fatal = region == BodyRegion.Head || region == BodyRegion.Neck;
+            Assert.That(Find<FatalCutaway>().IsVisible, Is.EqualTo(fatal), region.ToString());
+            Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(fatal ? 0 : 75));
+            if (fatal)
+            {
+                Assert.That(duel.Flow.Winner, Is.Zero);
+                continue;
+            }
+            deadline = Time.time + 24f;
+            var opponent = duel.Opponent.GetComponent<AIArcher>();
+            while (!duel.Flow.CanShoot(1) && opponent.ShotsFired == 0 && Time.time < deadline) yield return null;
+            Assert.That(duel.Flow.CanShoot(1) || opponent.ShotsFired == 1, Is.True, region.ToString());
+            Assert.That(duel.Opponent.GetComponent<ArcherReactionAnimation>().IsInjured, Is.False, region.ToString());
+        }
+        Assert.That(failures, Is.Empty, string.Join(", ", failures));
     }
 
     // Preserves physical head/controller offsets while all animated-eye displacement is applied exactly once.
