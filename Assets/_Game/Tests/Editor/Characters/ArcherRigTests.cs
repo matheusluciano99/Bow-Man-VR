@@ -7,6 +7,23 @@ using Object = UnityEngine.Object;
 
 public class ArcherRigTests
 {
+    // Measures clearance between the wrapped hand and the nocked shaft on the gameplay bow.
+    [TestCase("Left")]
+    [TestCase("Right")]
+    public void GripLeavesSpaceForTheArrow(string side)
+    {
+        var skin = Resources.Load<SkinnedMeshRenderer>("ArcherHands/" + side);
+        var mesh = skin.sharedMesh;
+        var offsets = new Vector3[mesh.vertexCount];
+        mesh.GetBlendShapeFrameVertices(mesh.GetBlendShapeIndex("Grip"), 0, offsets, null, null);
+        var grip = mesh.vertices.Select((v,i) => v + offsets[i]).ToArray();
+        var underShaft = grip.Where(v => Mathf.Abs(v.x) < .026f).ToArray();
+        Assert.That(underShaft.Length, Is.GreaterThan(10));
+        var bow = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Bow.prefab");
+        var shaftHeight = bow.transform.Find("String Rest").localPosition.y;
+        Assert.That(shaftHeight - underShaft.Max(v => v.z), Is.GreaterThan(.008f));
+    }
+
     // Opens the project-owned prefab in an isolated preview scene.
     private static GameObject Load(string name) =>
         PrefabUtility.LoadPrefabContents($"Assets/_Game/Prefabs/Characters/{name}.prefab");

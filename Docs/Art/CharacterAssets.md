@@ -12,6 +12,8 @@ Both duel archers use an eight-second loop from Sam Lazarus’s standing motion 
 
 For a shot, the opposing archer reaches, draws and releases with an upper-body segment of the free Rokoko archery recording. Each model has separate left-bow and right-bow clips. The equipment follows the grip and the drawing fingers meet the active string. The source and Unity bake menu are documented in the [archery recording attribution](../../Assets/ThirdParty/Rokoko/Attribution.md#bow-action-recording).
 
+The first-person hands reuse the prepared Erika Archer hand skin, leather cuffs and materials. Unity extracts the hand and cuff triangles and bakes relaxed, grip and pinch shapes into the two hand prefabs. Rebuild them with **Bow Man VR > Characters > Bake first-person hands**. The original Mixamo source and terms are listed below.
+
 ## Retained Templar Knight
 
 - Creator: everlasting17th / everlastinggrey.
@@ -183,3 +185,5 @@ The hand reactions use Hamada’s recorded opposite-hand wrist guard and finger 
 The shaft and feather geometry comes from count_zero’s English Archer and keeps the equipment texture atlas and UVs. The source model and credit are recorded in the [English Archer attribution](../../Assets/ThirdParty/EnglishArcher/ATTRIBUTION.txt). The game adds its own faceted iron head and notched horn nock. Blender can regenerate the textured mesh from the retained FBX by running `SourceAssets/EnglishArcher/ExportArrow.py` in background mode.
 
 The three meshes are children of the existing TestArrow prefab. Its root is the impact tip and the nock meets the string at local Z −0.70 m. The bow, AI and online replica use that same prefab.
+
+The [duel audio credits](../../Assets/ThirdParty/DuelAudio/Credits.md) list the free source recordings used for character breathing, bow handling, arrow flight, impacts and arena ambience.

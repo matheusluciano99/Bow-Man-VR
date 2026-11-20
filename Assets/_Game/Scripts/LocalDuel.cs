@@ -19,6 +19,7 @@ namespace BowMan
         [SerializeField] private TextMesh feedback;
         private Transform matchRoot;
         private FatalCutaway cutaway;
+        private DuelAudio sounds;
         private InputAction restart;
         private InputAction switchHand;
         private InputAction desktop;
@@ -37,6 +38,7 @@ namespace BowMan
                 throw new InvalidOperationException("The local duel scene is missing a required character, bow, view or feedback reference.");
             vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
             Flow = gameObject.AddComponent<DuelTurnFlow>();
+            vrInput.ShowArcherHands();
             cutaway = head.gameObject.AddComponent<FatalCutaway>();
             Flow.FatalityRequested += OnFatality;
             Flow.Changed += OnFlowChanged;
@@ -65,6 +67,8 @@ namespace BowMan
             }
             matchRoot = new GameObject("Current match").transform;
             matchRoot.SetParent(transform, false);
+            var setting = DuelEnvironment.Choose();
+            DuelEnvironment.Place(setting, matchRoot, localSpawn, opponentSpawn);
             LocalArcher = Spawn(localArcherPrefab, localSpawn);
             Opponent = Spawn(opponentPrefab, opponentSpawn);
             foreach (var renderer in LocalArcher.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
@@ -74,7 +78,10 @@ namespace BowMan
             bow.SetOwner(LocalArcher.transform);
             var animator = LocalArcher.GetComponentInChildren<Animator>();
             injuryView.Bind(LocalArcher.transform, animator.GetBoneTransform(HumanBodyBones.Head).Find("EyeAnchor"), LocalArcher);
-            Opponent.gameObject.AddComponent<OpponentBowAction>().Bind(bow, arrowPrefab);
+            var otherBow = Opponent.gameObject.AddComponent<OpponentBowAction>();
+            otherBow.Bind(bow, arrowPrefab);
+            sounds = matchRoot.gameObject.AddComponent<DuelAudio>();
+            sounds.Bind(Flow, bow, otherBow, LocalArcher, Opponent, setting, 0);
             Opponent.gameObject.AddComponent<AIArcher>().Initialize(Flow, 1, Opponent, LocalArcher, arrowPrefab);
             if (desktopMode) desktopInput.UseDesktopControls(true);
             OnFlowChanged();
@@ -125,7 +132,7 @@ namespace BowMan
                 return;
             }
             feedback.text = $"{status}     You {LocalArcher.CurrentHealth}  |  Opponent {Opponent.CurrentHealth}\n" +
-                $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}\n" +
+                $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}   {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? "A / R: restart" :
                 Flow.CanShoot(0) ? vrInput.ShotHint(desktopMode) : "Your bow unlocks on your turn");
         }

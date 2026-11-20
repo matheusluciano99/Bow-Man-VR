@@ -24,6 +24,7 @@ namespace BowMan.Networking
         private FatalCutaway cutaway;
         private OpponentBowAction opponentBow;
         private ArrowFlight visualArrow;
+        private DuelAudio sounds;
         private Vector3 visualOrigin, visualVelocity;
         private float launchedAt;
         private int displayedShot = -1;
@@ -38,6 +39,7 @@ namespace BowMan.Networking
 
         public DuelTurnFlow Flow { get; private set; }
         public int Round => round;
+        public ArenaSetting Setting { get; private set; }
         public bool RematchRequested => (votes & (1 << LocalIndex)) != 0;
         // Returns the actor occupying a fixed seat during this round.
         public ArcherHealth Archer(int index) => actors[index];
@@ -67,19 +69,21 @@ namespace BowMan.Networking
         public void PeerReady(ulong peer)
         {
             if (!Net.IsServer || match != null || connection.Seats.RoleOf(peer) != ArcherRole.Archer2) return;
-            Begin(round + 1);
-            Seat.BeginRpc(round);
+            Begin(round + 1, DuelEnvironment.Choose());
+            Seat.BeginRpc(round, Setting);
         }
 
         // Creates identical actor slots on both peers and gives collision and animation authority to the host.
-        public void Begin(int newRound)
+        public void Begin(int newRound, ArenaSetting setting)
         {
             if (newRound <= round && match != null) return;
             EndRound();
             round = newRound;
+            Setting = setting;
             presences = FindObjectsByType<PlayerPresence>(FindObjectsSortMode.None);
             match = new GameObject("Online round").transform;
             match.SetParent(transform, false);
+            DuelEnvironment.Place(setting, match, spawns.For(ArcherRole.Archer1), spawns.For(ArcherRole.Archer2));
             for (var i = 0; i < actors.Length; i++)
             {
                 var spawn = spawns.For(i == 0 ? ArcherRole.Archer1 : ArcherRole.Archer2);
@@ -95,12 +99,15 @@ namespace BowMan.Networking
             Flow.Initialize(actors[0], actors[1], replica: !Net.IsServer);
             for (var i = 0; i < actors.Length; i++)
                 actors[i].GetComponent<ArcherReactionAnimation>().Connect(Flow, i, actors[i]);
+            sounds = match.gameObject.AddComponent<DuelAudio>();
+            sounds.Bind(Flow, bow, opponentBow, local, actors[1 - LocalIndex], setting, LocalIndex);
             Flow.Changed += Changed;
             Flow.ReactionRequested += React;
             Flow.FatalityRequested += Fatal;
             var eyes = local.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head).Find("EyeAnchor");
             injuryView.Bind(local.transform, eyes, local);
             bow.gameObject.SetActive(true);
+            vrInput.ShowArcherHands();
             bow.SetOwner(local.transform);
             desktop.PlaceStand(local.transform.TransformPoint(new Vector3(-0.45f, 1.3f, 0.6f)), local.transform.rotation);
             desktop.UseDesktopControls(desktopMode);
@@ -155,8 +162,8 @@ namespace BowMan.Networking
             votes |= role == ArcherRole.Archer1 ? 1 : 2;
             if (votes == 3)
             {
-                Begin(round + 1);
-                Seat.BeginRpc(round);
+                Begin(round + 1, DuelEnvironment.Choose());
+                Seat.BeginRpc(round, Setting);
             }
             else Seat.VotesRpc(round, votes);
         }
@@ -210,7 +217,7 @@ namespace BowMan.Networking
             arrow.Hit += hit =>
             {
                 if (!hit.collider.TryGetComponent<BodyHitRegion>(out _))
-                    Seat.SceneryRpc(round, token, hit.point, arrow.transform.rotation, arrow.SceneryLifetime);
+                    Seat.SceneryRpc(round, token, hit.point, arrow.transform.rotation, arrow.SceneryLifetime, sounds.Surface(hit.collider));
             };
             if (!Flow.TryTrackShot(shooter, arrow)) { Destroy(arrow.gameObject); return; }
             if (shooter != LocalIndex) opponentBow.Release();
@@ -226,15 +233,17 @@ namespace BowMan.Networking
             if (Flow == null || receivedRound != round || shot != Flow.ShotId || visualArrow != null) return;
             if (Flow.ActiveArcher != LocalIndex) opponentBow.Release();
             visualArrow = Instantiate(arrowPrefab, origin, Quaternion.LookRotation(velocity), match);
+            sounds.Flight(shot, visualArrow);
             visualOrigin = origin;
             visualVelocity = velocity;
             launchedAt = Time.time;
         }
 
         // Keeps the scenery arrow at the host's contact while the turn passes to the other seat.
-        public void ShowScenery(int receivedRound, int shot, Vector3 point, Quaternion rotation, float lifetime)
+        public void ShowScenery(int receivedRound, int shot, Vector3 point, Quaternion rotation, float lifetime, ImpactSound surface)
         {
             if (Flow == null || receivedRound != round || shot != Flow.ShotId || visualArrow == null) return;
+            sounds.Impact(point, surface);
             visualArrow.transform.SetPositionAndRotation(point, rotation);
             Destroy(visualArrow.gameObject, lifetime);
             visualArrow = null;
@@ -262,6 +271,7 @@ namespace BowMan.Networking
             Flow.ApplyReplicaState(Flow.Phase, Flow.ActiveArcher, Flow.Winner, shot, hp1, hp2);
             if (visualArrow == null) visualArrow = Instantiate(arrowPrefab, match);
             visualArrow.GetComponent<ArrowAnatomy>().SetReport(report);
+            sounds.Impact(report.Entry.Point, ImpactSound.Body);
             visualArrow.Embed(report.Entry);
             visualArrow = null;
             Flow.ApplyReplicaImpact(shot, report);
@@ -349,7 +359,7 @@ namespace BowMan.Networking
                 if (i != LocalIndex) ShowDraw(presence.Draw, i, actor.transform.position);
             }
             var status = Flow.StatusFor(LocalIndex);
-            feedback.text = $"{status}    You {actors[LocalIndex].CurrentHealth}  |  Opponent {actors[1 - LocalIndex].CurrentHealth}\n" +
+            feedback.text = $"{status}    You {actors[LocalIndex].CurrentHealth}  |  Opponent {actors[1 - LocalIndex].CurrentHealth}    {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? (RematchRequested ? "Waiting for opponent" :
                     votes != 0 ? "Opponent wants a rematch — A / R: accept" : "A / R: rematch") +
                     (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : Flow.CanShoot(LocalIndex) ? vrInput.ShotHint(desktopMode) :

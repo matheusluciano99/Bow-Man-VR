@@ -1,6 +1,6 @@
 {
   "name": "BowMan.Gameplay.PlayTests",
-  "references": ["BowMan.Gameplay", "Unity.InputSystem"],
+  "references": ["BowMan.Gameplay", "Unity.InputSystem", "Unity.Collections"],
   "optionalUnityReferences": ["TestAssemblies"],
   "autoReferenced": false
 }
