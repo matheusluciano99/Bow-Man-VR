@@ -138,6 +138,22 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 4ce73ea63e443624fb9c1f659f0fbe0e, type: 2}
   - {fileID: 7400000, guid: b6ebae3f48b968a42bbb7febf8484dab, type: 2}
   - {fileID: 7400000, guid: 2a073f4836be5574289c24b0bfcc5f90, type: 2}
+  fatalEntries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: 3e1f52118a8616c4185023508796a0d7, type: 2}
+  - {fileID: 7400000, guid: 837900cc4f86d494180adf14e436a46a, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &8906102758618609701
 MonoBehaviour:
   m_ObjectHideFlags: 0

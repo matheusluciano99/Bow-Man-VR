@@ -13,6 +13,7 @@ namespace BowMan
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
         [SerializeField] private AnimationClip[] deathFinishers = new AnimationClip[15];
+        [SerializeField] private AnimationClip[] fatalEntries = new AnimationClip[15];
         private DuelTurnFlow flow;
         private ArcherHealth health;
         private int archerIndex;
@@ -51,6 +52,17 @@ namespace BowMan
 
         // Returns the collapse authored from this region's injured pose, separate from its surviving recovery.
         public AnimationClip DeathFinisher(BodyRegion value) => deathFinishers[(int)value];
+
+        // Returns a complete recorded fatal reaction that starts at impact.
+        public AnimationClip FatalEntry(BodyRegion value) => fatalEntries[(int)value];
+
+        // Binds a continuous shoulder performance from first impact through the final collapse.
+        public void SetFatalShoulder(BodyRegion side, AnimationClip clip)
+        {
+            if (clip == null || side is not (BodyRegion.LeftShoulder or BodyRegion.RightShoulder))
+                throw new ArgumentException("A complete fatal shoulder clip is required.");
+            fatalEntries[(int)side] = clip;
+        }
 
         // Stores a body-region collapse without replacing the independent head and neck fatal entries.
         public void SetDeathFinisher(BodyRegion value, AnimationClip clip)
@@ -97,7 +109,7 @@ namespace BowMan
             finishingDeath = false;
             injured = true;
             elapsed = 0f;
-            playing = Entry(region);
+            playing = lethal && FatalEntry(region) != null ? FatalEntry(region) : Entry(region);
             entryImpact = hit;
             if (region is BodyRegion.Neck or BodyRegion.Abdomen)
             {
@@ -142,7 +154,9 @@ namespace BowMan
             } : 1f;
             elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
             playing.SampleAnimation(gameObject, elapsed);
-            if (!recovering && !finishingDeath) ArcherHitRecoil.Apply(poseAnimator, entryImpact, elapsed);
+            var completeFatalEntry = fatalPlayback && playing == FatalEntry(region);
+            if (!recovering && !finishingDeath && !completeFatalEntry)
+                ArcherHitRecoil.Apply(poseAnimator, entryImpact, elapsed);
             if (finishingDeath && elapsed < 0.15f)
             {
                 var blend = Mathf.SmoothStep(0f, 1f, elapsed / 0.15f);
@@ -165,7 +179,7 @@ namespace BowMan
             playing = null;
             if (fatalPlayback)
             {
-                if (!finishingDeath && region is not BodyRegion.Head and not BodyRegion.Neck)
+                if (!finishingDeath && !completeFatalEntry && region is not BodyRegion.Head and not BodyRegion.Neck)
                 {
                     BeginDeathFinisher();
                     return;

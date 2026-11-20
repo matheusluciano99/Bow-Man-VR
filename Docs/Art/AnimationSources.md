@@ -115,6 +115,15 @@ The local trial is excluded from the game.
 [Mixamo catalog](https://www.mixamo.com/#/?query=react%20bow&type=Motion%2CMotionPack)
 and [Adobe's game-use terms](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html).
 
+Two full human performances were then reviewed on both character meshes.
+**Shoulder Hit And Fall** shows the actor recoiling, reaching across the body,
+and collapsing in a single 3.1-second take. Its cross-body reach was selected for fatal
+shoulder hits. **Shoulder Rubbing** has a continuous standing reach, rub, and
+release. It has no visible impact flinch. Neither recording supplies the
+standing, surviving reaction from first impact through the wound hold.
+The original FBXs are in the same Mixamo download cache. Full-speed review
+videos are in `Artifacts/PRReview/CapturedShoulders/`. The mirrored reach and final playback still need visual review in the duel.
+
 ## Coverage against the agreed reactions
 
 These are source candidates and adaptation requirements, not completed replacement

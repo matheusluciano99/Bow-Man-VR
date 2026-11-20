@@ -277,6 +277,12 @@ match result immediately; the visual sequence does not delay the result or run
 a surviving hold, recovery or turn handoff. Death during an existing reaction
 or recovery interrupts getting up and finishes the collapse from the current
 pose. Preserve the independent head and neck fatal sequences.
+
+For a lethal shoulder shot, use the complete captured recoil, opposite-hand reach
+and fall from *Shoulder Hit And Fall*. Mirroring lets the same performance
+react to the correct side. The standing shoulder reaction needs its own
+performance that includes the impact and a supported hold.
+
 ## D019 — Bow controls consolidated into D008
 
 D008 is the canonical bow-control decision, including continuous attachment,

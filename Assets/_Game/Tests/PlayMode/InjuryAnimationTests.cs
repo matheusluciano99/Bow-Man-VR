@@ -30,7 +30,7 @@ public class InjuryAnimationTests
         var actor = Character(model).GetComponent<ArcherReactionAnimation>();
         foreach (BodyRegion region in System.Enum.GetValues(typeof(BodyRegion)))
         {
-            var clips = new[] { actor.Entry(region), actor.Hold(region), actor.Recovery(region), actor.DeathFinisher(region) };
+            var clips = new[] { actor.Entry(region), actor.Hold(region), actor.Recovery(region), actor.DeathFinisher(region), actor.FatalEntry(region) };
             foreach (var clip in clips.Where(c => c != null))
                 Assert.That(clip.legacy, Is.True, model + " " + region + " " + clip.name);
         }
@@ -452,6 +452,35 @@ public class InjuryAnimationTests
         }
     }
 
+    // Both rigs reach across to the struck shoulder during the recorded fatal reaction.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void FatalShouldersReachAcrossBeforeFalling(string model)
+    {
+        var root = Character(model);
+        var player = root.GetComponent<ArcherReactionAnimation>();
+        var rig = root.GetComponentInChildren<Animator>();
+        foreach (var side in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder })
+        {
+            var clip = player.FatalEntry(side);
+            Assert.That(clip, Is.Not.Null, side.ToString());
+            var left = side == BodyRegion.LeftShoulder;
+            var finger = rig.GetBoneTransform(left ? HumanBodyBones.RightIndexDistal : HumanBodyBones.LeftIndexDistal);
+            var struck = rig.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+            var other = rig.GetBoneTransform(left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm);
+            var nearest = float.PositiveInfinity;
+            for (var frame = 12; frame <= 36; frame++)
+            {
+                clip.SampleAnimation(root, frame / 30f);
+                var distance = Vector3.Distance(finger.position, struck.position);
+                if (distance < Vector3.Distance(finger.position, other.position)) nearest = Mathf.Min(nearest, distance);
+            }
+            Assert.That(nearest, Is.LessThan(0.2f), side.ToString());
+            clip.SampleAnimation(root, clip.length);
+            Assert.That(rig.GetBoneTransform(HumanBodyBones.Head).position.y, Is.LessThan(0.4f));
+        }
+    }
+
     // Verifies a real left-shoulder hit uses its separate automatic sequence and preserves impact identity.
     [UnityTest]
     public IEnumerator LeftShoulderUsesItsOwnRecoveryAndImpactIdentity()
@@ -539,7 +568,7 @@ public class InjuryAnimationTests
             Assert.That(limbs, Has.Length.EqualTo(includeBoots ? 6 : 4));
             Assert.That(bodyVolumes, Has.Length.EqualTo(5));
 
-            foreach (var clip in new[] { actor.Entry(region), actor.Recovery(region), actor.DeathFinisher(region) })
+            foreach (var clip in new[] { actor.Entry(region), actor.Recovery(region), actor.DeathFinisher(region), actor.FatalEntry(region) }.Where(c => c != null))
             for (var sample = 0; sample <= 120; sample++)
             {
                 var time = clip.length * sample / 120f;
@@ -1413,7 +1442,8 @@ public class InjuryAnimationTests
                 var tip = arrow.transform.localPosition;
                 var player = target.GetComponent<ArcherReactionAnimation>();
                 var finisher = player.DeathFinisher(region);
-                var duration = player.Entry(region).length + (finisher != null ? finisher.length : 0f);
+                var fatal = player.FatalEntry(region);
+                var duration = fatal != null ? fatal.length : player.Entry(region).length + (finisher != null ? finisher.length : 0f);
                 yield return new WaitForSeconds(duration + 0.25f);
                 var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
                 Assert.That(head.position.y - target.transform.position.y, Is.LessThan(0.4f), name + " " + region);

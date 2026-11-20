@@ -57,6 +57,8 @@ Use Bow Man VR > Injuries > Rebuild Left Shoulder or Rebuild Right Shoulder for 
 
 The wrist target is derived from the point where the palm reaches the shoulder. The support hand travels in front of the chest and releases earlier on the return. During the fatal continuation, the builder checks the fitted body volumes and swivels the support elbow away from penetration before fitting floor contact.
 
+Use **Bow Man VR > Injuries > Rebuild Fatal Shoulders** for lethal shoulder arrows. Each model plays the recorded reach and fall in one pass, with the opposite arm crossing to the injured side. An interrupted standing reaction still uses its own transition from the current pose. The standing shoulder motion remains under review.
+
 Use Bow Man VR > Injuries > Rebuild Left Hand or Rebuild Right Hand for the independent hand/wrist sequences. Its clip explicitly binds the injured fingers to their open pose so another animation cannot leave them clenched. It is independent of shoulder cupping and arm cradling.
 
 The injured hand withdraws and opens first as the archer looks toward it. The opposite palm cups the wrist from underneath, flexes its fingers for support, and releases before the injured hand lowers. Hand rebuilds also update the fatal continuation from the final supported pose. The PlayMode clearance check samples the forearms and hands against the torso volumes on both models in all three clips.

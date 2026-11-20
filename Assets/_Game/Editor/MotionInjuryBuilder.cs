@@ -382,20 +382,11 @@ public static class MotionInjuryBuilder
             try
             {
                 var animator = root.GetComponentInChildren<Animator>();
-                var humanBones = Enumerable.Range(0, (int)HumanBodyBones.LastBone)
-                    .Select(i => animator.GetBoneTransform((HumanBodyBones)i)).Where(t => t != null).ToArray();
-                var bones = animator.GetComponentsInChildren<Transform>().Where(t => humanBones.Contains(t)).ToArray();
+                var bones = HumanoidBones(animator);
                 var positions = bones.Select(t => t.localPosition).ToArray();
                 var rotations = bones.Select(t => t.localRotation).ToArray();
                 var worldRotations = bones.Select(t => t.rotation).ToArray();
-                var mirrored = bones.Select(t =>
-                {
-                    var human = (HumanBodyBones)Enumerable.Range(0, (int)HumanBodyBones.LastBone)
-                        .First(i => animator.GetBoneTransform((HumanBodyBones)i) == t);
-                    var opposite = human.ToString().StartsWith("Left") ? human.ToString().Replace("Left", "Right")
-                        : human.ToString().StartsWith("Right") ? human.ToString().Replace("Right", "Left") : human.ToString();
-                    return Array.IndexOf(bones, animator.GetBoneTransform(Enum.Parse<HumanBodyBones>(opposite)));
-                }).ToArray();
+                var mirrored = OppositeBoneIndices(animator, bones);
                 var modelPosition = animator.transform.localPosition;
                 var modelRotation = animator.transform.localRotation;
                 var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
@@ -444,20 +435,7 @@ public static class MotionInjuryBuilder
                         if (bones[i] != hips) bones[i].localPosition = positions[i];
                     if (left)
                     {
-                        var sampled = bones.Select(t => t.rotation).ToArray();
-                        var offset = root.transform.InverseTransformVector(hips.position - hipStart);
-                        offset.x = -offset.x;
-                        Restore(bones, positions, rotations);
-                        hips.position = hipStart + root.transform.TransformVector(offset);
-                        for (var i = 0; i < bones.Length; i++)
-                        {
-                            var other = mirrored[i];
-                            var delta = Quaternion.Inverse(root.transform.rotation) * sampled[other]
-                                * Quaternion.Inverse(worldRotations[other]) * root.transform.rotation;
-                            delta = new Quaternion(delta.x, -delta.y, -delta.z, delta.w);
-                            bones[i].rotation = root.transform.rotation * delta
-                                * Quaternion.Inverse(root.transform.rotation) * worldRotations[i];
-                        }
+                        MirrorBody(root.transform, hips, hipStart, bones, positions, rotations, worldRotations, mirrored);
                     }
                     hips.position += footPositions[healthy] - feet[healthy].position;
                     feet[healthy].rotation = footRotations[healthy];
@@ -800,10 +778,106 @@ public static class MotionInjuryBuilder
     [MenuItem("Bow Man VR/Injuries/Rebuild Neck Collapse")]
     public static void RebuildNeckCollapse() => RebuildFall(BodyRegion.Neck, 0.8f, 2.4f, 1.3f);
 
-    // Bakes the region's own fall timing and head posture onto each target skeleton.
-    private static void RebuildFall(BodyRegion region, float sourceStart, float duration, float speed)
+    // Bakes the recorded left-shoulder fall and its Humanoid mirror onto both archers.
+    [MenuItem("Bow Man VR/Injuries/Rebuild Fatal Shoulders")]
+    public static void RebuildFatalShoulders()
     {
-        var source = ImportMotion("Dying Backwards");
+        var source = ImportMotion("Shoulder Hit And Fall");
+        RebuildFall(BodyRegion.LeftShoulder, 0f, source.length, 1f, source);
+        RebuildFall(BodyRegion.RightShoulder, 0f, source.length, 1f, source);
+    }
+
+    // Keeps mapped joints in parent-first order for anatomical reflection.
+    private static Transform[] HumanoidBones(Animator animator)
+    {
+        var mapped = Enumerable.Range(0, (int)HumanBodyBones.LastBone)
+            .Select(i => animator.GetBoneTransform((HumanBodyBones)i)).ToHashSet();
+        return animator.GetComponentsInChildren<Transform>().Where(mapped.Contains).ToArray();
+    }
+
+    // Pairs each joint with its opposite side, preserving midline joints.
+    private static int[] OppositeBoneIndices(Animator animator, Transform[] bones)
+    {
+        var ids = Enumerable.Range(0, (int)HumanBodyBones.LastBone).Select(i => (HumanBodyBones)i)
+            .Where(id => animator.GetBoneTransform(id) != null).ToDictionary(animator.GetBoneTransform);
+        return bones.Select(bone =>
+        {
+            var name = ids[bone].ToString();
+            var opposite = name.StartsWith("Right") ? name.Replace("Right", "Left") : name.Replace("Left", "Right");
+            return Array.IndexOf(bones, animator.GetBoneTransform(Enum.Parse<HumanBodyBones>(opposite)));
+        }).ToArray();
+    }
+
+    // Reflects recorded motion around the character's sagittal plane in each joint's own neutral frame.
+    private static void MirrorBody(Transform root, Transform hips, Vector3 hipStart, Transform[] bones,
+        Vector3[] positions, Quaternion[] rotations, Quaternion[] worldRotations, int[] mirrored)
+    {
+        var sampled = bones.Select(t => t.rotation).ToArray();
+        var offset = root.InverseTransformVector(hips.position - hipStart);
+        offset.x = -offset.x;
+        Restore(bones, positions, rotations);
+        hips.position = hipStart + root.TransformVector(offset);
+        for (var i = 0; i < bones.Length; i++)
+        {
+            var other = mirrored[i];
+            var delta = Quaternion.Inverse(root.rotation) * sampled[other]
+                * Quaternion.Inverse(worldRotations[other]) * root.rotation;
+            delta = new Quaternion(delta.x, -delta.y, -delta.z, delta.w);
+            bones[i].rotation = root.rotation * delta
+                * Quaternion.Inverse(root.rotation) * worldRotations[i];
+        }
+    }
+
+    // Fits the recorded arm paths around the model's chest while the supporting fingers reach the shoulder cap.
+    private static void FitShoulderArm(Animator animator, BoxCollider chestVolume, bool left, bool support, float time)
+    {
+        var chest = chestVolume.transform;
+        var forward = chest.forward;
+        var up = chest.up;
+        var right = chest.right;
+        var reach = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.53f, 0.83f, time));
+        var upper = left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm;
+        var lower = left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm;
+        var hand = left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand;
+        var wrist = animator.GetBoneTransform(hand);
+        var elbow = animator.GetBoneTransform(lower);
+        var arm = animator.GetBoneTransform(upper);
+        var orientation = wrist.rotation;
+        var target = wrist.position;
+        var lead = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.18f, 0.55f, time));
+        var hint = elbow.position - arm.position;
+        if (support)
+        {
+            var finger = animator.GetBoneTransform(left ? HumanBodyBones.LeftIndexDistal : HumanBodyBones.RightIndexDistal);
+            var cap = animator.GetBoneTransform(left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm);
+            var contact = cap.position + forward * 0.065f + up * 0.05f + right * (left ? 0.025f : -0.025f);
+            var foldedWrist = contact + forward * 0.15f + up * 0.065f + right * (left ? -0.10f : 0.10f);
+            target = Vector3.Lerp(target, foldedWrist, reach);
+            var frontDepth = chestVolume.size.z * 0.5f + 0.08f - 0.025f * reach +
+                0.055f * Mathf.Sin(reach * Mathf.PI);
+            var local = chest.InverseTransformPoint(target);
+            target += forward * (Mathf.Max(0f, frontDepth - local.z) * lead);
+            var turn = Quaternion.FromToRotation(finger.position - wrist.position, contact - target);
+            orientation = Quaternion.Slerp(Quaternion.identity, turn, reach) * orientation;
+            hint = Vector3.Lerp(hint, forward * 0.27f - up * 0.13f, lead);
+        }
+        else
+        {
+            var outward = left ? -1f : 1f;
+            var local = chest.InverseTransformPoint(target);
+            var sideClearance = chestVolume.size.x * 0.5f + 0.095f;
+            target += right * (outward * Mathf.Max(0f, sideClearance - outward * local.x) * lead);
+            hint += right * (outward * 0.10f * lead);
+        }
+        ArcherLimbIK.Solve(animator, upper, lower, hand, target, hint);
+        wrist.rotation = orientation;
+    }
+
+    // Bakes the region's own fall timing and head posture onto each target skeleton.
+    private static void RebuildFall(BodyRegion region, float sourceStart, float duration, float speed, AnimationClip source = null)
+    {
+        source ??= ImportMotion("Dying Backwards");
+        var shoulder = region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder;
         foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
         {
             var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
@@ -811,7 +885,24 @@ public static class MotionInjuryBuilder
             try
             {
                 var animator = root.GetComponentInChildren<Animator>();
-                var bones = animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var bones = shoulder ? HumanoidBones(animator) :
+                    animator.GetComponentsInChildren<Transform>().Where(t => t != animator.transform).ToArray();
+                var rightShoulder = region == BodyRegion.RightShoulder;
+                var opposite = rightShoulder ? OppositeBoneIndices(animator, bones) : null;
+                var worldRotations = rightShoulder ? bones.Select(t => t.rotation).ToArray() : null;
+                var regions = root.GetComponentsInChildren<BodyHitRegion>();
+                var core = shoulder ? CoreVolumes(regions) : null;
+                var leftArm = shoulder ? ForearmVolumes(regions, animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
+                    animator.GetBoneTransform(HumanBodyBones.LeftHand)) : null;
+                var rightArm = shoulder ? ForearmVolumes(regions, animator.GetBoneTransform(HumanBodyBones.RightLowerArm),
+                    animator.GetBoneTransform(HumanBodyBones.RightHand)) : null;
+                if (shoulder)
+                {
+                    // The extra baking clearance keeps the forearm clear of the face between sampled poses.
+                    var head = regions.Single(r => r.Region == BodyRegion.Head).GetComponent<BoxCollider>();
+                    head.size += Vector3.one * 0.024f;
+                }
+                var chestVolume = shoulder ? (BoxCollider)regions.Single(r => r.Region == BodyRegion.Chest).GetComponent<Collider>() : null;
                 var positions = bones.Select(t => t.localPosition).ToArray();
                 var rotations = bones.Select(t => t.localRotation).ToArray();
                 var modelPosition = animator.transform.localPosition;
@@ -831,6 +922,8 @@ public static class MotionInjuryBuilder
                         var motionTime = region == BodyRegion.Neck ? Mathf.Max(0f, time - 0.55f) : time;
                         Sample(animator, source, sourceStart + motionTime * speed, modelPosition, modelRotation);
                         hips.position += offset;
+                        if (rightShoulder)
+                            MirrorBody(root.transform, hips, neutralHips, bones, positions, rotations, worldRotations, opposite);
                         var blend = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / (region == BodyRegion.Head ? 0.06f : 0.18f)));
                         for (var i = 0; i < bones.Length; i++)
                         {
@@ -845,20 +938,29 @@ public static class MotionInjuryBuilder
                             ArcherLimbIK.ReachNeck(animator, neck.position + root.transform.forward * 0.08f,
                                 root.transform.forward, ArcherLimbIK.NeckReachWeight(time));
                         }
+                        if (shoulder)
+                        {
+                            FitShoulderArm(animator, chestVolume, true, rightShoulder, time);
+                            FitShoulderArm(animator, chestVolume, false, !rightShoulder, time);
+                            ArcherLimbIK.ClearForearm(animator, true, leftArm, core, 14);
+                            ArcherLimbIK.ClearForearm(animator, false, rightArm, core, 14);
+                        }
                         var clearance = region == BodyRegion.Head && time > 0f && time < duration ? 0.004f : 0f;
                         Ground(root, hips, mesh, clearance);
                     }, region == BodyRegion.Neck ? 30f : 60f);
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
-                clip.name = region + " Entry";
+                var phase = shoulder ? "Fatal" : "Entry";
+                clip.name = region + " " + phase;
                 var folder = $"Assets/_Game/Animations/Injuries/{name}";
-                clip = InjuryAnimationBuilder.SaveClip(clip, $"{folder}/{region}_Entry.anim");
+                clip = InjuryAnimationBuilder.SaveClip(clip, $"{folder}/{region}_{phase}.anim");
                 Restore(bones, positions, rotations);
                 var prefab = PrefabUtility.LoadPrefabContents(path);
                 try
                 {
                     var player = prefab.GetComponent<ArcherReactionAnimation>();
-                    player.SetSequence(region, clip, player.Recovery(region));
+                    if (shoulder) player.SetFatalShoulder(region, clip);
+                    else player.SetSequence(region, clip, player.Recovery(region));
                     PrefabUtility.SaveAsPrefabAsset(prefab, path);
                 }
                 finally { PrefabUtility.UnloadPrefabContents(prefab); }
