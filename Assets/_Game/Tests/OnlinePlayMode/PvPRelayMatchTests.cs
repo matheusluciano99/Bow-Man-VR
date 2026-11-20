@@ -31,6 +31,18 @@ public class PvPRelayMatchTests
         return index < 0 || index + 1 >= args.Length ? null : args[index + 1];
     }
 
+    // Confirms that a fresh round or rejoin leaves one archer hand on each local tracked controller.
+    private static void CheckHands()
+    {
+        var rig = Object.FindAnyObjectByType<LocalRigBinder>();
+        foreach (var controller in new[] { rig.LeftHand, rig.RightHand })
+        {
+            var hands = controller.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            Assert.That(hands.Length, Is.EqualTo(1));
+            Assert.That(hands[0].sharedMesh.blendShapeCount, Is.EqualTo(2));
+        }
+    }
+
     // Exercises the shared bow in its assigned arena slot.
     private static void Fire(PvPDuel duel, Bow bow, int shooter, BodyRegion region)
     {
@@ -211,6 +223,7 @@ public class PvPRelayMatchTests
                 yield return Until(() => joining.IsCompleted, "Relay client allocation");
             }
             yield return Until(() => duel.Flow != null, $"Round start on {role}");
+            CheckHands();
             var bow = Object.FindAnyObjectByType<Bow>();
             var hits = new List<string>();
             duel.Flow.ReactionRequested += (target, impact, lethal, token) =>
@@ -280,6 +293,7 @@ public class PvPRelayMatchTests
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
             Assert.That(duel.Flow.CanShoot(0), Is.True);
             Assert.That(duel.RematchRequested, Is.False);
+            CheckHands();
             Assert.That(duel.Archer(1).GetComponentsInChildren<ArrowFlight>(), Is.Empty);
             if (host)
             {
@@ -305,6 +319,7 @@ public class PvPRelayMatchTests
             yield return Until(() => duel.Flow != null && duel.Round == firstRound + 2, "Fresh round after rejoin");
             Assert.That(duel.Flow.CanShoot(0), Is.True);
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
+            CheckHands();
             if (Argument("-duelTestMatrix") == "all")
             {
                 yield return MissesPassTheTurn(duel, bow, host, folder);

@@ -68,6 +68,26 @@ namespace BowMan
             drawTracked?.Dispose();
         }
 
+        // Removes the visual hands from a surviving tracking rig when its bow input is replaced.
+        private void OnDestroy()
+        {
+            RemoveHand(leftHand);
+            RemoveHand(rightHand);
+        }
+
+        // Restores the controller's diagnostic marker when its gameplay hand is removed.
+        private static void RemoveHand(SkinnedMeshRenderer hand)
+        {
+            if (hand == null) return;
+            var controller = hand.transform.parent;
+            if (controller != null)
+            {
+                var marker = controller.Find("Controller Marker");
+                if (marker != null) marker.gameObject.SetActive(true);
+            }
+            Destroy(hand.gameObject);
+        }
+
         // Switches controller roles, cancelling a tracked draw and rebuilding handed bindings.
         public void SetBowHand(bool left)
         {

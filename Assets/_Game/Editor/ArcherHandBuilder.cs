@@ -119,9 +119,12 @@ public static class ArcherHandBuilder
             var thumbTip = FingerTip(fingers[0]);
             var indexTip = FingerTip(fingers[1]);
             if (gesture == 2) ClosePinch(fingers[0], thumbTip, indexTip.position);
+            if (gesture == 1) ClosePinch(fingers[0], thumbTip, fingers[1].GetChild(0).position);
             var forward = fingers[2].position - wrist.position;
             var up = fingers[1].position - fingers[3].position;
             var toController = Quaternion.Euler(90,0,0) * Quaternion.Inverse(Quaternion.LookRotation(forward, up));
+            if (gesture == 1)
+                toController = Quaternion.AngleAxis(left ? 32f : -32f, Vector3.forward) * toController;
             var anchor = gesture switch {
                 1 => Vector3.Lerp(fingers[2].position, fingers[2].GetChild(0).position, .55f),
                 2 => (thumbTip.position+indexTip.position)*.5f,
@@ -161,7 +164,19 @@ public static class ArcherHandBuilder
                 for (var sub=0; sub<triangles.Count; sub++) result.SetTriangles(triangles[sub],sub);
                 result.RecalculateTangents();
             }
-            else result.AddBlendShapeFrame(gesture == 1 ? "Grip" : "Pinch",100,delta,normalDelta,null);
+            else
+            {
+                if (gesture == 1)
+                {
+                    // Lower the hand along the wrapped grip until the nocked shaft clears the skin.
+                    var bow = AssetDatabase.LoadAssetAtPath<Bow>("Assets/_Game/Prefabs/Bow.prefab");
+                    var ceiling = bow.transform.InverseTransformPoint(bow.RestPosition).y - .009f;
+                    var top = vertices.Select((v,i) => v+delta[i]).Where(v => Mathf.Abs(v.x)<.026f).Max(v=>v.z);
+                    var lower = Vector3.back * Mathf.Max(0f, top-ceiling);
+                    for (var i=0; i<delta.Length; i++) delta[i] += lower;
+                }
+                result.AddBlendShapeFrame(gesture == 1 ? "Grip" : "Pinch",100,delta,normalDelta,null);
+            }
         }
         var path = $"{Output}/{side}.asset";
         var stored = AssetDatabase.LoadAssetAtPath<Mesh>(path);
