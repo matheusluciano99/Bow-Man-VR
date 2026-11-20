@@ -173,6 +173,11 @@ public static class InjuryAnimationBuilder
                 for (var c = 0; c < 7; c++) curves[i][c].AddKey(sample / rate, values[c]);
             }
         }
+        // The impact overlay rotates the struck clavicle relative to each freshly sampled entry pose.
+        var struckShoulder = !recovery && region is (BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
+            ? root.GetComponentInChildren<Animator>().GetBoneTransform(
+                region == BodyRegion.LeftShoulder ? HumanBodyBones.LeftShoulder : HumanBodyBones.RightShoulder)
+            : null;
         var properties = new[] { "localPosition.x", "localPosition.y", "localPosition.z",
             "localRotation.x", "localRotation.y", "localRotation.z", "localRotation.w" };
         for (var i = 0; i < bones.Length; i++)
@@ -184,7 +189,7 @@ public static class InjuryAnimationBuilder
                 Mathf.Abs(k.value - curves[i][c].keys[0].value) >= 0.000001f));
             var openFingers = group == 1 && (region == BodyRegion.LeftHand || region == BodyRegion.RightHand) &&
                 bones[i].name.Contains(region == BodyRegion.LeftHand ? "LeftHand" : "RightHand");
-            if (!changed && !openFingers) continue;
+            if (!changed && !openFingers && !(group == 1 && bones[i] == struckShoulder)) continue;
             for (var c = start; c < start + count; c++)
                 clip.SetCurve(AnimationUtility.CalculateTransformPath(bones[i], root.transform), typeof(Transform), properties[c], curves[i][c]);
         }
