@@ -82,18 +82,36 @@ they are alternatives to the unavailable itch archives, not injury replacements.
 
 ### Recorded shoulder impact candidates
 
-Mixamo's bow catalog supplied **Standing React Large From Left** and **Standing
-React Large From Right**, exported on Erika Archer as FBX Binary, without skin,
+Mixamo's bow catalog supplied **Standing React Large From Left** and **Standing React Large From Right**, exported on Erika Archer as FBX Binary, without skin,
 at 30 fps with no key reduction. The originals are in the local
 `SourceAssets/Downloads/Mixamo/Motions/` cache. The left file's SHA-256 is
 `2859c39a3af154b567589ad06a8ff8aa4f20f471e536ede765ffd4d2a5e6afdf`.
 The right file's SHA-256 is
 `20b933bf698cbd461f1447c93deb38e6270fe31096f6af7209ef06e561e503a5`.
-Both one-second takes were retargeted on Erika and the English Archer and
-compared with the current entry at 30 fps. The performer recoils, steps, and
-returns to the bow stance. Neither take includes the opposite hand cupping
-the injured shoulder. Evaluate them for impact only. The comparison video is
-local at `Artifacts/PRReview/CapturedShoulders/Shoulder comparison.mp4`.
+Both one-second takes were compared on both archers. Firing the real practice
+arrows at Erika's left and right shoulder gave almost frontal impacts. At 100 ms
+the recorded wound positions had moved 24 cm and 32 cm sideways, respectively,
+and moved toward the shooter on both hits. Both takes were rejected for this
+frontal duel. The local comparison video is
+`Artifacts/PRReview/CapturedShoulders/Shoulder comparison.mp4`.
+
+Two more bow takes, **Standing React Small From Front** and **Standing React
+Large From Front**, were acquired with the same export settings. Their SHA-256
+hashes are `19e2df8a0edb4fb80f12001e008238f69001a5fb5d4b97f7e3572a65832824ea`
+and `cda00eab48c1e6aba37124dca784377cd6dd0befef593a4d40b6861e2e3512cb`,
+respectively. The small take also moved Erika's wound toward the shooter in
+the first 100 ms. The large take moved it in the arrow's direction. The
+large take supplies the initial impact in the local shoulder trial, followed
+by the existing wound hold and recovery. The takes contain no shoulder-clutch
+performance. In the desktop trial, 40% of the captured motion is blended over the standing
+pose. The right hit mirrors the left after retargeting. At 100 ms, both models
+and both sides moved the wound 13.5–13.7 cm in the arrow direction and
+0.5 cm sideways. The struck shoulder moved 1.8–2.1 cm farther back than its
+opposite. The saved practice scene returned shooting control after both real
+shoulder hits. The visual review rejected this trial. The hands and forearms switched into
+the old pose after the recorded recoil, which broke the visible continuity.
+A replacement needs a single recorded flinch, reach, and supported hold.
+The local trial is excluded from the game.
 [Mixamo catalog](https://www.mixamo.com/#/?query=react%20bow&type=Motion%2CMotionPack)
 and [Adobe's game-use terms](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html).
 
