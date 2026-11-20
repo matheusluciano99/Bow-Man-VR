@@ -83,6 +83,9 @@ injury/death interrupts the archer, and keep live local controller tracking.
 Resolve each shot outcome once: later arrow destruction, repeated impact
 callbacks or a cancelled recovery callback must not advance the turn again.
 
+A contacted rig bone fractures at a provisional 75% draw. The same path at
+lower strength reports contact only. See [Anatomy.md](Anatomy.md).
+
 Damage numbers and the gameplay effects of organs/fractures remain tuning under
 the combat/anatomy tasks. Do not infer additional guaranteed-fatal body regions,
 fixed health values or persistent impairment rules from this animation table.

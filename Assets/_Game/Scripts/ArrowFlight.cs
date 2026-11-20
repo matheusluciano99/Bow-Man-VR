@@ -16,6 +16,7 @@ namespace BowMan
         private bool flying;
         private bool useGravity;
         private float remainingLifetime;
+        private float shotStrength;
 
         public event Action<RaycastHit> Hit;
         public event Action<BodyImpact> BodyHit;
@@ -24,11 +25,13 @@ namespace BowMan
 
         // Starts one timed flight with the given velocity, ignoring the firing archer.
         // In flight the root is the tip; an embedded root anchors the entry while geometry penetrates ahead.
-        public void Launch(Vector3 initialVelocity, Transform firingArcher = null, bool useGravity = true)
+        public void Launch(Vector3 initialVelocity, Transform firingArcher = null, bool useGravity = true, float shotStrength = 1f)
         {
             var speedSquared = initialVelocity.sqrMagnitude;
             if (float.IsNaN(speedSquared) || float.IsInfinity(speedSquared) || speedSquared <= 0f)
                 throw new ArgumentException("Launch velocity must be finite and nonzero.", nameof(initialVelocity));
+            if (!(shotStrength >= 0f && shotStrength <= 1f))
+                throw new ArgumentOutOfRangeException(nameof(shotStrength));
             if (launched)
                 throw new InvalidOperationException("An arrow can only be launched once.");
             if (!(bodyPenetration > 0f) || float.IsInfinity(bodyPenetration))
@@ -37,6 +40,7 @@ namespace BowMan
             owner = firingArcher;
             velocity = initialVelocity;
             this.useGravity = useGravity;
+            this.shotStrength = shotStrength;
             launched = flying = true;
             transform.rotation = Quaternion.LookRotation(velocity);
             remainingLifetime = lifetime;
@@ -73,7 +77,7 @@ namespace BowMan
                 {
                     transform.SetParent(nearest.collider.transform, true);
                     foreach (Transform visual in transform) visual.position += transform.forward * bodyPenetration;
-                    BodyHit?.Invoke(new BodyImpact(region, nearest, displacement, bodyPenetration));
+                    BodyHit?.Invoke(new BodyImpact(region, nearest, displacement, bodyPenetration, shotStrength));
                 }
                 else Destroy(gameObject, Mathf.Min(impactLifetime, remainingLifetime));
                 Hit?.Invoke(nearest);

@@ -263,8 +263,9 @@ Use GitHub's Assignees field to record task responsibility.
   for rebuild controls and provisional visual settings.
 - Sniper Elite is the reference for anatomical hit visualization and damage
   feedback. Organ analysis uses fitted BodyParts3D tissue and the actual finite
-  arrow path; see [Docs/Anatomy.md](Docs/Anatomy.md). Bone analysis and X-ray
-  rendering retain their separate tasks. The duel publishes `FatalityRequested`
+  arrow path; see [Docs/Anatomy.md](Docs/Anatomy.md). Bone contacts use the
+  animated game skeleton. A provisional 75% draw fractures contacted bones.
+  The duel publishes `FatalityRequested`
   only for its lethal arrow, after health confirms death.
 
 ## Body-specific injury sequences
