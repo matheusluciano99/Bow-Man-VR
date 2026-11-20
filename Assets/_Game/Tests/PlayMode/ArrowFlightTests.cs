@@ -56,6 +56,19 @@ public class ArrowFlightTests
             (initialVelocity + Physics.gravity * elapsed).normalized), Is.GreaterThan(0.999f));
     }
 
+    // A straight review arrow keeps its heading and height with scene gravity enabled.
+    [UnityTest]
+    public IEnumerator ReviewArrowFliesStraight()
+    {
+        var arrow = Create("Review arrow").AddComponent<ArrowFlight>();
+        arrow.Launch(Vector3.forward * 20f, useGravity: false);
+        var startTime = Time.fixedTime;
+        for (var i = 0; i < 10; i++) yield return new WaitForFixedUpdate();
+        var expected = Origin + Vector3.forward * (20f * (Time.fixedTime - startTime));
+        Assert.That(Vector3.Distance(arrow.transform.position, expected), Is.LessThan(0.01f));
+        Assert.That(Vector3.Dot(arrow.transform.forward, Vector3.forward), Is.GreaterThan(0.999f));
+    }
+
     // Checks that a fast arrow stops at the nearest thin target, reports once, and expires after impact.
     [UnityTest]
     public IEnumerator FastArrowHitsNearestThinColliderExactlyOnceAndCleansUp()

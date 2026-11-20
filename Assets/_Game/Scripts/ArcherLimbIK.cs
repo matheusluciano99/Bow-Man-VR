@@ -39,16 +39,20 @@ namespace BowMan
         public static float NeckReachWeight(float time) => Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / 0.45f)) *
             (1f - Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((time - 1.1f) / 0.7f)));
 
-        // Fits the palm to the specific neck surface point as the struck archer falls.
+        // Fits the palm to the specific neck surface point using the same arm solver as authored injuries.
         public static void ReachNeck(Animator animator, Vector3 point, Vector3 outward, float weight)
         {
             if (weight <= 0f) return;
             var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
             var wrist = animator.GetBoneTransform(HumanBodyBones.RightHand);
             var target = point - neck.up * 0.045f + outward * 0.025f;
+            var approach = Vector3.Lerp(wrist.position, target, weight)
+                + (outward * 0.08f - animator.transform.up * 0.08f) * (weight * (1f - weight));
             Solve(animator, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
-                Vector3.Lerp(wrist.position, target, weight), animator.transform.right - neck.up * 0.3f + outward * 0.5f);
-            PointHand(animator, false, neck.up, weight);
+                approach, animator.transform.right - neck.up * 0.3f + outward * 0.5f);
+            var shoulderLine = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm).position
+                - animator.GetBoneTransform(HumanBodyBones.RightUpperArm).position;
+            PointHand(animator, false, Vector3.ProjectOnPlane(shoulderLine, outward), weight);
         }
 
         // Aims the open fingers toward the contact direction without translating the supported wrist.

@@ -1,14 +1,18 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BowMan
 {
     public sealed class DuelTurnReview : MonoBehaviour
     {
+        private static readonly float[] AimOffsets = { 0f, -0.45f, 0.45f, -0.8f, 0.8f };
         [SerializeField] private DuelTurnFlow flow;
         [SerializeField] private ArcherHealth first;
         [SerializeField] private ArcherHealth second;
         [SerializeField] private ArrowFlight arrowPrefab;
         [SerializeField] private bool useAI;
+        [SerializeField] private bool animationPractice;
         [SerializeField] private BodyRegion selectedRegion = BodyRegion.Chest;
         private string lastReaction = "No reaction requested";
         private bool manualEntry = true;
@@ -17,13 +21,15 @@ namespace BowMan
         // Starts the desktop state review after both health components have initialized.
         private void Start()
         {
-            flow.Initialize(first, second);
+            flow.Initialize(first, second, alternateShooters: !animationPractice);
             flow.ReactionRequested += OnReaction;
             var firstAnimation = first.GetComponentInChildren<ArcherReactionAnimation>();
             var secondAnimation = second.GetComponentInChildren<ArcherReactionAnimation>();
             if (firstAnimation != null) firstAnimation.Connect(flow, 0, first);
             if (secondAnimation != null) secondAnimation.Connect(flow, 1, second);
-            if (useAI) second.gameObject.AddComponent<AIArcher>().Initialize(flow, 1, second, first, arrowPrefab);
+            if (animationPractice) flow.MatchFinished += OnMatchFinished;
+            if (useAI && !animationPractice)
+                second.gameObject.AddComponent<AIArcher>().Initialize(flow, 1, second, first, arrowPrefab);
         }
 
         // Retains the actual region requested by combat without pretending an animation has completed.
@@ -35,6 +41,43 @@ namespace BowMan
             manualRecovery = actor == null || actor.Recovery(hit.Region) == null;
         }
 
+        // Restarts the animation review after the losing archer finishes collapsing.
+        private void OnMatchFinished(int winner)
+        {
+            var defeated = winner == 0 ? second : first;
+            StartCoroutine(RestartWhenReady(defeated.GetComponentInChildren<ArcherReactionAnimation>()));
+        }
+
+        // Leaves the final pose visible briefly and keeps the selected hit region in the fresh round.
+        private IEnumerator RestartWhenReady(ArcherReactionAnimation defeated)
+        {
+            yield return null;
+            while (defeated != null && defeated.IsInjured) yield return null;
+            yield return new WaitForSecondsRealtime(1f);
+
+            var path = gameObject.scene.path;
+            var region = selectedRegion;
+            SceneManager.sceneLoaded += RestoreSelection;
+#if UNITY_EDITOR
+            UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
+                path, new LoadSceneParameters(LoadSceneMode.Single));
+#else
+            SceneManager.LoadSceneAsync(path, LoadSceneMode.Single);
+#endif
+
+            // Sets the selection on the new review instance as its scene becomes available.
+            void RestoreSelection(Scene loaded, LoadSceneMode mode)
+            {
+                SceneManager.sceneLoaded -= RestoreSelection;
+                if (loaded.path != path) return;
+                foreach (var root in loaded.GetRootGameObjects())
+                {
+                    var review = root.GetComponentInChildren<DuelTurnReview>();
+                    if (review != null) review.selectedRegion = region;
+                }
+            }
+        }
+
         // Launches a real shot for the active archer and lets the match own its one outcome.
         private void Fire()
         {
@@ -42,16 +85,40 @@ namespace BowMan
             if (!flow.CanShoot(shooter)) return;
             var owner = shooter == 0 ? first : second;
             var target = shooter == 0 ? second : first;
+            if (animationPractice) Physics.SyncTransforms();
             foreach (var region in target.GetComponentsInChildren<BodyHitRegion>())
             {
                 if (region.Region != selectedRegion) continue;
                 var start = owner.transform.position + Vector3.up * 1.4f + owner.transform.forward;
+                var bounds = region.GetComponent<Collider>().bounds;
+                var aim = bounds.center;
+                if (animationPractice && !TryAimAtExposedRegion(owner.transform, target.transform, bounds, ref start, out aim))
+                    continue;
+                var velocity = (aim - start) / 0.8f;
+                if (!animationPractice) velocity -= Physics.gravity * 0.4f;
                 var arrow = Instantiate(arrowPrefab, start, Quaternion.identity);
-                arrow.Launch((region.GetComponent<Collider>().bounds.center - start) / 0.8f - Physics.gravity * 0.4f,
-                    owner.transform);
+                arrow.Launch(velocity, owner.transform, useGravity: !animationPractice);
                 if (!flow.TryTrackShot(shooter, arrow)) Destroy(arrow.gameObject);
                 return;
             }
+            if (animationPractice) lastReaction = $"No clear shot at {selectedRegion}";
+        }
+
+        // Keeps the review shot horizontal and checks the intended region is its first contact.
+        private bool TryAimAtExposedRegion(Transform shooter, Transform target, Bounds bounds, ref Vector3 start, out Vector3 aim)
+        {
+            foreach (var x in AimOffsets)
+            foreach (var y in AimOffsets)
+            {
+                aim = bounds.center + new Vector3(bounds.extents.x * x, bounds.extents.y * y, 0f);
+                start.y = aim.y;
+                var hit = arrowPrefab.FirstImpact(start, aim - start, shooter).collider;
+                if (hit != null && hit.transform.IsChildOf(target) &&
+                    hit.TryGetComponent<BodyHitRegion>(out var body) && body.Region == selectedRegion)
+                    return true;
+            }
+            aim = bounds.center;
+            return false;
         }
 
         // Exposes shot and explicit animation callbacks so reviewers can verify the state contract without clips.
@@ -78,7 +145,9 @@ namespace BowMan
         // Removes the review listener when the scene closes.
         private void OnDestroy()
         {
-            if (flow != null) flow.ReactionRequested -= OnReaction;
+            if (flow == null) return;
+            flow.ReactionRequested -= OnReaction;
+            flow.MatchFinished -= OnMatchFinished;
         }
     }
 }

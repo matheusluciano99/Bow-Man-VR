@@ -287,6 +287,15 @@ public static class MotionInjuryBuilder
                         upper[i].localRotation = Quaternion.Slerp(upper[i].localRotation, recorded[i], 0.65f * weight);
                     ArcherLimbIK.ClearForearm(rig, true, leftArm, core);
                     ArcherLimbIK.ClearForearm(rig, false, rightArm, core);
+                    if (recovering && u > 0.85f)
+                    {
+                        var settle = Ease(u, 0.85f, 1f);
+                        for (var joint = 0; joint < bones.Length; joint++)
+                        {
+                            bones[joint].localPosition = Vector3.Lerp(bones[joint].localPosition, positions[joint], settle);
+                            bones[joint].localRotation = Quaternion.Slerp(bones[joint].localRotation, neutral[joint], settle);
+                        }
+                    }
                 });
                 clip.name = region + (recovering ? " Recovery" : " Entry");
                 return SaveClip(clip, folder + (recovering ? "_Recovery.anim" : "_Entry.anim"));
@@ -1537,7 +1546,7 @@ public static class MotionInjuryBuilder
                         }
                         var clearance = region == BodyRegion.Head && time > 0f && time < duration ? 0.004f : 0f;
                         Ground(root, hips, mesh, clearance);
-                    });
+                    }, region == BodyRegion.Neck ? 30f : 60f);
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
                 var phase = shoulder ? "Fatal" : "Entry";
@@ -1693,8 +1702,28 @@ public static class MotionInjuryBuilder
                 float Ease(float time, float start, float end) => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(start, end, time));
 
                 const float entrySourceEnd = 0.8f;
+                var swingArm = animator.GetBoneTransform(left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm);
+                var otherArm = animator.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+                var swingHand = animator.GetBoneTransform(left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
+                var otherHand = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var hasBeltGear = name == "EnglishArcher";
+
+                // Swings the arm from its shoulder while retaining the captured elbow bend.
+                void SwingAroundBelt(Transform arm, Transform hand, Vector3 offset)
+                {
+                    var reach = hand.position - arm.position;
+                    arm.rotation = Quaternion.FromToRotation(reach, reach + offset) * arm.rotation;
+                }
+
                 var entry = Record(root, bones, 0.3f + entrySourceEnd, time =>
-                    Pose(Mathf.Max(0f, time - 0.3f), Ease(time, 0f, 0.3f), Ease(time, 0.1f, 0.3f), 0f));
+                {
+                    Pose(Mathf.Max(0f, time - 0.3f), Ease(time, 0f, 0.3f), Ease(time, 0.1f, 0.3f), 0f);
+                    var arc = Ease(time, 0f, 0.22f) * (1f - Ease(time, 0.96f, 1.1f));
+                    var side = (swingArm.position - otherArm.position).normalized;
+                    var offset = hasBeltGear ? side * 0.18f + root.transform.forward * 0.08f : side * 0.12f;
+                    SwingAroundBelt(swingArm, swingHand, offset * arc);
+                    if (hasBeltGear && left) SwingAroundBelt(otherArm, otherHand, -side * (0.06f * arc));
+                });
                 var hold = Record(root, bones, 3f, time => Pose(entrySourceEnd + time, 1f, 1f, 0f));
                 var tail = source.length - entrySourceEnd - 3f;
                 var recovery = Record(root, bones, tail + 0.9f, time =>
@@ -1915,10 +1944,9 @@ public static class MotionInjuryBuilder
         if (floor < groundedHeight) hips.position += Vector3.up * (groundedHeight - floor);
     }
 
-    // Bakes complete local position/quaternion groups at sixty samples per second on the actual target hierarchy.
-    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose)
+    // Bakes complete transform curves at the requested sample rate on the target hierarchy.
+    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose, float sampleRate = 60f)
     {
-        const float sampleRate = 60f;
         var clip = new AnimationClip { frameRate = sampleRate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
         var frames = Mathf.RoundToInt(duration * sampleRate);

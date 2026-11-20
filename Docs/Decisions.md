@@ -240,6 +240,20 @@ Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
 bone/fracture rules and X-ray rendering remain separate work. Preserve source
 filenames, mesh GUIDs and native subasset identities when regenerating.
 
+## D018 — Fatal body hits finish with a full collapse
+
+A fatal hit outside the head or neck first plays the reaction for the actual
+struck region, then collapses fully and remains down. Resolve defeat and the
+match result immediately; the visual sequence does not delay the result or run
+a surviving hold, recovery or turn handoff. Death during an existing reaction
+or recovery interrupts getting up and finishes the collapse from the current
+pose. Preserve the independent head and neck fatal sequences.
+
+For a lethal shoulder shot, use the complete captured recoil, opposite-hand reach
+and fall from *Shoulder Hit And Fall*. Mirroring lets the same performance
+react to the correct side. The fitted fatal fall passed the Unity injury review on November 20, 2026. The standing shoulder reaction needs its own
+performance that includes the impact and a supported hold.
+
 ## Open questions and provisional values
 
 - The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.

@@ -518,6 +518,11 @@ public class InjuryAnimationTests
             var wrist = a.GetBoneTransform(HumanBodyBones.RightHand);
             var expected = arrow.transform.position - neck.up * 0.045f - arrow.transform.forward * 0.025f;
             Assert.That(Vector3.Distance(wrist.position, expected), Is.LessThan(0.008f), "Actual wound side " + offset);
+            var across = a.GetBoneTransform(HumanBodyBones.LeftUpperArm).position
+                - a.GetBoneTransform(HumanBodyBones.RightUpperArm).position;
+            var fingers = a.GetBoneTransform(HumanBodyBones.RightMiddleDistal).position - wrist.position;
+            Assert.That(Vector3.Angle(fingers, Vector3.ProjectOnPlane(across, arrow.transform.forward)),
+                Is.LessThan(8f), character + " fingers across neck");
             var anchored = arrow.transform.localPosition;
             yield return new WaitForSeconds(2f);
             Assert.That(arrow.transform.localPosition, Is.EqualTo(anchored));
@@ -1451,6 +1456,165 @@ public class InjuryAnimationTests
         yield return new WaitForSeconds(4f);
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Drives the support arm into the fitted chest and verifies the solver clears it without stretching either bone.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void ForearmCorrectionClearsAnOverlappingReach(string model)
+    {
+        var root = Character(model);
+        var player = root.GetComponent<ArcherReactionAnimation>();
+        player.Hold(BodyRegion.RightShoulder).SampleAnimation(root, 0f);
+        var rig = root.GetComponentInChildren<Animator>();
+        var upper = rig.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+        var elbow = rig.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+        var hand = rig.GetBoneTransform(HumanBodyBones.LeftHand);
+        var parts = root.GetComponentsInChildren<BodyHitRegion>();
+        var limbs = parts.Where(p => p.transform.parent == elbow || p.transform.parent == hand)
+            .Select(p => p.GetComponent<Collider>()).ToArray();
+        var chest = parts.Single(p => p.Region == BodyRegion.Chest).GetComponent<BoxCollider>();
+        var torso = new Collider[] { chest };
+        var chestCenter = chest.transform.TransformPoint(chest.center);
+        var wrist = hand.position;
+        var hint = elbow.position - upper.position;
+        var upperLength = hint.magnitude;
+        var lowerLength = Vector3.Distance(hand.position, elbow.position);
+        for (var i = 1; i <= 100 && ArcherLimbIK.DeepestOverlap(limbs, torso, out _) < 0.008f; i++)
+            ArcherLimbIK.Solve(rig, HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm,
+                HumanBodyBones.LeftHand, Vector3.Lerp(wrist, chestCenter, i * 0.01f), hint);
+
+        Assert.That(ArcherLimbIK.DeepestOverlap(limbs, torso, out _), Is.GreaterThan(0.007f));
+        ArcherLimbIK.ClearForearm(rig, true, limbs, torso, 14);
+        Assert.That(ArcherLimbIK.DeepestOverlap(limbs, torso, out _), Is.LessThan(0.003f));
+        Assert.That(Vector3.Distance(upper.position, elbow.position), Is.EqualTo(upperLength).Within(0.0001f));
+        Assert.That(Vector3.Distance(elbow.position, hand.position), Is.EqualTo(lowerLength).Within(0.0001f));
+    }
+
+    // Checks every enabled hit region has its own entry and the appropriate recovery and collapse on each rig.
+    [Test]
+    public void AllEnabledRegionsHaveTheirOwnCompleteSequences()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var player = root.GetComponent<ArcherReactionAnimation>();
+            var regions = root.GetComponentsInChildren<BodyHitRegion>().Select(r => r.Region).Distinct().ToArray();
+            Assert.That(regions.Length, Is.EqualTo(15));
+            Assert.That(regions.Select(player.Entry).Distinct().Count(), Is.EqualTo(15));
+            foreach (var region in regions)
+            {
+                Assert.That(player.Supports(region), Is.True, name + " " + region);
+                Assert.That(AssetDatabase.GetAssetPath(player.Entry(region)), Does.Contain(name + "/" + region + "_Entry.anim"));
+                if (region is BodyRegion.Head or BodyRegion.Neck)
+                {
+                    Assert.That(player.Recovery(region), Is.Null);
+                    Assert.That(player.DeathFinisher(region), Is.Null);
+                    continue;
+                }
+                Assert.That(AssetDatabase.GetAssetPath(player.Recovery(region)), Does.Contain(name + "/" + region + "_Recovery.anim"));
+                Assert.That(player.DeathFinisher(region), Is.Not.Null, name + " " + region + " fatal continuation");
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Exercises every surviving region on both models and measures hold and full-pose readiness at handoff.
+    [UnityTest]
+    public IEnumerator EverySurvivingRegionRecoversBeforeItsNextTurn()
+    {
+        var originalScale = Time.timeScale;
+        Time.timeScale = 4f;
+        try
+        {
+            foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+            foreach (BodyRegion region in System.Enum.GetValues(typeof(BodyRegion)))
+            {
+                if (region is BodyRegion.Head or BodyRegion.Neck) continue;
+                var flow = BodyShot(out var target, out var arrow, region, name);
+                var animator = target.GetComponentInChildren<Animator>();
+                var bones = Enumerable.Range(0, (int)HumanBodyBones.LastBone)
+                    .Select(i => animator.GetBoneTransform((HumanBodyBones)i)).Where(t => t != null).ToArray();
+                var standing = bones.Select(t => t.position).ToArray();
+                var rotations = bones.Select(t => t.rotation).ToArray();
+                var landed = -1f;
+                var recovery = -1f;
+                var readyError = float.PositiveInfinity;
+                var readyRotationError = float.PositiveInfinity;
+                var recoveries = 0;
+                flow.RecoveryRequested += (_, __) => recoveries++;
+                flow.Changed += () =>
+                {
+                    if (flow.Phase == DuelPhase.Holding) landed = Time.time;
+                    if (flow.Phase == DuelPhase.Recovering) recovery = Time.time;
+                    if (flow.Phase != DuelPhase.Aiming || flow.ActiveArcher != 1) return;
+                    readyError = bones.Select((t, i) => Vector3.Distance(t.position, standing[i])).Max();
+                    readyRotationError = bones.Select((t, i) => Quaternion.Angle(t.rotation, rotations[i])).Max();
+                };
+                var player = target.GetComponent<ArcherReactionAnimation>();
+                var deadline = Time.time + player.Entry(region).length + 3f + player.Recovery(region).length + 1f;
+                while (!flow.CanShoot(1) && Time.time < deadline) yield return null;
+                Assert.That(flow.CanShoot(1), Is.True, name + " " + region);
+                Assert.That(target.CurrentHealth, Is.EqualTo(75), name + " " + region);
+                Assert.That(recoveries, Is.EqualTo(1));
+                Assert.That(landed, Is.GreaterThan(0f));
+                var holdDuration = region switch
+                {
+                    BodyRegion.Chest => 0.75f,
+                    BodyRegion.LeftFoot or BodyRegion.RightFoot => 2f,
+                    _ => 3f
+                };
+                Assert.That(recovery - landed, Is.GreaterThanOrEqualTo(holdDuration - 0.005f));
+                Assert.That(readyError, Is.LessThan(0.005f), name + " " + region);
+                Assert.That(readyRotationError, Is.LessThan(0.2f), name + " " + region);
+                Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(region));
+                yield return CleanUp();
+            }
+        }
+        finally { Time.timeScale = originalScale; }
+    }
+
+    // Resolves every lethal region once, finishes the matching collapse and preserves the actual embedded tip.
+    [UnityTest]
+    public IEnumerator EveryFatalRegionEndsOnceAndCollapsesWithoutRecovery()
+    {
+        var originalScale = Time.timeScale;
+        Time.timeScale = 4f;
+        try
+        {
+            foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+            foreach (BodyRegion region in System.Enum.GetValues(typeof(BodyRegion)))
+            {
+                var flow = BodyShot(out var target, out var arrow, region, name);
+                if (region is not BodyRegion.Head and not BodyRegion.Neck) target.TakeDamage(75);
+                var results = 0;
+                var holds = 0;
+                var recoveries = 0;
+                flow.MatchFinished += _ => results++;
+                flow.RecoveryRequested += (_, __) => recoveries++;
+                flow.Changed += () => { if (flow.Phase == DuelPhase.Holding) holds++; };
+                yield return new WaitForSeconds(0.12f);
+                Assert.That(target.CurrentHealth, Is.Zero, name + " " + region);
+                Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+                Assert.That(flow.Winner, Is.Zero);
+                var tip = arrow.transform.localPosition;
+                var player = target.GetComponent<ArcherReactionAnimation>();
+                var finisher = player.DeathFinisher(region);
+                var fatal = player.FatalEntry(region);
+                var duration = fatal != null ? fatal.length : player.Entry(region).length + (finisher != null ? finisher.length : 0f);
+                yield return new WaitForSeconds(duration + 0.25f);
+                var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
+                Assert.That(head.position.y - target.transform.position.y, Is.LessThan(0.4f), name + " " + region);
+                Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(region));
+                Assert.That(Vector3.Distance(arrow.transform.localPosition, tip), Is.LessThan(0.00001f));
+                Assert.That(flow.CanShoot(0) || flow.CanShoot(1), Is.False);
+                Assert.That(results, Is.EqualTo(1));
+                Assert.That(holds, Is.Zero);
+                Assert.That(recoveries, Is.Zero);
+                yield return CleanUp();
+            }
+        }
+        finally { Time.timeScale = originalScale; }
     }
 }
 #endif

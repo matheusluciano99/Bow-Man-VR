@@ -12,6 +12,7 @@ namespace BowMan
         private ArrowFlight pendingArrow;
         private float holdRemaining;
         private bool initialized;
+        private bool alternateShooters;
 
         public DuelPhase Phase { get; private set; } = DuelPhase.Finished;
         public int ActiveArcher { get; private set; }
@@ -24,7 +25,7 @@ namespace BowMan
         public event Action<int, AnatomicalImpact> FatalityRequested;
 
         // Starts a duel with two distinct living archers and invalidates callbacks from any earlier match.
-        public void Initialize(ArcherHealth first, ArcherHealth second)
+        public void Initialize(ArcherHealth first, ArcherHealth second, bool alternateShooters = true)
         {
             if (first == null || second == null || first == second || first.IsDefeated || second.IsDefeated)
                 throw new ArgumentException("A duel requires two distinct living archers.");
@@ -35,6 +36,7 @@ namespace BowMan
             first.Defeated += FirstDefeated;
             second.Defeated += SecondDefeated;
             initialized = true;
+            this.alternateShooters = alternateShooters;
             ShotId++;
             ActiveArcher = 0;
             Winner = -1;
@@ -119,10 +121,10 @@ namespace BowMan
             NextTurn();
         }
 
-        // Gives the other living archer the next turn after the current outcome has fully resolved.
+        // Returns to aiming after an outcome and switches sides in an alternating duel.
         private void NextTurn()
         {
-            ActiveArcher = 1 - ActiveArcher;
+            if (alternateShooters) ActiveArcher = 1 - ActiveArcher;
             SetPhase(DuelPhase.Aiming);
         }
 
