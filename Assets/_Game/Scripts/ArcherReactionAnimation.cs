@@ -14,6 +14,8 @@ namespace BowMan
         [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
         [SerializeField] private AnimationClip[] deathFinishers = new AnimationClip[15];
         [SerializeField] private AnimationClip[] fatalEntries = new AnimationClip[15];
+        private ArcherAbdomenContact abdomenContact;
+        private BodyImpact entryImpact;
         private DuelTurnFlow flow;
         private ArcherHealth health;
         private int archerIndex;
@@ -86,6 +88,9 @@ namespace BowMan
             flow = match;
             health = actor;
             archerIndex = index;
+            poseAnimator = GetComponentInChildren<Animator>();
+            if (poseAnimator != null && poseAnimator.isHuman && Supports(BodyRegion.Abdomen))
+                abdomenContact = new ArcherAbdomenContact(poseAnimator, GetComponentsInChildren<BodyHitRegion>());
             flow.ReactionRequested += OnReaction;
             flow.RecoveryRequested += OnRecovery;
             flow.Changed += OnFlowChanged;
@@ -105,9 +110,9 @@ namespace BowMan
             injured = true;
             elapsed = 0f;
             playing = clip;
-            if (region == BodyRegion.Neck)
+            entryImpact = hit;
+            if (region is BodyRegion.Neck or BodyRegion.Abdomen)
             {
-                poseAnimator = GetComponentInChildren<Animator>();
                 woundAnchor = hit.Collider.transform;
                 woundPoint = woundAnchor.InverseTransformPoint(hit.Point);
                 woundOutward = woundAnchor.InverseTransformDirection(-hit.Direction);
@@ -161,6 +166,14 @@ namespace BowMan
             if (fatalPlayback && region == BodyRegion.Neck && woundAnchor != null)
                 ArcherLimbIK.ReachNeck(poseAnimator, woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
+            if (region == BodyRegion.Abdomen && !recovering && !finishingDeath)
+                abdomenContact?.Flinch(entryImpact, elapsed);
+            if (region == BodyRegion.Abdomen && woundAnchor != null && !finishingDeath && abdomenContact != null)
+            {
+                var reach = AbdomenContactWeight(elapsed / playing.length, recovering);
+                abdomenContact.Apply(woundAnchor.TransformPoint(woundPoint),
+                    woundAnchor.TransformDirection(woundOutward).normalized, reach);
+            }
             if (elapsed < playing.length) return;
             var completeFatalEntry = fatalPlayback && playing == FatalEntry(region);
             playing = null;
@@ -187,6 +200,11 @@ namespace BowMan
                 flow.MarkInjuredPose(token);
             }
         }
+
+        // Retargets near contact while letting the fitted clips handle the approach and release.
+        internal static float AbdomenContactWeight(float progress, bool recovering) => recovering
+            ? Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(0.37f, 0.54f, progress))
+            : Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.34f, 0.53f, progress));
 
         // Starts the authored collapse from the actual current pose, including interrupted recovery.
         private void BeginDeathFinisher()
@@ -229,6 +247,7 @@ namespace BowMan
             deathBlendBones = null;
             deathBlendPositions = null;
             deathBlendRotations = null;
+            abdomenContact = null;
         }
 
         // Prevents late match callbacks from sampling a destroyed character.

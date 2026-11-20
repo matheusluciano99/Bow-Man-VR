@@ -719,7 +719,7 @@ public class InjuryAnimationTests
         try
         {
             foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
-            foreach (var region in new[] { BodyRegion.Chest, BodyRegion.Pelvis })
+            foreach (var region in new[] { BodyRegion.Chest, BodyRegion.Pelvis, BodyRegion.Abdomen })
             {
                 var flow = BodyShot(out var target, out var arrow, region, name);
                 target.TakeDamage(75);
@@ -871,6 +871,174 @@ public class InjuryAnimationTests
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Pelvis);
         var entry = target.GetComponent<ArcherReactionAnimation>().Entry(BodyRegion.Pelvis);
         yield return new WaitForSeconds(entry.length + 3.2f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
+        target.TakeDamage(100);
+        var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
+        yield return new WaitForSeconds(1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(head.position.y - target.transform.position.y, Is.LessThan(0.4f));
+    }
+
+    // Requires both visible knees on the floor and a separate folded wound-brace pose before returning to neutral.
+    [Test]
+    public void AbdomenClipsFoldAndKneelOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var a = root.GetComponentInChildren<Animator>();
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            Assert.That(actor.Supports(BodyRegion.Abdomen), Is.True);
+            var head = a.GetBoneTransform(HumanBodyBones.Head);
+            var standing = head.position;
+            var spine = a.GetBoneTransform(HumanBodyBones.Spine);
+            var rotation = spine.rotation;
+            var entry = actor.Entry(BodyRegion.Abdomen);
+            for (var frame = 0; frame <= 81; frame++)
+            {
+                entry.SampleAnimation(root, entry.length * frame / 81f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + frame);
+            }
+            foreach (var bone in new[] { HumanBodyBones.LeftLowerLeg, HumanBodyBones.RightLowerLeg })
+                Assert.That(ContactFloor(root, a.GetBoneTransform(bone).position), Is.InRange(-0.006f, 0.015f), name + " " + bone);
+            Assert.That(Quaternion.Angle(spine.rotation, rotation), Is.GreaterThan(35f));
+            var box = root.GetComponentsInChildren<BodyHitRegion>().Single(r => r.Region == BodyRegion.Abdomen).GetComponent<BoxCollider>();
+            var point = box.transform.TransformPoint(box.center + Vector3.forward * (box.size.z * 0.5f));
+            var right = a.GetBoneTransform(HumanBodyBones.RightHand);
+            var left = a.GetBoneTransform(HumanBodyBones.LeftHand);
+            Assert.That(Vector3.Distance(a.GetBoneTransform(HumanBodyBones.RightMiddleProximal).position, point), Is.LessThan(0.1f));
+            Assert.That(Vector3.Distance(a.GetBoneTransform(HumanBodyBones.LeftMiddleProximal).position, point), Is.LessThan(0.1f));
+            var supportedRight = right.position;
+            var supportedLeft = left.position;
+            var recovery = actor.Recovery(BodyRegion.Abdomen);
+            recovery.SampleAnimation(root, 0f);
+            Assert.That(Vector3.Distance(right.position, supportedRight), Is.LessThan(0.001f));
+            Assert.That(Vector3.Distance(left.position, supportedLeft), Is.LessThan(0.001f));
+            for (var frame = 0; frame <= 81; frame++)
+            {
+                recovery.SampleAnimation(root, recovery.length * frame / 81f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f));
+            }
+            Assert.That(Vector3.Distance(head.position, standing), Is.LessThan(0.001f));
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Samples the kneeling entry, recovery and fatal continuation for boot penetration through the pelvis.
+    [Test]
+    public void AbdomenClipsKeepBothBootsClearOfThePelvis()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var hitVolumes = root.GetComponentsInChildren<BodyHitRegion>();
+            var pelvis = hitVolumes.Single(r => r.Region == BodyRegion.Pelvis).GetComponent<Collider>();
+            var boots = hitVolumes.Where(r => r.Region is BodyRegion.LeftFoot or BodyRegion.RightFoot)
+                .Select(r => r.GetComponent<Collider>()).ToArray();
+            Assert.That(boots, Has.Length.EqualTo(2), name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            foreach (var clip in new[] { actor.Entry(BodyRegion.Abdomen), actor.Recovery(BodyRegion.Abdomen),
+                actor.DeathFinisher(BodyRegion.Abdomen) })
+            for (var sample = 0; sample <= 60; sample++)
+            {
+                var time = clip.length * sample / 60f;
+                clip.SampleAnimation(root, time);
+                foreach (var boot in boots)
+                {
+                    if (Physics.ComputePenetration(boot, boot.transform.position, boot.transform.rotation,
+                        pelvis, pelvis.transform.position, pelvis.transform.rotation, out _, out var depth))
+                        Assert.That(depth, Is.LessThanOrEqualTo(0.002f), $"{name} {clip.name} {boot.name} at {time:F3}s");
+                }
+            }
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Fits both hands to actual left/right abdominal impacts and keeps the turn locked until standing.
+    [UnityTest]
+    public IEnumerator AbdomenReachFollowsTheActualWoundThroughItsFullHold()
+    {
+        foreach (var offset in new[] { -0.08f, 0.08f })
+        {
+            var flow = BodyShot(out var target, out var arrow, BodyRegion.Abdomen);
+            var actor = target.GetComponent<ArcherReactionAnimation>();
+            arrow.transform.position += Vector3.right * offset;
+            var landed = -1f;
+            var recoveryStarted = -1f;
+            var ready = -1f;
+            flow.Changed += () =>
+            {
+                if (flow.Phase == DuelPhase.Holding) landed = Time.time;
+                if (flow.Phase == DuelPhase.Recovering) recoveryStarted = Time.time;
+                if (flow.Phase == DuelPhase.Aiming) ready = Time.time;
+            };
+            yield return new WaitForSeconds(actor.Entry(BodyRegion.Abdomen).length + 0.18f);
+            Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+            Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Abdomen));
+            var a = target.GetComponentInChildren<Animator>();
+            var spine = a.GetBoneTransform(HumanBodyBones.Spine);
+            var right = a.GetBoneTransform(HumanBodyBones.RightHand);
+            var left = a.GetBoneTransform(HumanBodyBones.LeftHand);
+            var expected = arrow.transform.position + spine.right * 0.079f - arrow.transform.forward * 0.068f + spine.up * 0.062f;
+            Assert.That(Vector3.Distance(right.position, expected), Is.LessThan(0.008f));
+            expected = arrow.transform.position - spine.right * 0.079f - arrow.transform.forward * 0.068f + spine.up * 0.05f;
+            Assert.That(Vector3.Distance(left.position, expected), Is.LessThan(0.008f));
+            Assert.That(flow.CanShoot(1), Is.False);
+            yield return new WaitForSeconds(3f + actor.Recovery(BodyRegion.Abdomen).length + 0.1f);
+            Assert.That(flow.CanShoot(1), Is.True);
+            Assert.That(landed, Is.GreaterThan(0f));
+            Assert.That(recoveryStarted - landed, Is.GreaterThanOrEqualTo(2.995f));
+            Assert.That(ready - recoveryStarted, Is.GreaterThanOrEqualTo(0.85f));
+            Assert.That(target.CurrentHealth, Is.EqualTo(75));
+            yield return CleanUp();
+        }
+    }
+
+    // Checks both rigs on a low off-center impact throughout the real reaction and recovery.
+    [UnityTest]
+    public IEnumerator LowAbdomenHitsKeepBothForearmsClear()
+    {
+        foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var flow = BodyShot(out var target, out var arrow, BodyRegion.Abdomen, model);
+            arrow.transform.position += Vector3.right * 0.075f - Vector3.up * 0.022f;
+            var animator = target.GetComponentInChildren<Animator>();
+            var forearms = new[] { animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
+                animator.GetBoneTransform(HumanBodyBones.RightLowerArm) };
+            var regions = target.GetComponentsInChildren<BodyHitRegion>();
+            var limbs = regions.Where(region => region.Region is BodyRegion.LeftHand or BodyRegion.RightHand ||
+                forearms.Contains(region.transform.parent)).Select(region => region.GetComponent<Collider>()).ToArray();
+            var body = regions.Where(region => region.Region is BodyRegion.Head or BodyRegion.Neck or BodyRegion.Chest or
+                BodyRegion.Abdomen or BodyRegion.Pelvis).Select(region => region.GetComponent<Collider>()).ToArray();
+
+            var deadline = Time.time + 8f;
+            while (!flow.CanShoot(1) && Time.time < deadline)
+            {
+                if (flow.Phase is DuelPhase.Reacting or DuelPhase.Holding or DuelPhase.Recovering)
+                {
+                    foreach (var limb in limbs)
+                    foreach (var core in body)
+                        if (Physics.ComputePenetration(limb, limb.transform.position, limb.transform.rotation,
+                            core, core.transform.position, core.transform.rotation, out _, out var depth))
+                            Assert.That(depth, Is.LessThanOrEqualTo(0.0021f), $"{model} {flow.Phase}: {limb.name}/{core.name}");
+                }
+                yield return null;
+            }
+            Assert.That(flow.CanShoot(1), Is.True);
+            Assert.That(target.CurrentHealth, Is.EqualTo(75));
+            Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Abdomen));
+            yield return CleanUp();
+        }
+    }
+
+    // Interrupts abdominal recovery with a full fatal collapse and no return to shooting.
+    [UnityTest]
+    public IEnumerator DeathInterruptsAbdominalRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.Abdomen);
+        var actor = target.GetComponent<ArcherReactionAnimation>();
+        yield return new WaitForSeconds(actor.Entry(BodyRegion.Abdomen).length + 3.2f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         target.TakeDamage(100);
         var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
