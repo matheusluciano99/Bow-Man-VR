@@ -44,12 +44,21 @@ public static class StandingIdleBuilder
             var skeleton = source.GetComponentsInChildren<Transform>();
             var recorded = names.Select(n => skeleton.Single(t => t.name == "mixamorig:" + n)).ToArray();
             var bones = ids.Select(rig.GetBoneTransform).ToArray();
-            var neutral = bones.Select(b => b.rotation).ToArray();
             take.SampleAnimation(source, 1f);
             var first = recorded.Select(b => b.rotation).ToArray();
             var across = recorded[5].position - recorded[8].position;
             var align = Quaternion.AngleAxis(Vector3.SignedAngle(Vector3.ProjectOnPlane(across, Vector3.up),
                 Vector3.ProjectOnPlane(bones[5].position - bones[8].position, Vector3.up), Vector3.up), Vector3.up);
+            // Fit the relaxed arm directions to each rig while retaining clearance for the quiver and belt.
+            foreach (var upper in new[] { 6, 9 })
+            {
+                var left = upper == 6;
+                var hand = rig.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                var recordedHand = skeleton.Single(t => t.name == (left ? "mixamorig:LeftHand" : "mixamorig:RightHand"));
+                FitDirection(bones[upper], bones[upper + 1], align * (recorded[upper + 1].position - recorded[upper].position));
+                FitDirection(bones[upper + 1], hand, align * (recordedHand.position - recorded[upper + 1].position));
+            }
+            var neutral = bones.Select(b => b.rotation).ToArray();
             var restSpine = bones[0].position;
             var start = recorded[0].position;
             var clip = MotionInjuryBuilder.Record(root, bones, Duration, time =>
@@ -72,4 +81,12 @@ public static class StandingIdleBuilder
         }
         finally { Object.DestroyImmediate(root); }
     }
+
+    // Retains some clearance from the rig's clothing when its proportions differ from the performer.
+    private static void FitDirection(Transform joint, Transform end, Vector3 direction)
+    {
+        var fit = Quaternion.FromToRotation(end.position - joint.position, direction);
+        joint.rotation = Quaternion.Slerp(Quaternion.identity, fit, 0.8f) * joint.rotation;
+    }
+
 }

@@ -11,6 +11,9 @@ namespace BowMan
 
         [SerializeField] private AnimationClip standingIdle;
         private float idleTime;
+        private Transform[] idleArms;
+        private readonly Quaternion[] previousArms = new Quaternion[4];
+        private float armBlendTime;
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
@@ -95,6 +98,12 @@ namespace BowMan
             poseAnimator = GetComponentInChildren<Animator>();
             if (poseAnimator != null && poseAnimator.isHuman && (Supports(BodyRegion.Abdomen) || Supports(BodyRegion.Neck)))
                 woundContact = new ArcherWoundContact(poseAnimator, GetComponentsInChildren<BodyHitRegion>());
+            if (standingIdle != null && poseAnimator != null && poseAnimator.isHuman)
+            {
+                idleArms = new[] { HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm,
+                    HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm }.Select(poseAnimator.GetBoneTransform).ToArray();
+                BeginArmBlend();
+            }
             flow.ReactionRequested += OnReaction;
             flow.RecoveryRequested += OnRecovery;
             flow.Changed += OnFlowChanged;
@@ -122,7 +131,9 @@ namespace BowMan
                 woundPoint = woundAnchor.InverseTransformPoint(hit.Point);
                 woundOutward = woundAnchor.InverseTransformDirection(-hit.Direction);
             }
+            BeginArmBlend();
             playing.SampleAnimation(gameObject, 0f);
+            BlendArms(0f);
         }
 
         // Starts the matching return motion only after the flow's complete injured-pose hold.
@@ -146,6 +157,7 @@ namespace BowMan
                 {
                     idleTime = Mathf.Repeat(idleTime + Time.deltaTime, standingIdle.length);
                     standingIdle.SampleAnimation(gameObject, idleTime);
+                    BlendArms(Time.deltaTime);
                     return;
                 }
                 var hold = Hold(region);
@@ -186,6 +198,7 @@ namespace BowMan
                 woundContact.ApplyAbdomen(woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, reach);
             }
+            BlendArms(Time.deltaTime);
             if (elapsed < playing.length) return;
             playing = null;
             if (fatalPlayback)
@@ -203,6 +216,7 @@ namespace BowMan
             if (recovering)
             {
                 injured = false;
+                BeginArmBlend();
                 flow.CompleteRecovery(token);
             }
             else
@@ -210,6 +224,25 @@ namespace BowMan
                 elapsed = 0f;
                 flow.MarkInjuredPose(token);
             }
+        }
+
+        // Captures arm rotations at the transition between the recorded resting pose and a regional clip.
+        private void BeginArmBlend()
+        {
+            if (idleArms == null) return;
+            for (var i = 0; i < idleArms.Length; i++) previousArms[i] = idleArms[i].localRotation;
+            armBlendTime = 0f;
+        }
+
+        // Eases the resting arms over the first tenth of a second while the impact and torso play immediately.
+        private void BlendArms(float deltaTime)
+        {
+            const float duration = 0.1f;
+            if (idleArms == null || armBlendTime >= duration) return;
+            armBlendTime += deltaTime;
+            var weight = Mathf.SmoothStep(0f, 1f, armBlendTime / duration);
+            for (var i = 0; i < idleArms.Length; i++)
+                idleArms[i].localRotation = Quaternion.Slerp(previousArms[i], idleArms[i].localRotation, weight);
         }
 
         // Retargets near contact while letting the fitted clips handle the approach and release.
