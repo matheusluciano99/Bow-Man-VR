@@ -7,6 +7,8 @@ using NUnit.Framework;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
 
 public class LocalDuelTests
@@ -148,6 +150,76 @@ public class LocalDuelTests
         Assert.That(results, Is.EqualTo(2));
         Assert.That(fatalities, Is.EqualTo(2));
         Assert.That(lastFatality.Entry.Region, Is.EqualTo(BodyRegion.Neck));
+    }
+
+    // Plays a sided injury and an AI victory in the saved scene, then restarts through the player's keyboard binding.
+    [UnityTest]
+    public IEnumerator AIWinsAgainstLocalArcherAndPlayerCanRestart()
+    {
+        var duel = Find<LocalDuel>();
+        var ai = duel.Opponent.GetComponent<AIArcher>();
+        var settings = new UnityEditor.SerializedObject(ai);
+        settings.FindProperty("aimError").floatValue = 0f;
+        settings.ApplyModifiedPropertiesWithoutUndo();
+        duel.LocalArcher.TakeDamage(duel.LocalArcher.CurrentHealth - 1);
+        var victories = 0;
+        var defeatedArcher = -1;
+        var legRecovered = false;
+        duel.Flow.RecoveryRequested += (target, _) => legRecovered |= target == 1;
+        duel.Flow.MatchFinished += winner =>
+        {
+            Assert.That(winner, Is.EqualTo(1));
+            victories++;
+        };
+        duel.Flow.FatalityRequested += (target, _) => defeatedArcher = target;
+
+        var arrow = Shoot(duel, BodyRegion.LeftLeg);
+        var deadline = Time.time + 32f;
+        while (duel.Flow.Phase != DuelPhase.Finished && Time.time < deadline) yield return null;
+        yield return null;
+        Assert.That(arrow.GetComponentInParent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.LeftLeg));
+        Assert.That(legRecovered, Is.True);
+        Assert.That(ai.ShotsFired, Is.EqualTo(1));
+        Assert.That(victories, Is.EqualTo(1));
+        Assert.That(defeatedArcher, Is.Zero);
+        Assert.That(duel.LocalArcher.IsDefeated, Is.True);
+        Assert.That(Find<TextMesh>().text, Does.Contain("DEFEAT"));
+        Assert.That(Find<Bow>().ShotAllowed, Is.False);
+
+        var focus = InputSystem.settings.editorInputBehaviorInPlayMode;
+        var background = InputSystem.settings.backgroundBehavior;
+        var keyboard = InputSystem.GetDevice<Keyboard>();
+        var added = keyboard == null;
+        if (added) keyboard = InputSystem.AddDevice<Keyboard>();
+        var wasEnabled = keyboard.enabled;
+        try
+        {
+            // Batch Mode has no focused Game view to receive keyboard events.
+            InputSystem.settings.editorInputBehaviorInPlayMode =
+                InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            InputSystem.EnableDevice(keyboard);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.R));
+            yield return null;
+            yield return null;
+            Assert.That(duel.Flow.CanShoot(0), Is.True);
+            Assert.That(duel.LocalArcher.CurrentHealth, Is.EqualTo(100));
+            Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(100));
+            Assert.That(Find<TextMesh>().text, Does.Contain("Your turn"));
+        }
+        finally
+        {
+            if (added) InputSystem.RemoveDevice(keyboard);
+            else
+            {
+                InputSystem.ResetDevice(keyboard);
+                if (!wasEnabled) InputSystem.DisableDevice(keyboard);
+            }
+            InputSystem.settings.backgroundBehavior = background;
+            InputSystem.settings.editorInputBehaviorInPlayMode = focus;
+        }
     }
 
     // Preserves physical head/controller offsets while all animated-eye displacement is applied exactly once.
