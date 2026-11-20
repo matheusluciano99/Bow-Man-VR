@@ -15,6 +15,18 @@ using Object = UnityEngine.Object;
 
 public class PvPRelayMatchTests
 {
+    // Confirms that a fresh round or rejoin leaves one archer hand on each local tracked controller.
+    private static void CheckHands()
+    {
+        var rig = Object.FindAnyObjectByType<LocalRigBinder>();
+        foreach (var controller in new[] { rig.LeftHand, rig.RightHand })
+        {
+            var hands = controller.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            Assert.That(hands.Length, Is.EqualTo(1));
+            Assert.That(hands[0].sharedMesh.blendShapeCount, Is.EqualTo(2));
+        }
+    }
+
     // Waits in both Editors without accelerating the live Relay transport or the host's animation clock.
     private static IEnumerator Until(Func<bool> complete, string label, float seconds = 60f)
     {
@@ -244,6 +256,7 @@ public class PvPRelayMatchTests
                 var bones = string.Join(",", report.Bones.Select(h => h.Bone + (h.Fractured ? "*" : "")));
                 hits.Add($"{token}/{target}/{impact.Region}/{impact.Side}/{point:F3}/{organs}/{bones}/{lethal}");
             };
+            CheckHands();
             var observer = duel.Archer(host ? 1 : 0).GetComponentInChildren<Animator>();
             var shoulder = observer.GetBoneTransform(HumanBodyBones.LeftShoulder);
             var standing = shoulder.rotation;
@@ -304,6 +317,7 @@ public class PvPRelayMatchTests
                 duel.RequestRematch();
             }
             yield return Until(() => duel.Round == firstRound + 1, "Both votes started a new round");
+            CheckHands();
             Assert.That(duel.Archer(0).CurrentHealth, Is.EqualTo(100));
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
             Assert.That(duel.Flow.CanShoot(0), Is.True);
@@ -334,6 +348,7 @@ public class PvPRelayMatchTests
             yield return Until(() => duel.Flow != null && duel.Round == firstRound + 2, "Fresh round after rejoin");
             Assert.That(duel.Flow.CanShoot(0), Is.True);
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
+            CheckHands();
             if (Argument("-duelTestMatrix") == "all")
             {
                 yield return MissesPassTheTurn(duel, bow, host, folder);

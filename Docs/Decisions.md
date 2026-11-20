@@ -66,8 +66,7 @@ host shares the choice with the joiner so both players see the same scene.
 Carry the archers’ visual style into the arrow and the player’s hands. Use one
 finished arrow from nock through impact so its visible tip stays aligned with
 the hit. The bow hand grips the bow and the drawing hand follows the string,
-with roles swapped for left-handed play. The current primitive arrow and
-controller markers are prototypes.
+with roles swapped for left-handed play. Use hand and cuff surfaces from the prepared Erika Archer for both hands so skin, leather and scale match the archers. Keep the blue and orange markers in the tracking test scene.
 
 Use three baked scenery prefabs around the same level spawns. The host sends the selected setting in the round-start message, including on rematch. Shared scenery materials and combined meshes reduce draw calls. The distant woodland uses two profiles rendered from a full-resolution fir. The [environment art inventory](../Assets/ThirdParty/PolyHaven/Attribution.md) records each source and license.
 

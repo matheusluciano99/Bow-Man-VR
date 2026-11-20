@@ -242,6 +242,7 @@ Use GitHub's Assignees field to record task responsibility.
   review scene. Provisional aim error, thinking delay and speed need play tuning.
 
 - The visible opponent uses the recorded archery action on its aiming turn. Match the equipped bow hand and string to the shot in both PvE and PvP. Show a single flying projectile per accepted release. Injury and defeat take priority over the standing bow pose.
+- Playable duels show the local archer’s hands on the two tracked controllers. Keep the diagnostic markers in the tracking test scene. Switching bow hands swaps grip and string poses, and losing a controller’s tracking hides its hand. Physical grip and pinch placement require Quest 2 review.
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
   provisional maximum draw of 0.70 m (70 cm).
