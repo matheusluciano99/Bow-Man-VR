@@ -125,3 +125,18 @@ Physical viewpoint acceptance belongs to
 Internal X-ray presentation is a finishing sequence for a confirmed lethal arrow
 only. A surviving hit never starts it; ordinary wound blood and the agreed
 regional entry, hold and recovery still apply. See [Anatomy.md](Anatomy.md).
+
+
+### Pelvic reaction on the game rigs
+
+The surviving sequence uses the Mixamo performances **Falling Down** and
+**Standing**. The archer lands on the seat, braces with both palms behind
+the hips, holds for three seconds and rises through a half kneel. A fatal
+arrow or death during recovery ends in the grounded collapse. The embedded
+arrow stays attached to the struck pelvic volume.
+
+Use **Bow Man VR > Injuries > Rebuild Pelvis** to bake the two rigs’ entry,
+recovery and fatal continuation. The saved clips and their prefab bindings
+are included with the project. The **InjuryAnimationTests** Play Mode suite
+covers the contacts, hold, recovery and death interruption.
+[Adobe Mixamo](https://www.mixamo.com/) and [Adobe’s game-use terms](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html).
