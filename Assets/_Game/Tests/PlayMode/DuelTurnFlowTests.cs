@@ -85,6 +85,25 @@ public class DuelTurnFlowTests
         Assert.That(flow.CanShoot(1), Is.True);
     }
 
+    // Repeats the original shooter after the target finishes its full injury recovery.
+    [UnityTest]
+    public IEnumerator AnimationPracticeKeepsTheFirstShooterAfterRecovery()
+    {
+        flow.Initialize(first, second, alternateShooters: false);
+        var recoveringArcher = -1;
+        flow.RecoveryRequested += (target, _) => recoveringArcher = target;
+        Shoot(BodyRegion.Abdomen);
+        yield return new WaitForFixedUpdate();
+        flow.MarkInjuredPose(flow.ShotId);
+        yield return new WaitForSeconds(3.1f);
+        Assert.That(recoveringArcher, Is.EqualTo(1));
+        Assert.That(flow.CanShoot(0), Is.False);
+        flow.CompleteRecovery(flow.ShotId);
+        Assert.That(flow.CanShoot(0), Is.True);
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(second.CurrentHealth, Is.EqualTo(75));
+    }
+
     // Verifies first scenery contact hands over once and later arrow destruction cannot change it again.
     [UnityTest]
     public IEnumerator SceneryMissHandsOverOnce()

@@ -241,6 +241,10 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Body-specific injury sequences
 
+- Review individual hits in `Assets/_Game/Scenes/InjuryAnimationTest.unity`.
+  Select a region and fire the straight test arrow. The first archer keeps the
+  practice turn. After a fatal collapse the review resets both characters while
+  keeping the selected region. Normal duels still alternate shooters.
 - Bow-duel archers face each other. Current hit regions are head, neck, chest,
   abdomen, pelvis, left/right shoulders, left/right arms, left/right hands,
   left/right legs and left/right feet. Each needs its own reaction. Back hits

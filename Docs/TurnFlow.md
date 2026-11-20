@@ -21,3 +21,5 @@ Run Gameplay PlayMode and required VR EditMode checks. Tests include death durin
 `AIArcher` uses the same CanShoot gate, ArrowFlight and registered-shot outcome as a human. It waits a provisional 0.8 seconds, aims toward the actual chest volume with up to 20 cm of random target-plane error, then solves a lower-time ballistic arc at the provisional full-draw speed of 25 m/s. Unreachable targets produce a bounded-speed attempt rather than freezing the turn. These values need play tuning.
 
 The AI cannot fire during flight, reaction, hold, recovery or defeat. It does not bypass animation callbacks. The automated two-bot match uses an explicit test-host adapter for those callbacks and the full region-specific hold; that proves legal AI turns and match completion, not completed injury visuals. The separate AI review scene keeps its callback buttons visibly manual.
+
+In `InjuryAnimationTest.unity` practice mode, the first archer keeps the turn after a miss or completed recovery. The straight test arrow uses the real first solid impact. A fatal hit plays its collapse before the scene resets with the same selected region. Normal duels continue to alternate shooters.
