@@ -11,6 +11,9 @@ namespace BowMan.Menu
     {
         [SerializeField] private ControllerPointer pointer;
 
+        [SerializeField] private ModeOption handOption;
+        [SerializeField] private TextMesh handLabel;
+
         private Keyboard keyboard;
         private bool loading;
 
@@ -23,6 +26,7 @@ namespace BowMan.Menu
         private void OnEnable()
         {
             if (pointer != null) pointer.Selected += OnSelected;
+            RefreshHandLabel();
             keyboard = Keyboard.current;
             if (keyboard != null) keyboard.onTextInput += OnTextInput;
         }
@@ -53,11 +57,32 @@ namespace BowMan.Menu
         }
 
         // Chooses the mode of the panel the pointer confirmed.
-        private void OnSelected(ModeOption option) => Choose(option.Mode);
+        private void OnSelected(ModeOption option)
+        {
+            if (option == handOption) SwitchHand();
+            else Choose(option.Mode);
+        }
+
+        // Switches which controller holds the bow and updates the visible menu choice.
+        private void SwitchHand()
+        {
+            if (loading) return;
+            VRBowInput.PreferredBowLeft = !VRBowInput.PreferredBowLeft;
+            RefreshHandLabel();
+        }
+
+        // Describes both hand roles so a first-time player can choose their drawing hand.
+        private void RefreshHandLabel()
+        {
+            if (handLabel != null) handLabel.text = VRBowInput.PreferredBowLeft
+                ? "Bow in left hand  •  Draw with right"
+                : "Bow in right hand  •  Draw with left";
+        }
 
         // Chooses PvE or PvP from the typed digits 1 and 2.
         private void OnTextInput(char key)
         {
+            if (key == 'h' || key == 'H') SwitchHand();
             var mode = GameScenes.ModeForKey(key);
             if (mode.HasValue) Choose(mode.Value);
         }

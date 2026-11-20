@@ -54,7 +54,7 @@ public static class ModeMenuBuilder
     }
 
     // Creates the menu scene: rig, floor, title, two mode panels and the controller pointer.
-    private static void BuildMenuScene()
+    public static void BuildMenuScene()
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         var light = new GameObject("Directional Light").AddComponent<Light>();
@@ -67,14 +67,23 @@ public static class ModeMenuBuilder
 
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(XRPlayerPath));
         var camera = rig.GetComponentInChildren<Camera>();
+        camera.clearFlags = CameraClearFlags.SolidColor;
+        camera.backgroundColor = new Color(0.085f, 0.12f, 0.16f);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(camera);
+        floor.GetComponent<Renderer>().sharedMaterial = MenuMaterial(MaterialFolder + "/MenuFloor.mat", new Color(0.10f, 0.14f, 0.14f));
         var rightHand = rig.transform.Find("Camera Offset/Right Controller");
 
-        Label(null, "Bow Man VR — choose a mode", new Vector3(0f, 2.15f, 2.5f), 0.05f);
-        Label(null, "Point with the right controller and pull the trigger\nDesktop: press 1 / 2 or click a panel",
-            new Vector3(0f, 0.75f, 2.5f), 0.025f);
+        Label(null, "Bow Man VR", new Vector3(0f, 2.20f, 2.5f), 0.05f);
+        Label(null, "Point and pull the right trigger to select  •  Desktop: click or press 1 / 2",
+            new Vector3(0f, 1.93f, 2.5f), 0.018f);
         var panelMaterial = MenuMaterial(PanelMaterialPath, new Color(0.16f, 0.2f, 0.28f));
         Panel(GameMode.PvE, new Vector3(-0.8f, 1.45f, 2.5f), panelMaterial);
         Panel(GameMode.PvP, new Vector3(0.8f, 1.45f, 2.5f), panelMaterial);
+
+        var handPosition = new Vector3(0f, 0.78f, 2.5f);
+        var handOption = Panel(GameMode.PvE, handPosition, panelMaterial, true);
+        var handLabel = handOption.GetComponentInChildren<TextMesh>();
+        Label(null, "Select the hand panel or press H to switch", new Vector3(0f, 0.53f, 2.5f), 0.019f);
 
         var pointer = rightHand.gameObject.AddComponent<ControllerPointer>();
         var line = rightHand.gameObject.AddComponent<LineRenderer>();
@@ -93,26 +102,30 @@ public static class ModeMenuBuilder
         var menu = new GameObject("Mode menu").AddComponent<ModeMenu>();
         var menuFields = new SerializedObject(menu);
         menuFields.FindProperty("pointer").objectReferenceValue = pointer;
+        menuFields.FindProperty("handOption").objectReferenceValue = handOption;
+        menuFields.FindProperty("handLabel").objectReferenceValue = handLabel;
         menuFields.ApplyModifiedPropertiesWithoutUndo();
 
         EditorSceneManager.SaveScene(scene, MenuScenePath);
     }
 
     // Creates one selectable panel: a solid board, its mode title and the highlight component.
-    private static void Panel(GameMode mode, Vector3 position, Material material)
+    private static ModeOption Panel(GameMode mode, Vector3 position, Material material, bool handChoice = false)
     {
-        var root = new GameObject(mode + " option");
+        var root = new GameObject(handChoice ? "Bow hand option" : mode + " option");
         root.transform.position = position;
         var board = GameObject.CreatePrimitive(PrimitiveType.Cube);
         board.name = "Board";
         board.transform.SetParent(root.transform, false);
-        board.transform.localScale = new Vector3(1.3f, 0.9f, 0.05f);
+        board.transform.localScale = handChoice ? new Vector3(2.9f, 0.34f, 0.05f) : new Vector3(1.3f, 0.72f, 0.05f);
         var renderer = board.GetComponent<Renderer>();
         renderer.sharedMaterial = material;
-        Label(root.transform, GameScenes.Title(mode), new Vector3(0f, 0f, -0.04f), 0.032f);
+        Label(root.transform, handChoice ? "Bow in left hand  •  Draw with right" : GameScenes.Title(mode),
+            new Vector3(0f, 0f, -0.04f), handChoice ? 0.024f : 0.032f);
         var option = root.AddComponent<ModeOption>();
         option.Configure(mode, renderer);
         EditorUtility.SetDirty(option);
+        return option;
     }
 
     // Adds centered white text using the built-in font, readable from the player's side.
