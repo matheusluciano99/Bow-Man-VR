@@ -254,6 +254,36 @@ and fall from *Shoulder Hit And Fall*. Mirroring lets the same performance
 react to the correct side. The fitted fatal fall passed the Unity injury review on November 20, 2026. The standing shoulder reaction needs its own
 performance that includes the impact and a supported hold.
 
+## D020 — Keep one XR session and one shot authority for the local duel
+
+Use the existing tracked bow and AI with DuelTurnFlow; every released arrow
+registers there before physics, and the bow rejects nocking/release outside the
+local aiming turn. Rebuild match-owned actors and arrows on restart while keeping
+the XR rig, live Link session and handedness. Keep the local body's renderers
+hidden while its bone-bound volumes and injury clips remain active.
+
+Apply the animated eyes' change from their standing reference to the tracking
+origin after animation. Preserve each tracked head/controller's local position
+and rotation, including live movement during a fall; do not add eye height to
+floor-level tracking. Restore the origin on restart. This implements the chosen
+eye-following presentation; physical height alignment and motion comfort still
+require the Quest 2 checklist.
+
+## D023 — Keep manual headset acceptance under the wearer's control
+
+The headset wearer fires each regional test using the actual controller input,
+draw and aim. Passive hit logs, frame captures and region labels guide the
+review without firing arrows or skipping injury/recovery on the wearer's behalf. This
+keeps visual review tied to the real interaction being accepted. Scripted
+projectile/animation checks remain separate automated evidence. A temporary
+close opponent helps inspect contacts without settling the arena distance.
+
+Regional animation review uses a passive opponent that never shoots. After a
+miss or complete surviving recovery, return practice control to the wearer
+without healing the target or resetting its pose. Keep the actual trigger,
+tracking, focus and injury gates; exercise AI combat separately. This avoids
+waiting for unrelated attacks while comparing regional motion.
+
 ## Open questions and provisional values
 
 - The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.

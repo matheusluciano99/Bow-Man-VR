@@ -35,6 +35,9 @@ namespace BowMan
 
         public event Action<ArrowFlight> Fired;
 
+        // Assigns the living local actor whose colliders this bow's arrows ignore.
+        public void SetOwner(Transform owner) => firingArcher = owner;
+
         // Locks all input paths during another turn, injury, flight or defeat and discards any pending draw.
         public void SetShotAllowed(bool allowed)
         {

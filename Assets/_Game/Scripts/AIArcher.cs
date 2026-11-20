@@ -68,6 +68,7 @@ namespace BowMan
             if (!ArrowBallistics.TryVelocity(start, point, launchSpeed, out var velocity))
                 velocity = (point - start).normalized * launchSpeed;
             var arrow = Instantiate(arrowPrefab, start, Quaternion.identity);
+            arrow.transform.SetParent(owner.transform.parent, true);
             arrow.Launch(velocity, owner.transform);
             if (flow.TryTrackShot(archerIndex, arrow)) ShotsFired++;
             else Destroy(arrow.gameObject);

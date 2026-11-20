@@ -7,6 +7,7 @@ namespace BowMan
     {
         [SerializeField] private Bow bow;
         [SerializeField] private VRBowInput vrInput;
+        [SerializeField] private bool showPanel = true;
 
         private bool desktopControls;
         private Vector3 parkedPosition;
@@ -92,7 +93,7 @@ namespace BowMan
         // Shows desktop test controls and shot feedback without changing the VR interaction.
         private void OnGUI()
         {
-            if (bow == null) return;
+            if (bow == null || !showPanel) return;
             GUILayout.BeginArea(new Rect(16, 16, 390, 195), GUI.skin.box);
             GUILayout.Label("Bow interaction test");
             if (vrInput != null && GUILayout.Button(vrInput.BowInLeftHand

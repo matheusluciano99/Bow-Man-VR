@@ -191,6 +191,34 @@ Use GitHub's Assignees field to record task responsibility.
   visually attached during a shooting lock. `Bow.SetShotAllowed` gates both
   input paths without changing tracked head/controller poses.
 
+## Running the local VR duel
+
+- Open `Assets/_Game/Scenes/LocalDuel.unity` after starting Quest Link. The player
+  faces Erika across the existing 20-metre arena and sees tracked controllers
+  plus their bow; the hidden local body still receives anatomical impacts.
+- The bow stays equipped; the opposite trigger draws/releases. Right-controller B
+  switches bow hands during the player's aiming turn. Right-controller A restarts
+  after victory/defeat. Hand preference survives restart.
+- The headset-visible text shows both health values, current flow, draw strength,
+  handedness and restart controls. Flying arrows, opponent turns, injuries and
+  defeat lock nocking/release through the shared bow gate.
+- Without a headset, focus Game view and press Tab for desktop controls; arrow
+  keys aim and Space draws/releases. H changes hands during your aiming turn;
+  R restarts a finished match. Tab returns to tracked input.
+- Injuries apply animated-eye displacement/rotation to the tracking origin while
+  preserving live local head/controller poses. A neutral frame adds no extra
+  standing height; restart restores the floor origin without restarting XR.
+- In manual headset review, the wearer fires every test shot. Assistants can
+  label regions and capture frames/hit data; keep automatic demonstrations
+  separate from manual acceptance. In regional animation review, disable AI
+  shooting and return practice control to the wearer after a miss or complete
+  recovery, preserving health/wounds and all tracking, focus and injury gates.
+  Review ordinary AI combat separately.
+- Build this scene explicitly for Windows x86_64 under `Builds/PCVRDuel/`.
+  Shared tracking-scene build settings remain unchanged. Run the lab checklist in
+  [Docs/LabTestPlan.md](Docs/LabTestPlan.md); physical eye alignment, comfort,
+  grip offsets and draw calibration remain pending on Quest 2.
+
 ## Running the bow interaction test
 
 - Open `Assets/_Game/Scenes/BowInteractionTest.unity` and enter Play. For VR,
