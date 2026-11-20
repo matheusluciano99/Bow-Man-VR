@@ -159,3 +159,7 @@ knees buckle. The match ends on impact and the archer stays down once the
 collapse completes. Use **Bow Man VR > Injuries > Rebuild Neck Collapse** to
 regenerate the clips, then choose **Neck** in **DuelTurnTest**. First-person
 headset comfort is tracked in #35.
+
+## Fatal shoulder reaction
+
+A lethal shoulder arrow plays Adobe Mixamo’s **Shoulder Hit And Fall** from impact to collapse. Its right hand reaches the left shoulder. The right-shoulder clip mirrors the take on the target rig. The fitted fall passed visual review in the Unity injury scene. The standing reaction remains in review. Rebuild the four model-specific clips with **Bow Man VR > Injuries > Rebuild Fatal Shoulders**. The source FBX is under `Assets/ThirdParty/MixamoAnimations/Motions/`. [Mixamo game-use FAQ](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html)

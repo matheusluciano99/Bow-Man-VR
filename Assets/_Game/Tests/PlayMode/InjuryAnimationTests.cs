@@ -481,6 +481,26 @@ public class InjuryAnimationTests
         }
     }
 
+    // A lethal shoulder arrow runs the complete fall even when the standing reaction is unbound.
+    [UnityTest]
+    public IEnumerator LethalShoulderArrowsCompleteTheRecordedFall()
+    {
+        foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
+        foreach (var side in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder })
+        {
+            var flow = BodyShot(out var target, out var arrow, side, model);
+            target.TakeDamage(75);
+            var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
+            var duration = target.GetComponent<ArcherReactionAnimation>().FatalEntry(side).length;
+            yield return new WaitForSeconds(duration + 0.25f);
+            Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(side));
+            Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+            Assert.That(target.CurrentHealth, Is.Zero);
+            Assert.That(target.transform.InverseTransformPoint(head.position).y, Is.LessThan(0.4f), model);
+            yield return CleanUp();
+        }
+    }
+
     // Verifies a real left-shoulder hit uses its separate automatic sequence and preserves impact identity.
     [UnityTest]
     public IEnumerator LeftShoulderUsesItsOwnRecoveryAndImpactIdentity()

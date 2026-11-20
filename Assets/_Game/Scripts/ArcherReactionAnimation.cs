@@ -101,7 +101,9 @@ namespace BowMan
         // Plays this exact region's entry; unsupported regions remain pending for their own implementations.
         private void OnReaction(int target, BodyImpact hit, bool lethal, int shotId)
         {
-            if (target != archerIndex || Entry(hit.Region) == null) return;
+            if (target != archerIndex) return;
+            var clip = lethal && FatalEntry(hit.Region) != null ? FatalEntry(hit.Region) : Entry(hit.Region);
+            if (clip == null) return;
             region = hit.Region;
             token = shotId;
             recovering = false;
@@ -109,7 +111,7 @@ namespace BowMan
             finishingDeath = false;
             injured = true;
             elapsed = 0f;
-            playing = lethal && FatalEntry(region) != null ? FatalEntry(region) : Entry(region);
+            playing = clip;
             entryImpact = hit;
             if (region is BodyRegion.Neck or BodyRegion.Abdomen)
             {

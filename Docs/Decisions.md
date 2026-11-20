@@ -280,7 +280,7 @@ pose. Preserve the independent head and neck fatal sequences.
 
 For a lethal shoulder shot, use the complete captured recoil, opposite-hand reach
 and fall from *Shoulder Hit And Fall*. Mirroring lets the same performance
-react to the correct side. The standing shoulder reaction needs its own
+react to the correct side. The fitted fatal fall passed the Unity injury review on November 20, 2026. The standing shoulder reaction needs its own
 performance that includes the impact and a supported hold.
 
 ## D019 — Bow controls consolidated into D008
