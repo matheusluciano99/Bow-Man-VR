@@ -35,6 +35,7 @@ namespace BowMan
                 bow == null || vrInput == null || desktopInput == null || injuryView == null || arrowPrefab == null ||
                 head == null || feedback == null)
                 throw new InvalidOperationException("The local duel scene is missing a required character, bow, view or feedback reference.");
+            vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
             Flow = gameObject.AddComponent<DuelTurnFlow>();
             cutaway = head.gameObject.AddComponent<FatalCutaway>();
             Flow.FatalityRequested += OnFatality;
@@ -117,8 +118,7 @@ namespace BowMan
                 position.z = head.position.z;
                 LocalArcher.transform.position = position;
             }
-            var status = Flow.Phase == DuelPhase.Finished ? (Flow.Winner == 0 ? "VICTORY" : "DEFEAT") :
-                Flow.CanShoot(0) ? "Your turn" : Flow.Phase == DuelPhase.Aiming ? "Opponent aiming" : Flow.Phase.ToString();
+            var status = Flow.StatusFor(0);
             if (cutaway.IsVisible)
             {
                 feedback.text = $"{status}     A / R: restart\n{cutaway.Caption}";
@@ -127,8 +127,7 @@ namespace BowMan
             feedback.text = $"{status}     You {LocalArcher.CurrentHealth}  |  Opponent {Opponent.CurrentHealth}\n" +
                 $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}\n" +
                 (Flow.Phase == DuelPhase.Finished ? "A / R: restart" :
-                desktopMode ? "Arrow keys: aim   Hold/release Space: shoot   Tab: VR" :
-                "Trigger: draw/release   B: switch bow hand");
+                Flow.CanShoot(0) ? vrInput.ShotHint(desktopMode) : "Your bow unlocks on your turn");
         }
 
         // Releases input actions and listeners when this duel scene closes.

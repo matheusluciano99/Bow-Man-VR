@@ -150,7 +150,7 @@ public class LocalDuelTests
         Assert.That(duel.Flow.CanShoot(0), Is.True, $"{duel.Flow.Phase}: local health {duel.LocalArcher.CurrentHealth}");
         var bowInput = new UnityEditor.SerializedObject(Find<VRBowInput>());
         Assert.That(bowInput.FindProperty("gripRotationOffset").vector3Value, Is.EqualTo(new Vector3(90f, 0f, 0f)));
-        Assert.That(Find<TextMesh>().text, Does.Contain("Trigger: draw/release"));
+        Assert.That(Find<TextMesh>().text, Does.Contain(UnityEngine.XR.XRSettings.isDeviceActive ? "Hold its trigger" : "Press Tab"));
         Assert.That(Find<TextMesh>().text, Does.Not.Contain("Grip: hold bow"));
         Assert.That(duel.LocalArcher.GetComponentsInChildren<Renderer>().All(r => !r.enabled), Is.True);
         Assert.That(duel.Opponent.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r => r.enabled), Is.True);
