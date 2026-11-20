@@ -162,5 +162,26 @@ namespace BowMan
             action.Enable();
             return action;
         }
+
+        // Stores the menu's bow-hand selection locally for either duel mode.
+        public static bool PreferredBowLeft
+        {
+            get => PlayerPrefs.GetInt("BowMan.BowLeft", 1) != 0;
+            set
+            {
+                PlayerPrefs.SetInt("BowMan.BowLeft", value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
+
+        // Shows the next action for the player's input method and current string state.
+        public string ShotHint(bool desktop)
+        {
+            if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
+            if (!UnityEngine.XR.XRSettings.isDeviceActive) return "Press Tab for desktop controls";
+            if (bow.IsDrawing) return "Pull back, aim, then release the trigger";
+            var hand = BowInLeftHand ? "right" : "left";
+            return $"Bring your {hand} hand to the string • Hold its trigger";
+        }
     }
 }

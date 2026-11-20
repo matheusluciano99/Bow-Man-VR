@@ -189,6 +189,9 @@ Use GitHub's Assignees field to record task responsibility.
   **PvE — vs AI archer** (opens `LocalDuel`) and **PvP — online duel** (opens
   `PvPConnectionTest`). Point the right controller's ray at a panel and pull the
   trigger; without a headset press 1 / 2 or click a panel.
+- Select the bow-hand panel or press H to choose which hand holds the bow and
+  which hand draws. Both modes start with that saved choice. While aiming, the
+  duel HUD shows the next action for the current hand and input method.
 - In either mode, the left controller's Menu button or Esc returns to the menu.
   Leaving the PvP scene ends the online session. Health, turn and the
   VICTORY/DEFEAT result stay on the local duel's headset text (#8).

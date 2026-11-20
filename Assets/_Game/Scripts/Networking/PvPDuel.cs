@@ -61,6 +61,7 @@ namespace BowMan.Networking
             bow.gameObject.SetActive(false);
             bow.Fired += Released;
             connection.StatusChanged += ConnectionChanged;
+            vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
             desktopMode = DesktopXR.Requested(Environment.GetCommandLineArgs());
         }
 
@@ -357,12 +358,12 @@ namespace BowMan.Networking
                 if ((pos - spawn).sqrMagnitude <= 9f) actor.transform.position = pos;
                 if (i != LocalIndex) ShowDraw(presence.Draw, i, actor.transform.position);
             }
-            var status = Flow.Phase == DuelPhase.Finished ? (Flow.Winner == LocalIndex ? "VICTORY" : "DEFEAT") :
-                Flow.Phase == DuelPhase.Aiming ? (Flow.CanShoot(LocalIndex) ? "Your turn" : "Opponent aiming") : Flow.Phase.ToString();
+            var status = Flow.StatusFor(LocalIndex);
             feedback.text = $"{status}    You {actors[LocalIndex].CurrentHealth}  |  Opponent {actors[1 - LocalIndex].CurrentHealth}    {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? (RematchRequested ? "Waiting for opponent" :
                     votes != 0 ? "Opponent wants a rematch — A / R: accept" : "A / R: rematch") +
-                    (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : desktopMode ? "Arrow keys: aim    Space: draw/release" : "Trigger: draw/release");
+                    (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : Flow.CanShoot(LocalIndex) ? vrInput.ShotHint(desktopMode) :
+                    "Your bow unlocks on your turn");
         }
 
         // Releases the match and connection listeners when leaving the network scene.
