@@ -75,9 +75,14 @@ character.
 late floor penetration into a fitted, two-palm seat. `Standing` drives the rise
 after an authored pivot to one knee. `Kneeling Down` drives the abdominal weight transfer into the fitted double kneel. `Standing` also drives its planted-foot rise.
 `Injured Hurting Idle` holds the upper thigh; it is not a raised-foot reaction.
-`Injured Idle` does not supply the required forearm cradle. Arm Stretching and
-Injured Walking contain useful support movement but do not by themselves complete
-the agreed arm/wrist sequences. The three bow sources cover reload/aim/recoil;
+`Injured Idle` does not supply the required forearm cradle. In the full one-second `Injured Walking` take, the free hand
+holds the opposite upper arm throughout the stride. The 8.87-second
+`Arm Stretching` take shows the hand coming under each elbow in turn, then
+releasing and lowering both arms. Both takes begin without an impact, and
+neither shows the opposite hand supporting an injured wrist. Full-speed
+side-by-side renders on English Archer and Erika are available locally under
+`Artifacts/PRReview/ArmSources/` for pose review. Neither source has been
+selected for a gameplay reaction. The three bow sources cover reload/aim/recoil;
 they are alternatives to the unavailable itch archives, not injury replacements.
 
 ### Recorded shoulder impact candidates
