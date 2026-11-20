@@ -98,6 +98,46 @@ public class LocalDuelTests
         Assert.That(maxAngle, Is.GreaterThan(0.3f));
     }
 
+    // Checks the visible AI draw against the fingertips and the one projectile admitted by the turn.
+    [UnityTest]
+    public IEnumerator OpponentNocksDrawsAndReleasesOneArrow()
+    {
+        var duel = Find<LocalDuel>();
+        var ai = duel.Opponent.GetComponent<AIArcher>();
+        var action = ai.GetComponent<OpponentBowAction>();
+        var rig = ai.GetComponentInChildren<Animator>();
+        var settings = new UnityEditor.SerializedObject(ai);
+        settings.FindProperty("thinkDelay").floatValue = 2f;
+        settings.ApplyModifiedPropertiesWithoutUndo();
+        Shoot(duel, BodyRegion.LeftHand);
+        var end = Time.time + 22f;
+        var sawInjury = false;
+        var samples = 0;
+        var largestGap = 0f;
+        var firstString = Vector3.zero;
+        var travel = 0f;
+        while (ai.ShotsFired == 0 && Time.time < end)
+        {
+            yield return null;
+            var equipment = ai.transform.Find("Opponent bow");
+            if (!equipment.gameObject.activeSelf) sawInjury = true;
+            if (!action.IsNocked) continue;
+            var pinch = (rig.GetBoneTransform(HumanBodyBones.RightIndexDistal).position +
+                rig.GetBoneTransform(HumanBodyBones.RightThumbDistal).position) * 0.5f;
+            largestGap = Mathf.Max(largestGap, Vector3.Distance(pinch, action.StringPoint));
+            var relativeString = equipment.InverseTransformPoint(action.StringPoint);
+            if (samples++ == 0) firstString = relativeString;
+            travel = Mathf.Max(travel, Vector3.Distance(firstString, relativeString));
+        }
+        Assert.That(sawInjury, Is.True);
+        Assert.That(samples, Is.GreaterThan(1));
+        Assert.That(travel, Is.GreaterThan(0.3f));
+        Assert.That(largestGap, Is.LessThan(0.045f), "Drawing fingers to moving string");
+        Assert.That(ai.ShotsFired, Is.EqualTo(1));
+        Assert.That(action.IsNocked, Is.False);
+        Assert.That(action.transform.Find("Opponent bow").GetComponentsInChildren<ArrowFlight>(true), Is.Empty);
+    }
+
     // Exercises a real twenty-metre bow hit, full recovery, an AI response, fatal victory and a clean same-session restart.
     [UnityTest]
     public IEnumerator BowDamageRecoveryAIResultAndRestartWorkTogether()

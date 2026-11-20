@@ -54,6 +54,47 @@ public class PvPRelayMatchTests
         Assert.That(bow.Release(), Is.Not.Null);
     }
 
+    // Waits for the other seat to see the nock, the extended string and the correct drawing fingers.
+    private static IEnumerator PreviewDraw(PvPDuel duel, Bow bow, bool shooting, int shooter, string folder)
+    {
+        var archer = duel.Archer(shooter);
+        var bowLeft = shooter == 0;
+        var ready = Path.Combine(folder, "draw-" + shooter);
+        if (shooting)
+        {
+            var input = Object.FindAnyObjectByType<VRBowInput>(FindObjectsInactive.Include);
+            input.SetBowHand(bowLeft);
+            var grip = archer.transform.TransformPoint(new Vector3(bowLeft ? -0.16f : 0.16f, 1.38f, 0.47f));
+            bow.transform.SetPositionAndRotation(grip, archer.transform.rotation);
+            bow.SetHeld(true);
+            Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
+            yield return Until(() => File.Exists(ready + "-nock"), "Peer saw resting nock");
+            bow.PullTo(bow.RestPosition - bow.transform.forward * 0.52f);
+            yield return Until(() => File.Exists(ready + "-pull"), "Peer saw drawn bow");
+            bow.CancelDraw();
+            yield return Until(() => File.Exists(ready + "-cancel"), "Peer discarded cancelled draw");
+        }
+        else
+        {
+            var action = archer.GetComponent<OpponentBowAction>();
+            var rig = archer.GetComponentInChildren<Animator>();
+            var equipment = archer.transform.Find("Opponent bow");
+            yield return Until(() => action.IsNocked, "Remote arrow on the string");
+            var initial = equipment.InverseTransformPoint(action.StringPoint);
+            File.WriteAllText(ready + "-nock", "");
+            yield return Until(() => Vector3.Distance(initial, equipment.InverseTransformPoint(action.StringPoint)) > 0.45f,
+                "Remote draw extends by half a metre");
+            var thumb = rig.GetBoneTransform(bowLeft ? HumanBodyBones.RightThumbDistal : HumanBodyBones.LeftThumbDistal);
+            var index = rig.GetBoneTransform(bowLeft ? HumanBodyBones.RightIndexDistal : HumanBodyBones.LeftIndexDistal);
+            yield return Until(() => Vector3.Distance((thumb.position + index.position) * 0.5f, action.StringPoint) < 0.045f,
+                "Remote drawing fingers meet the string", 3f);
+            Assert.That(equipment.GetComponentsInChildren<ArrowFlight>(true), Is.Empty);
+            File.WriteAllText(ready + "-pull", "");
+            yield return Until(() => !action.IsNocked, "Remote cancellation");
+            File.WriteAllText(ready + "-cancel", "");
+        }
+    }
+
     // Checks turn and health replication for a ground impact and an arrow that flies outside the arena.
     private static IEnumerator MissesPassTheTurn(PvPDuel duel, Bow bow, bool host, string folder)
     {
@@ -189,13 +230,17 @@ public class PvPRelayMatchTests
                 "Standing opponent moves on " + role, 8f);
             File.WriteAllText(Path.Combine(folder, role + "-ready"), "");
             yield return Until(() => File.Exists(Path.Combine(folder, (host ? "join" : "host") + "-ready")), "Peer entered match");
+            var directInput = Object.FindAnyObjectByType<DesktopBowTest>();
+            directInput.enabled = false;
+            Object.FindAnyObjectByType<VRBowInput>(FindObjectsInactive.Include).enabled = false;
             var regions = new[] { BodyRegion.LeftLeg, BodyRegion.Chest, BodyRegion.Head };
             for (var shot = 0; shot < regions.Length; shot++)
             {
                 var shooter = shot % 2;
+                yield return Until(() => duel.Flow.CanShoot(shooter), "Recovered shooting turn " + shot);
+                if (shot < 2) yield return PreviewDraw(duel, bow, host == (shooter == 0), shooter, folder);
                 if (host == (shooter == 0))
                 {
-                    yield return Until(() => duel.Flow.CanShoot(shooter), "Recovered shooting turn " + shot);
                     Fire(duel, bow, shooter, regions[shot]);
                 }
                 yield return Until(() => hits.Count == shot + 1, "Replicated wound " + shot);

@@ -6,4 +6,4 @@ The duel uses a loop of the recorded torso, shoulder and head motion fitted to t
 
 ## Bow action recording
 
-`Hawkeye_Archery_mixamo.fbx` comes from the Superhero folder in the same free collection. The full take contains several gestures. The straight draw around 5–7 seconds is the candidate for the visible opponent's bow action. Game timing, equipment contact and left-handed playback still need fitting. [Rokoko's motion collection](https://www.rokoko.com/resources/download-263-rokoko-motion-capture-assets)
+`Hawkeye_Archery_mixamo.fbx` comes from the Superhero folder in the same free collection. The full take contains several gestures. The duel uses the straight draw from 4.5 to 7.25 seconds. The upper-body motion is retargeted onto each archer and mirrored for the other bow hand. Rebuild the four clips in Unity with **Bow Man VR > Characters > Bake opponent bow action**. [Rokoko's motion collection](https://www.rokoko.com/resources/download-263-rokoko-motion-capture-assets)
