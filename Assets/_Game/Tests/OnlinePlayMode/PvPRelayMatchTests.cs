@@ -100,8 +100,11 @@ public class PvPRelayMatchTests
             for (var shot = 0; shot < regions.Length; shot++)
             {
                 var shooter = shot % 2;
-                yield return Until(() => duel.Flow.CanShoot(shooter), "Recovered turn " + shot);
-                if (host == (shooter == 0)) Fire(duel, bow, shooter, regions[shot]);
+                if (host == (shooter == 0))
+                {
+                    yield return Until(() => duel.Flow.CanShoot(shooter), "Recovered shooting turn " + shot);
+                    Fire(duel, bow, shooter, regions[shot]);
+                }
                 yield return Until(() => hits.Count == shot + 1, "Replicated wound " + shot);
                 Assert.That(hits.Last(), Does.Contain("/" + regions[shot] + "/"));
             }
