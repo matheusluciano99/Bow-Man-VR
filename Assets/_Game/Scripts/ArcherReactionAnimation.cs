@@ -102,6 +102,8 @@ namespace BowMan
             {
                 idleArms = new[] { HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm,
                     HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm }.Select(poseAnimator.GetBoneTransform).ToArray();
+                idleTime = 0f;
+                standingIdle.SampleAnimation(gameObject, idleTime);
                 BeginArmBlend();
             }
             flow.ReactionRequested += OnReaction;
