@@ -257,6 +257,24 @@ Use GitHub's Assignees field to record task responsibility.
   visually attached during a shooting lock. `Bow.SetShotAllowed` gates both
   input paths without changing tracked head/controller poses.
 
+## Reviewing the medieval environments
+
+- Use **Bow Man VR > Arenas > Rebuild medieval environments** to regenerate the three scenery prefabs under `Assets/_Game/Resources/Arenas/`. Each round places its selected prefab around the two spawns.
+- Compare the three settings from both seats in the Unity Editor. Check the opponent and flight path against each backdrop. Run the two-Editor Relay test to compare the initial setting and rematch on both seats. Verify headset scale and binocular readability on Quest 2.
+- Original scenery sources, author credits and Blender derivative instructions are in [the Poly Haven inventory](Assets/ThirdParty/PolyHaven/Attribution.md).
+
+## Duel audio
+
+- Use the arena selected for the round to choose its ambience on both seats.
+  Play spatial draw and release sounds at the bow, flight on the moving arrow,
+  and contact at the confirmed impact point. A cancelled draw stays quiet on release.
+- The string starts creaking above 60% draw, grows louder toward full draw and
+  quiets while held. Easing back to the threshold, cancelling or firing stops it.
+- X on the left controller or V on the keyboard cycles game volume through mute
+  and four audible levels. Keep this preference local across modes and rematches.
+- Source recordings and edits are listed in [Duel audio credits](Assets/ThirdParty/DuelAudio/Credits.md).
+  Verify spatial placement and comfort on Quest 2.
+
 ## Running the local VR duel
 
 - Open `Assets/_Game/Scenes/LocalDuel.unity` after starting Quest Link. The player

@@ -31,6 +31,21 @@ public class PvPRelayMatchTests
         return index < 0 || index + 1 >= args.Length ? null : args[index + 1];
     }
 
+    // Compares the host-selected environment and the instantiated scenery on each seat of this round.
+    private static IEnumerator SameEnvironment(PvPDuel duel, string folder, string role)
+    {
+        var setting = duel.Setting.ToString();
+        var scenery = duel.Flow.GetComponentInChildren<DuelEnvironment>();
+        Assert.That(scenery.name, Is.EqualTo(setting + "(Clone)"));
+        var prefix = Path.Combine(folder, "arena-" + duel.Round + "-");
+        var path = prefix + role;
+        File.WriteAllText(path + ".tmp", setting);
+        File.Move(path + ".tmp", path);
+        var peer = prefix + (role == "host" ? "join" : "host");
+        yield return Until(() => File.Exists(peer), "Peer loaded its arena");
+        Assert.That(File.ReadAllText(peer), Is.EqualTo(setting));
+    }
+
     // Exercises the shared bow in its assigned arena slot.
     private static void Fire(PvPDuel duel, Bow bow, int shooter, BodyRegion region)
     {
@@ -80,6 +95,8 @@ public class PvPRelayMatchTests
             var rig = archer.GetComponentInChildren<Animator>();
             var equipment = archer.transform.Find("Opponent bow");
             yield return Until(() => action.IsNocked, "Remote arrow on the string");
+            var creak = Object.FindAnyObjectByType<DuelAudio>().transform.Find("Draw").GetComponent<AudioSource>();
+            Assert.That(creak.isPlaying, Is.False, "Resting remote nock stays quiet");
             var initial = equipment.InverseTransformPoint(action.StringPoint);
             File.WriteAllText(ready + "-nock", "");
             yield return Until(() => Vector3.Distance(initial, equipment.InverseTransformPoint(action.StringPoint)) > 0.45f,
@@ -89,8 +106,10 @@ public class PvPRelayMatchTests
             yield return Until(() => Vector3.Distance((thumb.position + index.position) * 0.5f, action.StringPoint) < 0.045f,
                 "Remote drawing fingers meet the string", 3f);
             Assert.That(equipment.GetComponentsInChildren<ArrowFlight>(true), Is.Empty);
+            yield return Until(() => creak.isPlaying && creak.volume > 0.05f, "Remote bow sounds under tension");
             File.WriteAllText(ready + "-pull", "");
             yield return Until(() => !action.IsNocked, "Remote cancellation");
+            yield return Until(() => !creak.isPlaying, "Remote stretch stops on cancellation");
             File.WriteAllText(ready + "-cancel", "");
         }
     }
@@ -211,8 +230,10 @@ public class PvPRelayMatchTests
                 yield return Until(() => joining.IsCompleted, "Relay client allocation");
             }
             yield return Until(() => duel.Flow != null, $"Round start on {role}");
+            yield return SameEnvironment(duel, folder, role);
             var bow = Object.FindAnyObjectByType<Bow>();
             var hits = new List<string>();
+            var sounds = Object.FindAnyObjectByType<DuelAudio>();
             duel.Flow.ReactionRequested += (target, impact, lethal, token) =>
             {
                 var report = duel.Archer(target).GetComponentsInChildren<ArrowAnatomy>()
@@ -246,6 +267,13 @@ public class PvPRelayMatchTests
                 }
                 yield return Until(() => hits.Count == shot + 1, "Replicated wound " + shot);
                 Assert.That(hits.Last(), Does.Contain("/" + regions[shot] + "/"));
+                var cues = sounds.GetComponentsInChildren<AudioSource>();
+                Assert.That(cues.Count(c => c.clip.name == "Body"), Is.EqualTo(1), "One contact on " + role);
+                Assert.That(cues.Any(c => c.clip.name == "Flight" && c.isPlaying), Is.False);
+                var embedded = duel.Archer(1 - shooter).GetComponentsInChildren<ArrowAnatomy>()
+                    .Last(a => a.LastImpact?.Entry.Region == regions[shot]);
+                Assert.That(Vector3.Distance(cues.Single(c => c.clip.name == "Body").transform.position,
+                    embedded.LastImpact.Entry.Point), Is.LessThan(0.15f));
             }
             Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
             Assert.That(duel.Flow.Winner, Is.Zero);
@@ -280,6 +308,7 @@ public class PvPRelayMatchTests
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
             Assert.That(duel.Flow.CanShoot(0), Is.True);
             Assert.That(duel.RematchRequested, Is.False);
+            yield return SameEnvironment(duel, folder, role);
             Assert.That(duel.Archer(1).GetComponentsInChildren<ArrowFlight>(), Is.Empty);
             if (host)
             {

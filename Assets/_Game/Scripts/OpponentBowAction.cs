@@ -19,6 +19,8 @@ namespace BowMan
         private Quaternion[] baseRotations;
         private Vector3[] basePositions;
 
+        public Vector3 GripPosition => equipment.position;
+        public float DrawStrength => draw;
         public Vector3 ArrowTip => arrow.position;
         public bool IsNocked => arrow != null && arrow.gameObject.activeSelf;
         public Vector3 StringPoint => bowString.GetPosition(1);

@@ -76,6 +76,120 @@ public class LocalDuelTests
         return arrow;
     }
 
+    // Checks both sides of the stretch threshold, a held full draw, easing off and cancellation.
+    [UnityTest]
+    public IEnumerator StretchStartsAboveSixtyPercentAndStopsWhenTheStringRelaxes()
+    {
+        Time.timeScale = 1f;
+        Find<VRBowInput>().enabled = false;
+        Find<DesktopBowTest>().enabled = false;
+        var sounds = Find<DuelAudio>();
+        var bow = Find<Bow>();
+        var creak = sounds.transform.Find("Draw").GetComponent<AudioSource>();
+        bow.SetHeld(true);
+        Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
+        yield return null;
+        Assert.That(sounds.transform.Find("Nock"), Is.Not.Null);
+        bow.PullTo(bow.RestPosition - bow.transform.forward * (bow.MaximumDrawDistance * 0.59f));
+        yield return null;
+        Assert.That(creak.isPlaying, Is.False);
+        bow.PullTo(bow.RestPosition - bow.transform.forward * (bow.MaximumDrawDistance * 0.61f));
+        yield return new WaitForSeconds(0.16f);
+        Assert.That(creak.isPlaying, Is.True);
+        var onsetGain = creak.volume;
+        var onsetPitch = creak.pitch;
+        Assert.That(onsetGain, Is.GreaterThan(0.05f));
+        bow.PullTo(bow.RestPosition - bow.transform.forward * bow.MaximumDrawDistance);
+        yield return new WaitForSeconds(0.3f);
+        Assert.That(creak.volume, Is.GreaterThan(onsetGain * 2f));
+        Assert.That(creak.pitch, Is.GreaterThan(onsetPitch));
+        bow.PullTo(bow.RestPosition - bow.transform.forward * (bow.MaximumDrawDistance * 0.58f));
+        yield return null;
+        Assert.That(creak.isPlaying, Is.False);
+        bow.PullTo(bow.RestPosition - bow.transform.forward * bow.MaximumDrawDistance);
+        yield return null;
+        Assert.That(creak.isPlaying, Is.True);
+        bow.CancelDraw();
+        yield return null;
+        Assert.That(creak.isPlaying, Is.False);
+        Assert.That(sounds.transform.Find("Release"), Is.Null);
+        Assert.That(Find<LocalDuel>().Flow.CanShoot(0), Is.True);
+    }
+
+    // Renders the imported breath on each side of the actual player listener and compares stereo output.
+    [UnityTest]
+    public IEnumerator HeadLevelEmitterPansAcrossTheDesktopListener()
+    {
+        var duel = Find<LocalDuel>();
+        var listener = Find<AudioListener>();
+        var sources = Find<DuelAudio>().GetComponentsInChildren<AudioSource>();
+        var voice = duel.Opponent.GetComponentsInChildren<AudioSource>().Single(s => s.clip.name == "Breath");
+        foreach (var source in sources) source.mute = source != voice;
+        voice.transform.SetParent(listener.transform, false);
+        voice.volume = 1f;
+        var savedVolume = AudioListener.volume;
+        var frameRate = Time.captureFramerate;
+        try
+        {
+            AudioListener.volume = 1f;
+            Time.captureFramerate = 60;
+            Assert.That(AudioRenderer.Start(), Is.True);
+            foreach (var side in new[] { -1, 1 })
+            {
+                voice.transform.localPosition = Vector3.right * side;
+                double left = 0, right = 0;
+                for (var frame = 0; frame < 48; frame++)
+                {
+                    yield return null;
+                    int samples = AudioRenderer.GetSampleCountForCaptureFrame();
+                    using var buffer = new Unity.Collections.NativeArray<float>(samples * 2, Unity.Collections.Allocator.Temp);
+                    Assert.That(AudioRenderer.Render(buffer), Is.True);
+                    if (frame < 4) continue;
+                    for (int i = 0; i < buffer.Length; i += 2)
+                    {
+                        left += buffer[i] * buffer[i];
+                        right += buffer[i + 1] * buffer[i + 1];
+                    }
+                }
+                Debug.Log($"Duel breath stereo energy, side {side}: left {left:F4}, right {right:F4}");
+                Assert.That(side < 0 ? left : right, Is.GreaterThan(0.001));
+                Assert.That(side < 0 ? left : right, Is.GreaterThan(2 * (side < 0 ? right : left)));
+            }
+        }
+        finally
+        {
+            AudioRenderer.Stop();
+            Time.captureFramerate = frameRate;
+            AudioListener.volume = savedVolume;
+        }
+    }
+
+    // Checks the actual round emitters through a bow release, a lethal contact and a rematch.
+    [UnityTest]
+    public IEnumerator AudioFollowsTheShotAndStopsBreathingOnDefeat()
+    {
+        var duel = Find<LocalDuel>();
+        var sounds = Find<DuelAudio>();
+        var room = sounds.GetComponentsInChildren<AudioSource>();
+        Assert.That(room.Count(s => s.clip.name == "Breath" && s.spatialBlend == 1f), Is.EqualTo(2));
+        var ambience = room.Single(s => s.spatialBlend == 0f);
+        Assert.That(ambience.clip.channels, Is.EqualTo(2));
+        var arrow = Shoot(duel, BodyRegion.Head);
+        var launch = sounds.transform.Find("Release");
+        Assert.That(launch.position, Is.EqualTo(Find<Bow>().transform.position));
+        Assert.That(arrow.transform.Find("Flight"), Is.Not.Null);
+        var deadline = Time.time + 3f;
+        while (arrow.IsFlying && Time.time < deadline) yield return null;
+        Assert.That(duel.Opponent.IsDefeated, Is.True);
+        Assert.That(Vector3.Distance(sounds.transform.Find("Body").position, arrow.transform.position), Is.LessThan(0.10f));
+        Assert.That(duel.Opponent.GetComponentsInChildren<AudioSource>().Single(s => s.clip.name == "Breath").isPlaying, Is.False);
+        Assert.That(arrow.transform.Find("Flight") == null || !arrow.transform.Find("Flight").GetComponent<AudioSource>().isPlaying);
+        duel.RestartMatch();
+        yield return null;
+        Assert.That(sounds == null, Is.True);
+        Assert.That(Find<DuelAudio>().GetComponentsInChildren<AudioSource>().Count(s => s.clip.name == "Breath"), Is.EqualTo(2));
+    }
+
     // Checks visible breathing at duel distance while the local tracking origin stays still.
     [UnityTest]
     public IEnumerator StandingOpponentMovesWhileTrackingOriginStaysStill()
@@ -279,6 +393,8 @@ public class LocalDuelTests
         var added = keyboard == null;
         if (added) keyboard = InputSystem.AddDevice<Keyboard>();
         var wasEnabled = keyboard.enabled;
+        var originalVolume = AudioListener.volume;
+        var savedVolume = PlayerPrefs.GetFloat("BowMan.DuelVolume", -1f);
         try
         {
             // Batch Mode has no focused Game view to receive keyboard events.
@@ -288,6 +404,12 @@ public class LocalDuelTests
             InputSystem.EnableDevice(keyboard);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
             yield return null;
+            AudioListener.volume = 1f;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.V));
+            yield return null;
+            yield return null;
+            Assert.That(AudioListener.volume, Is.Zero);
+            Assert.That(PlayerPrefs.GetFloat("BowMan.DuelVolume"), Is.Zero);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.R));
             yield return null;
             yield return null;
@@ -295,9 +417,14 @@ public class LocalDuelTests
             Assert.That(duel.LocalArcher.CurrentHealth, Is.EqualTo(100));
             Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(100));
             Assert.That(Find<TextMesh>().text, Does.Contain("Your turn"));
+            Assert.That(AudioListener.volume, Is.Zero, "The next round preserves mute");
         }
         finally
         {
+            AudioListener.volume = originalVolume;
+            if (savedVolume < 0f) PlayerPrefs.DeleteKey("BowMan.DuelVolume");
+            else PlayerPrefs.SetFloat("BowMan.DuelVolume", savedVolume);
+            PlayerPrefs.Save();
             if (added) InputSystem.RemoveDevice(keyboard);
             else
             {

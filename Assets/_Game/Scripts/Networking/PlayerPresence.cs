@@ -121,7 +121,7 @@ namespace BowMan.Networking
 
         // Starts the joiner's replica after the host has created its match.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
-        public void BeginRpc(int round) => duel?.Begin(round);
+        public void BeginRpc(int round, ArenaSetting setting) => duel?.Begin(round, setting);
 
         // Replays a host-approved arrow without running collision resolution on the client.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
@@ -130,8 +130,8 @@ namespace BowMan.Networking
 
         // Stops a missed arrow at the host's actual scenery contact for its remaining visual lifetime.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
-        public void SceneryRpc(int round, int shot, Vector3 point, Quaternion rotation, float lifetime) =>
-            duel?.ShowScenery(round, shot, point, rotation, lifetime);
+        public void SceneryRpc(int round, int shot, Vector3 point, Quaternion rotation, float lifetime, ImpactSound surface) =>
+            duel?.ShowScenery(round, shot, point, rotation, lifetime, surface);
 
         // Distributes the host's phase and health after each transition or shot rejection.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]

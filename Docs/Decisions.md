@@ -69,6 +69,8 @@ the hit. The bow hand grips the bow and the drawing hand follows the string,
 with roles swapped for left-handed play. The current primitive arrow and
 controller markers are prototypes.
 
+Use three baked scenery prefabs around the same level spawns. The host sends the selected setting in the round-start message, including on rematch. Shared scenery materials and combined meshes reduce draw calls. The distant woodland uses two profiles rendered from a full-resolution fir. The [environment art inventory](../Assets/ThirdParty/PolyHaven/Attribution.md) records each source and license.
+
 ## D005 — PC VR on the classroom Quest 2
 
 Target Windows PC VR through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
@@ -353,6 +355,10 @@ persists across scene loads.
 Use recorded breathing, shoulder movement and small weight shifts on both standing duel rigs. The visible opponent should still look alive while the player aims. Keep the feet planted and the local headset tracking origin steady. The hit reaction takes over on impact, the survivor returns to idle after recovery, and a defeated archer stays down. Both PvP seats use these rules. The [standing motion source and rebuild instructions](../Assets/ThirdParty/Rokoko/Attribution.md) accompany the recording.
 
 Sample the visible opponent’s recorded bow action from the AI turn clock in PvE and from the owner’s draw in PvP. This lets a human pause or cancel a draw and switch bow hands. A mesh represents the nocked arrow on the observing side. The existing duel authority creates the flying projectile when it accepts the release.
+
+## Duel sound
+
+Use recorded spatial cues for the two archers and their equipment. Start the string creak above 60% of maximum draw. Increase pitch and volume toward full draw, with a softer sustained sound while the player holds tension. Falling back to 60% or below, cancelling or releasing stops the stretch cue. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.
 
 ## Open questions and provisional values
 
