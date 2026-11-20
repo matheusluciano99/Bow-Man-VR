@@ -38,6 +38,7 @@ namespace BowMan.Networking
 
         public DuelTurnFlow Flow { get; private set; }
         public int Round => round;
+        public ArenaSetting Setting { get; private set; }
         public bool RematchRequested => (votes & (1 << LocalIndex)) != 0;
         // Returns the actor occupying a fixed seat during this round.
         public ArcherHealth Archer(int index) => actors[index];
@@ -66,19 +67,21 @@ namespace BowMan.Networking
         public void PeerReady(ulong peer)
         {
             if (!Net.IsServer || match != null || connection.Seats.RoleOf(peer) != ArcherRole.Archer2) return;
-            Begin(round + 1);
-            Seat.BeginRpc(round);
+            Begin(round + 1, DuelEnvironment.Choose());
+            Seat.BeginRpc(round, Setting);
         }
 
         // Creates identical actor slots on both peers and gives collision and animation authority to the host.
-        public void Begin(int newRound)
+        public void Begin(int newRound, ArenaSetting setting)
         {
             if (newRound <= round && match != null) return;
             EndRound();
             round = newRound;
+            Setting = setting;
             presences = FindObjectsByType<PlayerPresence>(FindObjectsSortMode.None);
             match = new GameObject("Online round").transform;
             match.SetParent(transform, false);
+            DuelEnvironment.Place(setting, match, spawns.For(ArcherRole.Archer1), spawns.For(ArcherRole.Archer2));
             for (var i = 0; i < actors.Length; i++)
             {
                 var spawn = spawns.For(i == 0 ? ArcherRole.Archer1 : ArcherRole.Archer2);
@@ -154,8 +157,8 @@ namespace BowMan.Networking
             votes |= role == ArcherRole.Archer1 ? 1 : 2;
             if (votes == 3)
             {
-                Begin(round + 1);
-                Seat.BeginRpc(round);
+                Begin(round + 1, DuelEnvironment.Choose());
+                Seat.BeginRpc(round, Setting);
             }
             else Seat.VotesRpc(round, votes);
         }

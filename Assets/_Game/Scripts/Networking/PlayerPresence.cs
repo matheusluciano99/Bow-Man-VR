@@ -121,7 +121,7 @@ namespace BowMan.Networking
 
         // Starts the joiner's replica after the host has created its match.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
-        public void BeginRpc(int round) => duel?.Begin(round);
+        public void BeginRpc(int round, ArenaSetting setting) => duel?.Begin(round, setting);
 
         // Replays a host-approved arrow without running collision resolution on the client.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]

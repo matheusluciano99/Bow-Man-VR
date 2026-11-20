@@ -69,6 +69,8 @@ the hit. The bow hand grips the bow and the drawing hand follows the string,
 with roles swapped for left-handed play. The current primitive arrow and
 controller markers are prototypes.
 
+Use three baked scenery prefabs around the same level spawns. The host sends the selected setting in the round-start message, including on rematch. Shared scenery materials and combined meshes reduce draw calls. The distant woodland uses two profiles rendered from a full-resolution fir. The [environment art inventory](../Assets/ThirdParty/PolyHaven/Attribution.md) records each source and license.
+
 ## D005 — PC VR on the classroom Quest 2
 
 Target Windows PC VR through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
