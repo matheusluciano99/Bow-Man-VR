@@ -45,14 +45,21 @@ namespace BowMan
             if (weight <= 0f) return;
             var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
             var wrist = animator.GetBoneTransform(HumanBodyBones.RightHand);
-            var target = point - neck.up * 0.045f + outward * 0.025f;
-            var approach = Vector3.Lerp(wrist.position, target, weight)
-                + (outward * 0.08f - animator.transform.up * 0.08f) * (weight * (1f - weight));
-            Solve(animator, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
-                approach, animator.transform.right - neck.up * 0.3f + outward * 0.5f);
-            var shoulderLine = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm).position
+            var upperChest = animator.GetBoneTransform(HumanBodyBones.UpperChest);
+            var up = (neck.position - upperChest.position).normalized;
+            var across = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm).position
                 - animator.GetBoneTransform(HumanBodyBones.RightUpperArm).position;
-            PointHand(animator, false, Vector3.ProjectOnPlane(shoulderLine, outward), weight);
+            var along = Vector3.ProjectOnPlane(across, outward).normalized;
+            var knuckle = animator.GetBoneTransform(HumanBodyBones.RightMiddleProximal);
+            PointHand(animator, false, along, weight);
+            var rotation = wrist.rotation;
+            var palm = Vector3.Lerp(wrist.position, knuckle.position, 0.55f);
+            var target = wrist.position + point + outward * 0.046f - up * 0.014f - palm;
+            var approach = Vector3.Lerp(wrist.position, target, weight)
+                + outward * (0.12f * Mathf.Sin(weight * Mathf.PI));
+            Solve(animator, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
+                approach, -along * 0.8f + Vector3.Cross(-across.normalized, up) * 1.7f + outward * 0.55f);
+            wrist.rotation = rotation;
         }
 
         // Aims the open fingers toward the contact direction without translating the supported wrist.

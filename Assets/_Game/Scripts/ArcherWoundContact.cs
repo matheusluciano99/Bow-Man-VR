@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BowMan
 {
-    internal sealed class ArcherAbdomenContact
+    internal sealed class ArcherWoundContact
     {
         private readonly Animator animator;
         private readonly Collider[] body;
@@ -11,7 +11,7 @@ namespace BowMan
         private readonly Arm right;
 
         // Caches the forearm and body volumes used to limit live retargeting.
-        internal ArcherAbdomenContact(Animator animator, BodyHitRegion[] regions)
+        internal ArcherWoundContact(Animator animator, BodyHitRegion[] regions)
         {
             this.animator = animator;
             body = regions.Where(region => region.Region is BodyRegion.Chest or BodyRegion.Abdomen or
@@ -22,7 +22,7 @@ namespace BowMan
         }
 
         // Retargets the palms to the actual wound with a clear forearm path.
-        internal void Apply(Vector3 point, Vector3 outward, float weight)
+        internal void ApplyAbdomen(Vector3 point, Vector3 outward, float weight)
         {
             if (weight <= 0f) return;
             var leftAuthored = left.Rotations();
@@ -30,6 +30,15 @@ namespace BowMan
             ArcherLimbIK.ReachAbdomen(animator, point, outward, weight);
             left.Limit(leftAuthored, body);
             right.Limit(rightAuthored, body);
+        }
+
+        // Keeps the reaching forearm outside the face and chest when adapting the captured neck pose.
+        internal void ApplyNeck(Vector3 point, Vector3 outward, float weight)
+        {
+            if (weight <= 0f) return;
+            var authored = right.Rotations();
+            ArcherLimbIK.ReachNeck(animator, point, outward, weight);
+            right.Limit(authored, body);
         }
 
         private sealed class Arm

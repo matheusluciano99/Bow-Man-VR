@@ -1490,10 +1490,13 @@ public static class MotionInjuryBuilder
                 var opposite = rightShoulder ? OppositeBoneIndices(animator, bones) : null;
                 var worldRotations = rightShoulder ? bones.Select(t => t.rotation).ToArray() : null;
                 var regions = root.GetComponentsInChildren<BodyHitRegion>();
-                var core = shoulder ? CoreVolumes(regions) : null;
+                var neckSurface = region == BodyRegion.Neck
+                    ? regions.Single(v => v.Region == region).GetComponent<BoxCollider>()
+                    : null;
+                var core = (shoulder || neckSurface != null) ? CoreVolumes(regions) : null;
                 var leftArm = shoulder ? ForearmVolumes(regions, animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
                     animator.GetBoneTransform(HumanBodyBones.LeftHand)) : null;
-                var rightArm = shoulder ? ForearmVolumes(regions, animator.GetBoneTransform(HumanBodyBones.RightLowerArm),
+                var rightArm = (shoulder || neckSurface != null) ? ForearmVolumes(regions, animator.GetBoneTransform(HumanBodyBones.RightLowerArm),
                     animator.GetBoneTransform(HumanBodyBones.RightHand)) : null;
                 if (shoulder)
                 {
@@ -1533,9 +1536,9 @@ public static class MotionInjuryBuilder
                             animator.GetBoneTransform(HumanBodyBones.Head).localRotation *= Quaternion.Euler(12f * blend, 0f, 35f * blend);
                         if (region == BodyRegion.Neck)
                         {
-                            var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
-                            ArcherLimbIK.ReachNeck(animator, neck.position + root.transform.forward * 0.08f,
-                                root.transform.forward, ArcherLimbIK.NeckReachWeight(time));
+                            var point = neckSurface.transform.TransformPoint(neckSurface.center + Vector3.forward * (neckSurface.size.z * 0.5f));
+                            ArcherLimbIK.ReachNeck(animator, point, neckSurface.transform.forward, ArcherLimbIK.NeckReachWeight(time));
+                            ArcherLimbIK.ClearForearm(animator, false, rightArm, core, 8);
                         }
                         if (shoulder)
                         {

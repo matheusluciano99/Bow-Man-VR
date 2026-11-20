@@ -173,3 +173,5 @@ A surviving shoulder hit uses the reach before the fall in **Shoulder Hit And Fa
 ### Captured wrist support
 
 Each hand uses Hamada’s recorded standing wrist guard. The injured hand recoils and opens, the opposite palm supports the wrist through the hold, and the hands return to stance. The finger extension comes from the bracing hand in **Getting Up**. **Bow Man VR > Injuries > Rebuild Captured Hand Reactions** regenerates both sides for English Archer and Erika. A lethal hand hit continues into a full collapse.
+
+During the fatal neck reach, the right palm covers the actual entry point with its fingers across the wound. The forearm approaches around the face and chest. The live retargeting uses the same fitted volumes as the authored motion and limits the reach when clothing would intersect.
