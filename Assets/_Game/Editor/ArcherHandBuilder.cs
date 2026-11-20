@@ -53,9 +53,6 @@ public static class ArcherHandBuilder
             var mesh = skin.sharedMesh;
             var bones = skin.bones;
             var weights = mesh.boneWeights;
-            var baked = new Mesh();
-            skin.BakeMesh(baked, true);
-            var positions = baked.vertices;
             var map = new Dictionary<int,int>();
             var selected = new List<int>();
             var meshUV = mesh.uv;
@@ -83,7 +80,6 @@ public static class ArcherHandBuilder
                 triangles.Add(kept.ToArray());
                 materials.Add(skin.sharedMaterials[sub]);
             }
-            Object.DestroyImmediate(baked);
             if (selected.Count == 0) continue;
             source.Add((skin,selected.ToArray()));
             vertices.AddRange(new Vector3[selected.Count]);
@@ -94,8 +90,7 @@ public static class ArcherHandBuilder
             {
                 if (index >= weights.Length) return false;
                 var bone = bones[weights[index].boneIndex0];
-                return bone != null && (bone == wrist || bone.IsChildOf(wrist) || (bone == wrist.parent &&
-                    Vector3.Distance(skin.transform.TransformPoint(positions[index]), wrist.position) <= .075f));
+                return bone != null && (bone == wrist || bone.IsChildOf(wrist) || bone == wrist.parent);
             }
         }
         var result = new Mesh { name = side + " Archer Hand" };
@@ -130,6 +125,7 @@ public static class ArcherHandBuilder
                 2 => (thumbTip.position+indexTip.position)*.5f,
                 _ => Vector3.Lerp(wrist.position, fingers[2].position, .7f)
             };
+            var forearm = (wrist.parent.position - wrist.position).normalized;
             var indexInHand = 0;
             var delta = new Vector3[vertices.Count];
             var normalDelta = new Vector3[vertices.Count];
@@ -141,8 +137,19 @@ public static class ArcherHandBuilder
                 var n = baked.normals;
                 foreach (var original in part.selected)
                 {
-                    var position = toController * (part.skin.transform.TransformPoint(v[original]) - anchor);
-                    var normal = toController * part.skin.transform.TransformDirection(n[original]).normalized;
+                    var point = part.skin.transform.TransformPoint(v[original]);
+                    var surfaceNormal = part.skin.transform.TransformDirection(n[original]).normalized;
+                    var behind = Vector3.Dot(point - wrist.position, forearm);
+                    if (behind > .052f)
+                    {
+                        // Roll the original forearm surface into a closed cuff at the back of the wrist.
+                        var end = Mathf.Clamp01((behind - .052f) / .015f);
+                        var radial = point - wrist.position - forearm * behind;
+                        point = wrist.position + forearm * (.052f + .006f * end) + radial * (1f - end);
+                        surfaceNormal = Vector3.Slerp(surfaceNormal, forearm, end);
+                    }
+                    var position = toController * (point - anchor);
+                    var normal = toController * surfaceNormal;
                     if (gesture == 0)
                     {
                         vertices[indexInHand] = position;
