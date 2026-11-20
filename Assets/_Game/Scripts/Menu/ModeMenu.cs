@@ -13,6 +13,7 @@ namespace BowMan.Menu
 
         [SerializeField] private ModeOption handOption;
         [SerializeField] private TextMesh handLabel;
+        [SerializeField] private MenuCredits credits;
 
         private Keyboard keyboard;
         private bool loading;
@@ -50,7 +51,7 @@ namespace BowMan.Menu
         // Loads the mode's scene once; later choices are ignored while it loads.
         public bool Choose(GameMode mode)
         {
-            if (loading) return false;
+            if (loading || (credits != null && credits.IsOpen)) return false;
             loading = true;
             Loader(GameScenes.For(mode));
             return true;
@@ -59,6 +60,7 @@ namespace BowMan.Menu
         // Chooses the mode of the panel the pointer confirmed.
         private void OnSelected(ModeOption option)
         {
+            if (loading || (credits != null && credits.Select(option))) return;
             if (option == handOption) SwitchHand();
             else Choose(option.Mode);
         }
@@ -79,9 +81,20 @@ namespace BowMan.Menu
                 : "Bow in right hand  •  Draw with left";
         }
 
-        // Chooses PvE or PvP from the typed digits 1 and 2.
+        // Navigates credits with the keyboard while the same panels remain available to the pointer.
+        private void Update()
+        {
+            if (credits == null || !credits.IsOpen || keyboard == null) return;
+            if (keyboard.escapeKey.wasPressedThisFrame) credits.Show(false);
+            else if (keyboard.leftArrowKey.wasPressedThisFrame) credits.Turn(-1);
+            else if (keyboard.rightArrowKey.wasPressedThisFrame) credits.Turn(1);
+        }
+
+        // Opens credits, switches bow hands or chooses a mode from the desktop shortcuts.
         private void OnTextInput(char key)
         {
+            if (loading || (credits != null && credits.IsOpen)) return;
+            if (credits != null && (key == 'c' || key == 'C')) { credits.Show(true); return; }
             if (key == 'h' || key == 'H') SwitchHand();
             var mode = GameScenes.ModeForKey(key);
             if (mode.HasValue) Choose(mode.Value);

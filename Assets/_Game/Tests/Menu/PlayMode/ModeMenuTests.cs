@@ -49,6 +49,74 @@ public class ModeMenuTests
     }
 
 #if UNITY_EDITOR
+    // Reads every credits and source page with the scene's pointer, then returns to an actionable mode menu.
+    [UnityTest]
+    public IEnumerator CreditsShowEveryNoticeAndReturnToModeSelection()
+    {
+        const string path = "Assets/_Game/Scenes/MainMenu.unity";
+        yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+        var scene = SceneManager.GetSceneByPath(path);
+        try
+        {
+            yield return null;
+            var roots = scene.GetRootGameObjects();
+            var menu = roots.SelectMany(g => g.GetComponentsInChildren<ModeMenu>()).Single();
+            var pointer = roots.SelectMany(g => g.GetComponentsInChildren<ControllerPointer>()).Single();
+            var camera = roots.SelectMany(g => g.GetComponentsInChildren<Camera>()).Single();
+            var options = roots.SelectMany(g => g.GetComponentsInChildren<ModeOption>(true)).ToArray();
+            var pages = roots.Single(g => g.name == "Release credits");
+            var body = pages.transform.Find("Credit text").GetComponent<TextMesh>();
+            var more = options.Single(o => o.name == "Next credit page");
+            string loaded = null;
+            menu.Loader = name => loaded = name;
+
+            // Uses the authored collider and the same confirm event as a controller trigger or mouse click.
+            void Click(string name)
+            {
+                var option = options.Single(o => o.name == name);
+                Assert.That(option.gameObject.activeInHierarchy, Is.True, name);
+                Physics.SyncTransforms();
+                pointer.Point(new Ray(camera.transform.position, option.transform.position - camera.transform.position));
+                Assert.That(pointer.Hovered, Is.SameAs(option), name);
+                pointer.Confirm();
+            }
+
+            Click("Credits option");
+            Assert.That(menu.Choose(GameMode.PvE), Is.False);
+            Assert.That(body.text, Does.Contain("Matheus"));
+            int count = 1;
+            while (more.gameObject.activeInHierarchy)
+            {
+                Click("Next credit page");
+                Assert.That(++count, Is.LessThan(32));
+            }
+            Assert.That(count, Is.EqualTo(9));
+            Click("Previous credit page");
+            Assert.That(body.text, Does.Contain("qubodup"));
+            Click("Source notices");
+            var read = body.text;
+            count = 1;
+            while (more.gameObject.activeInHierarchy)
+            {
+                Click("Next credit page");
+                read += body.text;
+                Assert.That(++count, Is.LessThan(120));
+            }
+            var notices = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.streamingAssetsPath, "BowMan-Credits.txt"));
+            Assert.That(string.Concat(read.Where(c => !char.IsWhiteSpace(c))),
+                Is.EqualTo(string.Concat(notices.Where(c => !char.IsWhiteSpace(c)))));
+            Click("Return to menu");
+            Assert.That(loaded, Is.Null);
+            Click("Credits option");
+            Assert.That(body.text, Does.Contain("Matheus"));
+            Click("Return to menu");
+            Click("PvP option");
+            Assert.That(loaded, Is.EqualTo(GameScenes.PvPConnection));
+        }
+        finally { SceneManager.UnloadSceneAsync(scene); }
+        yield return null;
+    }
+
     // Checks that the online lobby starts with the same bow-hand preference as the local duel.
     [UnityTest]
     public IEnumerator OnlineLobbyUsesTheChosenHand()
@@ -93,7 +161,8 @@ public class ModeMenuTests
             var roots = menuScene.GetRootGameObjects();
             var menu = roots.SelectMany(g => g.GetComponentsInChildren<ModeMenu>()).Single();
             var pointer = roots.SelectMany(g => g.GetComponentsInChildren<ControllerPointer>()).Single();
-            var hand = roots.Single(g => g.name == "Bow hand option");
+            var choices = roots.Single(g => g.name == "Mode choices").transform;
+            var hand = choices.Find("Bow hand option").gameObject;
             var camera = roots.SelectMany(g => g.GetComponentsInChildren<Camera>()).Single();
             Physics.SyncTransforms();
             pointer.Point(new Ray(camera.transform.position, hand.transform.position - camera.transform.position));
@@ -102,7 +171,7 @@ public class ModeMenuTests
             Assert.That(hand.GetComponentInChildren<TextMesh>().text, Does.Contain("Draw with left"));
             string chosen = null;
             menu.Loader = name => chosen = name;
-            var pve = roots.Single(g => g.name == "PvE option");
+            var pve = choices.Find("PvE option").gameObject;
             pointer.Point(new Ray(camera.transform.position, pve.transform.position - camera.transform.position));
             pointer.Confirm();
             Assert.That(chosen, Is.EqualTo(GameScenes.LocalDuel));

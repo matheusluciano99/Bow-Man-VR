@@ -1,0 +1,52 @@
+Bow Man VR
+Developed by Matheus Luciano and João (joaorcmr)
+Medieval archery for PC VR
+Source and license details appear under Notices.
+
+Characters and equipment
+English Archer • count_zero on Sketchfab
+Character, bow limbs, shaft and feathers • CC BY 4.0
+Erika Archer • Adobe Mixamo
+Character and first-person hands • Mixamo game-use terms
+
+Anatomy
+BodyParts3D
+© The Database Center for Life Science
+Surfaces fitted to the archers for the injury view
+Creative Commons Attribution 4.0 International
+
+Standing, shooting and falling
+Rokoko • Regular Light and Hawkeye Archery
+Standing performance by Sam Lazarus
+Rokoko free motion collection • game-use terms
+Falls and get-ups • Adobe Mixamo game-use terms
+
+Regional reactions
+Arm and wrist performances • Azumi and Hamada
+© Eyes, JAPAN Co. Ltd. • mocapdata.com
+Retargeted excerpts • CC BY-SA 2.1 Japan
+Foot reaction • Cosindra MotionSmith game-use license
+
+Arenas • surfaces and props
+Poly Haven • CC0
+Rob Tuytel and Rico Cilliers • ground, timber and trees
+Amal Kumar • clay tiles / Charlotte Baglioni • plaster
+James Ray Cock • barrel and crate
+
+Arenas • skies
+Poly Haven • CC0
+Forest Grove • Dimitrios Savva and Jarod Guest
+Kloofendal • Greg Zaal and Jarod Guest
+Autumn Field • Sergej Majboroda
+
+Archery and impacts
+Ben Jaszczak and Brian Nelson • bows and passing arrow
+Iwan “qubodup” Gabovitch • body, wood and stone
+Vehicle • ground contact
+OpenGameArt recordings • CC0
+
+Breathing and ambience
+mikeask • archer breathing
+TinyWorlds • woodland ambience
+Thimras • open-field wind and birds
+OpenGameArt recordings • CC0
