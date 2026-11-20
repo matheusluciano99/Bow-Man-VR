@@ -827,7 +827,7 @@ public static class MotionInjuryBuilder
                         }
                         var clearance = region == BodyRegion.Head && time > 0f && time < duration ? 0.004f : 0f;
                         Ground(root, hips, mesh, clearance);
-                    });
+                    }, region == BodyRegion.Neck ? 30f : 60f);
                 }
                 finally { UnityEngine.Object.DestroyImmediate(mesh); }
                 clip.name = region + " Entry";
@@ -955,15 +955,15 @@ public static class MotionInjuryBuilder
         if (floor < groundedHeight) hips.position += Vector3.up * (groundedHeight - floor);
     }
 
-    // Bakes complete transform groups at sixty Hz to retain fitted contacts between source frames.
-    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose)
+    // Bakes complete transform groups at the requested sample rate.
+    private static AnimationClip Record(GameObject root, Transform[] bones, float duration, Action<float> pose, float sampleRate = 60f)
     {
-        var clip = new AnimationClip { frameRate = 60f };
+        var clip = new AnimationClip { frameRate = sampleRate };
         var curves = bones.Select(_ => Enumerable.Range(0, 7).Select(i => new AnimationCurve()).ToArray()).ToArray();
-        var frames = Mathf.RoundToInt(duration * 60f);
+        var frames = Mathf.RoundToInt(duration * sampleRate);
         for (var frame = 0; frame <= frames; frame++)
         {
-            var time = frame / 60f;
+            var time = frame / sampleRate;
             pose(time);
             for (var i = 0; i < bones.Length; i++)
             {

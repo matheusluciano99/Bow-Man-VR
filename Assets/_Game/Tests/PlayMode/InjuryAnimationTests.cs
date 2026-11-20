@@ -871,6 +871,11 @@ public class InjuryAnimationTests
             var wrist = a.GetBoneTransform(HumanBodyBones.RightHand);
             var expected = arrow.transform.position - neck.up * 0.045f - arrow.transform.forward * 0.025f;
             Assert.That(Vector3.Distance(wrist.position, expected), Is.LessThan(0.008f), "Actual wound side " + offset);
+            var across = a.GetBoneTransform(HumanBodyBones.LeftUpperArm).position
+                - a.GetBoneTransform(HumanBodyBones.RightUpperArm).position;
+            var fingers = a.GetBoneTransform(HumanBodyBones.RightMiddleDistal).position - wrist.position;
+            Assert.That(Vector3.Angle(fingers, Vector3.ProjectOnPlane(across, arrow.transform.forward)),
+                Is.LessThan(8f), character + " fingers across neck");
             var anchored = arrow.transform.localPosition;
             yield return new WaitForSeconds(2f);
             Assert.That(arrow.transform.localPosition, Is.EqualTo(anchored));

@@ -46,9 +46,13 @@ namespace BowMan
             var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
             var wrist = animator.GetBoneTransform(HumanBodyBones.RightHand);
             var target = point - neck.up * 0.045f + outward * 0.025f;
+            var approach = Vector3.Lerp(wrist.position, target, weight)
+                + (outward * 0.08f - animator.transform.up * 0.08f) * (weight * (1f - weight));
             Solve(animator, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
-                Vector3.Lerp(wrist.position, target, weight), animator.transform.right - neck.up * 0.3f + outward * 0.5f);
-            PointHand(animator, false, neck.up, weight);
+                approach, animator.transform.right - neck.up * 0.3f + outward * 0.5f);
+            var shoulderLine = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm).position
+                - animator.GetBoneTransform(HumanBodyBones.RightUpperArm).position;
+            PointHand(animator, false, Vector3.ProjectOnPlane(shoulderLine, outward), weight);
         }
 
         // Aims the open fingers toward the contact direction without translating the supported wrist.
