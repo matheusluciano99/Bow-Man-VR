@@ -24,6 +24,7 @@ namespace BowMan
         public bool IsDrawing { get; private set; }
         public bool ShotAllowed { get; private set; } = true;
         public float MaximumDrawDistance => maximumDrawDistance;
+        public float MaximumLaunchSpeed => maximumLaunchSpeed;
         public Vector3 RestPosition => stringRest.position;
         public float DrawDistance => IsDrawing
             ? Mathf.Clamp(Vector3.Dot(stringRest.position - DrawPosition, transform.forward), 0f, maximumDrawDistance)

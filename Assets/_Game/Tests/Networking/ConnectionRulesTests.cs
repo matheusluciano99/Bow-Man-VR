@@ -4,6 +4,21 @@ using NUnit.Framework;
 
 public class ConnectionRulesTests
 {
+    // Rejects invalid release samples before the host creates any remote projectile.
+    [Test]
+    public void RemoteReleaseMustBeFiniteReachableAndDrawn()
+    {
+        var origin = UnityEngine.Vector3.zero;
+        var forward = UnityEngine.Vector3.forward;
+        Assert.IsTrue(PvPDuel.ValidRelease(origin, origin + UnityEngine.Vector3.up, forward, 0.6f));
+        Assert.IsFalse(PvPDuel.ValidRelease(origin, origin, forward, float.NaN));
+        Assert.IsFalse(PvPDuel.ValidRelease(origin, origin, forward, 1.01f));
+        Assert.IsFalse(PvPDuel.ValidRelease(origin, origin, forward, 0f));
+        Assert.IsFalse(PvPDuel.ValidRelease(origin, origin, forward * 2f, 1f));
+        Assert.IsFalse(PvPDuel.ValidRelease(origin, forward * 10f, forward, 1f));
+        Assert.IsFalse(PvPDuel.ValidRelease(origin, new UnityEngine.Vector3(float.NaN, 0f, 0f), forward, 1f));
+    }
+
     // Gives the host the first seat and the joining client the second.
     [Test]
     public void FirstClientIsArcher1SecondIsArcher2()

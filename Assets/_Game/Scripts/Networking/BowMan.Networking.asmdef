@@ -2,6 +2,7 @@
   "name": "BowMan.Networking",
   "rootNamespace": "BowMan.Networking",
   "references": [
+    "BowMan.Gameplay",
     "Unity.Netcode.Runtime",
     "Unity.Networking.Transport",
     "Unity.Collections",

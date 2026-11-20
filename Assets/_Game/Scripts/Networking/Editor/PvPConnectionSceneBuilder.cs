@@ -30,7 +30,8 @@ namespace BowMan.Networking.Editor
             CreateFloor();
             var spawns = CreateSpawns();
             var label = CreateRig(spawns);
-            CreateNetwork(presence, label);
+            var connection = CreateNetwork(presence, label);
+            CreateDuel(spawns, label, connection);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             Debug.Log($"PvP connection test scene written to {ScenePath}");
@@ -163,7 +164,7 @@ namespace BowMan.Networking.Editor
         }
 
         // Adds NetworkManager, Unity Transport, the connection controller and the panel on one object.
-        private static void CreateNetwork(GameObject presence, TextMesh label)
+        private static PvPConnectionController CreateNetwork(GameObject presence, TextMesh label)
         {
             var root = new GameObject("NetworkManager");
             var manager = root.AddComponent<NetworkManager>();
@@ -186,6 +187,49 @@ namespace BowMan.Networking.Editor
             panelFields.FindProperty("controller").objectReferenceValue = controller;
             panelFields.FindProperty("headsetLabel").objectReferenceValue = label;
             panelFields.ApplyModifiedPropertiesWithoutUndo();
+            return controller;
+        }
+
+        // Wires the saved online arena to the same characters, bow, tracked inputs and arrow used by PvE.
+        private static void CreateDuel(ArcherSpawnPoints spawns, TextMesh label, PvPConnectionController connection)
+        {
+            var host = new GameObject("Online duel");
+            var duel = host.AddComponent<PvPDuel>();
+            var binder = label.GetComponentInParent<LocalRigBinder>();
+            var bowObject = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/_Game/Prefabs/Bow.prefab"));
+            var bow = bowObject.GetComponent<Bow>();
+            var input = host.AddComponent<VRBowInput>();
+            Set(input, "bow", bow);
+            Set(input, "leftController", binder.LeftHand);
+            Set(input, "rightController", binder.RightHand);
+            var desktop = host.AddComponent<DesktopBowTest>();
+            Set(desktop, "bow", bow);
+            Set(desktop, "vrInput", input);
+            var editor = new SerializedObject(desktop);
+            editor.FindProperty("showPanel").boolValue = false;
+            editor.ApplyModifiedPropertiesWithoutUndo();
+            var view = host.AddComponent<VRInjuryView>();
+            Set(view, "trackingOrigin", binder.transform);
+            Set(duel, "firstPrefab", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Characters/EnglishArcher.prefab"));
+            Set(duel, "secondPrefab", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Characters/ErikaArcher.prefab"));
+            Set(duel, "arrowPrefab", AssetDatabase.LoadAssetAtPath<ArrowFlight>("Assets/_Game/Prefabs/TestArrow.prefab"));
+            Set(duel, "bow", bow);
+            Set(duel, "vrInput", input);
+            Set(duel, "desktop", desktop);
+            Set(duel, "injuryView", view);
+            Set(duel, "rig", binder);
+            Set(duel, "spawns", spawns);
+            Set(duel, "connection", connection);
+            Set(duel, "feedback", label);
+        }
+
+        // Saves one object reference on the authored component.
+        private static void Set(Object component, string field, Object value)
+        {
+            var serialized = new SerializedObject(component);
+            serialized.FindProperty(field).objectReferenceValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         // Creates each missing folder along an Assets-relative path.

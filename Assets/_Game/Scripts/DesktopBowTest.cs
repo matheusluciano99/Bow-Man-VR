@@ -28,6 +28,15 @@ namespace BowMan
             bow.Fired += OnFired;
         }
 
+        // Sets the desktop rest pose to the local archer’s assigned side of the arena.
+        public void PlaceStand(Vector3 position, Quaternion rotation)
+        {
+            parkedPosition = position;
+            parkedRotation = rotation;
+            pitch = 5f;
+            yaw = 1.5f;
+        }
+
         // Stops a simulated draw and releases the shot listener when the test ends.
         private void OnDisable()
         {
@@ -50,7 +59,7 @@ namespace BowMan
             var keyboard = Keyboard.current;
             pitch = Mathf.Clamp(pitch + (keyboard.upArrowKey.ReadValue() - keyboard.downArrowKey.ReadValue()) * 30f * Time.deltaTime, -60f, 80f);
             yaw += (keyboard.rightArrowKey.ReadValue() - keyboard.leftArrowKey.ReadValue()) * 30f * Time.deltaTime;
-            bow.transform.rotation = Quaternion.Euler(-pitch, yaw, 0f);
+            bow.transform.rotation = parkedRotation * Quaternion.Euler(-pitch, yaw, 0f);
             if (keyboard.spaceKey.wasPressedThisFrame)
             {
                 draw = 0f;

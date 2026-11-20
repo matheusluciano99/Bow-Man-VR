@@ -1,0 +1,6 @@
+{
+  "name": "BowMan.Networking.PlayTests",
+  "references": ["BowMan.Gameplay", "BowMan.Networking", "Unity.Netcode.Runtime"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}
