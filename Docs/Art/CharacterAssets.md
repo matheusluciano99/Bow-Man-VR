@@ -12,6 +12,8 @@ Both duel archers use an eight-second loop from Sam Lazarus’s standing motion 
 
 For a shot, the opposing archer reaches, draws and releases with an upper-body segment of the free Rokoko archery recording. Each model has separate left-bow and right-bow clips. The equipment follows the grip and the drawing fingers meet the active string. The source and Unity bake menu are documented in the [archery recording attribution](../../Assets/ThirdParty/Rokoko/Attribution.md#bow-action-recording).
 
+The first-person hands reuse the prepared Erika Archer hand skin, leather cuffs and materials. Unity extracts the hand and cuff triangles and bakes relaxed, grip and pinch shapes into the two hand prefabs. Rebuild them with **Bow Man VR > Characters > Bake first-person hands**. The original Mixamo source and terms are listed below.
+
 ## Retained Templar Knight
 
 - Creator: everlasting17th / everlastinggrey.
