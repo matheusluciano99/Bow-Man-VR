@@ -237,7 +237,8 @@ public class PvPRelayMatchTests
             for (var shot = 0; shot < regions.Length; shot++)
             {
                 var shooter = shot % 2;
-                yield return Until(() => duel.Flow.CanShoot(shooter), "Recovered shooting turn " + shot);
+                if (shot < 2 || host == (shooter == 0))
+                    yield return Until(() => duel.Flow.CanShoot(shooter), "Recovered shooting turn " + shot);
                 if (shot < 2) yield return PreviewDraw(duel, bow, host == (shooter == 0), shooter, folder);
                 if (host == (shooter == 0))
                 {

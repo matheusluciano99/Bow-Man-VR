@@ -218,7 +218,8 @@ Use GitHub's Assignees field to record task responsibility.
   without a headset with `BowManVR-PvP.exe -desktop`.
 - Expected: the host reads "Connected as Archer 1", the joining player
   "Connected as Archer 2", each rig stands on its spawn, and each player sees
-  the opponent's head and hands as red markers. A third player is refused by
+  the opponent’s equipped archer during the match. The lobby uses head and hand
+  markers for connection diagnostics. A third player is refused by
   Relay's one-opponent limit ("Connection failed: …"); "Match is full" appears
   only if Netcode approval refuses it first.
 - Cross-network acceptance for #11 needs two PCs on different networks, for
