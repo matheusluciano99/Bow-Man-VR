@@ -53,7 +53,7 @@ Use Bow Man VR > Injuries > Rebuild Left Arm or Rebuild Right Arm for the indepe
 
 The arm rebuild fits both forearms against the head, neck and torso volumes through recoil, recovery and collapse. The final clips use the character's own arm lengths and anatomical palm orientation.
 
-Use Bow Man VR > Injuries > Rebuild Left Shoulder or Rebuild Right Shoulder for the independent shoulder sequences. Each standing entry blends the recoil from **Shoulder Hit And Fall** into **Shoulder Rubbing**. On both rigs the opposite hand reaches the injured shoulder, stays there through the three-second hold, and releases back to standing. One second each is baked for entry and recovery. Both feet stay planted. The standing take is pending visual acceptance.
+Use Bow Man VR > Injuries > Rebuild Left Shoulder or Rebuild Right Shoulder for the independent shoulder sequences. Each standing entry blends the recoil from **Shoulder Hit And Fall** into **Shoulder Rubbing**. On both rigs the opposite hand reaches the injured shoulder, stays there through the three-second hold, and releases back to standing. One second each is baked for entry and recovery. Both feet stay planted. Visual review rejected this standing blend. Compare full-body source performances before replacing it.
 
 The wrist target is derived from the point where the palm reaches the shoulder. The support hand travels in front of the chest and releases earlier on the return. During the fatal continuation, the builder checks the fitted body volumes and swivels the support elbow away from penetration before fitting floor contact.
 

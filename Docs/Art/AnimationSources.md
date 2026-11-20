@@ -137,6 +137,36 @@ the torso. The unchanged Mixamo export for **Shoulder Rubbing** has SHA-256
 `82b9811c324dd7e26b8cd2e32d3f4ca564fe4b0d80ed1435c8c132da578fd1d8`.
 
 
+## Full-body human recordings for the open reactions
+
+The standing shoulder blend at `d6c5405` was rejected in play. Its baked
+clavicle, elbow and wrist adjustments remained visible. Do not use it as
+the source for another fit. The selected fatal shoulder fall is independent.
+
+The Eyes, JAPAN free **accident** and **pain** archives supplied fourteen BVH
+recordings by Azumi and Takiguchi covering seven motion labels. Eight complete
+takes were retargeted to English Archer and Erika for local comparison. The
+review samples one Humanoid recording directly per actor with the gameplay
+reaction scripts disabled. Review the entire movement, including weight transfer,
+the opposite arm, foot placement and release, before selecting a take.
+
+| Regions | Finding from the source review |
+| --- | --- |
+| Surviving shoulders and arms, both sides | The two right-arm takes and a left-arm take include recorded recoil and a cross-body reach. Takiguchi reaches high on the right arm around 18 seconds. The contact differs on the two meshes. Azumi's joint-pain take is an additional reference for the supporting arm. A standing shoulder replacement still needs visual acceptance. |
+| Both hands | The BVH skeleton tracks wrists without individual finger channels. These takes do not establish finger opening and opposite-hand wrist support. |
+| Abdomen | Takiguchi's stomach-pain take covers the abdomen with a natural weight shift. The required impact and drop to both knees are unverified. |
+| Pelvis | Azumi's fall is a candidate for loss of balance. A seated landing with both hands supporting from behind and a suitable rise remain unverified. |
+| Both legs | Separate left- and right-leg injury recordings show a whole-body response. The same-side knee and palm contacting the floor still need review. |
+| Head, neck, chest, both feet and fatal shoulders | Retain the existing reactions and their recorded acceptance status. None of these takes replaces them. |
+
+The BVH filenames, archive members and SHA-256 values are recorded in the
+local source cache at `SourceAssets/Downloads/EyesJapan/whole-body-sources.json`.
+The source recordings are by mocapdata.com, Eyes, JAPAN Co. Ltd., © 2008–2009.
+The publisher's free-data page requests attribution and describes share-alike
+terms for adaptations. The local preview converts skeleton names, units and file
+format, and retargets the original body motion to the game characters.
+[Source catalog](https://mocapdata.com/) and [free-data terms](https://mocapdata.com/Terms_of_Use.html).
+
 ## Coverage against the agreed reactions
 
 These are source candidates and adaptation requirements, not completed replacement
