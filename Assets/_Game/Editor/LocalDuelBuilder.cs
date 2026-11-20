@@ -58,6 +58,7 @@ public static class LocalDuelBuilder
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.receiveShadows = false;
         label.transform.localScale = Vector3.one * (1.15f / renderer.bounds.size.x);
+        AddFeedbackPanel(head);
         var duel = host.AddComponent<LocalDuel>();
         Set(duel, "localArcherPrefab", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Characters/EnglishArcher.prefab"));
         Set(duel, "opponentPrefab", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Characters/ErikaArcher.prefab"));
@@ -72,6 +73,21 @@ public static class LocalDuelBuilder
         Set(duel, "feedback", label);
         host.AddComponent<ReturnToMenu>();
         EditorSceneManager.SaveScene(scene, "Assets/_Game/Scenes/LocalDuel.unity");
+    }
+
+    // Places a dark surface behind the match text so it stays legible over bright arena floors.
+    internal static void AddFeedbackPanel(Transform head)
+    {
+        var panel = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        panel.name = "Match feedback background";
+        Object.DestroyImmediate(panel.GetComponent<Collider>());
+        panel.transform.SetParent(head, false);
+        panel.transform.localPosition = new Vector3(0f, -0.37f, 1.8f);
+        panel.transform.localScale = new Vector3(2f, 0.36f, 1f);
+        var renderer = panel.GetComponent<MeshRenderer>();
+        renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Materials/Menu/ModePanel.mat");
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
     }
 
     // Stores scene references in serialized fields without adding runtime authoring APIs.
