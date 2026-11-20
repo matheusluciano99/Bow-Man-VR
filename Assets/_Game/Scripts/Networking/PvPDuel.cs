@@ -31,10 +31,13 @@ namespace BowMan.Networking
         private bool desktopMode;
         private int round;
         private InputAction switchHand;
+        private InputAction rematch;
+        private int votes;
         private PlayerPresence[] presences = Array.Empty<PlayerPresence>();
 
         public DuelTurnFlow Flow { get; private set; }
         public int Round => round;
+        public bool RematchRequested => (votes & (1 << LocalIndex)) != 0;
         // Returns the actor occupying a fixed seat during this round.
         public ArcherHealth Archer(int index) => actors[index];
         private NetworkManager Net => connection.GetComponent<NetworkManager>();
@@ -44,6 +47,9 @@ namespace BowMan.Networking
         // Keeps the connection lobby usable until the joiner confirms its assigned seat.
         private void Start()
         {
+            rematch = new InputAction("Rematch", InputActionType.Button, "<XRController>{RightHand}/primaryButton");
+            rematch.AddBinding("<Keyboard>/r");
+            rematch.Enable();
             switchHand = new InputAction("Switch bow hand", InputActionType.Button, "<XRController>{RightHand}/secondaryButton");
             switchHand.AddBinding("<Keyboard>/h");
             switchHand.Enable();
@@ -118,10 +124,40 @@ namespace BowMan.Networking
             visualArrow = null;
             resolvedImpact = null;
             displayedShot = -1;
+            votes = 0;
             awaitingRelease = false;
             if (cutaway != null) cutaway.Clear();
             if (injuryView != null) injuryView.ResetView();
             if (bow != null) { bow.SetShotAllowed(false); bow.gameObject.SetActive(false); }
+        }
+
+        // Offers a rematch from the finished result, preserving the current result until both players accept.
+        public void RequestRematch()
+        {
+            if (Flow == null || Flow.Phase != DuelPhase.Finished || RematchRequested) return;
+            if (Net.IsServer) ReceiveRematch(Net.LocalClientId, round);
+            else Seat.RematchRpc(round);
+        }
+
+        // Counts each admitted seat once and replaces the round only after the second vote.
+        public void ReceiveRematch(ulong peer, int requestedRound)
+        {
+            if (!Net.IsServer || Flow == null || Flow.Phase != DuelPhase.Finished || requestedRound != round) return;
+            var role = connection.Seats.RoleOf(peer);
+            if (role == ArcherRole.None) return;
+            votes |= role == ArcherRole.Archer1 ? 1 : 2;
+            if (votes == 3)
+            {
+                Begin(round + 1);
+                Seat.BeginRpc(round);
+            }
+            else Seat.VotesRpc(round, votes);
+        }
+
+        // Applies the host's votes only to the same finished round.
+        public void ShowVotes(int receivedRound, int ready)
+        {
+            if (Flow != null && receivedRound == round && Flow.Phase == DuelPhase.Finished) votes = ready;
         }
 
         // Submits a real bow release; a joiner waits for host approval before displaying flight.
@@ -249,6 +285,7 @@ namespace BowMan.Networking
         private void Update()
         {
             if (Flow == null) return;
+            if (rematch.WasPressedThisFrame()) RequestRematch();
             var keyboard = Keyboard.current;
             if (keyboard != null && keyboard.tabKey.wasPressedThisFrame)
             {
@@ -278,12 +315,15 @@ namespace BowMan.Networking
             var status = Flow.Phase == DuelPhase.Finished ? (Flow.Winner == LocalIndex ? "VICTORY" : "DEFEAT") :
                 Flow.Phase == DuelPhase.Aiming ? (Flow.CanShoot(LocalIndex) ? "Your turn" : "Opponent aiming") : Flow.Phase.ToString();
             feedback.text = $"{status}    You {actors[LocalIndex].CurrentHealth}  |  Opponent {actors[1 - LocalIndex].CurrentHealth}\n" +
-                (cutaway.IsVisible ? cutaway.Caption : desktopMode ? "Arrow keys: aim    Space: draw/release" : "Trigger: draw/release");
+                (Flow.Phase == DuelPhase.Finished ? (RematchRequested ? "Waiting for opponent" :
+                    votes != 0 ? "Opponent wants a rematch — A / R: accept" : "A / R: rematch") +
+                    (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : desktopMode ? "Arrow keys: aim    Space: draw/release" : "Trigger: draw/release");
         }
 
         // Releases the match and connection listeners when leaving the network scene.
         private void OnDestroy()
         {
+            rematch?.Dispose();
             switchHand?.Dispose();
             if (connection != null) connection.StatusChanged -= ConnectionChanged;
             if (bow != null) bow.Fired -= Released;
