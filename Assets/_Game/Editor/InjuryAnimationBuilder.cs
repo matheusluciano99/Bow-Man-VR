@@ -619,6 +619,8 @@ public static class InjuryAnimationBuilder
     // Replaces clip contents without changing existing asset GUIDs when authoring is rerun.
     internal static AnimationClip SaveClip(AnimationClip clip, string path)
     {
+        // Playback samples transform paths from the prefab root, above its Humanoid Animator.
+        clip.legacy = true;
         var existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
         if (existing == null) { AssetDatabase.CreateAsset(clip, path); return clip; }
         EditorUtility.CopySerialized(clip, existing);

@@ -22,6 +22,20 @@ public class InjuryAnimationTests
         return root;
     }
 
+    // The Windows player requires root-sampled transform clips when the Humanoid Animator is on a child.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void AllInjuryClipsSupportStandaloneRootSampling(string model)
+    {
+        var actor = Character(model).GetComponent<ArcherReactionAnimation>();
+        foreach (BodyRegion region in System.Enum.GetValues(typeof(BodyRegion)))
+        {
+            var clips = new[] { actor.Entry(region), actor.Hold(region), actor.Recovery(region), actor.DeathFinisher(region) };
+            foreach (var clip in clips.Where(c => c != null))
+                Assert.That(clip.legacy, Is.True, model + " " + region + " " + clip.name);
+        }
+    }
+
     // Measures the posed visible body's lowest world-space vertex without cached skin bounds.
     private static float Floor(GameObject root)
     {
