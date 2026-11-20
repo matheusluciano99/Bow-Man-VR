@@ -316,6 +316,12 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Body-specific injury sequences
 
+- Use free recorded human performances for revised injury motion. Review the
+  full take on both archers, then choose the short action that matches the
+  region, side and outcome. Record the source and license with the asset.
+- Fit palms, forearms and boots on the clothed rigs. Check intermediate poses,
+  actual wound placement and floor support through recovery or collapse.
+  Regional source choices and rebuild commands are in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
 - Review individual hits in `Assets/_Game/Scenes/InjuryAnimationTest.unity`.
   Select a region and fire the straight test arrow. The first archer keeps the
   practice turn. After a fatal collapse the review resets both characters while
