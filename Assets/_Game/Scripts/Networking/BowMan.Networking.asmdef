@@ -1,0 +1,14 @@
+{
+  "name": "BowMan.Networking",
+  "rootNamespace": "BowMan.Networking",
+  "references": [
+    "Unity.Netcode.Runtime",
+    "Unity.Networking.Transport",
+    "Unity.Collections",
+    "Unity.Services.Core",
+    "Unity.Services.Authentication",
+    "Unity.Services.Multiplayer",
+    "Unity.XR.Management",
+    "Unity.InputSystem"
+  ]
+}
