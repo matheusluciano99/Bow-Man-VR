@@ -21,7 +21,8 @@ public static class LocalDuelBuilder
             for (var i = spawn.childCount - 1; i >= 0; i--)
             {
                 var child = spawn.GetChild(i);
-                if (child.name != "PositionMarker" && child.name != "FacingMarker") Object.DestroyImmediate(child.gameObject);
+                if (child.name == "PositionMarker" || child.name == "FacingMarker") child.gameObject.SetActive(false);
+                else Object.DestroyImmediate(child.gameObject);
             }
         }
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(
