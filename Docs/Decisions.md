@@ -56,6 +56,19 @@ Verify skeletons, skin weights and animation compatibility in actual files;
 a model title or a creator's rig claim does not establish Unity readiness.
 See [character sources and preparation status](Art/CharacterAssets.md).
 
+### Medieval duel presentation
+
+The planned arenas are a castle courtyard, a woodland archery range and a
+village training yard. Pick one setting at the start of each duel to give
+repeat matches variety while keeping the same floor and firing lane. The PvP
+host shares the choice with the joiner so both players see the same scene.
+
+Carry the archers’ visual style into the arrow and the player’s hands. Use one
+finished arrow from nock through impact so its visible tip stays aligned with
+the hit. The bow hand grips the bow and the drawing hand follows the string,
+with roles swapped for left-handed play. The current primitive arrow and
+controller markers are prototypes.
+
 ## D005 — PC VR on the classroom Quest 2
 
 Target Windows PC VR through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
