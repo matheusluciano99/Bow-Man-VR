@@ -14,7 +14,7 @@ namespace BowMan
         [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
         [SerializeField] private AnimationClip[] deathFinishers = new AnimationClip[15];
         [SerializeField] private AnimationClip[] fatalEntries = new AnimationClip[15];
-        private ArcherAbdomenContact abdomenContact;
+        private ArcherWoundContact woundContact;
         private BodyImpact entryImpact;
         private DuelTurnFlow flow;
         private ArcherHealth health;
@@ -91,8 +91,8 @@ namespace BowMan
             health = actor;
             archerIndex = index;
             poseAnimator = GetComponentInChildren<Animator>();
-            if (poseAnimator != null && poseAnimator.isHuman && Supports(BodyRegion.Abdomen))
-                abdomenContact = new ArcherAbdomenContact(poseAnimator, GetComponentsInChildren<BodyHitRegion>());
+            if (poseAnimator != null && poseAnimator.isHuman && (Supports(BodyRegion.Abdomen) || Supports(BodyRegion.Neck)))
+                woundContact = new ArcherWoundContact(poseAnimator, GetComponentsInChildren<BodyHitRegion>());
             flow.ReactionRequested += OnReaction;
             flow.RecoveryRequested += OnRecovery;
             flow.Changed += OnFlowChanged;
@@ -165,16 +165,16 @@ namespace BowMan
                     deathBlendBones[i].localRotation = Quaternion.Slerp(deathBlendRotations[i], deathBlendBones[i].localRotation, blend);
                 }
             }
-            if (fatalPlayback && region == BodyRegion.Neck && woundAnchor != null)
-                ArcherLimbIK.ReachNeck(poseAnimator, woundAnchor.TransformPoint(woundPoint),
+            if (fatalPlayback && region == BodyRegion.Neck && woundAnchor != null && woundContact != null)
+                woundContact.ApplyNeck(woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
             var completeFatalEntry = fatalPlayback && playing == FatalEntry(region);
             if (!recovering && !finishingDeath && !completeFatalEntry)
                 ArcherHitRecoil.Apply(poseAnimator, entryImpact, elapsed);
-            if (region == BodyRegion.Abdomen && woundAnchor != null && !finishingDeath && abdomenContact != null)
+            if (region == BodyRegion.Abdomen && woundAnchor != null && !finishingDeath && woundContact != null)
             {
                 var reach = AbdomenContactWeight(elapsed / playing.length, recovering);
-                abdomenContact.Apply(woundAnchor.TransformPoint(woundPoint),
+                woundContact.ApplyAbdomen(woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, reach);
             }
             if (elapsed < playing.length) return;
@@ -249,7 +249,7 @@ namespace BowMan
             deathBlendBones = null;
             deathBlendPositions = null;
             deathBlendRotations = null;
-            abdomenContact = null;
+            woundContact = null;
         }
 
         // Prevents late match callbacks from sampling a destroyed character.
