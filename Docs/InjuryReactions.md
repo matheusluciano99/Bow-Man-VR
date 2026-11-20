@@ -140,3 +140,17 @@ recovery and fatal continuation. The saved clips and their prefab bindings
 are included with the project. The **InjuryAnimationTests** Play Mode suite
 covers the contacts, hold, recovery and death interruption.
 [Adobe Mixamo](https://www.mixamo.com/) and [Adobe’s game-use terms](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html).
+
+### Abdominal reaction on the game rigs
+
+The abdominal sequence uses the Mixamo performances **Kneeling Down** and
+**Standing**. The archer flinches in the impact direction, folds forward,
+guards the actual abdominal wound and settles on both knees. Both forearms
+have clearance checks during the reach. A survivor holds for three seconds
+and completes the rise before receiving the next turn. A lethal hit or death
+during recovery plays through to a grounded collapse.
+
+Use **Bow Man VR > Injuries > Rebuild Abdomen** to regenerate both archers’
+clips. The Play Mode tests cover the two knees, boots, off-center hand reach
+and live turn flow. [Adobe Mixamo](https://www.mixamo.com/) and
+[Adobe’s game-use terms](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html).
