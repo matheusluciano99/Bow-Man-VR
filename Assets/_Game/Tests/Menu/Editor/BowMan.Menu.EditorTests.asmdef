@@ -1,0 +1,7 @@
+{
+  "name": "BowMan.Menu.EditorTests",
+  "references": ["BowMan.Menu"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

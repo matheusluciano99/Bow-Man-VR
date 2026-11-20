@@ -3,6 +3,7 @@
   "rootNamespace": "BowMan.Networking.Editor",
   "references": [
     "BowMan.Networking",
+    "BowMan.Menu",
     "Unity.Netcode.Runtime",
     "Unity.Networking.Transport"
   ],
