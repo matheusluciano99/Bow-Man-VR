@@ -40,6 +40,12 @@ namespace BowMan
                         left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
                         (incoming * 0.055f + outside * 0.022f) * amount, 13f * amount);
                     break;
+                case BodyRegion.LeftHand:
+                case BodyRegion.RightHand:
+                    Deflect(rig, left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm,
+                        left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand,
+                        (incoming * 0.052f + outside * 0.023f + up * 0.015f) * amount, 16f * amount);
+                    break;
                 case BodyRegion.LeftLeg:
                 case BodyRegion.RightLeg:
                     Buckle(rig, incoming, outside, amount);

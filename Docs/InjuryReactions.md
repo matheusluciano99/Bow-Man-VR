@@ -169,3 +169,7 @@ The weight shift in **Kneeling Down** and **Standing** times the descent and ris
 ### Standing shoulder reach
 
 A surviving shoulder hit uses the reach before the fall in **Shoulder Hit And Fall**. The injured shoulder recoils, the opposite hand cups it and both boots remain planted. The three-second hold follows the captured shoulder movement. On release the hand clears the body and the archer resumes the duel stance. A lethal shoulder hit still plays the complete recorded fall. **Bow Man VR > Injuries > Rebuild Surviving Shoulders** regenerates the standing reactions on both rigs.
+
+### Captured wrist support
+
+Each hand uses Hamada’s recorded standing wrist guard. The injured hand recoils and opens, the opposite palm supports the wrist through the hold, and the hands return to stance. The finger extension comes from the bracing hand in **Getting Up**. **Bow Man VR > Injuries > Rebuild Captured Hand Reactions** regenerates both sides for English Archer and Erika. A lethal hand hit continues into a full collapse.

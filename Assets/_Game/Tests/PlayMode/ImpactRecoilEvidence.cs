@@ -30,7 +30,7 @@ public class ImpactRecoilEvidence
                 .Select(v => v.GetComponent<Collider>()).ToArray();
             var leftBoot = rig.GetBoneTransform(HumanBodyBones.LeftFoot);
             var rightBoot = rig.GetBoneTransform(HumanBodyBones.RightFoot);
-            var regions = new[] { BodyRegion.Abdomen, BodyRegion.LeftShoulder, BodyRegion.RightShoulder, BodyRegion.LeftArm, BodyRegion.RightArm, BodyRegion.LeftLeg, BodyRegion.RightLeg };
+            var regions = new[] { BodyRegion.Abdomen, BodyRegion.LeftShoulder, BodyRegion.RightShoulder, BodyRegion.LeftArm, BodyRegion.RightArm, BodyRegion.LeftHand, BodyRegion.RightHand, BodyRegion.LeftLeg, BodyRegion.RightLeg };
             var failures = new List<string>();
             foreach (var region in regions)
             {
@@ -81,6 +81,8 @@ public class ImpactRecoilEvidence
         BodyRegion.RightShoulder => HumanBodyBones.RightUpperArm,
         BodyRegion.LeftArm => HumanBodyBones.LeftLowerArm,
         BodyRegion.RightArm => HumanBodyBones.RightLowerArm,
+        BodyRegion.LeftHand => HumanBodyBones.LeftHand,
+        BodyRegion.RightHand => HumanBodyBones.RightHand,
         _ => HumanBodyBones.Hips
     };
 
