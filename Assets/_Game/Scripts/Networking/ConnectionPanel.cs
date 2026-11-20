@@ -8,6 +8,8 @@ namespace BowMan.Networking
         [SerializeField] private PvPConnectionController controller;
         [SerializeField] private TextMesh headsetLabel;
 
+        private const string MenuHint = "Menu button / Esc: back to modes";
+
         private string codeInput = string.Empty;
 
         // Mirrors every status change onto the headset label.
@@ -40,6 +42,7 @@ namespace BowMan.Networking
             GUI.enabled = !status.CanStart;
             if (GUILayout.Button("Leave")) controller.Leave();
             GUI.enabled = true;
+            GUILayout.Label(MenuHint);
             GUILayout.EndVertical();
             GUILayout.EndArea();
         }
@@ -47,7 +50,7 @@ namespace BowMan.Networking
         // Writes the status sentence on the label in front of the headset camera.
         private void ShowInHeadset(ConnectionStatus status)
         {
-            if (headsetLabel != null) headsetLabel.text = status.Describe();
+            if (headsetLabel != null) headsetLabel.text = status.Describe() + "\n" + MenuHint;
         }
     }
 }

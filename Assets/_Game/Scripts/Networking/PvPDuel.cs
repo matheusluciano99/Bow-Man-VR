@@ -58,8 +58,7 @@ namespace BowMan.Networking
             bow.gameObject.SetActive(false);
             bow.Fired += Released;
             connection.StatusChanged += ConnectionChanged;
-            desktopMode = Array.Exists(Environment.GetCommandLineArgs(), arg =>
-                string.Equals(arg, LocalRigBinder.DesktopFlag, StringComparison.OrdinalIgnoreCase));
+            desktopMode = DesktopXR.Requested(Environment.GetCommandLineArgs());
         }
 
         // Starts the first round only for the admitted second player.

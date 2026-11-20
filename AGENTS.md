@@ -180,6 +180,24 @@ Use GitHub's Assignees field to record task responsibility.
   have no health target. Body-region damage, death animations, turn handoff,
   and match outcomes belong to later tasks.
 
+## Starting the game
+
+- `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Two panels offer
+  **PvE — vs AI archer** (opens `LocalDuel`) and **PvP — online duel** (opens
+  `PvPConnectionTest`). Point the right controller's ray at a panel and pull the
+  trigger; without a headset press 1 / 2 or click a panel.
+- In either mode, the left controller's Menu button or Esc returns to the menu.
+  Leaving the PvP scene ends the online session. Health, turn and the
+  VICTORY/DEFEAT result stay on the local duel's headset text (#8).
+- Run **Bow Man VR > Build Mode Menu And Game Scenes** after changing the menu,
+  duel or PvP generators. It regenerates the three scenes and puts MainMenu,
+  LocalDuel and PvPConnectionTest first in the build list (D025).
+- **Bow Man VR > Build Windows Game Player** writes `Builds/PCVRGame/BowManVR.exe`
+  with those three scenes; add `-desktop` to run it without a headset.
+- PvP still stops at the connection test until duel synchronization (#12) lands.
+  Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
+  (PlayMode) before a menu PR.
+
 ## Testing PvP connectivity
 
 - One-time setup: in the Unity Cloud dashboard for the linked project

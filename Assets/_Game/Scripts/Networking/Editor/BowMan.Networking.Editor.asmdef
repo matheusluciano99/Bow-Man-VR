@@ -4,6 +4,7 @@
   "references": [
     "BowMan.Gameplay",
     "BowMan.Networking",
+    "BowMan.Menu",
     "Unity.Netcode.Runtime",
     "Unity.Networking.Transport"
   ],
