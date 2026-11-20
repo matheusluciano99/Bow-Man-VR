@@ -7,6 +7,8 @@ namespace BowMan
     public sealed class VRInjuryView : MonoBehaviour
     {
         [SerializeField] private Transform trackingOrigin;
+        private ArcherReactionAnimation reaction;
+        private ArcherHealth health;
         private Transform actor;
         private Transform eyes;
         private Vector3 restEyePosition;
@@ -16,11 +18,13 @@ namespace BowMan
         private bool bound;
 
         // Stores the standing eye reference while leaving tracked head and controller poses untouched.
-        public void Bind(Transform character, Transform eyeAnchor)
+        public void Bind(Transform character, Transform eyeAnchor, ArcherHealth duelActor = null)
         {
             if (trackingOrigin == null || character == null || eyeAnchor == null || !eyeAnchor.IsChildOf(character))
                 throw new ArgumentException("Injury view requires a tracking origin and the character's eye anchor.");
             ResetView();
+            health = duelActor;
+            reaction = health != null ? health.GetComponent<ArcherReactionAnimation>() : null;
             actor = character;
             eyes = eyeAnchor;
             restEyePosition = actor.InverseTransformPoint(eyes.position);
@@ -43,6 +47,11 @@ namespace BowMan
         private void LateUpdate()
         {
             if (eyes == null || actor == null) return;
+            if (reaction != null && !reaction.IsInjured && !health.IsDefeated)
+            {
+                trackingOrigin.SetPositionAndRotation(originPosition, originRotation);
+                return;
+            }
             var neutralEyes = actor.TransformPoint(restEyePosition);
             var rotation = eyes.rotation * Quaternion.Inverse(actor.rotation * restEyeRotation);
             trackingOrigin.SetPositionAndRotation(eyes.position + rotation * (originPosition - neutralEyes),

@@ -71,6 +71,28 @@ public class LocalDuelTests
         return arrow;
     }
 
+    // Checks visible breathing at duel distance while the local tracking origin stays still.
+    [UnityTest]
+    public IEnumerator StandingOpponentMovesWhileTrackingOriginStaysStill()
+    {
+        var duel = Find<LocalDuel>();
+        var shoulder = duel.Opponent.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.LeftShoulder);
+        var origin = Find<Camera>().transform.root;
+        var position = origin.position;
+        var rotation = origin.rotation;
+        var start = shoulder.localRotation;
+        var maxAngle = 0f;
+        var end = Time.time + 4f;
+        while (Time.time < end)
+        {
+            yield return null;
+            maxAngle = Mathf.Max(maxAngle, Quaternion.Angle(start, shoulder.localRotation));
+            Assert.That(Vector3.Distance(position, origin.position), Is.LessThan(0.001f));
+            Assert.That(Quaternion.Angle(rotation, origin.rotation), Is.LessThan(0.01f));
+        }
+        Assert.That(maxAngle, Is.GreaterThan(0.3f));
+    }
+
     // Exercises a real twenty-metre bow hit, full recovery, an AI response, fatal victory and a clean same-session restart.
     [UnityTest]
     public IEnumerator BowDamageRecoveryAIResultAndRestartWorkTogether()

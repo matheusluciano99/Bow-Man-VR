@@ -2545,6 +2545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f207d6928c83624e8b8ee4508b966b0, type: 3}
   m_Name:
   m_EditorClassIdentifier: BowMan.Gameplay::BowMan.ArcherReactionAnimation
+  standingIdle: {fileID: 7400000, guid: a64f082ff25f8f74ea21d99f8ddd4e62, type: 2}
   entries:
   - {fileID: 7400000, guid: f65a01033d204f54b8a491f9aa4603d3, type: 2}
   - {fileID: 7400000, guid: d1d873756d0377e4d8137e0c60d0f124, type: 2}

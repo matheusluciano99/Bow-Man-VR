@@ -6,6 +6,10 @@ Use free assets only; multiple different archer models are allowed. The prototyp
 review uses English Archer and Erika Archer. Design is tracked in
 [issue #38](https://github.com/matheusluciano99/Bow-Man-VR/issues/38).
 
+## Standing motion
+
+Both duel archers use an eight-second loop from Sam Lazarus’s standing motion capture. The boots stay planted while the shoulders, arms, spine and head follow the recording. The local tracking origin follows the headset during idle and the animated eyes during injury. Source and rebuild details are in the [Rokoko attribution](../../Assets/ThirdParty/Rokoko/Attribution.md).
+
 ## Retained Templar Knight
 
 - Creator: everlasting17th / everlastinggrey.

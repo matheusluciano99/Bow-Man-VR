@@ -94,7 +94,7 @@ namespace BowMan.Networking
             Flow.ReactionRequested += React;
             Flow.FatalityRequested += Fatal;
             var eyes = local.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head).Find("EyeAnchor");
-            injuryView.Bind(local.transform, eyes);
+            injuryView.Bind(local.transform, eyes, local);
             bow.gameObject.SetActive(true);
             bow.SetOwner(local.transform);
             desktop.PlaceStand(local.transform.TransformPoint(new Vector3(-0.45f, 1.3f, 0.6f)), local.transform.rotation);

@@ -72,7 +72,7 @@ namespace BowMan
             Opponent.GetComponent<ArcherReactionAnimation>().Connect(Flow, 1, Opponent);
             bow.SetOwner(LocalArcher.transform);
             var animator = LocalArcher.GetComponentInChildren<Animator>();
-            injuryView.Bind(LocalArcher.transform, animator.GetBoneTransform(HumanBodyBones.Head).Find("EyeAnchor"));
+            injuryView.Bind(LocalArcher.transform, animator.GetBoneTransform(HumanBodyBones.Head).Find("EyeAnchor"), LocalArcher);
             Opponent.gameObject.AddComponent<AIArcher>().Initialize(Flow, 1, Opponent, LocalArcher, arrowPrefab);
             if (desktopMode) desktopInput.UseDesktopControls(true);
             OnFlowChanged();

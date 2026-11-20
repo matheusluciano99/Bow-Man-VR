@@ -9,6 +9,8 @@ namespace BowMan
         private const float FootRecoveryDuration = 0.8f;
         private const float ChestRecoveryDuration = 3.6f;
 
+        [SerializeField] private AnimationClip standingIdle;
+        private float idleTime;
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
@@ -110,6 +112,7 @@ namespace BowMan
             fatalPlayback = lethal;
             finishingDeath = false;
             injured = true;
+            idleTime = 0f;
             elapsed = 0f;
             playing = clip;
             entryImpact = hit;
@@ -139,6 +142,12 @@ namespace BowMan
             if (health == null || (health.IsDefeated && !fatalPlayback)) return;
             if (playing == null)
             {
+                if (!injured && standingIdle != null)
+                {
+                    idleTime = Mathf.Repeat(idleTime + Time.deltaTime, standingIdle.length);
+                    standingIdle.SampleAnimation(gameObject, idleTime);
+                    return;
+                }
                 var hold = Hold(region);
                 if (injured && flow.Phase == DuelPhase.Holding && hold != null)
                 {

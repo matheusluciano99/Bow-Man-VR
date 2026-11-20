@@ -36,6 +36,38 @@ public class InjuryAnimationTests
         }
     }
 
+    // Samples the complete standing loop on each shipped rig, checking shoulder motion, foot contacts and the seam.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void StandingIdleMovesUpperBodyWithPlantedBoots(string model)
+    {
+        var actor = Character(model);
+        var clip = (AnimationClip)new SerializedObject(actor.GetComponent<ArcherReactionAnimation>())
+            .FindProperty("standingIdle").objectReferenceValue;
+        Assert.That(clip, Is.Not.Null);
+        var rig = actor.GetComponentInChildren<Animator>();
+        var chest = rig.GetBoneTransform(HumanBodyBones.UpperChest);
+        var shoulder = rig.GetBoneTransform(HumanBodyBones.LeftShoulder);
+        var feet = new[] { rig.GetBoneTransform(HumanBodyBones.LeftFoot), rig.GetBoneTransform(HumanBodyBones.RightFoot) };
+        var feetAtRest = feet.Select(f => f.position).ToArray();
+        var start = shoulder.position;
+        var startRotation = chest.rotation;
+        var displacement = 0f;
+        var rotation = 0f;
+        for (var frame = 0; frame <= 120; frame++)
+        {
+            clip.SampleAnimation(actor, clip.length * frame / 120f);
+            displacement = Mathf.Max(displacement, Vector3.Distance(shoulder.position, start));
+            rotation = Mathf.Max(rotation, Quaternion.Angle(chest.rotation, startRotation));
+            for (var i = 0; i < feet.Length; i++)
+                Assert.That(Vector3.Distance(feet[i].position, feetAtRest[i]), Is.LessThan(0.001f));
+        }
+        Debug.Log($"{model} idle shoulder travel {displacement:F4} m, chest rotation {rotation:F2} degrees");
+        Assert.That(displacement, Is.InRange(0.004f, 0.10f));
+        Assert.That(rotation, Is.InRange(0.4f, 20f));
+        Assert.That(Vector3.Distance(shoulder.position, start), Is.LessThan(0.001f));
+    }
+
     // Measures the posed visible body's lowest world-space vertex without cached skin bounds.
     private static float Floor(GameObject root)
     {
