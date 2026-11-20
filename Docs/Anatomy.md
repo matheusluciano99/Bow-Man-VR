@@ -42,11 +42,17 @@ sequence. `DuelTurnFlow.FatalityRequested(targetIndex, impact)` publishes the
 actual anatomy after health confirms death and before regional death motion.
 Surviving hits, misses, and unrelated later deaths cannot request that view.
 The event does not delay the match result or alter the existing death sequence.
-The future view must subscribe to this fatal gate, not the general `Resolved`
-event. Normal blood and regional survivor reactions continue on ordinary hits.
+The local duel displays a stereoscopic close-up of the interior intersected by
+the fatal game arrow. Cyan surfaces are the contacted organ meshes. Orange
+volumes mark fractured rig bones and pale volumes show bone contact below the
+fracture threshold. The gold line reveals the actual finite path from entry to
+tip. All structures use their source frames through the fall. The HUD names
+the region, organs and fractures, including empty results.
 
-Rendering, timing and headset readability belong to the X-ray task. Organ- and
-fracture-specific health effects remain separate work.
+The cutaway lasts a provisional three seconds. Restart dismisses it immediately.
+Head and hand tracking continue throughout the presentation. Headset readability
+and comfort require the physical Quest 2 pass. Organ- and fracture-specific
+health effects remain separate work.
 
 ## Sources and authoring
 
