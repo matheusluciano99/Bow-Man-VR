@@ -109,7 +109,7 @@ public static class ModeMenuBuilder
         board.transform.localScale = new Vector3(1.3f, 0.9f, 0.05f);
         var renderer = board.GetComponent<Renderer>();
         renderer.sharedMaterial = material;
-        Label(root.transform, GameScenes.Title(mode), new Vector3(0f, 0f, -0.04f), 0.045f);
+        Label(root.transform, GameScenes.Title(mode), new Vector3(0f, 0f, -0.04f), 0.032f);
         var option = root.AddComponent<ModeOption>();
         option.Configure(mode, renderer);
         EditorUtility.SetDirty(option);

@@ -738,7 +738,7 @@ TextMesh:
 
     vs AI archer'
   m_OffsetZ: 0
-  m_CharacterSize: 0.045
+  m_CharacterSize: 0.032
   m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
@@ -1259,7 +1259,7 @@ TextMesh:
 
     online duel'
   m_OffsetZ: 0
-  m_CharacterSize: 0.045
+  m_CharacterSize: 0.032
   m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
