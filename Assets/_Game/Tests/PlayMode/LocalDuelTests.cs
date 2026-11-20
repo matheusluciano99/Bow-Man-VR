@@ -54,7 +54,12 @@ public class LocalDuelTests
     {
         Physics.SyncTransforms();
         var target = duel.Opponent.GetComponentsInChildren<BodyHitRegion>().First(v => v.Region == region);
-        var point = target.GetComponent<Collider>().bounds.center;
+        var volume = target.GetComponent<Collider>();
+        var point = volume.bounds.center;
+        // Aim at the outer shoulder visible beside the chest in the relaxed stance.
+        if (region is BodyRegion.LeftShoulder or BodyRegion.RightShoulder)
+            point = volume.ClosestPoint(point + duel.Opponent.transform.right *
+                (region == BodyRegion.LeftShoulder ? -0.035f : 0.035f));
         var bow = Find<Bow>();
         var start = duel.LocalArcher.transform.position + Vector3.up * 1.4f + Vector3.forward * 0.6f;
         Assert.That(ArrowBallistics.TryVelocity(start, point, 25f, out var velocity), Is.True);

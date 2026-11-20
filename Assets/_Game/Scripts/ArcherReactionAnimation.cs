@@ -12,6 +12,7 @@ namespace BowMan
         [SerializeField] private AnimationClip standingIdle;
         private float idleTime;
         private Transform[] idleArms;
+        private Quaternion[] restingArms;
         private readonly Quaternion[] previousArms = new Quaternion[4];
         private float armBlendTime;
         [SerializeField] private AnimationClip[] entries = new AnimationClip[15];
@@ -104,6 +105,7 @@ namespace BowMan
                     HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm }.Select(poseAnimator.GetBoneTransform).ToArray();
                 idleTime = 0f;
                 standingIdle.SampleAnimation(gameObject, idleTime);
+                restingArms = idleArms.Select(bone => bone.localRotation).ToArray();
                 BeginArmBlend();
             }
             flow.ReactionRequested += OnReaction;
@@ -200,6 +202,12 @@ namespace BowMan
                     woundAnchor.TransformDirection(woundOutward).normalized, reach);
             }
             BlendArms(Time.deltaTime);
+            if (recovering && idleArms != null)
+            {
+                var weight = Mathf.SmoothStep(0f, 1f, 1f - (playing.length - elapsed) / (0.22f * recoverySpeed));
+                for (var i = 0; i < idleArms.Length; i++)
+                    idleArms[i].localRotation = Quaternion.Slerp(idleArms[i].localRotation, restingArms[i], weight);
+            }
             if (elapsed < playing.length) return;
             playing = null;
             if (fatalPlayback)
@@ -217,7 +225,7 @@ namespace BowMan
             if (recovering)
             {
                 injured = false;
-                BeginArmBlend();
+                if (standingIdle != null) standingIdle.SampleAnimation(gameObject, 0f);
                 flow.CompleteRecovery(token);
             }
             else
