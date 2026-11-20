@@ -13,6 +13,7 @@ namespace BowMan
         [SerializeField] private AnimationClip[] recoveries = new AnimationClip[15];
         [SerializeField] private AnimationClip[] holds = new AnimationClip[15];
         [SerializeField] private AnimationClip[] deathFinishers = new AnimationClip[15];
+        [SerializeField] private AnimationClip[] fatalEntries = new AnimationClip[15];
         private DuelTurnFlow flow;
         private ArcherHealth health;
         private int archerIndex;
@@ -48,6 +49,17 @@ namespace BowMan
         // Returns the collapse authored from this region's injured pose, separate from its surviving recovery.
         public AnimationClip DeathFinisher(BodyRegion value) => deathFinishers[(int)value];
 
+        // Returns a complete recorded fatal reaction that starts at impact.
+        public AnimationClip FatalEntry(BodyRegion value) => fatalEntries[(int)value];
+
+        // Binds a continuous shoulder performance from first impact through the final collapse.
+        public void SetFatalShoulder(BodyRegion side, AnimationClip clip)
+        {
+            if (clip == null || side is not (BodyRegion.LeftShoulder or BodyRegion.RightShoulder))
+                throw new ArgumentException("A complete fatal shoulder clip is required.");
+            fatalEntries[(int)side] = clip;
+        }
+
         // Stores a body-region collapse without replacing the independent head and neck fatal entries.
         public void SetDeathFinisher(BodyRegion value, AnimationClip clip)
         {
@@ -82,7 +94,9 @@ namespace BowMan
         // Plays this exact region's entry; unsupported regions remain pending for their own implementations.
         private void OnReaction(int target, BodyImpact hit, bool lethal, int shotId)
         {
-            if (target != archerIndex || Entry(hit.Region) == null) return;
+            if (target != archerIndex) return;
+            var clip = lethal && FatalEntry(hit.Region) != null ? FatalEntry(hit.Region) : Entry(hit.Region);
+            if (clip == null) return;
             region = hit.Region;
             token = shotId;
             recovering = false;
@@ -90,7 +104,7 @@ namespace BowMan
             finishingDeath = false;
             injured = true;
             elapsed = 0f;
-            playing = Entry(region);
+            playing = clip;
             if (region == BodyRegion.Neck)
             {
                 poseAnimator = GetComponentInChildren<Animator>();
@@ -148,10 +162,11 @@ namespace BowMan
                 ArcherLimbIK.ReachNeck(poseAnimator, woundAnchor.TransformPoint(woundPoint),
                     woundAnchor.TransformDirection(woundOutward).normalized, ArcherLimbIK.NeckReachWeight(elapsed));
             if (elapsed < playing.length) return;
+            var completeFatalEntry = fatalPlayback && playing == FatalEntry(region);
             playing = null;
             if (fatalPlayback)
             {
-                if (!finishingDeath && region is not BodyRegion.Head and not BodyRegion.Neck)
+                if (!finishingDeath && !completeFatalEntry && region is not BodyRegion.Head and not BodyRegion.Neck)
                 {
                     BeginDeathFinisher();
                     return;

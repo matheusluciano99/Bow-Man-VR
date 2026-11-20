@@ -2609,3 +2609,19 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 7400000, guid: 14890c2eb38dce247bcce17da7454ede, type: 2}
   - {fileID: 7400000, guid: d4f1bfdb7b353e74980f613c8a3841b8, type: 2}
+  fatalEntries:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 7400000, guid: e9762018b6b363549ace0165021f70e8, type: 2}
+  - {fileID: 7400000, guid: 32e0c503a75e3aa4684ea4e86bde9170, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

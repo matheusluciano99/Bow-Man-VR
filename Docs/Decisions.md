@@ -252,3 +252,7 @@ filenames, mesh GUIDs and native subasset identities when regenerating.
 - Per-model hitbox dimensions, damage values, organ/fracture effects and internal
   injury presentation remain implementation/tuning work. The chosen eye
   viewpoint and injury motion need hardware validation.
+
+### Fatal shoulder motion
+
+A lethal shoulder hit plays the complete recorded reach and fall as a single motion. This preserves the timing between the opposite hand reaching the injured shoulder and the body losing balance. The fitted take was accepted in the Unity injury review on November 20, 2026. Surviving shoulder hits require a separate standing reaction.

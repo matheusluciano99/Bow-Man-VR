@@ -30,7 +30,7 @@ public class InjuryAnimationTests
         var actor = Character(model).GetComponent<ArcherReactionAnimation>();
         foreach (BodyRegion region in System.Enum.GetValues(typeof(BodyRegion)))
         {
-            var clips = new[] { actor.Entry(region), actor.Hold(region), actor.Recovery(region), actor.DeathFinisher(region) };
+            var clips = new[] { actor.Entry(region), actor.Hold(region), actor.Recovery(region), actor.DeathFinisher(region), actor.FatalEntry(region) };
             foreach (var clip in clips.Where(c => c != null))
                 Assert.That(clip.legacy, Is.True, model + " " + region + " " + clip.name);
         }
@@ -87,6 +87,55 @@ public class InjuryAnimationTests
         arrow.Launch(Vector3.back * 1000f, first.transform);
         Assert.That(flow.TryTrackShot(0, arrow), Is.True);
         return flow;
+    }
+
+    // Both rigs reach across to the struck shoulder during the recorded fatal reaction.
+    [TestCase("EnglishArcher")]
+    [TestCase("ErikaArcher")]
+    public void FatalShouldersReachAcrossBeforeFalling(string model)
+    {
+        var root = Character(model);
+        var player = root.GetComponent<ArcherReactionAnimation>();
+        var rig = root.GetComponentInChildren<Animator>();
+        foreach (var side in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder })
+        {
+            var clip = player.FatalEntry(side);
+            Assert.That(clip, Is.Not.Null, side.ToString());
+            var left = side == BodyRegion.LeftShoulder;
+            var finger = rig.GetBoneTransform(left ? HumanBodyBones.RightIndexDistal : HumanBodyBones.LeftIndexDistal);
+            var struck = rig.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+            var other = rig.GetBoneTransform(left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm);
+            var nearest = float.PositiveInfinity;
+            for (var frame = 12; frame <= 36; frame++)
+            {
+                clip.SampleAnimation(root, frame / 30f);
+                var distance = Vector3.Distance(finger.position, struck.position);
+                if (distance < Vector3.Distance(finger.position, other.position)) nearest = Mathf.Min(nearest, distance);
+            }
+            Assert.That(nearest, Is.LessThan(0.2f), side.ToString());
+            clip.SampleAnimation(root, clip.length);
+            Assert.That(rig.GetBoneTransform(HumanBodyBones.Head).position.y, Is.LessThan(0.4f));
+        }
+    }
+
+    // A lethal shoulder arrow runs the complete fall even when the standing reaction is unbound.
+    [UnityTest]
+    public IEnumerator LethalShoulderArrowsCompleteTheRecordedFall()
+    {
+        foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
+        foreach (var side in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder })
+        {
+            var flow = BodyShot(out var target, out var arrow, side, model);
+            target.TakeDamage(75);
+            var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
+            var duration = target.GetComponent<ArcherReactionAnimation>().FatalEntry(side).length;
+            yield return new WaitForSeconds(duration + 0.25f);
+            Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(side));
+            Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+            Assert.That(target.CurrentHealth, Is.Zero);
+            Assert.That(target.transform.InverseTransformPoint(head.position).y, Is.LessThan(0.4f), model);
+            yield return CleanUp();
+        }
     }
 
     // Requires a dedicated rapid collapse with a relaxed head, visible ground contact and no recovery asset.
