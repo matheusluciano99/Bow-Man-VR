@@ -48,6 +48,62 @@ public class PvPRelayMatchTests
         Assert.That(bow.Release(), Is.Not.Null);
     }
 
+    // Runs the full inventory across real Relay turns and compares each peer's recorded outcome.
+    private static IEnumerator RegionMatrix(PvPDuel duel, Bow bow, bool host, string folder)
+    {
+        var role = host ? "host" : "join";
+        var other = host ? "join" : "host";
+        var rows = new List<string>();
+        var failures = new List<string>();
+        foreach (BodyRegion region in Enum.GetValues(typeof(BodyRegion)))
+        {
+            if (duel.Flow.Phase == DuelPhase.Finished)
+            {
+                var round = duel.Round;
+                duel.RequestRematch();
+                yield return Until(() => duel.Round > round, "Fresh matrix round");
+            }
+            yield return Until(() => duel.Flow.Phase == DuelPhase.Aiming, "Available turn for " + region);
+            var flow = duel.Flow;
+            var shooter = flow.ActiveArcher;
+            var previous = flow.ShotId;
+            BodyRegion? actual = null;
+            string record = null;
+            void Capture(int index, BodyImpact entry, bool lethal, int token)
+            {
+                var actor = duel.Archer(index);
+                var volume = entry.Volume.transform;
+                var report = actor.GetComponentsInChildren<ArrowAnatomy>()
+                    .Select(a => a.LastImpact).Last(r => r != null && r.Entry.Volume == entry.Volume);
+                actual = entry.Region;
+                record = $"{region}/{entry.Region}/{entry.Side}/{index}/{token}/{lethal}/" +
+                    $"{Vector3Int.RoundToInt(volume.InverseTransformPoint(entry.Point) * 1000f)}/" +
+                    $"{string.Join(",", report.Organs.Select(h => h.Organ.DisplayName))}/" +
+                    $"{string.Join(",", report.Bones.Select(h => h.Bone + (h.Fractured ? "*" : "")))}";
+            }
+            flow.ReactionRequested += Capture;
+            try
+            {
+                File.WriteAllText(Path.Combine(folder, $"{region}-{role}-ready"), "");
+                yield return Until(() => File.Exists(Path.Combine(folder, $"{region}-{other}-ready")), "Peer ready for " + region);
+                if (host == (shooter == 0)) Fire(duel, bow, shooter, region);
+                yield return Until(() => actual.HasValue || flow.ShotId > previous && flow.Phase == DuelPhase.Aiming,
+                    "Outcome for " + region);
+                rows.Add((record ?? region + "/miss") + $"/{duel.Archer(0).CurrentHealth}/{duel.Archer(1).CurrentHealth}");
+                if (actual != region) failures.Add($"{region} reached {actual?.ToString() ?? "scenery"}");
+            }
+            finally { flow.ReactionRequested -= Capture; }
+            yield return Until(() => flow.Phase == DuelPhase.Finished || flow.Phase == DuelPhase.Aiming, "Recovery for " + region);
+        }
+        var file = Path.Combine(folder, role + "-regions.txt");
+        File.WriteAllLines(file + ".tmp", rows);
+        File.Move(file + ".tmp", file);
+        var peer = Path.Combine(folder, other + "-regions.txt");
+        yield return Until(() => File.Exists(peer), "Other region matrix");
+        Assert.That(File.ReadAllLines(peer), Is.EqualTo(rows));
+        Assert.That(failures, Is.Empty, string.Join(", ", failures));
+    }
+
     // Plays a real host/client match in two separate Editors and compares both authoritative injury records.
     [UnityTest]
     public IEnumerator TwoEditorsAgreeOnTheDuel()
@@ -166,6 +222,7 @@ public class PvPRelayMatchTests
             yield return Until(() => duel.Flow != null && duel.Round == firstRound + 2, "Fresh round after rejoin");
             Assert.That(duel.Flow.CanShoot(0), Is.True);
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
+            if (Argument("-duelTestMatrix") == "all") yield return RegionMatrix(duel, bow, host, folder);
             if (host)
             {
                 yield return Until(() => File.Exists(Path.Combine(folder, "join-reentered")), "Peer rejoined");
