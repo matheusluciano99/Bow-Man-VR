@@ -36,6 +36,7 @@ namespace BowMan
                 head == null || feedback == null)
                 throw new InvalidOperationException("The local duel scene is missing a required character, bow, view or feedback reference.");
             Flow = gameObject.AddComponent<DuelTurnFlow>();
+            vrInput.ShowArcherHands();
             cutaway = head.gameObject.AddComponent<FatalCutaway>();
             Flow.FatalityRequested += OnFatality;
             Flow.Changed += OnFlowChanged;

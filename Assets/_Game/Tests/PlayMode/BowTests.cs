@@ -228,6 +228,11 @@ public class BowTests
         bow.Fired += _ => shots++;
         inputObject.SetActive(true);
         input.SetBowHand(leftBow);
+        input.ShowArcherHands();
+        var gripMesh = holdingPose.GetComponentInChildren<SkinnedMeshRenderer>(true);
+        var drawMesh = drawPose.GetComponentInChildren<SkinnedMeshRenderer>(true);
+        Assert.That(gripMesh.sharedMesh.vertexCount, Is.GreaterThan(150));
+        Assert.That(drawMesh.sharedMesh.blendShapeCount, Is.EqualTo(2));
         input.SendMessage("OnApplicationFocus", true);
         Button(left, "isTracked", true);
         Button(right, "isTracked", true);
@@ -235,6 +240,9 @@ public class BowTests
         yield return null;
         Assert.That(bow.IsHeld, Is.True);
         Assert.That(Vector3.Distance(bow.transform.position, holdingPose.position), Is.LessThan(0.0001f));
+        Assert.That(gripMesh.gameObject.activeSelf && drawMesh.gameObject.activeSelf, Is.True);
+        Assert.That(gripMesh.GetBlendShapeWeight(0), Is.EqualTo(100f));
+        Assert.That(Vector3.Distance(gripMesh.transform.position, bow.transform.position), Is.LessThan(.001f));
         Assert.That(Vector3.Dot(bow.transform.up, holdingPose.forward), Is.GreaterThan(0.9999f));
         Assert.That(Vector3.Dot(bow.transform.forward, -holdingPose.up), Is.GreaterThan(0.9999f));
         Button(drawing, "triggerPressed", true);
@@ -248,6 +256,9 @@ public class BowTests
         Assert.That(bow.IsDrawing, Is.True, "Grip is not an equip or release control");
         drawPose.position = bow.RestPosition - bow.transform.forward * 0.7f;
         yield return null;
+        yield return new WaitForSecondsRealtime(.12f);
+        Assert.That(drawMesh.GetBlendShapeWeight(1), Is.EqualTo(100f));
+        Assert.That(Vector3.Distance(drawMesh.transform.position, bow.StringPosition), Is.LessThan(.001f));
         Button(drawing, "triggerPressed", false);
         yield return null;
         yield return null;
@@ -296,6 +307,8 @@ public class BowTests
         Assert.That(bow.IsDrawing, Is.False);
         Assert.That(shots, Is.EqualTo(1));
 
+        Assert.That(drawMesh.gameObject.activeSelf, Is.False);
+        Assert.That(gripMesh.gameObject.activeSelf, Is.True);
         Button(drawing, "isTracked", true);
         drawPose.position = bow.RestPosition;
         yield return null;
