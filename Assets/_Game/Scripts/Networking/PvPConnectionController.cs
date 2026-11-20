@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BowMan.Networking
 {
@@ -20,6 +21,7 @@ namespace BowMan.Networking
         private ArcherRole localRole;
         private bool ignoreStopEvents;
         private int session;
+        private string ownScene;
 
         public ArcherSeatAllocator Seats { get; } = new ArcherSeatAllocator();
         public ConnectionStatus Status { get; private set; } = ConnectionStatus.Offline;
@@ -33,6 +35,24 @@ namespace BowMan.Networking
             networkManager.NetworkConfig.EnableSceneManagement = false;
             networkManager.NetworkConfig.ConnectionApproval = true;
             networkManager.ConnectionApprovalCallback = Approve;
+        }
+
+        // Remembers the scene that owns this session so leaving it can end the session.
+        private void Start()
+        {
+            ownScene = SceneManager.GetActiveScene().name;
+            SceneManager.activeSceneChanged += HandleActiveSceneChanged;
+        }
+
+        // Stops watching scene changes when the network object is destroyed.
+        private void OnDestroy() => SceneManager.activeSceneChanged -= HandleActiveSceneChanged;
+
+        // Ends the session and removes the persistent network object when another scene takes over.
+        private void HandleActiveSceneChanged(Scene previous, Scene next)
+        {
+            if (next.name == ownScene) return;
+            Leave();
+            Destroy(gameObject);
         }
 
         // Listens for connection, transport and shutdown events while enabled.

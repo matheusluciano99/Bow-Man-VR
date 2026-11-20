@@ -558,6 +558,7 @@ GameObject:
   - component: {fileID: 1293801860}
   - component: {fileID: 1293801859}
   - component: {fileID: 1293801858}
+  - component: {fileID: 209870268}
   m_Layer: 0
   m_Name: Local duel
   m_TagString: Untagged
@@ -565,6 +566,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &209870268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293801857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 452f0c722901f514bbcf39afc04353b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BowMan.Menu::BowMan.Menu.ReturnToMenu
 --- !u!114 &1293801858
 MonoBehaviour:
   m_ObjectHideFlags: 0

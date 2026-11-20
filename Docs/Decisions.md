@@ -323,6 +323,18 @@ one PC can connect. Online play therefore depends on UGS availability, the free
 Relay quota and Relay being enabled for the project. Lobby/matchmaking, dedicated
 servers and duel synchronization are outside this choice (#12, #13).
 
+## D025 — The mode menu is the game's entry scene
+
+Start the game on `MainMenu`, where a right-controller ray and trigger choose
+PvE (local duel against the AI) or PvP (online connection). Pointing at world
+panels is the expected VR menu interaction and needs no new package; XR
+Interaction Toolkit would add a dependency that touches the shared rig. The
+menu generator puts MainMenu, LocalDuel and PvPConnectionTest first in the build
+list so scenes can load each other, and other scenes stay after them. Single-scene
+test players are still built explicitly. The left Menu button or Esc returns to
+the menu; leaving the PvP scene ends the session because the network object
+persists across scene loads.
+
 ## Open questions and provisional values
 
 - The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.
