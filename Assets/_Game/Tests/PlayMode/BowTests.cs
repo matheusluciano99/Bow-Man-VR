@@ -232,6 +232,9 @@ public class BowTests
         var gripMesh = holdingPose.GetComponentInChildren<SkinnedMeshRenderer>(true);
         var drawMesh = drawPose.GetComponentInChildren<SkinnedMeshRenderer>(true);
         Assert.That(gripMesh.sharedMesh.vertexCount, Is.GreaterThan(150));
+        var bounds = gripMesh.sharedMesh.bounds;
+        Assert.That(bounds.size.magnitude, Is.InRange(.14f, .4f), "Hand and cuff dimensions in metres");
+        Assert.That(bounds.center.magnitude, Is.LessThan(.14f), "Hand surface near the tracked palm");
         Assert.That(drawMesh.sharedMesh.blendShapeCount, Is.EqualTo(2));
         input.SendMessage("OnApplicationFocus", true);
         Button(left, "isTracked", true);

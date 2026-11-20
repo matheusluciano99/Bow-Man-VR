@@ -54,7 +54,7 @@ public static class ArcherHandBuilder
             var bones = skin.bones;
             var weights = mesh.boneWeights;
             var baked = new Mesh();
-            skin.BakeMesh(baked);
+            skin.BakeMesh(baked, true);
             var positions = baked.vertices;
             var map = new Dictionary<int,int>();
             var selected = new List<int>();
@@ -133,7 +133,7 @@ public static class ArcherHandBuilder
             foreach (var part in source)
             {
                 var baked = new Mesh();
-                part.skin.BakeMesh(baked);
+                part.skin.BakeMesh(baked, true);
                 var v = baked.vertices;
                 var n = baked.normals;
                 foreach (var original in part.selected)
