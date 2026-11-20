@@ -81,7 +81,15 @@ namespace BowMan.Menu
             var path = Path.Combine(Application.streamingAssetsPath, "BowMan-Credits.txt");
             var result = new List<string>();
             var lines = new List<string>();
-            foreach (var paragraph in File.ReadAllText(path).Replace("\r", "").Trim().Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries))
+            string text;
+            try { text = File.ReadAllText(path); }
+            catch (Exception error) when (error is IOException || error is UnauthorizedAccessException)
+            {
+                Debug.LogWarning($"Could not open the bundled credits: {error.Message}");
+                return new[] { "Could not open BowMan-Credits.txt.\nSelect Credits to return to the contributor pages." };
+            }
+            if (string.IsNullOrWhiteSpace(text)) return new[] { "The source notices file is empty." };
+            foreach (var paragraph in text.Replace("\r", "").Trim().Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 foreach (var line in paragraph.Split('\n'))
                 {
