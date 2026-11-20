@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace BowMan
 {
+    [DefaultExecutionOrder(200)]
     public sealed class AIArcher : MonoBehaviour
     {
         [SerializeField, Min(0f)] private float thinkDelay = 0.8f;
@@ -13,6 +14,7 @@ namespace BowMan
         private ArcherHealth opponent;
         private ArrowFlight arrowPrefab;
         private int archerIndex;
+        private OpponentBowAction presentation;
         private bool waiting;
         private float fireAt;
         public int ShotsFired { get; private set; }
@@ -31,6 +33,7 @@ namespace BowMan
             owner = archer;
             opponent = target;
             arrowPrefab = prefab;
+            presentation = GetComponent<OpponentBowAction>();
             ShotsFired = 0;
             flow.Changed += OnFlowChanged;
             OnFlowChanged();
@@ -41,17 +44,28 @@ namespace BowMan
         {
             waiting = flow != null && flow.CanShoot(archerIndex);
             fireAt = Time.time + thinkDelay;
+            if (!waiting) presentation?.Rest();
         }
 
-        // Fires once when ready; locked turns, pending reactions and defeat keep the opponent idle.
+        // Drives the visible nock and draw over the delay already owned by the AI turn.
         private void Update()
+        {
+            if (!waiting || presentation == null) return;
+            var start = owner.transform.position + Vector3.up * 1.4f + owner.transform.forward;
+            var target = opponent.transform.position + Vector3.up * 1.3f;
+            var direction = ArrowBallistics.TryVelocity(start, target, launchSpeed, out var velocity) ? velocity : target - start;
+            presentation.PrepareAI(thinkDelay > 0f ? 1f - (fireAt - Time.time) / thinkDelay : 1f, direction);
+        }
+
+        // Releases once after this frame's final bow and string contacts have been placed.
+        private void LateUpdate()
         {
             if (!waiting || Time.time < fireAt || !flow.CanShoot(archerIndex)) return;
             waiting = false;
             Fire();
         }
 
-        // Aims with bounded error and launches a legal fixed-speed arc through the shared arrow/turn systems.
+        // Aims with bounded error and sends the single physical arrow through the shared turn authority.
         private void Fire()
         {
             Physics.SyncTransforms();
@@ -64,15 +78,23 @@ namespace BowMan
             }
             var error = UnityEngine.Random.insideUnitCircle * aimError;
             point += opponent.transform.right * error.x + Vector3.up * error.y;
-            var start = owner.transform.position + Vector3.up * 1.4f + owner.transform.forward;
+            var start = presentation != null && presentation.IsNocked ? presentation.ArrowTip :
+                owner.transform.position + Vector3.up * 1.4f + owner.transform.forward;
             if (!ArrowBallistics.TryVelocity(start, point, launchSpeed, out var velocity))
                 velocity = (point - start).normalized * launchSpeed;
             var arrow = Instantiate(arrowPrefab, start, Quaternion.identity);
             arrow.transform.SetParent(owner.transform.parent, true);
             arrow.Launch(velocity, owner.transform);
-            if (flow.TryTrackShot(archerIndex, arrow)) ShotsFired++;
+            if (flow.TryTrackShot(archerIndex, arrow))
+            {
+                ShotsFired++;
+                presentation?.Release();
+            }
             else Destroy(arrow.gameObject);
         }
+
+        // Returns the opponent to idle when practice mode suspends the AI.
+        private void OnDisable() => presentation?.Rest();
 
         // Detaches the AI from match notifications when its host is removed.
         private void OnDestroy()

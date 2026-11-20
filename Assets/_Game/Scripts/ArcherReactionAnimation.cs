@@ -10,6 +10,11 @@ namespace BowMan
         private const float ChestRecoveryDuration = 3.6f;
 
         [SerializeField] private AnimationClip standingIdle;
+        [SerializeField] private AnimationClip bowInLeftHand;
+        [SerializeField] private AnimationClip bowInRightHand;
+
+        // Returns the upper-body draw and release recorded for this rig and grip hand.
+        public AnimationClip BowAction(bool left) => left ? bowInLeftHand : bowInRightHand;
         private float idleTime;
         private Transform[] idleArms;
         private Quaternion[] restingArms;
@@ -40,6 +45,11 @@ namespace BowMan
         private Transform woundAnchor;
         private Vector3 woundPoint;
         private Vector3 woundOutward;
+
+        private OpponentBowAction bowPresentation;
+
+        // Attaches the visible opponent's action to the same pose owner as idle and injury.
+        internal void UseBowPresentation(OpponentBowAction presentation) => bowPresentation = presentation;
 
         public bool IsInjured => injured;
 
@@ -153,7 +163,10 @@ namespace BowMan
         // Advances the authored bones and reports completion only after sampling the final frame.
         private void LateUpdate()
         {
-            if (health == null || (health.IsDefeated && !fatalPlayback)) return;
+            bowPresentation?.Restore();
+            if (health == null) return;
+            if (injured || health.IsDefeated) bowPresentation?.Interrupt();
+            if (health.IsDefeated && !fatalPlayback) return;
             if (playing == null)
             {
                 if (!injured && standingIdle != null)
@@ -161,6 +174,7 @@ namespace BowMan
                     idleTime = Mathf.Repeat(idleTime + Time.deltaTime, standingIdle.length);
                     standingIdle.SampleAnimation(gameObject, idleTime);
                     BlendArms(Time.deltaTime);
+                    bowPresentation?.Present();
                     return;
                 }
                 var hold = Hold(region);

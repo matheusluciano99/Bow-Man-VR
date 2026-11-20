@@ -22,6 +22,7 @@ namespace BowMan.Networking
         private readonly ArcherHealth[] actors = new ArcherHealth[2];
         private Transform match;
         private FatalCutaway cutaway;
+        private OpponentBowAction opponentBow;
         private ArrowFlight visualArrow;
         private Vector3 visualOrigin, visualVelocity;
         private float launchedAt;
@@ -84,6 +85,9 @@ namespace BowMan.Networking
                 var go = Instantiate(i == 0 ? firstPrefab : secondPrefab, spawn.position, spawn.rotation, match);
                 actors[i] = go.GetComponent<ArcherHealth>() ?? go.AddComponent<ArcherHealth>();
             }
+            opponentBow = actors[1 - LocalIndex].gameObject.AddComponent<OpponentBowAction>();
+            opponentBow.Bind(bow, arrowPrefab);
+            foreach (var presence in presences) presence.SetMarkersVisible(false);
             var local = actors[LocalIndex];
             foreach (var renderer in local.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
             Flow = match.gameObject.AddComponent<DuelTurnFlow>();
@@ -117,6 +121,9 @@ namespace BowMan.Networking
                 Flow.ReactionRequested -= React;
                 Flow.FatalityRequested -= Fatal;
             }
+            foreach (var presence in presences)
+                if (presence != null && presence.IsSpawned) presence.SetMarkersVisible(!presence.IsOwner);
+            opponentBow = null;
             Flow = null;
             if (match != null) { match.gameObject.SetActive(false); Destroy(match.gameObject); }
             match = null;
@@ -205,6 +212,7 @@ namespace BowMan.Networking
                     Seat.SceneryRpc(round, token, hit.point, arrow.transform.rotation, arrow.SceneryLifetime);
             };
             if (!Flow.TryTrackShot(shooter, arrow)) { Destroy(arrow.gameObject); return; }
+            if (shooter != LocalIndex) opponentBow.Release();
             resolvedImpact = null;
             arrow.GetComponent<ArrowAnatomy>().Resolved += report =>
                 resolvedImpact = JsonUtility.ToJson(ImpactReplay.Capture(actors[1 - shooter], report));
@@ -215,6 +223,7 @@ namespace BowMan.Networking
         public void ShowFlight(int receivedRound, int shot, Vector3 origin, Vector3 velocity)
         {
             if (Flow == null || receivedRound != round || shot != Flow.ShotId || visualArrow != null) return;
+            if (Flow.ActiveArcher != LocalIndex) opponentBow.Release();
             visualArrow = Instantiate(arrowPrefab, origin, Quaternion.LookRotation(velocity), match);
             visualOrigin = origin;
             visualVelocity = velocity;
@@ -280,6 +289,32 @@ namespace BowMan.Networking
         // Allows input only on the local seat's recovered turn and while no release awaits acknowledgment.
         private void GateBow() => bow.SetShotAllowed(!awaitingRelease && Flow.CanShoot(LocalIndex));
 
+        // Captures the owner's actual handedness, string displacement and equipped bow during this turn.
+        internal BowPose LocalBowPose()
+        {
+            var pose = new BowPose { Round = round, Turn = Flow.ShotId, Left = vrInput.BowInLeftHand, Strength = -1f };
+            if (!Flow.CanShoot(LocalIndex) || !bow.IsDrawing) return pose;
+            pose.Strength = bow.DrawStrength;
+            pose.Grip = bow.transform.position;
+            pose.Rotation = bow.transform.rotation;
+            pose.Pull = bow.StringPosition - bow.RestPosition;
+            return pose;
+        }
+
+        // Applies only current, reachable draw samples from the other seat.
+        private void ShowDraw(BowPose pose, int index, Vector3 actor)
+        {
+            if (pose.Round != round || pose.Turn != Flow.ShotId || !Flow.CanShoot(index))
+            {
+                opponentBow.Rest();
+                return;
+            }
+            var rotationLength = Quaternion.Dot(pose.Rotation, pose.Rotation);
+            var valid = pose.Strength >= 0f && pose.Strength <= 1f && (pose.Grip - actor).sqrMagnitude <= 16f &&
+                rotationLength >= 0.99f && rotationLength <= 1.01f && pose.Pull.magnitude <= bow.MaximumDrawDistance + 0.001f;
+            opponentBow.PreparePlayer(pose.Left, valid ? pose.Strength : -1f, pose.Grip, pose.Rotation, pose.Pull);
+        }
+
         // Updates observer flight, controller shortcuts, tracked targets and the two-player match HUD.
         private void Update()
         {
@@ -310,6 +345,7 @@ namespace BowMan.Networking
                 var spawn = spawns.For(presence.Role.Value).position;
                 pos.y = spawn.y;
                 if ((pos - spawn).sqrMagnitude <= 9f) actor.transform.position = pos;
+                if (i != LocalIndex) ShowDraw(presence.Draw, i, actor.transform.position);
             }
             var status = Flow.Phase == DuelPhase.Finished ? (Flow.Winner == LocalIndex ? "VICTORY" : "DEFEAT") :
                 Flow.Phase == DuelPhase.Aiming ? (Flow.CanShoot(LocalIndex) ? "Your turn" : "Opponent aiming") : Flow.Phase.ToString();
