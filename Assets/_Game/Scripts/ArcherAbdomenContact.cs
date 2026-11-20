@@ -10,19 +10,6 @@ namespace BowMan
         private readonly Arm left;
         private readonly Arm right;
 
-        // Deflects the spine in the incoming shot direction during the first fifth of a second.
-        internal void Flinch(BodyImpact hit, float elapsed)
-        {
-            if (elapsed >= 0.22f) return;
-            var up = animator.transform.up;
-            var axis = Vector3.Cross(up, Vector3.ProjectOnPlane(hit.Direction, up).normalized);
-            if (axis.sqrMagnitude < 0.01f) return;
-            var weight = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.055f, elapsed)) *
-                Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(0.055f, 0.22f, elapsed));
-            var spine = animator.GetBoneTransform(HumanBodyBones.Spine);
-            spine.rotation = Quaternion.AngleAxis(7f * weight, axis) * spine.rotation;
-        }
-
         // Caches the forearm and body volumes used to limit live retargeting.
         internal ArcherAbdomenContact(Animator animator, BodyHitRegion[] regions)
         {
