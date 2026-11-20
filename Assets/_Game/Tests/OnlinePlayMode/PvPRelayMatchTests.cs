@@ -40,12 +40,44 @@ public class PvPRelayMatchTests
         var start = owner.TransformPoint(new Vector3(0f, 1.4f, 0.6f));
         Assert.That(ArrowBallistics.TryVelocity(start, target.GetComponent<Collider>().bounds.center,
             bow.MaximumLaunchSpeed, out var velocity), Is.True);
-        bow.transform.rotation = Quaternion.LookRotation(velocity);
+        Release(bow, start, velocity.normalized);
+    }
+
+    // Releases the real bow from the supplied scene position and direction.
+    private static void Release(Bow bow, Vector3 start, Vector3 direction)
+    {
+        bow.transform.rotation = Quaternion.LookRotation(direction);
         bow.transform.position += start - bow.RestPosition;
         bow.SetHeld(true);
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
-        bow.PullTo(bow.RestPosition - velocity.normalized * bow.MaximumDrawDistance);
+        bow.PullTo(bow.RestPosition - direction * bow.MaximumDrawDistance);
         Assert.That(bow.Release(), Is.Not.Null);
+    }
+
+    // Checks turn and health replication for a ground impact and an arrow that flies outside the arena.
+    private static IEnumerator MissesPassTheTurn(PvPDuel duel, Bow bow, bool host, string folder)
+    {
+        for (var shooter = 0; shooter < 2; shooter++)
+        {
+            var flow = duel.Flow;
+            yield return Until(() => flow.CanShoot(shooter), "Turn before the missed shot");
+            var previousShot = flow.ShotId;
+            var ready = Path.Combine(folder, "miss-" + shooter);
+            File.WriteAllText(ready + (host ? "-host" : "-join"), "");
+            yield return Until(() => File.Exists(ready + (host ? "-join" : "-host")), "Both peers ready for miss");
+            if (host == (shooter == 0))
+            {
+                var actor = duel.Archer(shooter).transform;
+                var start = actor.TransformPoint(new Vector3(0f, 1.4f, 0.6f));
+                var direction = shooter == 0 ? (actor.forward + Vector3.down).normalized : actor.right;
+                Release(bow, start, direction);
+            }
+            yield return Until(() => flow.ShotId == previousShot + 1 && flow.CanShoot(1 - shooter),
+                "One turn handoff after the missed shot");
+            Assert.That(duel.Archer(0).CurrentHealth, Is.EqualTo(100));
+            Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
+            Assert.That(Object.FindAnyObjectByType<FatalCutaway>().IsVisible, Is.False);
+        }
     }
 
     // Runs the full inventory across real Relay turns and compares each peer's recorded outcome.
@@ -222,7 +254,11 @@ public class PvPRelayMatchTests
             yield return Until(() => duel.Flow != null && duel.Round == firstRound + 2, "Fresh round after rejoin");
             Assert.That(duel.Flow.CanShoot(0), Is.True);
             Assert.That(duel.Archer(1).CurrentHealth, Is.EqualTo(100));
-            if (Argument("-duelTestMatrix") == "all") yield return RegionMatrix(duel, bow, host, folder);
+            if (Argument("-duelTestMatrix") == "all")
+            {
+                yield return MissesPassTheTurn(duel, bow, host, folder);
+                yield return RegionMatrix(duel, bow, host, folder);
+            }
             if (host)
             {
                 yield return Until(() => File.Exists(Path.Combine(folder, "join-reentered")), "Peer rejoined");
