@@ -18,6 +18,7 @@ namespace BowMan
         [SerializeField] private ArrowFlight arrowPrefab;
         [SerializeField] private TextMesh feedback;
         private Transform matchRoot;
+        private FatalCutaway cutaway;
         private InputAction restart;
         private InputAction switchHand;
         private InputAction desktop;
@@ -35,6 +36,8 @@ namespace BowMan
                 head == null || feedback == null)
                 throw new InvalidOperationException("The local duel scene is missing a required character, bow, view or feedback reference.");
             Flow = gameObject.AddComponent<DuelTurnFlow>();
+            cutaway = head.gameObject.AddComponent<FatalCutaway>();
+            Flow.FatalityRequested += OnFatality;
             Flow.Changed += OnFlowChanged;
             bow.Fired += OnFired;
             restart = new InputAction("Restart match", InputActionType.Button, "<XRController>{RightHand}/primaryButton");
@@ -52,6 +55,7 @@ namespace BowMan
         public void RestartMatch()
         {
             bow.SetShotAllowed(false);
+            cutaway.Clear();
             injuryView.ResetView();
             if (matchRoot != null)
             {
@@ -88,6 +92,9 @@ namespace BowMan
             if (!Flow.TryTrackShot(0, arrow)) Destroy(arrow.gameObject);
         }
 
+        // Presents the shared anatomy report after the duel confirms a fatal arrow.
+        private void OnFatality(int target, AnatomicalImpact report) => cutaway.Show(report);
+
         // Cancels the player's nock whenever the duel leaves their legal aiming turn.
         private void OnFlowChanged() => bow.SetShotAllowed(Flow.CanShoot(0));
 
@@ -111,6 +118,11 @@ namespace BowMan
             }
             var status = Flow.Phase == DuelPhase.Finished ? (Flow.Winner == 0 ? "VICTORY" : "DEFEAT") :
                 Flow.CanShoot(0) ? "Your turn" : Flow.Phase == DuelPhase.Aiming ? "Opponent aiming" : Flow.Phase.ToString();
+            if (cutaway.IsVisible)
+            {
+                feedback.text = $"{status}     A / R: restart\n{cutaway.Caption}";
+                return;
+            }
             feedback.text = $"{status}     You {LocalArcher.CurrentHealth}  |  Opponent {Opponent.CurrentHealth}\n" +
                 $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}\n" +
                 (Flow.Phase == DuelPhase.Finished ? "A / R: restart" :
@@ -125,7 +137,12 @@ namespace BowMan
             switchHand?.Dispose();
             desktop?.Dispose();
             if (bow != null) bow.Fired -= OnFired;
-            if (Flow != null) Flow.Changed -= OnFlowChanged;
+            if (Flow != null)
+            {
+                Flow.Changed -= OnFlowChanged;
+                Flow.FatalityRequested -= OnFatality;
+            }
+            if (cutaway != null) Destroy(cutaway);
             if (injuryView != null) injuryView.ResetView();
             if (matchRoot != null) Destroy(matchRoot.gameObject);
         }

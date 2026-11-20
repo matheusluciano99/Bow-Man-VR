@@ -285,15 +285,17 @@ Use GitHub's Assignees field to record task responsibility.
 - Present internal injury only after a confirmed fatal arrow hit, as a brief
   X-ray finishing sequence inside the defeated archer. Surviving hits must not
   trigger this view; their normal blood and regional reactions still apply.
-  Highlight the actual arrow path and affected anatomy; duration and rendering
-  treatment remain provisional until VR review.
+  The local duel shows a stereo cutaway with the recorded path, contacted
+  organs and fractured rig bones. Its three-second duration and headset
+  readability remain provisional until VR review.
 - The shared arrow emits blood at the actual wound and follows its hit volume.
   Spilled droplets move in world space. See [wound blood](Docs/BloodEffects.md)
   for rebuild controls and provisional visual settings.
 - Sniper Elite is the reference for anatomical hit visualization and damage
   feedback. Organ analysis uses fitted BodyParts3D tissue and the actual finite
-  arrow path; see [Docs/Anatomy.md](Docs/Anatomy.md). Bone analysis and X-ray
-  rendering retain their separate tasks. The duel publishes `FatalityRequested`
+  arrow path; see [Docs/Anatomy.md](Docs/Anatomy.md). Bone contacts use the
+  animated game skeleton. A provisional 75% draw fractures contacted bones.
+  The duel publishes `FatalityRequested`
   only for its lethal arrow, after health confirms death.
 
 ## Body-specific injury sequences
@@ -366,8 +368,7 @@ Use GitHub's Assignees field to record task responsibility.
 - Exact per-model hitbox dimensions, calibrated from the region boundaries in
   the injury table and reviewed on the rigged archers.
 - Damage values and the gameplay effects of organ injuries and broken bones.
-- How to present internal injuries in VR, including whether to use an overlay,
-  an X-ray view, or another approach.
+- Duration, scale, contrast and headset readability of the fatal X-ray close-up.
 - Calibration and comfort of the agreed first-person animated-eye viewpoint
   during knockdown and recovery on the target headset.
 
