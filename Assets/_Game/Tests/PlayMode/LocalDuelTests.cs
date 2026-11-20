@@ -76,9 +76,9 @@ public class LocalDuelTests
         return arrow;
     }
 
-    // Moves the string under manual control, holds tension, then cancels before release.
+    // Checks both sides of the stretch threshold, a held full draw, easing off and cancellation.
     [UnityTest]
-    public IEnumerator DrawCreakFollowsMotionAndCancelStaysQuiet()
+    public IEnumerator StretchStartsAboveSixtyPercentAndStopsWhenTheStringRelaxes()
     {
         Time.timeScale = 1f;
         Find<VRBowInput>().enabled = false;
@@ -90,18 +90,28 @@ public class LocalDuelTests
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
         yield return null;
         Assert.That(sounds.transform.Find("Nock"), Is.Not.Null);
-        var started = Time.time;
-        do
-        {
-            var distance = Mathf.Min(0.40f, (Time.time - started) * 2f);
-            bow.PullTo(bow.RestPosition - bow.transform.forward * distance);
-            yield return null;
-        } while (Time.time - started < 0.2f);
-        Assert.That(creak.volume, Is.GreaterThan(0.02f));
+        bow.PullTo(bow.RestPosition - bow.transform.forward * (bow.MaximumDrawDistance * 0.59f));
+        yield return null;
+        Assert.That(creak.isPlaying, Is.False);
+        bow.PullTo(bow.RestPosition - bow.transform.forward * (bow.MaximumDrawDistance * 0.61f));
+        yield return new WaitForSeconds(0.16f);
+        Assert.That(creak.isPlaying, Is.True);
+        var onsetGain = creak.volume;
+        var onsetPitch = creak.pitch;
+        Assert.That(onsetGain, Is.GreaterThan(0.05f));
+        bow.PullTo(bow.RestPosition - bow.transform.forward * bow.MaximumDrawDistance);
         yield return new WaitForSeconds(0.3f);
-        Assert.That(creak.volume, Is.Zero);
+        Assert.That(creak.volume, Is.GreaterThan(onsetGain * 2f));
+        Assert.That(creak.pitch, Is.GreaterThan(onsetPitch));
+        bow.PullTo(bow.RestPosition - bow.transform.forward * (bow.MaximumDrawDistance * 0.58f));
+        yield return null;
+        Assert.That(creak.isPlaying, Is.False);
+        bow.PullTo(bow.RestPosition - bow.transform.forward * bow.MaximumDrawDistance);
+        yield return null;
+        Assert.That(creak.isPlaying, Is.True);
         bow.CancelDraw();
         yield return null;
+        Assert.That(creak.isPlaying, Is.False);
         Assert.That(sounds.transform.Find("Release"), Is.Null);
         Assert.That(Find<LocalDuel>().Flow.CanShoot(0), Is.True);
     }

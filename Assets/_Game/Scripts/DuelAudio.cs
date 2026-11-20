@@ -7,6 +7,7 @@ namespace BowMan
 
     public sealed class DuelAudio : MonoBehaviour
     {
+        private const float StretchThreshold = 0.60f;
         private const string VolumeKey = "BowMan.DuelVolume";
         private Bow bow;
         private OpponentBowAction opponent;
@@ -40,7 +41,6 @@ namespace BowMan
             Breathing(local, 0f);
             Breathing(remote, 0.43f);
             creak = Emitter(transform, Clip("Draw"), 0f, true);
-            creak.Play();
             AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey, 0.75f));
             volume = new InputAction("Duel volume", InputActionType.Button, "<XRController>{LeftHand}/primaryButton");
             volume.AddBinding("<Keyboard>/v");
@@ -142,11 +142,26 @@ namespace BowMan
             var draw = bow.IsDrawing ? bow.DrawStrength : opponent.DrawStrength;
             var position = bow.IsDrawing ? bow.StringPosition : opponent.StringPoint;
             if (drawing && previousDraw < 0f) OneShot(nock, position, 0.52f);
-            var speed = drawing && previousDraw >= 0f ? Mathf.Abs(draw - previousDraw) / Mathf.Max(Time.deltaTime, 0.001f) : 0f;
             creak.transform.position = position;
-            creak.pitch = Mathf.Lerp(0.75f, 1.2f, draw);
-            creak.volume = Mathf.MoveTowards(creak.volume, 0.55f * Mathf.Clamp01(speed * 2f), Time.deltaTime * 4f);
+            UpdateStretch(drawing ? draw : 0f);
             previousDraw = drawing ? draw : -1f;
+        }
+
+        // Starts the recording above the draw threshold and keeps a softer creak under steady tension.
+        private void UpdateStretch(float draw)
+        {
+            if (draw <= StretchThreshold)
+            {
+                if (creak.isPlaying) creak.Stop();
+                creak.volume = 0f;
+                return;
+            }
+            var tension = Mathf.InverseLerp(StretchThreshold, 1f, draw);
+            var speed = previousDraw < 0f ? 0f : Mathf.Abs(draw - previousDraw) / Mathf.Max(Time.deltaTime, 0.001f);
+            var gain = Mathf.Lerp(0.10f, 0.32f, tension) + 0.18f * Mathf.Clamp01(speed);
+            creak.pitch = Mathf.Lerp(0.90f, 1.18f, tension);
+            creak.volume = Mathf.MoveTowards(creak.volume, gain, 4f * Time.deltaTime);
+            if (!creak.isPlaying) creak.Play();
         }
 
         // Disconnects from the reused local turn authority as soon as its old round is disabled.

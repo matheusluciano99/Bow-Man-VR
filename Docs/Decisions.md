@@ -358,7 +358,7 @@ Sample the visible opponent’s recorded bow action from the AI turn clock in Pv
 
 ## Duel sound
 
-Use recorded spatial cues for the two archers and their equipment. Tie the draw creak to string movement so holding a steady aim quiets it. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.
+Use recorded spatial cues for the two archers and their equipment. Start the string creak above 60% of maximum draw. Increase pitch and volume toward full draw, with a softer sustained sound while the player holds tension. Falling back to 60% or below, cancelling or releasing stops the stretch cue. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.
 
 ## Open questions and provisional values
 

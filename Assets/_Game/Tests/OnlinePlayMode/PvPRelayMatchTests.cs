@@ -95,6 +95,8 @@ public class PvPRelayMatchTests
             var rig = archer.GetComponentInChildren<Animator>();
             var equipment = archer.transform.Find("Opponent bow");
             yield return Until(() => action.IsNocked, "Remote arrow on the string");
+            var creak = Object.FindAnyObjectByType<DuelAudio>().transform.Find("Draw").GetComponent<AudioSource>();
+            Assert.That(creak.isPlaying, Is.False, "Resting remote nock stays quiet");
             var initial = equipment.InverseTransformPoint(action.StringPoint);
             File.WriteAllText(ready + "-nock", "");
             yield return Until(() => Vector3.Distance(initial, equipment.InverseTransformPoint(action.StringPoint)) > 0.45f,
@@ -104,8 +106,10 @@ public class PvPRelayMatchTests
             yield return Until(() => Vector3.Distance((thumb.position + index.position) * 0.5f, action.StringPoint) < 0.045f,
                 "Remote drawing fingers meet the string", 3f);
             Assert.That(equipment.GetComponentsInChildren<ArrowFlight>(true), Is.Empty);
+            yield return Until(() => creak.isPlaying && creak.volume > 0.05f, "Remote bow sounds under tension");
             File.WriteAllText(ready + "-pull", "");
             yield return Until(() => !action.IsNocked, "Remote cancellation");
+            yield return Until(() => !creak.isPlaying, "Remote stretch stops on cancellation");
             File.WriteAllText(ready + "-cancel", "");
         }
     }
