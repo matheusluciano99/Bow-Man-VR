@@ -171,3 +171,9 @@ A lethal shoulder arrow plays Adobe Mixamo’s **Shoulder Hit And Fall** from im
 ### Standing wrist support
 
 The hand reactions use Hamada’s recorded opposite-hand wrist guard and finger extension from the bracing hand in Adobe Mixamo’s **Getting Up**. The full Humanoid body take, conversion credit and license are in [Eyes, JAPAN attribution](../../Assets/ThirdParty/EyesJapan/Source.md).
+
+## Playable arrow
+
+The shaft and feather geometry comes from count_zero’s English Archer and keeps the equipment texture atlas and UVs. The source model and credit are recorded in the [English Archer attribution](../../Assets/ThirdParty/EnglishArcher/ATTRIBUTION.txt). The game adds its own faceted iron head and notched horn nock. Blender can regenerate the textured mesh from the retained FBX by running `SourceAssets/EnglishArcher/ExportArrow.py` in background mode.
+
+The three meshes are children of the existing TestArrow prefab. Its root is the impact tip and the nock meets the string at local Z −0.70 m. The bow, AI and online replica use that same prefab.

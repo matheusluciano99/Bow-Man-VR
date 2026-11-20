@@ -19,6 +19,44 @@ public class ArrowAttachmentTests
         yield return null;
     }
 
+#if UNITY_EDITOR
+    // Runs the shared art through resting nock, draw, flight and attachment using the playable bow prefab.
+    [UnityTest]
+    public IEnumerator PlayableArrowKeepsTheNockOnTheStringAndTheTipAtImpact()
+    {
+        body = new GameObject("Arrow art test");
+        body.transform.position = new Vector3(500f, 500f, 500f);
+        var bow = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/_Game/Prefabs/Bow.prefab"), body.transform).GetComponent<Bow>();
+        bow.SetHeld(true);
+        Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
+        var arrow = bow.GetComponentInChildren<ArrowFlight>();
+        arrowObject = arrow.gameObject;
+        var nock = arrow.transform.Find("Nock").GetComponent<MeshFilter>();
+        var tip = arrow.transform.Find("Tip").GetComponent<MeshFilter>();
+        var tipZ = tip.sharedMesh.bounds.max.z;
+        var tail = Vector3.forward * nock.sharedMesh.bounds.min.z;
+        Assert.That(tipZ, Is.EqualTo(0f).Within(0.001f));
+        Assert.That(Vector3.Distance(nock.transform.TransformPoint(tail), bow.RestPosition), Is.LessThan(0.001f));
+        var drawn = bow.RestPosition - bow.transform.forward * bow.MaximumDrawDistance;
+        bow.PullTo(drawn);
+        bow.RefreshVisuals();
+        Assert.That(Vector3.Distance(nock.transform.TransformPoint(tail), drawn), Is.LessThan(0.001f));
+        var target = new GameObject("Struck volume");
+        target.transform.SetParent(body.transform);
+        target.transform.position = arrow.transform.position + bow.transform.forward;
+        target.AddComponent<BoxCollider>().size = Vector3.one * 0.6f;
+        target.AddComponent<BodyHitRegion>().Configure(BodyRegion.Chest);
+        BodyImpact hit = default;
+        arrow.BodyHit += impact => hit = impact;
+        Assert.That(bow.Release(), Is.SameAs(arrow));
+        for (var i = 0; i < 12 && arrow.transform.parent == null; i++) yield return new WaitForFixedUpdate();
+        Assert.That(arrow.transform.parent, Is.EqualTo(target.transform));
+        Assert.That(Vector3.Distance(tip.transform.position, hit.PathEnd), Is.LessThan(0.001f));
+        Assert.That(arrow.GetComponentsInChildren<MeshRenderer>().Length, Is.EqualTo(3));
+    }
+#endif
+
     // Preserves the entry anchor, penetrated geometry and rotation through fall, kneel and recovery transforms.
     [UnityTest]
     public IEnumerator BodyArrowFollowsTheExactLocalImpactThroughPoseChanges()
