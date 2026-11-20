@@ -873,6 +873,133 @@ public static class MotionInjuryBuilder
         wrist.rotation = orientation;
     }
 
+    // Bakes a recorded flinch and a standing reach, hold and release for the struck side on each rig.
+    public static void RebuildStandingShoulder(BodyRegion side)
+    {
+        var standingTake = ImportMotion("Shoulder Rubbing");
+        var left = side == BodyRegion.LeftShoulder;
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var path = $"Assets/_Game/Prefabs/Characters/{name}.prefab";
+            var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            try
+            {
+                var rig = root.GetComponentInChildren<Animator>();
+                var bones = HumanoidBones(rig);
+                var spine = rig.GetBoneTransform(HumanBodyBones.Spine);
+                var upper = bones.Where(b => b.IsChildOf(spine)).ToArray();
+                var stance = bones.Where(b => !b.IsChildOf(spine)).ToArray();
+                var positions = bones.Select(b => b.localPosition).ToArray();
+                var rotations = bones.Select(b => b.localRotation).ToArray();
+                var stancePositions = stance.Select(b => b.localPosition).ToArray();
+                var stanceRotations = stance.Select(b => b.localRotation).ToArray();
+                var neutral = upper.Select(b => b.localRotation).ToArray();
+                var world = bones.Select(b => b.rotation).ToArray();
+                var opposite = OppositeBoneIndices(rig, bones);
+                var hips = rig.GetBoneTransform(HumanBodyBones.Hips);
+                var hipStart = hips.position;
+                var modelPosition = rig.transform.localPosition;
+                var modelRotation = rig.transform.localRotation;
+                var hit = root.GetComponent<ArcherReactionAnimation>().FatalEntry(side);
+                var regions = root.GetComponentsInChildren<BodyHitRegion>();
+                var core = CoreVolumes(regions);
+                var forearms = new[] {
+                    ForearmVolumes(regions, rig.GetBoneTransform(HumanBodyBones.LeftLowerArm), rig.GetBoneTransform(HumanBodyBones.LeftHand)),
+                    ForearmVolumes(regions, rig.GetBoneTransform(HumanBodyBones.RightLowerArm), rig.GetBoneTransform(HumanBodyBones.RightHand))
+                };
+
+                foreach (var volume in core.OfType<BoxCollider>())
+                    volume.size += Vector3.one * 0.008f;
+                var torso = regions.Single(r => r.Region == BodyRegion.Chest).transform;
+                var upperArm = left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm;
+                var lowerArm = left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm;
+                var hand = left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand;
+                var wrist = rig.GetBoneTransform(hand);
+                var knuckle = rig.GetBoneTransform(left ? HumanBodyBones.RightMiddleProximal : HumanBodyBones.LeftMiddleProximal);
+                var cap = rig.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+                var up = root.transform.up;
+                var chest = rig.GetBoneTransform(HumanBodyBones.UpperChest);
+                var fingertip = rig.GetBoneTransform(left ? HumanBodyBones.RightMiddleDistal : HumanBodyBones.LeftMiddleDistal);
+                var clavicle = rig.GetBoneTransform(left ? HumanBodyBones.RightShoulder : HumanBodyBones.LeftShoulder);
+                var impactPose = new Quaternion[upper.Length];
+                const float grasp = 1f;
+                const float releaseStart = 3f;
+                const float finish = 4f;
+
+                // The rigs have different forearm lengths and shoulder widths.
+                var elbowOutward = name == "EnglishArcher" ? 2.5f : 1.5f;
+                var elbowDownward = name == "EnglishArcher" ? -0.25f : 0.25f;
+
+                // Joins the recorded flinch to a standing hand reach, hold and release sampled on the same timeline.
+                void StandingPose(float time)
+                {
+                    Restore(bones, positions, rotations);
+                    var blend = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.15f, 0.60f, time));
+                    if (blend < 1f)
+                    {
+                        hit.SampleAnimation(root, time);
+                        for (var i = 0; i < upper.Length; i++) impactPose[i] = upper[i].localRotation;
+                    }
+                    Restore(bones, positions, rotations);
+                    Sample(rig, standingTake, time, modelPosition, modelRotation);
+                    if (left) MirrorBody(root.transform, hips, hipStart, bones, positions, rotations, world, opposite);
+                    Restore(stance, stancePositions, stanceRotations);
+                    var rest = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(3.55f, finish, time));
+                    for (var i = 0; i < upper.Length; i++)
+                    {
+                        if (blend < 1f) upper[i].localRotation = Quaternion.Slerp(impactPose[i], upper[i].localRotation, blend);
+                        upper[i].localRotation = Quaternion.Slerp(upper[i].localRotation, neutral[i], rest);
+                    }
+                    var reach = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.38f, grasp, time)) *
+                        (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(releaseStart, 3.72f, time)));
+                    chest.rotation = Quaternion.AngleAxis((left ? 18f : -18f) * reach, up) * chest.rotation;
+                    clavicle.rotation = Quaternion.AngleAxis((left ? -48f : 48f) * reach, up) * clavicle.rotation;
+                    var front = torso.forward;
+                    var vertical = torso.up;
+                    var outward = torso.right * (left ? -1f : 1f);
+                    var turn = Quaternion.Slerp(Quaternion.identity,
+                        Quaternion.FromToRotation(fingertip.position - wrist.position, outward * 0.60f - vertical * 0.95f - front * 1.50f), reach);
+                    var handRotation = turn * wrist.rotation;
+                    var capContact = cap.position + front * 0.025f + vertical * 0.085f + outward * 0.05f;
+                    var wristTarget = capContact - turn * (knuckle.position - wrist.position) * 0.5f;
+                    var hint = rig.GetBoneTransform(lowerArm).position - rig.GetBoneTransform(upperArm).position;
+                    var target = Vector3.Lerp(wrist.position, wristTarget, reach) + front * (0.22f * Mathf.Sin(Mathf.PI * reach));
+                    hint = Vector3.Lerp(hint, front - outward * elbowOutward - vertical * elbowDownward, reach);
+                    var support = forearms[left ? 1 : 0];
+                    for (var pass = 0; pass < 12; pass++)
+                    {
+                        ArcherLimbIK.Solve(rig, upperArm, lowerArm, hand, target, hint);
+                        wrist.rotation = handRotation;
+                        var deepest = ArcherLimbIK.DeepestOverlap(support, core, out _);
+                        if (deepest < 0.0001f) break;
+                        target += front * Mathf.Min(deepest * 1.4f, 0.035f);
+                    }
+                    ArcherLimbIK.ClearForearm(rig, left, forearms[left ? 0 : 1], core, 14);
+                    if (time >= finish || time <= 0f) Restore(bones, positions, rotations);
+                }
+
+                var entry = Record(root, upper, grasp, StandingPose);
+                var hold = Record(root, upper, releaseStart - grasp, time => StandingPose(grasp + time));
+                var recovery = Record(root, upper, finish - releaseStart, time => StandingPose(releaseStart + time));
+                var folder = $"Assets/_Game/Animations/Injuries/{name}/{side}";
+                entry.name = side + "_Entry";
+                hold.name = side + "_Hold";
+                recovery.name = side + "_Recovery";
+                entry = InjuryAnimationBuilder.SaveClip(entry, folder + "_Entry.anim");
+                hold = InjuryAnimationBuilder.SaveClip(hold, folder + "_Hold.anim");
+                recovery = InjuryAnimationBuilder.SaveClip(recovery, folder + "_Recovery.anim");
+                var prefab = PrefabUtility.LoadPrefabContents(path);
+                try
+                {
+                    prefab.GetComponent<ArcherReactionAnimation>().SetSequence(side, entry, recovery, hold);
+                    PrefabUtility.SaveAsPrefabAsset(prefab, path);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(prefab); }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+    }
+
     // Bakes the region's own fall timing and head posture onto each target skeleton.
     private static void RebuildFall(BodyRegion region, float sourceStart, float duration, float speed, AnimationClip source = null)
     {

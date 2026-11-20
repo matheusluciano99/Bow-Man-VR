@@ -108,7 +108,7 @@ namespace BowMan
         }
 
         // Finds the deepest penetration and its separating direction using the current bone poses.
-        internal static float DeepestOverlap(Collider[] armVolumes, Collider[] bodyVolumes, out Vector3 away)
+        public static float DeepestOverlap(Collider[] armVolumes, Collider[] bodyVolumes, out Vector3 away)
         {
             var deepest = 0f;
             away = Vector3.zero;

@@ -127,7 +127,15 @@ shoulder hits. **Shoulder Rubbing** has a continuous standing reach, rub, and
 release. It has no visible impact flinch. Neither recording supplies the
 standing, surviving reaction from first impact through the wound hold.
 The original FBXs are in the same Mixamo download cache. Full-speed review
-videos are in `Artifacts/PRReview/CapturedShoulders/`. The mirrored reach and final playback still need visual review in the duel.
+videos are in `Artifacts/PRReview/CapturedShoulders/`. The fitted fatal fall passed visual review in the Unity injury scene. The standing reaction was rejected and remains in review.
+
+The revised standing trial combines the impact from **Shoulder Hit And Fall**
+with the standing reach and release in **Shoulder Rubbing**. The three segments
+share the same sample at each transition. The rig-specific fit keeps the
+supporting palm at the shoulder cap and gives the forearm clearance in front of
+the torso. The unchanged Mixamo export for **Shoulder Rubbing** has SHA-256
+`82b9811c324dd7e26b8cd2e32d3f4ca564fe4b0d80ed1435c8c132da578fd1d8`.
+
 
 ## Coverage against the agreed reactions
 
