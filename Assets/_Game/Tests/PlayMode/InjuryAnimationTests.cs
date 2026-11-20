@@ -710,17 +710,17 @@ public class InjuryAnimationTests
         Assert.That(head.position.y - target.transform.position.y, Is.LessThan(0.4f));
     }
 
-    // Resolves a lethal chest hit once, finishes the matching collapse and preserves the actual embedded tip.
+    // Resolves lethal chest and pelvic hits once, finishes the matching collapse and preserves the embedded tip.
     [UnityTest]
-    public IEnumerator FatalChestHitEndsOnceAndCollapsesWithoutRecovery()
+    public IEnumerator FatalGroundedHitsEndOnceAndCollapseWithoutRecovery()
     {
         var originalScale = Time.timeScale;
         Time.timeScale = 4f;
         try
         {
             foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+            foreach (var region in new[] { BodyRegion.Chest, BodyRegion.Pelvis })
             {
-                const BodyRegion region = BodyRegion.Chest;
                 var flow = BodyShot(out var target, out var arrow, region, name);
                 target.TakeDamage(75);
                 var results = 0;
@@ -751,6 +751,133 @@ public class InjuryAnimationTests
             }
         }
         finally { Time.timeScale = originalScale; }
+    }
+
+    // Measures visible contact near a supported joint rather than treating its bone origin as the skin surface.
+    private static float ContactFloor(GameObject root, Vector3 joint, bool seat = false)
+    {
+        var floor = float.PositiveInfinity;
+        var radius = seat ? 0.25f : 0.18f;
+        var mesh = new Mesh();
+        try
+        {
+            foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                skin.BakeMesh(mesh, true);
+                foreach (var vertex in mesh.vertices)
+                {
+                    var point = skin.transform.TransformPoint(vertex);
+                    var delta = seat ? Vector3.ProjectOnPlane(point - joint, Vector3.up) : point - joint;
+                    if (delta.sqrMagnitude < radius * radius) floor = Mathf.Min(floor, point.y);
+                }
+                mesh.Clear();
+            }
+            return floor;
+        }
+        finally { Object.DestroyImmediate(mesh); }
+    }
+
+    // Measures the anatomical palm plane independently of the hand bone's imported local axes.
+    private static Vector3 PalmNormal(Animator animator, bool left)
+    {
+        var hand = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+        var middle = animator.GetBoneTransform(left ? HumanBodyBones.LeftMiddleProximal : HumanBodyBones.RightMiddleProximal);
+        var index = animator.GetBoneTransform(left ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal);
+        var little = animator.GetBoneTransform(left ? HumanBodyBones.LeftLittleProximal : HumanBodyBones.RightLittleProximal);
+        return Vector3.Cross(middle.position - hand.position, index.position - little.position).normalized * (left ? 1f : -1f);
+    }
+
+    // Requires a visible supported seat, both palms behind the hips and a continuous return to standing.
+    [Test]
+    public void PelvisClipsSitWithBothHandsBehindOnBothModels()
+    {
+        foreach (var name in new[] { "EnglishArcher", "ErikaArcher" })
+        {
+            var root = Character(name);
+            var actor = root.GetComponent<ArcherReactionAnimation>();
+            var a = root.GetComponentInChildren<Animator>();
+            var hips = a.GetBoneTransform(HumanBodyBones.Hips);
+            var head = a.GetBoneTransform(HumanBodyBones.Head);
+            var standing = head.position;
+            Assert.That(actor.Supports(BodyRegion.Pelvis), Is.True);
+            var entry = actor.Entry(BodyRegion.Pelvis);
+            Assert.That(entry, Is.Not.SameAs(actor.Entry(BodyRegion.Abdomen)));
+            for (var frame = 0; frame <= 81; frame++)
+            {
+                entry.SampleAnimation(root, entry.length * frame / 81f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f), name + " frame " + frame);
+            }
+            Assert.That(hips.position.y, Is.LessThan(0.3f));
+            Assert.That(ContactFloor(root, hips.position, true), Is.InRange(-0.006f, 0.015f));
+            var hands = new[] { a.GetBoneTransform(HumanBodyBones.LeftHand), a.GetBoneTransform(HumanBodyBones.RightHand) };
+            var resting = hands.Select(t => t.position).ToArray();
+            for (var i = 0; i < hands.Length; i++)
+            {
+                Assert.That(hands[i].position.z, Is.LessThan(hips.position.z - 0.08f));
+                Assert.That(ContactFloor(root, hands[i].position), Is.InRange(-0.006f, 0.01f));
+                Assert.That(PalmNormal(a, i == 0).y, Is.GreaterThan(0.95f));
+            }
+            Assert.That(a.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position.y, Is.GreaterThan(hips.position.y + 0.1f));
+            Assert.That(a.GetBoneTransform(HumanBodyBones.RightLowerLeg).position.y, Is.GreaterThan(hips.position.y + 0.1f));
+            var recovery = actor.Recovery(BodyRegion.Pelvis);
+            recovery.SampleAnimation(root, 0f);
+            for (var i = 0; i < hands.Length; i++) Assert.That(Vector3.Distance(hands[i].position, resting[i]), Is.LessThan(0.001f));
+            recovery.SampleAnimation(root, 0.65f);
+            var leadBoot = a.GetBoneTransform(HumanBodyBones.LeftFoot);
+            var planted = leadBoot.position;
+            Assert.That(a.GetBoneTransform(HumanBodyBones.RightLowerLeg).position.y, Is.LessThan(0.15f));
+            for (var frame = 1; frame <= 45; frame++)
+            {
+                recovery.SampleAnimation(root, 0.65f + frame / 60f);
+                Assert.That(Vector3.Distance(leadBoot.position, planted), Is.LessThan(0.01f), name + " lead boot");
+            }
+            for (var frame = 0; frame <= 81; frame++)
+            {
+                recovery.SampleAnimation(root, recovery.length * frame / 81f);
+                Assert.That(Floor(root), Is.GreaterThan(-0.006f));
+            }
+            Assert.That(Vector3.Distance(head.position, standing), Is.LessThan(0.001f));
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    // Holds the actual pelvic impact in a supported seat before a completed recovery grants the turn.
+    [UnityTest]
+    public IEnumerator PelvisHitWaitsForTheFullSeatedHoldAndRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.Pelvis);
+        var animation = target.GetComponent<ArcherReactionAnimation>();
+        var landed = -1f;
+        var recoveryStarted = -1f;
+        flow.Changed += () =>
+        {
+            if (flow.Phase == DuelPhase.Holding) landed = Time.time;
+            if (flow.Phase == DuelPhase.Recovering) recoveryStarted = Time.time;
+        };
+        yield return new WaitForSeconds(animation.Entry(BodyRegion.Pelvis).length + 0.15f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Pelvis));
+        yield return new WaitForSeconds(3f + animation.Recovery(BodyRegion.Pelvis).length);
+        Assert.That(recoveryStarted - landed, Is.GreaterThanOrEqualTo(2.995f));
+        Assert.That(flow.CanShoot(1), Is.True);
+        Assert.That(target.CurrentHealth, Is.EqualTo(75));
+    }
+
+    // Interrupts the supported seated get-up with a full fatal collapse.
+    [UnityTest]
+    public IEnumerator DeathInterruptsPelvisRecovery()
+    {
+        var flow = BodyShot(out var target, out var arrow, BodyRegion.Pelvis);
+        var entry = target.GetComponent<ArcherReactionAnimation>().Entry(BodyRegion.Pelvis);
+        yield return new WaitForSeconds(entry.length + 3.2f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
+        target.TakeDamage(100);
+        var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
+        yield return new WaitForSeconds(1f);
+        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Finished));
+        Assert.That(flow.CanShoot(1), Is.False);
+        Assert.That(head.position.y - target.transform.position.y, Is.LessThan(0.4f));
     }
 }
 #endif
