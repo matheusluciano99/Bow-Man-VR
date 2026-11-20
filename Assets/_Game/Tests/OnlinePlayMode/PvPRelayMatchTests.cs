@@ -229,6 +229,7 @@ public class PvPRelayMatchTests
             yield return SameEnvironment(duel, folder, role);
             var bow = Object.FindAnyObjectByType<Bow>();
             var hits = new List<string>();
+            var sounds = Object.FindAnyObjectByType<DuelAudio>();
             duel.Flow.ReactionRequested += (target, impact, lethal, token) =>
             {
                 var report = duel.Archer(target).GetComponentsInChildren<ArrowAnatomy>()
@@ -262,6 +263,13 @@ public class PvPRelayMatchTests
                 }
                 yield return Until(() => hits.Count == shot + 1, "Replicated wound " + shot);
                 Assert.That(hits.Last(), Does.Contain("/" + regions[shot] + "/"));
+                var cues = sounds.GetComponentsInChildren<AudioSource>();
+                Assert.That(cues.Count(c => c.clip.name == "Body"), Is.EqualTo(1), "One contact on " + role);
+                Assert.That(cues.Any(c => c.clip.name == "Flight" && c.isPlaying), Is.False);
+                var embedded = duel.Archer(1 - shooter).GetComponentsInChildren<ArrowAnatomy>()
+                    .Last(a => a.LastImpact?.Entry.Region == regions[shot]);
+                Assert.That(Vector3.Distance(cues.Single(c => c.clip.name == "Body").transform.position,
+                    embedded.LastImpact.Entry.Point), Is.LessThan(0.15f));
             }
             Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
             Assert.That(duel.Flow.Winner, Is.Zero);

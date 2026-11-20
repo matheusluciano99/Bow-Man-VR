@@ -76,6 +76,80 @@ public class LocalDuelTests
         return arrow;
     }
 
+    // Renders the imported breath on each side of the actual player listener and compares stereo output.
+    [UnityTest]
+    public IEnumerator HeadLevelEmitterPansAcrossTheDesktopListener()
+    {
+        var duel = Find<LocalDuel>();
+        var listener = Find<AudioListener>();
+        var sources = Find<DuelAudio>().GetComponentsInChildren<AudioSource>();
+        var voice = duel.Opponent.GetComponentsInChildren<AudioSource>().Single(s => s.clip.name == "Breath");
+        foreach (var source in sources) source.mute = source != voice;
+        voice.transform.SetParent(listener.transform, false);
+        voice.volume = 1f;
+        var savedVolume = AudioListener.volume;
+        var frameRate = Time.captureFramerate;
+        try
+        {
+            AudioListener.volume = 1f;
+            Time.captureFramerate = 60;
+            Assert.That(AudioRenderer.Start(), Is.True);
+            foreach (var side in new[] { -1, 1 })
+            {
+                voice.transform.localPosition = Vector3.right * side;
+                double left = 0, right = 0;
+                for (var frame = 0; frame < 48; frame++)
+                {
+                    yield return null;
+                    int samples = AudioRenderer.GetSampleCountForCaptureFrame();
+                    using var buffer = new Unity.Collections.NativeArray<float>(samples * 2, Unity.Collections.Allocator.Temp);
+                    Assert.That(AudioRenderer.Render(buffer), Is.True);
+                    if (frame < 4) continue;
+                    for (int i = 0; i < buffer.Length; i += 2)
+                    {
+                        left += buffer[i] * buffer[i];
+                        right += buffer[i + 1] * buffer[i + 1];
+                    }
+                }
+                Debug.Log($"Duel breath stereo energy, side {side}: left {left:F4}, right {right:F4}");
+                Assert.That(side < 0 ? left : right, Is.GreaterThan(0.001));
+                Assert.That(side < 0 ? left : right, Is.GreaterThan(2 * (side < 0 ? right : left)));
+            }
+        }
+        finally
+        {
+            AudioRenderer.Stop();
+            Time.captureFramerate = frameRate;
+            AudioListener.volume = savedVolume;
+        }
+    }
+
+    // Checks the actual round emitters through a bow release, a lethal contact and a rematch.
+    [UnityTest]
+    public IEnumerator AudioFollowsTheShotAndStopsBreathingOnDefeat()
+    {
+        var duel = Find<LocalDuel>();
+        var sounds = Find<DuelAudio>();
+        var room = sounds.GetComponentsInChildren<AudioSource>();
+        Assert.That(room.Count(s => s.clip.name == "Breath" && s.spatialBlend == 1f), Is.EqualTo(2));
+        var ambience = room.Single(s => s.spatialBlend == 0f);
+        Assert.That(ambience.clip.channels, Is.EqualTo(2));
+        var arrow = Shoot(duel, BodyRegion.Head);
+        var launch = sounds.transform.Find("Release");
+        Assert.That(launch.position, Is.EqualTo(Find<Bow>().transform.position));
+        Assert.That(arrow.transform.Find("Flight"), Is.Not.Null);
+        var deadline = Time.time + 3f;
+        while (arrow.IsFlying && Time.time < deadline) yield return null;
+        Assert.That(duel.Opponent.IsDefeated, Is.True);
+        Assert.That(Vector3.Distance(sounds.transform.Find("Body").position, arrow.transform.position), Is.LessThan(0.10f));
+        Assert.That(duel.Opponent.GetComponentsInChildren<AudioSource>().Single(s => s.clip.name == "Breath").isPlaying, Is.False);
+        Assert.That(arrow.transform.Find("Flight") == null || !arrow.transform.Find("Flight").GetComponent<AudioSource>().isPlaying);
+        duel.RestartMatch();
+        yield return null;
+        Assert.That(sounds == null, Is.True);
+        Assert.That(Find<DuelAudio>().GetComponentsInChildren<AudioSource>().Count(s => s.clip.name == "Breath"), Is.EqualTo(2));
+    }
+
     // Checks visible breathing at duel distance while the local tracking origin stays still.
     [UnityTest]
     public IEnumerator StandingOpponentMovesWhileTrackingOriginStaysStill()
