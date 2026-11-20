@@ -236,8 +236,8 @@ triangle batches. Bone-bound contacts follow subsequent motion. Anatomy never
 applies another health outcome. The finishing presentation listens to the
 confirmed lethal-shot gate, not the general per-arrow analysis event.
 
-Keep rigid tissue binding as a prototype limit; deforming anatomical motion,
-bone/fracture rules and X-ray rendering remain separate work. Preserve source
+Keep rigid tissue binding as a prototype limit. Deforming anatomical motion
+and X-ray rendering remain separate work. Preserve source
 filenames, mesh GUIDs and native subasset identities when regenerating.
 
 ## D015 — Fit recorded injury performances on both game archers
@@ -245,6 +245,15 @@ filenames, mesh GUIDs and native subasset identities when regenerating.
 Each body region has its own entry. Surviving reactions use the actual entry, hold and recovery completion to hand over the turn. Fatal hits lock the result immediately and allow the visible collapse to finish.
 
 Use free human performance recordings with verified game-use terms. Review the full source on both rigs, then select the short movement that matches the wound. Preserve the impact recoil and measured limb lengths when fitting the hand or boot. For live wound contact, use the baked pose as a cleared starting point and limit the change against the model’s fitted colliders. This keeps the glove near the actual arrow while the archer moves. The per-region sources, timings and authoring commands are in [Injury reactions](InjuryReactions.md).
+
+## D017 — Bone fracture depends on shot strength
+
+A shot reports each game bone its finite path intersects. A weak draw can
+contact the same bone as a strong draw. Only a draw at or above the prototype
+75% cutoff marks it fractured. The simplified volumes follow the Humanoid rig
+so the two players can share the same bone identities throughout animation.
+The cutoff and volume proportions are provisional game settings. Changes to
+health or recovery from a fracture require their own balance decision.
 
 ## D018 — Fatal body hits finish with a full collapse
 

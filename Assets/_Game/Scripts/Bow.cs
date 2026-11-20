@@ -106,7 +106,8 @@ namespace BowMan
             }
 
             arrow.transform.SetParent(null, true);
-            arrow.Launch(direction.normalized * (maximumLaunchSpeed * distance / maximumDrawDistance), firingArcher);
+            var strength = distance / maximumDrawDistance;
+            arrow.Launch(direction.normalized * (maximumLaunchSpeed * strength), firingArcher, shotStrength: strength);
             Fired?.Invoke(arrow);
             return arrow;
         }
