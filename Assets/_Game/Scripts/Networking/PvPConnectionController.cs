@@ -16,6 +16,9 @@ namespace BowMan.Networking
         [SerializeField] private NetworkManager networkManager;
         [SerializeField] private UnityTransport transport;
 
+        [SerializeField] private bool targetCompetition;
+        public bool IsTargetCompetition => targetCompetition;
+
         private readonly RelayConnector relay = new RelayConnector();
         private string joinCode = string.Empty;
         private ArcherRole localRole;
@@ -34,6 +37,7 @@ namespace BowMan.Networking
             if (transport == null) transport = GetComponent<UnityTransport>();
             networkManager.NetworkConfig.EnableSceneManagement = false;
             networkManager.NetworkConfig.ConnectionApproval = true;
+            if (targetCompetition) networkManager.NetworkConfig.ConnectionData = new byte[] { 1 };
             networkManager.ConnectionApprovalCallback = Approve;
         }
 
@@ -152,6 +156,14 @@ namespace BowMan.Networking
         private void Approve(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
             response.Pending = false;
+            var payload = request.Payload;
+            bool sameMode = targetCompetition ? payload is { Length: 1 } && payload[0] == 1 : payload == null || payload.Length == 0;
+            if (!sameMode)
+            {
+                response.Approved = false;
+                response.Reason = "Choose the same game mode as the host";
+                return;
+            }
             response.Approved = Seats.TryAssign(request.ClientNetworkId, out _);
             response.CreatePlayerObject = response.Approved;
             if (!response.Approved) response.Reason = ArcherSeatAllocator.FullReason;

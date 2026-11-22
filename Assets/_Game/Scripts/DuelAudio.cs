@@ -27,10 +27,19 @@ namespace BowMan
             ArcherHealth remote, ArenaSetting arena, int localIndex)
         {
             flow = turns;
-            bow = equipped;
             opponent = other;
-            setting = arena;
             localSeat = localIndex;
+            BindBow(equipped, arena);
+            Breathing(local, 0f);
+            Breathing(remote, 0.43f);
+            turns.ShotAccepted += Accepted;
+        }
+
+        // Loads the common bow, impact and range sounds for the active game mode.
+        public void BindBow(Bow equipped, ArenaSetting arena)
+        {
+            bow = equipped;
+            setting = arena;
             nock = Clip("Nock");
             release = Clip("Release");
             foreach (ImpactSound sound in System.Enum.GetValues(typeof(ImpactSound)))
@@ -38,14 +47,11 @@ namespace BowMan
             var ambience = Emitter(transform, Clip(arena.ToString()), 0.14f, true);
             ambience.spatialBlend = 0f;
             ambience.Play();
-            Breathing(local, 0f);
-            Breathing(remote, 0.43f);
             creak = Emitter(transform, Clip("Draw"), 0f, true);
             AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey, 0.75f));
             volume = new InputAction("Duel volume", InputActionType.Button, "<XRController>{LeftHand}/primaryButton");
             volume.AddBinding("<Keyboard>/v");
             volume.Enable();
-            turns.ShotAccepted += Accepted;
         }
 
         // Loads the imported recording shared by local and network presentation.
@@ -90,7 +96,8 @@ namespace BowMan
         {
             if (shot <= lastShot) return;
             lastShot = shot;
-            var grip = flow.ActiveArcher == localSeat ? bow.transform.position : opponent.GripPosition;
+            var grip = flow == null ? arrow.transform.position :
+                flow.ActiveArcher == localSeat ? bow.transform.position : opponent.GripPosition;
             OneShot(release, grip, 0.95f);
             passing = Emitter(arrow.transform, Clip("Flight"), 0.36f, true);
             passing.Play();
@@ -138,9 +145,10 @@ namespace BowMan
                 PlayerPrefs.SetFloat(VolumeKey, AudioListener.volume);
                 PlayerPrefs.Save();
             }
-            var drawing = bow.IsDrawing || opponent.IsNocked;
-            var draw = bow.IsDrawing ? bow.DrawStrength : opponent.DrawStrength;
-            var position = bow.IsDrawing ? bow.StringPosition : opponent.StringPoint;
+            var remoteDraw = !bow.IsDrawing && opponent != null && opponent.IsNocked;
+            var drawing = bow.IsDrawing || remoteDraw;
+            var draw = remoteDraw ? opponent.DrawStrength : bow.DrawStrength;
+            var position = remoteDraw ? opponent.StringPoint : bow.StringPosition;
             if (drawing && previousDraw < 0f) OneShot(nock, position, 0.52f);
             creak.transform.position = position;
             UpdateStretch(drawing ? draw : 0f);

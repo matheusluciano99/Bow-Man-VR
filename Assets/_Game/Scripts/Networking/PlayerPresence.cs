@@ -46,6 +46,7 @@ namespace BowMan.Networking
         public BowPose Draw => bowPose.Value;
         private LocalRigBinder rig;
         private PvPDuel duel;
+        private OnlineTargetMatch range;
         public Vector3 TrackedHead => IsOwner && rig != null ? rig.Head.position : headPosition.Value;
 
         // Creates a variable every client can read and only the owning client can write.
@@ -56,12 +57,13 @@ namespace BowMan.Networking
         public override void OnNetworkSpawn()
         {
             duel = FindAnyObjectByType<PvPDuel>();
+            range = FindAnyObjectByType<OnlineTargetMatch>();
             if (IsServer)
             {
                 var controller = FindAnyObjectByType<PvPConnectionController>();
                 if (controller != null) Role.Value = controller.Seats.RoleOf(OwnerClientId);
             }
-            SetMarkersVisible(!IsOwner);
+            SetMarkersVisible(!IsOwner && range == null);
             if (!IsOwner) return;
             rig = FindAnyObjectByType<LocalRigBinder>();
             Role.OnValueChanged += HandleRoleChanged;
@@ -99,21 +101,32 @@ namespace BowMan.Networking
             if (rig != null) rig.PlaceAt(role);
             var controller = FindAnyObjectByType<PvPConnectionController>();
             if (controller != null) controller.ReportLocalRole(role);
-            if (role == ArcherRole.Archer2 && duel != null) ReadyRpc();
+            if (role == ArcherRole.Archer2 && (duel != null || range != null)) ReadyRpc();
         }
 
         // Confirms the joiner has received its assigned seat and can accept a fresh round.
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
-        private void ReadyRpc() => duel?.PeerReady(OwnerClientId);
+        private void ReadyRpc()
+        {
+            if (range != null) range.PeerReady(OwnerClientId);
+            else duel?.PeerReady(OwnerClientId);
+        }
 
         // Submits a released bow to the host; only the owning seat can make the request.
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
-        public void ReleaseRpc(int round, int turn, Vector3 origin, Vector3 direction, float strength) =>
-            duel?.ReceiveRelease(OwnerClientId, round, turn, origin, direction, strength);
+        public void ReleaseRpc(int round, int turn, Vector3 origin, Vector3 direction, float strength)
+        {
+            if (range != null) range.ReceiveRelease(OwnerClientId, round, turn, origin, direction, strength);
+            else duel?.ReceiveRelease(OwnerClientId, round, turn, origin, direction, strength);
+        }
 
         // Records a rematch vote for the authenticated owner of this player object.
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
-        public void RematchRpc(int round) => duel?.ReceiveRematch(OwnerClientId, round);
+        public void RematchRpc(int round)
+        {
+            if (range != null) range.ReceiveRematch(OwnerClientId, round);
+            else duel?.ReceiveRematch(OwnerClientId, round);
+        }
 
         // Shows both seats' rematch choices while the current result is still visible.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
@@ -125,13 +138,24 @@ namespace BowMan.Networking
 
         // Replays a host-approved arrow without running collision resolution on the client.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
-        public void FlightRpc(int round, int shot, Vector3 origin, Vector3 velocity) =>
-            duel?.ShowFlight(round, shot, origin, velocity);
+        public void FlightRpc(int round, int shot, Vector3 origin, Vector3 velocity)
+        {
+            if (range != null) range.ShowFlight(round, shot, origin, velocity);
+            else duel?.ShowFlight(round, shot, origin, velocity);
+        }
 
         // Stops a missed arrow at the host's actual scenery contact for its remaining visual lifetime.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
-        public void SceneryRpc(int round, int shot, Vector3 point, Quaternion rotation, float lifetime, ImpactSound surface) =>
-            duel?.ShowScenery(round, shot, point, rotation, lifetime, surface);
+        public void SceneryRpc(int round, int shot, Vector3 point, Quaternion rotation, float lifetime, ImpactSound surface)
+        {
+            if (range != null) range.ShowContact(round, shot, point, rotation, lifetime, surface);
+            else duel?.ShowScenery(round, shot, point, rotation, lifetime, surface);
+        }
+
+        // Synchronizes both target scores, accepted shots and rematch votes from the host.
+        [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
+        public void TargetScoreRpc(int round, int completed, int first, int second, int last, bool flying, int votes) =>
+            range?.ApplyScore(round, completed, first, second, last, flying, votes);
 
         // Distributes the host's phase and health after each transition or shot rejection.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]

@@ -77,6 +77,10 @@ Use GitHub's Assignees field to record task responsibility.
   through Unity Relay with a host-issued join code; the host is Archer 1 and the
   joining player is Archer 2 (see D024).
 - PvE: duel against an AI-controlled archer.
+- Tiro ao alvo: two archers compete online on separate PCs. Both select the
+  target competition, then host/join with a Relay code. Alternate ten arrows per
+  archer at the same 15-metre target. The host scores each tip contact, and both
+  players see both totals, arrows remaining and the winner or tie.
 
 ## Project scope
 
@@ -185,12 +189,12 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Starting the game
 
-- `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Two panels offer
-  **PvE — vs AI archer** (opens `LocalDuel`) and **PvP — online duel** (opens
-  `PvPConnectionTest`). Point the right controller's ray at a panel and pull the
-  trigger; without a headset press 1 / 2 or click a panel.
+- `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Its panels offer
+  **PvE — vs AI archer** (opens `LocalDuel`), **PvP — online duel** (opens
+  `PvPConnectionTest`) and **Tiro ao alvo** (opens `TargetRange`). Point the right controller's ray at a panel and pull the
+  trigger; without a headset press 1 / 2 / 3 or click a panel.
 - Select the bow-hand panel or press H to choose which hand holds the bow and
-  which hand draws. Both modes start with that saved choice. While aiming, the
+  which hand draws. All modes start with that saved choice. While aiming, the
   duel HUD shows the next action for the current hand and input method.
 - Open **Credits** with the pointer or C. Read the contributor pages or choose
   **Notices** for the source and license text shipped with the player. Choose
@@ -199,11 +203,11 @@ Use GitHub's Assignees field to record task responsibility.
   Leaving the PvP scene ends the online session. Health, turn and the
   VICTORY/DEFEAT result stay on the local duel's headset text (#8).
 - Run **Bow Man VR > Build Mode Menu And Game Scenes** after changing the menu,
-  duel or PvP generators. It regenerates the three scenes and puts MainMenu,
-  LocalDuel and PvPConnectionTest first in the build list (D025).
+  duel or PvP generators. It regenerates the four scenes and puts MainMenu,
+  LocalDuel, PvPConnectionTest and TargetRange first in the build list (D025).
 - **Bow Man VR > Build Windows Game Player** writes `Builds/PCVRGame/BowManVR.exe`
-  with those three scenes; add `-desktop` to run it without a headset.
-- Both modes show health, turn and result. PvP supports rematch after both
+  with those four scenes; add `-desktop` to run it without a headset.
+- Both duel modes show health, turn and result. PvP supports rematch after both
   seats accept with A / R. Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
   (PlayMode) before a menu PR.
 

@@ -26,3 +26,17 @@ project's authenticated Relay service. It compares both clients' shot tokens,
 region and side, local entry, anatomy, health, turn handoff and final result.
 The empty directory keeps previous join codes and test observations separate.
 Physical Quest 2 review and the two-network session use the lab checklist.
+
+## Online target competition
+
+Select **Tiro ao alvo** (keyboard **3**) on both PCs. Host on one and join with
+its code on the other. Each archer sees the target from the same firing line.
+Use the usual bow controls, or aim with the arrow keys and hold/release Space
+on desktop. Tab toggles desktop input. The host shoots first. The bow unlocks
+for the other seat once the arrow lands or expires. After twenty shots, each
+player can press A or R to accept a new match. Menu or Esc leaves the session.
+
+To run the paired competition check, use the same two-Editor procedure above
+with the filter `OnlineTargetRelayTests.TwoEditorsScoreTheMatch` and a fresh
+shared test directory. Both Editors check every score update and the final HUD
+for a win and a tie.

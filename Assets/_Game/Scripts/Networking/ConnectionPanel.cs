@@ -31,7 +31,7 @@ namespace BowMan.Networking
             var status = controller.Status;
             GUILayout.BeginArea(new Rect(16, 16, 360, Screen.height - 32));
             GUILayout.BeginVertical(GUI.skin.box);
-            GUILayout.Label("PvP connection test");
+            GUILayout.Label(controller.IsTargetCompetition ? "Tiro ao alvo  •  Online" : "PvP connection test");
             GUILayout.Label(status.Describe());
             GUI.enabled = status.CanStart;
             if (GUILayout.Button("Host")) _ = controller.HostAsync();
