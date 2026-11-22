@@ -8,10 +8,17 @@ namespace BowMan
     {
         private const string Key = "BowMan.Archer";
 
+        private static ArcherModel? sessionChoice;
+
         public static ArcherModel Preferred
         {
-            get => PlayerPrefs.GetInt(Key) == (int)ArcherModel.Erika ? ArcherModel.Erika : ArcherModel.English;
-            set { PlayerPrefs.SetInt(Key, (int)value); PlayerPrefs.Save(); }
+            get => sessionChoice ??= (PlayerPrefs.GetInt(Key) == (int)ArcherModel.Erika ? ArcherModel.Erika : ArcherModel.English);
+            set
+            {
+                sessionChoice = value;
+                PlayerPrefs.SetInt(Key, (int)value);
+                PlayerPrefs.Save();
+            }
         }
 
         // Returns the other playable model for the menu switch and solo opponent.

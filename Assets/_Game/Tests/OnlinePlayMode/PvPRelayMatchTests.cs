@@ -376,8 +376,8 @@ public class PvPRelayMatchTests
         finally
         {
             controller.Leave();
+            ArcherSelection.Preferred = preferred == (int)ArcherModel.Erika ? ArcherModel.Erika : ArcherModel.English;
             if (preferred < 0) PlayerPrefs.DeleteKey("BowMan.Archer");
-            else PlayerPrefs.SetInt("BowMan.Archer", preferred);
             PlayerPrefs.Save();
         }
     }

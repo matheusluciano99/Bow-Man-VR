@@ -208,8 +208,8 @@ public class ModeMenuTests
         }
         finally
         {
+            ArcherSelection.Preferred = previousArcher == (int)ArcherModel.Erika ? ArcherModel.Erika : ArcherModel.English;
             if (previousArcher < 0) PlayerPrefs.DeleteKey("BowMan.Archer");
-            else PlayerPrefs.SetInt("BowMan.Archer", previousArcher);
             if (original < 0) PlayerPrefs.DeleteKey("BowMan.BowLeft");
             else PlayerPrefs.SetInt("BowMan.BowLeft", original);
             PlayerPrefs.Save();
