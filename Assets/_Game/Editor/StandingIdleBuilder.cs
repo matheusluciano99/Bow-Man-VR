@@ -18,7 +18,7 @@ public static class StandingIdleBuilder
         var source = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Source));
         try
         {
-            if (take.length < Duration + 1f) throw new InvalidOperationException("Standing take is too short.");
+            if (take.length < Duration + 35f) throw new InvalidOperationException("Standing take is too short.");
             foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
                 BakeModel(model, source, take);
         }
@@ -44,7 +44,8 @@ public static class StandingIdleBuilder
             var skeleton = source.GetComponentsInChildren<Transform>();
             var recorded = names.Select(n => skeleton.Single(t => t.name == "mixamorig:" + n)).ToArray();
             var bones = ids.Select(rig.GetBoneTransform).ToArray();
-            take.SampleAnimation(source, 1f);
+            float startTime = model == "ErikaArcher" ? 35f : 1f;
+            take.SampleAnimation(source, startTime);
             var first = recorded.Select(b => b.rotation).ToArray();
             var across = recorded[5].position - recorded[8].position;
             var align = Quaternion.AngleAxis(Vector3.SignedAngle(Vector3.ProjectOnPlane(across, Vector3.up),
@@ -63,7 +64,7 @@ public static class StandingIdleBuilder
             var start = recorded[0].position;
             var clip = MotionInjuryBuilder.Record(root, bones, Duration, time =>
             {
-                take.SampleAnimation(source, time + 1f);
+                take.SampleAnimation(source, time + startTime);
                 var edge = Mathf.SmoothStep(0f, 1f, Mathf.Min(time, Duration - time) / 0.8f);
                 bones[0].position = restSpine + Vector3.ClampMagnitude(align * (recorded[0].position - start), 0.032f) * edge;
                 for (var i = 0; i < bones.Length; i++)

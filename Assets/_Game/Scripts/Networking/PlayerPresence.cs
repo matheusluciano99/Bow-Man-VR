@@ -101,16 +101,28 @@ namespace BowMan.Networking
             if (rig != null) rig.PlaceAt(role);
             var controller = FindAnyObjectByType<PvPConnectionController>();
             if (controller != null) controller.ReportLocalRole(role);
-            if (role == ArcherRole.Archer2 && (duel != null || range != null)) ReadyRpc();
+            if (role == ArcherRole.Archer2 && (duel != null || range != null)) ReadyRpc(ArcherSelection.Preferred);
         }
 
         // Confirms the joiner has received its assigned seat and can accept a fresh round.
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
-        private void ReadyRpc()
+        private void ReadyRpc(ArcherModel guest)
         {
+            var connection = FindAnyObjectByType<PvPConnectionController>();
+            if (connection == null || connection.Seats.RoleOf(OwnerClientId) != ArcherRole.Archer2 ||
+                (guest != ArcherModel.English && guest != ArcherModel.Erika) ||
+                (duel != null && duel.Flow != null) || (range != null && range.Playing)) return;
+            connection.SetArchers(ArcherSelection.Preferred, guest);
+            var host = NetworkManager.LocalClient.PlayerObject.GetComponent<PlayerPresence>();
+            host.ArchersRpc(connection.FirstArcher, guest);
             if (range != null) range.PeerReady(OwnerClientId);
             else duel?.PeerReady(OwnerClientId);
         }
+
+        // Delivers the two model choices on the same ordered channel as the round-start message.
+        [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
+        private void ArchersRpc(ArcherModel first, ArcherModel second) =>
+            FindAnyObjectByType<PvPConnectionController>().SetArchers(first, second);
 
         // Submits a released bow to the host; only the owning seat can make the request.
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]

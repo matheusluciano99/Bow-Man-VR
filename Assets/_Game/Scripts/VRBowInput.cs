@@ -40,7 +40,8 @@ namespace BowMan
         // Attaches one hand to its tracked controller and hides the original marker.
         private static SkinnedMeshRenderer CreateHand(Transform controller, string side)
         {
-            var prefab = Resources.Load<SkinnedMeshRenderer>("ArcherHands/" + side);
+            var folder = ArcherSelection.Preferred == ArcherModel.English ? "ArcherHands/English/" : "ArcherHands/";
+            var prefab = Resources.Load<SkinnedMeshRenderer>(folder + side);
             var hand = Instantiate(prefab, controller, false);
             hand.gameObject.SetActive(false);
             var marker = controller.Find("Controller Marker");

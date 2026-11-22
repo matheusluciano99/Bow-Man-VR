@@ -11,6 +11,8 @@ namespace BowMan.Menu
     {
         [SerializeField] private ControllerPointer pointer;
 
+        [SerializeField] private ModeOption archerOption;
+        [SerializeField] private TextMesh archerLabel;
         [SerializeField] private ModeOption handOption;
         [SerializeField] private TextMesh handLabel;
         [SerializeField] private MenuCredits credits;
@@ -28,6 +30,7 @@ namespace BowMan.Menu
         {
             if (pointer != null) pointer.Selected += OnSelected;
             RefreshHandLabel();
+            ShowArcher();
             keyboard = Keyboard.current;
             if (keyboard != null) keyboard.onTextInput += OnTextInput;
         }
@@ -61,8 +64,22 @@ namespace BowMan.Menu
         private void OnSelected(ModeOption option)
         {
             if (loading || (credits != null && credits.Select(option))) return;
-            if (option == handOption) SwitchHand();
+            if (option == archerOption) SwitchArcher();
+            else if (option == handOption) SwitchHand();
             else Choose(option.Mode);
+        }
+
+        // Saves the next archer and shows which character will enter the match.
+        private void SwitchArcher()
+        {
+            ArcherSelection.Preferred = ArcherSelection.Other(ArcherSelection.Preferred);
+            ShowArcher();
+        }
+
+        // Restores the character label when returning to the mode menu.
+        private void ShowArcher()
+        {
+            if (archerLabel != null) archerLabel.text = "Archer: " + ArcherSelection.Name(ArcherSelection.Preferred);
         }
 
         // Switches which controller holds the bow and updates the visible menu choice.
@@ -96,6 +113,7 @@ namespace BowMan.Menu
             if (loading || (credits != null && credits.IsOpen)) return;
             if (credits != null && (key == 'c' || key == 'C')) { credits.Show(true); return; }
             if (key == 'h' || key == 'H') SwitchHand();
+            if (key == 'g' || key == 'G') SwitchArcher();
             var mode = GameScenes.ModeForKey(key);
             if (mode.HasValue) Choose(mode.Value);
         }

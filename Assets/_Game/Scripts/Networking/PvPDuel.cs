@@ -89,7 +89,8 @@ namespace BowMan.Networking
             for (var i = 0; i < actors.Length; i++)
             {
                 var spawn = spawns.For(i == 0 ? ArcherRole.Archer1 : ArcherRole.Archer2);
-                var go = Instantiate(i == 0 ? firstPrefab : secondPrefab, spawn.position, spawn.rotation, match);
+                var model = i == 0 ? connection.FirstArcher : connection.SecondArcher;
+                var go = Instantiate(model == ArcherModel.English ? firstPrefab : secondPrefab, spawn.position, spawn.rotation, match);
                 actors[i] = go.GetComponent<ArcherHealth>() ?? go.AddComponent<ArcherHealth>();
             }
             opponentBow = actors[1 - LocalIndex].gameObject.AddComponent<OpponentBowAction>();
@@ -102,7 +103,7 @@ namespace BowMan.Networking
             for (var i = 0; i < actors.Length; i++)
                 actors[i].GetComponent<ArcherReactionAnimation>().Connect(Flow, i, actors[i]);
             sounds = match.gameObject.AddComponent<DuelAudio>();
-            sounds.Bind(Flow, bow, opponentBow, local, actors[1 - LocalIndex], setting, LocalIndex);
+            sounds.Bind(Flow, bow, opponentBow, local, actors[1 - LocalIndex], setting, LocalIndex, connection.FirstArcher, connection.SecondArcher);
             Flow.Changed += Changed;
             Flow.ReactionRequested += React;
             Flow.FatalityRequested += Fatal;

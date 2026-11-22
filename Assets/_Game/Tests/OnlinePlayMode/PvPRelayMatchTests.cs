@@ -46,6 +46,8 @@ public class PvPRelayMatchTests
     // Compares the host-selected environment and the instantiated scenery on each seat of this round.
     private static IEnumerator SameEnvironment(PvPDuel duel, string folder, string role)
     {
+        Assert.That(duel.Archer(0).name, Does.StartWith("ErikaArcher"));
+        Assert.That(duel.Archer(1).name, Does.StartWith("EnglishArcher"));
         var setting = duel.Setting.ToString();
         var scenery = duel.Flow.GetComponentInChildren<DuelEnvironment>();
         Assert.That(scenery.name, Is.EqualTo(setting + "(Clone)"));
@@ -225,8 +227,10 @@ public class PvPRelayMatchTests
         SceneManager.SetActiveScene(scene);
         var controller = Object.FindAnyObjectByType<PvPConnectionController>();
         var duel = Object.FindAnyObjectByType<PvPDuel>();
+        var preferred = PlayerPrefs.GetInt("BowMan.Archer", -1);
         try
         {
+            ArcherSelection.Preferred = host ? ArcherModel.Erika : ArcherModel.English;
             if (host)
             {
                 var starting = controller.HostAsync();
@@ -369,7 +373,13 @@ public class PvPRelayMatchTests
             }
             File.WriteAllText(Path.Combine(folder, role + "-rematch.txt"), "Rematch, departure and rejoin passed.");
         }
-        finally { controller.Leave(); }
+        finally
+        {
+            controller.Leave();
+            if (preferred < 0) PlayerPrefs.DeleteKey("BowMan.Archer");
+            else PlayerPrefs.SetInt("BowMan.Archer", preferred);
+            PlayerPrefs.Save();
+        }
     }
 }
 #endif

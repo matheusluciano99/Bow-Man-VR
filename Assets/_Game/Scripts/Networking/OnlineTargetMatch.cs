@@ -100,7 +100,7 @@ namespace BowMan.Networking
                 desktop.PlaceStand(stand.TransformPoint(new Vector3(-0.45f, 1.3f, 0.6f)), stand.rotation);
                 desktop.UseDesktopControls(desktopMode);
                 sounds = match.gameObject.AddComponent<DuelAudio>();
-                sounds.BindBow(bow, ArenaSetting.WoodlandRange);
+                sounds.BindBow(bow, ArenaSetting.WoodlandRange, connection.FirstArcher, connection.SecondArcher);
             }
             if (replica != null && !inFlight) { Destroy(replica.gameObject); replica = null; }
             Round = round;

@@ -45,7 +45,7 @@ is a separate asset, not the selected player archer.
 
 The prototype visual choices are English Archer and Erika Archer. The local
 headset view shows tracked hands/controllers only for now; the opponent is a
-full archer. The current rig uses controller markers. Reference views and
+full archer. The hands in playable scenes come from the selected archer. The tracking test uses controller markers. Reference views and
 body-region/bow design constraints are in [ArcherDesign.md](Art/ArcherDesign.md).
 Both characters now have prepared Humanoid derivatives and a shared movement
 check. Rig readiness and remaining per-animation review are documented in
@@ -66,7 +66,7 @@ host shares the choice with the joiner so both players see the same scene.
 Carry the archers’ visual style into the arrow and the player’s hands. Use one
 finished arrow from nock through impact so its visible tip stays aligned with
 the hit. The bow hand grips the bow and the drawing hand follows the string,
-with roles swapped for left-handed play. Use hand and cuff surfaces from the prepared Erika Archer for both hands so skin, leather and scale match the archers. Keep the blue and orange markers in the tracking test scene.
+with roles swapped for left-handed play. Bake each character’s hand and cuff surfaces from their own prepared model so skin, clothing and scale match the chosen archer. Keep the blue and orange markers in the tracking test scene.
 
 Use three baked scenery prefabs around the same level spawns. The host sends the selected setting in the round-start message, including on rematch. Shared scenery materials and combined meshes reduce draw calls. The distant woodland uses two profiles rendered from a full-resolution fir. The [environment art inventory](../Assets/ThirdParty/PolyHaven/Attribution.md) records each source and license.
 
@@ -350,6 +350,8 @@ list so scenes can load each other, and other scenes stay after them. Single-sce
 test players are still built explicitly. The left Menu button or Esc returns to
 the menu; leaving the PvP scene ends the session because the network object
 persists across scene loads.
+
+Players choose English Archer or Erika Archer on the mode menu (G on desktop). Save the choice independently from the bow hand. In PvE the other model plays the opponent. In online play each seat chooses freely, including matching characters. Each archer has a distinct recorded idle, bow performance, breath, exertion, injury and defeat voice. The shared injury rules and shot timing keep both choices equivalent in play.
 
 A player chooses the bow hand on the mode menu before entering either duel.
 The panel names both the bow hand and drawing hand. Save that choice locally so

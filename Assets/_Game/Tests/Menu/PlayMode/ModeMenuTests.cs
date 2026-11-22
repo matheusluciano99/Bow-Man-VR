@@ -149,10 +149,12 @@ public class ModeMenuTests
     public IEnumerator NewPlayerChoosesHandEntersDuelAndDraws()
     {
         var original = PlayerPrefs.GetInt("BowMan.BowLeft", -1);
+        var previousArcher = PlayerPrefs.GetInt("BowMan.Archer", -1);
         var previous = SceneManager.GetActiveScene();
         Scene menuScene = default, duelScene = default;
         try
         {
+            ArcherSelection.Preferred = ArcherModel.English;
             VRBowInput.PreferredBowLeft = true;
             const string menuPath = "Assets/_Game/Scenes/MainMenu.unity";
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode(menuPath, new LoadSceneParameters(LoadSceneMode.Additive));
@@ -170,6 +172,11 @@ public class ModeMenuTests
             Assert.That(pointer.Hovered.gameObject, Is.EqualTo(hand));
             pointer.Confirm();
             Assert.That(hand.GetComponentInChildren<TextMesh>().text, Does.Contain("Draw with left"));
+            var character = choices.Find("Archer option");
+            pointer.Point(new Ray(camera.transform.position, character.position - camera.transform.position));
+            Assert.That(pointer.Hovered.transform, Is.SameAs(character));
+            pointer.Confirm();
+            Assert.That(character.GetComponentInChildren<TextMesh>().text, Does.Contain("Erika Archer"));
             string chosen = null;
             menu.Loader = name => chosen = name;
             var pve = choices.Find("PvE option").gameObject;
@@ -185,6 +192,11 @@ public class ModeMenuTests
             roots = duelScene.GetRootGameObjects();
             var input = roots.SelectMany(g => g.GetComponentsInChildren<VRBowInput>(true)).Single();
             var bow = roots.SelectMany(g => g.GetComponentsInChildren<Bow>(true)).Single();
+            var duel = roots.SelectMany(g => g.GetComponentsInChildren<LocalDuel>()).Single();
+            Assert.That(duel.LocalArcher.name, Does.StartWith("ErikaArcher"));
+            Assert.That(duel.Opponent.name, Does.StartWith("EnglishArcher"));
+            var localBreath = duel.LocalArcher.GetComponentInChildren<AudioSource>(true);
+            Assert.That(localBreath.clip, Is.SameAs(Resources.Load<AudioClip>("DuelAudio/Erika/Breath")));
             Assert.That(input.BowInLeftHand, Is.False);
             Assert.That(input.ShotHint(true), Does.Contain("Hold Space"));
             bow.SetHeld(true);
@@ -196,6 +208,8 @@ public class ModeMenuTests
         }
         finally
         {
+            if (previousArcher < 0) PlayerPrefs.DeleteKey("BowMan.Archer");
+            else PlayerPrefs.SetInt("BowMan.Archer", previousArcher);
             if (original < 0) PlayerPrefs.DeleteKey("BowMan.BowLeft");
             else PlayerPrefs.SetInt("BowMan.BowLeft", original);
             PlayerPrefs.Save();

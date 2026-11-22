@@ -10,9 +10,9 @@ final anatomy or bow calibration. Multiple different archer models remain allowe
 ## First-person and opponent views
 
 The local player uses first person in the Quest headset and sees tracked
-hands/controllers only for this prototype. The current tracking prefab shows
-controller markers; final hand meshes and bow interaction are separate work.
-The opponent appears as a full archer. No local full-body mesh or forced
+their chosen archer’s hands and cuffs. Each rig has a bow grip and a drawing-hand
+pinch on either side. The tracking test uses controller markers.
+Choose English Archer or Erika Archer from the main menu. The opponent appears as a full archer with a distinct idle, bow performance and voice. PvE uses the other model. Online opponents can select the same model. No local full-body mesh or forced
 third-person camera is part of this prototype decision.
 
 Body-specific knockdown animates the opponent's full character. The local injury

@@ -26,6 +26,16 @@ namespace BowMan.Networking
         private int session;
         private string ownScene;
 
+        public ArcherModel FirstArcher { get; private set; }
+        public ArcherModel SecondArcher { get; private set; }
+
+        // Stores the identities confirmed by the host before the round starts.
+        public void SetArchers(ArcherModel first, ArcherModel second)
+        {
+            FirstArcher = first;
+            SecondArcher = second;
+        }
+
         public ArcherSeatAllocator Seats { get; } = new ArcherSeatAllocator();
         public ConnectionStatus Status { get; private set; } = ConnectionStatus.Offline;
         public event Action<ConnectionStatus> StatusChanged;

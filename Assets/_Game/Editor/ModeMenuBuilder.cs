@@ -89,7 +89,9 @@ public static class ModeMenuBuilder
         var handLabel = handOption.GetComponentInChildren<TextMesh>();
         var creditsOption = Panel(choices, "Credits option", "Credits", 1.02f, 0.78f,
             new Vector2(0.86f, 0.34f), 0.024f, panelMaterial);
-        Label(choices, "H: switch bow hand   •   C: credits", new Vector3(0f, 0.53f, 2.5f), 0.019f);
+        var archerOption = Panel(choices, "Archer option", "Archer: English Archer", 0f, 0.39f,
+            new Vector2(2.9f, 0.34f), 0.022f, panelMaterial);
+        Label(choices, "G: change archer   •   H: bow hand   •   C: credits", new Vector3(0f, 0.11f, 2.5f), 0.019f);
 
         var pointer = rightHand.gameObject.AddComponent<ControllerPointer>();
         var line = rightHand.gameObject.AddComponent<LineRenderer>();
@@ -109,6 +111,8 @@ public static class ModeMenuBuilder
         var credits = menu.gameObject.AddComponent<MenuCredits>();
         BuildCredits(credits, choices.gameObject, creditsOption, panelMaterial);
         var menuFields = new SerializedObject(menu);
+        menuFields.FindProperty("archerOption").objectReferenceValue = archerOption;
+        menuFields.FindProperty("archerLabel").objectReferenceValue = archerOption.GetComponentInChildren<TextMesh>();
         menuFields.FindProperty("credits").objectReferenceValue = credits;
         menuFields.FindProperty("pointer").objectReferenceValue = pointer;
         menuFields.FindProperty("handOption").objectReferenceValue = handOption;

@@ -39,7 +39,8 @@ public static class OpponentBowBuilder
             var rigRotation = rig.transform.localRotation;
             var left = rig.GetBoneTransform(HumanBodyBones.LeftHand);
             var right = rig.GetBoneTransform(HumanBodyBones.RightHand);
-            source.SampleAnimation(rig.gameObject, 6.5f);
+            bool erika = model == "ErikaArcher";
+            source.SampleAnimation(rig.gameObject, erika ? 8.5f : 6.5f);
             var forward = Vector3.ProjectOnPlane(left.position - right.position, Vector3.up);
             var lane = Quaternion.AngleAxis(Vector3.SignedAngle(forward, root.transform.forward, Vector3.up), Vector3.up);
             var reaction = new SerializedObject(prefab.GetComponent<ArcherReactionAnimation>());
@@ -48,7 +49,10 @@ public static class OpponentBowBuilder
                 var clip = MotionInjuryBuilder.Record(root, upper, 2.75f, time =>
                 {
                     rig.transform.SetLocalPositionAndRotation(rigPosition, rigRotation);
-                    source.SampleAnimation(rig.gameObject, 4.5f + time);
+                    // Both draws reach the nock at 1.5 s and the cheek anchor at 2 s on the gameplay clock.
+                    float sample = 4.5f + time;
+                    if (erika) sample = time < 1.5f ? Mathf.Lerp(7.25f, 8f, time / 1.5f) : 8f + time - 1.5f;
+                    source.SampleAnimation(rig.gameObject, sample);
                     var sampled = upper.Select(t => lane * t.rotation).ToArray();
                     rig.transform.SetLocalPositionAndRotation(rigPosition, rigRotation);
                     MotionInjuryBuilder.Restore(all, positions, rotations);

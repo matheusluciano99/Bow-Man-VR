@@ -10,25 +10,29 @@ using Object = UnityEngine.Object;
 public static class ArcherHandBuilder
 {
     private const string Output = "Assets/_Game/Resources/ArcherHands";
-    private const string ModelPath = "Assets/_Game/Prefabs/Characters/ErikaArcher.prefab";
 
     // Extracts just the two hands and short cuffs from the prepared Humanoid and preserves their materials.
     [MenuItem("Bow Man VR/Characters/Bake first-person hands")]
     public static void Bake()
     {
-        Directory.CreateDirectory(Output);
+        Directory.CreateDirectory(Output + "/English");
         AssetDatabase.Refresh();
-        foreach (var left in new[] { true, false })
+        foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
         {
-            var actor = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath));
-            try { BakeHand(actor, left); }
-            finally { Object.DestroyImmediate(actor); }
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Game/Prefabs/Characters/{model}.prefab");
+            var folder = model == "EnglishArcher" ? Output + "/English" : Output;
+            foreach (var left in new[] { true, false })
+            {
+                var actor = Object.Instantiate(prefab);
+                try { BakeHand(actor, left, folder); }
+                finally { Object.DestroyImmediate(actor); }
+            }
         }
         AssetDatabase.SaveAssets();
     }
 
     // Bakes three gestures onto the same surface vertices in controller space, including the grip offset.
-    private static void BakeHand(GameObject actor, bool left)
+    private static void BakeHand(GameObject actor, bool left, string folder)
     {
         var side = left ? "Left" : "Right";
         var rig = actor.GetComponentInChildren<Animator>();
@@ -185,7 +189,7 @@ public static class ArcherHandBuilder
                 result.AddBlendShapeFrame(gesture == 1 ? "Grip" : "Pinch",100,delta,normalDelta,null);
             }
         }
-        var path = $"{Output}/{side}.asset";
+        var path = $"{folder}/{side}.asset";
         var stored = AssetDatabase.LoadAssetAtPath<Mesh>(path);
         if (stored == null) { AssetDatabase.CreateAsset(result,path); stored=result; }
         else { EditorUtility.CopySerialized(result,stored); Object.DestroyImmediate(result); }
@@ -197,7 +201,7 @@ public static class ArcherHandBuilder
             skin.sharedMaterials = materials.ToArray();
             skin.localBounds = new Bounds(Vector3.zero, Vector3.one*.45f);
             skin.shadowCastingMode = ShadowCastingMode.Off;
-            PrefabUtility.SaveAsPrefabAsset(hand,$"{Output}/{side}.prefab");
+            PrefabUtility.SaveAsPrefabAsset(hand,$"{folder}/{side}.prefab");
         }
         finally { Object.DestroyImmediate(hand); }
     }

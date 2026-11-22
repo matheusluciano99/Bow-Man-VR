@@ -66,7 +66,7 @@ The retained Templar Knight and the archer candidates are documented in
 player archer.
 
 Prototype character choices, front/side/back references and the first-person
-presentation are in [archer design](Docs/Art/ArcherDesign.md).
+presentation are in [archer design](Docs/Art/ArcherDesign.md). Choose **Archer** on the main menu (or press **G**) to switch between English Archer and Erika. This sets your hands, voice and character performance across modes.
 
 Prepared Humanoid models, the desktop movement check and reproducible Blender
 work are documented in [rig preparation](Docs/Art/RigPreparation.md).

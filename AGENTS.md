@@ -42,6 +42,7 @@ Use GitHub's Assignees field to record task responsibility.
 - Use free realistic medieval human archers in the visual style of For Honor
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
+- Select English Archer or Erika Archer on the main menu with the pointer or G. Preserve each seat’s independent choice across modes and rematches. Use the selected model’s hands, captured idle and bow action, and recorded voice. The solo opponent uses the other model.
 - The local headset player sees tracked hands/controllers only for now; the
   opponent appears as a full archer. During injury, the local viewpoint follows
   the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).

@@ -71,8 +71,10 @@ namespace BowMan
             matchRoot.SetParent(transform, false);
             var setting = DuelEnvironment.Choose();
             DuelEnvironment.Place(setting, matchRoot, localSpawn, opponentSpawn);
-            LocalArcher = Spawn(localArcherPrefab, localSpawn);
-            Opponent = Spawn(opponentPrefab, opponentSpawn);
+            var model = ArcherSelection.Preferred;
+            bool english = model == ArcherModel.English;
+            LocalArcher = Spawn(english ? localArcherPrefab : opponentPrefab, localSpawn);
+            Opponent = Spawn(english ? opponentPrefab : localArcherPrefab, opponentSpawn);
             foreach (var renderer in LocalArcher.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
             Flow.Initialize(LocalArcher, Opponent);
             LocalArcher.GetComponent<ArcherReactionAnimation>().Connect(Flow, 0, LocalArcher);
@@ -83,7 +85,7 @@ namespace BowMan
             var otherBow = Opponent.gameObject.AddComponent<OpponentBowAction>();
             otherBow.Bind(bow, arrowPrefab);
             sounds = matchRoot.gameObject.AddComponent<DuelAudio>();
-            sounds.Bind(Flow, bow, otherBow, LocalArcher, Opponent, setting, 0);
+            sounds.Bind(Flow, bow, otherBow, LocalArcher, Opponent, setting, 0, model, ArcherSelection.Other(model));
             Opponent.gameObject.AddComponent<AIArcher>().Initialize(Flow, 1, Opponent, LocalArcher, arrowPrefab);
             if (desktopMode) desktopInput.UseDesktopControls(true);
             OnFlowChanged();

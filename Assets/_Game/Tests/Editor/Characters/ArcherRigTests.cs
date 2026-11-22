@@ -10,6 +10,8 @@ public class ArcherRigTests
     // Measures clearance between the wrapped hand and the nocked shaft on the gameplay bow.
     [TestCase("Left")]
     [TestCase("Right")]
+    [TestCase("English/Left")]
+    [TestCase("English/Right")]
     public void GripLeavesSpaceForTheArrow(string side)
     {
         var skin = Resources.Load<SkinnedMeshRenderer>("ArcherHands/" + side);
