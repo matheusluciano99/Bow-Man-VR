@@ -48,7 +48,9 @@ namespace BowMan
             switchHand = new InputAction("Switch bow hand", InputActionType.Button, "<XRController>{RightHand}/secondaryButton");
             switchHand.AddBinding("<Keyboard>/h");
             desktop = new InputAction("Desktop controls", InputActionType.Button, "<Keyboard>/tab");
+            restart.AddBinding("<WebXRController>{RightHand}/buttonA");
             restart.Enable();
+            switchHand.AddBinding("<WebXRController>{RightHand}/buttonB");
             switchHand.Enable();
             desktop.Enable();
             RestartMatch();
@@ -111,6 +113,7 @@ namespace BowMan
         private void Update()
         {
             if (Flow == null) return;
+            desktopInput.FollowBrowserSession(ref desktopMode);
             if (restart.WasPressedThisFrame() && Flow.Phase == DuelPhase.Finished) RestartMatch();
             if (switchHand.WasPressedThisFrame() && Flow.CanShoot(0)) vrInput.SetBowHand(!vrInput.BowInLeftHand);
             if (desktop.WasPressedThisFrame())

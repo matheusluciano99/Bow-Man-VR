@@ -330,7 +330,7 @@ TextMesh:
   m_GameObject: {fileID: 384713776}
   m_Text: "Tiro ao alvo   \u2022   10 arrows per archer"
   m_OffsetZ: 0
-  m_CharacterSize: 0.008
+  m_CharacterSize: 0.03
   m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1

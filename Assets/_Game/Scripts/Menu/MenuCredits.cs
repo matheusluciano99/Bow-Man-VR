@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace BowMan.Menu
 {
@@ -60,7 +62,15 @@ namespace BowMan.Menu
             else if (option == next) Turn(1);
             else if (option == notices)
             {
-                if (details == null) details = ReadNotices();
+                if (details == null)
+                {
+                    if (Application.platform == RuntimePlatform.WebGLPlayer)
+                    {
+                        details = new[] { "Loading source notices…" };
+                        StartCoroutine(FetchNotices());
+                    }
+                    else details = ReadNotices();
+                }
                 showingNotices = !showingNotices;
                 page = 0;
                 Display();
@@ -75,12 +85,20 @@ namespace BowMan.Menu
             Display();
         }
 
+        // Loads the notices from the itch.io game's relative StreamingAssets URL.
+        private IEnumerator FetchNotices()
+        {
+            using var request = UnityWebRequest.Get(Application.streamingAssetsPath + "/BowMan-Credits.txt");
+            yield return request.SendWebRequest();
+            details = request.result == UnityWebRequest.Result.Success
+                ? Paginate(request.downloadHandler.text) : new[] { "Could not load source notices." };
+            if (IsOpen && showingNotices) Display();
+        }
+
         // Uses the copy distributed with the PC player so every source and license is available offline.
         private static string[] ReadNotices()
         {
             var path = Path.Combine(Application.streamingAssetsPath, "BowMan-Credits.txt");
-            var result = new List<string>();
-            var lines = new List<string>();
             string text;
             try { text = File.ReadAllText(path); }
             catch (Exception error) when (error is IOException || error is UnauthorizedAccessException)
@@ -88,6 +106,14 @@ namespace BowMan.Menu
                 Debug.LogWarning($"Could not open the bundled credits: {error.Message}");
                 return new[] { "Could not open BowMan-Credits.txt.\nSelect Credits to return to the contributor pages." };
             }
+            return Paginate(text);
+        }
+
+        // Wraps the source text into pages sized for the headset panel.
+        private static string[] Paginate(string text)
+        {
+            var result = new List<string>();
+            var lines = new List<string>();
             if (string.IsNullOrWhiteSpace(text)) return new[] { "The source notices file is empty." };
             foreach (var paragraph in text.Replace("\r", "").Trim().Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries))
             {

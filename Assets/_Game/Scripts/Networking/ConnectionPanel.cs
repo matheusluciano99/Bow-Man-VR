@@ -8,7 +8,8 @@ namespace BowMan.Networking
         [SerializeField] private PvPConnectionController controller;
         [SerializeField] private TextMesh headsetLabel;
 
-        private const string MenuHint = "Menu button / Esc: back to modes";
+        private static string MenuHint => Application.platform == RuntimePlatform.WebGLPlayer
+            ? "Left stick click / Esc: back to modes" : "Menu button / Esc: back to modes";
 
         private string codeInput = string.Empty;
 

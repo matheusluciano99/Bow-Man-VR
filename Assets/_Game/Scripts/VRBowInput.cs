@@ -24,6 +24,11 @@ namespace BowMan
         private Transform DrawHand => bowInLeftHand ? rightController : leftController;
         public bool BowInLeftHand => bowInLeftHand;
 
+        // The browser can keep its XR loader alive between immersive sessions.
+        public static bool HeadsetActive => Application.platform == RuntimePlatform.WebGLPlayer
+            ? WebXR.WebXRManager.Instance != null && WebXR.WebXRManager.Instance.XRState == WebXR.WebXRState.VR
+            : UnityEngine.XR.XRSettings.isDeviceActive;
+
         // Replaces diagnostic markers with the two archer hands when a playable match starts.
         public void ShowArcherHands()
         {
@@ -178,7 +183,7 @@ namespace BowMan
         public string ShotHint(bool desktop)
         {
             if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
-            if (!UnityEngine.XR.XRSettings.isDeviceActive) return "Press Tab for desktop controls";
+            if (!HeadsetActive) return "Press Tab for desktop controls";
             if (bow.IsDrawing) return "Pull back, aim, then release the trigger";
             var hand = BowInLeftHand ? "right" : "left";
             return $"Bring your {hand} hand to the string • Hold its trigger";

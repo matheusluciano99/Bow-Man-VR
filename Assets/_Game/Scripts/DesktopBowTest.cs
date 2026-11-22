@@ -73,6 +73,16 @@ namespace BowMan
             if (keyboard.spaceKey.wasReleasedThisFrame) bow.Release();
         }
 
+        // Transfers the equipped bow when a browser enters or leaves immersive VR during a round.
+        public void FollowBrowserSession(ref bool useDesktop)
+        {
+            if (Application.platform != RuntimePlatform.WebGLPlayer) return;
+            bool desktop = !VRBowInput.HeadsetActive;
+            if (useDesktop == desktop) return;
+            useDesktop = desktop;
+            UseDesktopControls(useDesktop);
+        }
+
         // Switches between desktop simulation and tracked VR input without firing a pending draw.
         public void UseDesktopControls(bool enabled)
         {

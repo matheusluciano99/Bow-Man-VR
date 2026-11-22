@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Bow Man VR</title>
+  <style>
+    * { box-sizing: border-box }
+    html, body { width: 100%; height: 100%; margin: 0 }
+    body { display: flex; flex-direction: column; color: #f4f0df; background: #172127; font: 16px system-ui, sans-serif }
+    #unity-canvas { min-height: 0; flex: 1 1 0; width: 100%; display: block; outline: none }
+    footer { display: flex; min-height: 54px; align-items: center; justify-content: space-between; gap: 1em; padding: .5em 1em }
+    button { font: inherit; font-weight: 650; padding: .5em 1.25em; border: 0; border-radius: 4px; color: #182124; background: #f1c379; white-space: nowrap }
+    button:disabled { opacity: .5 }
+  </style>
+</head>
+<body>
+  <canvas id="unity-canvas" tabindex="0" aria-label="Bow Man VR"></canvas>
+  <footer><span id="status" role="status">Loading game…</span><button id="enter-vr" disabled>Enter VR</button></footer>
+  <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+  <script>
+    const canvas = document.getElementById('unity-canvas');
+    const status = document.getElementById('status');
+    const enter = document.getElementById('enter-vr');
+    let game;
+    let supported = false;
+    // Wait for both the loaded game and a browser that can enter immersive VR.
+    function updateEntry() {
+      enter.disabled = !(game && supported);
+      if (game) status.textContent = supported ? 'Bow Man VR' : 'Connect a headset in a WebXR-capable browser to enter VR.';
+    }
+    document.addEventListener('onVRSupportedCheck', event => {
+      supported = event.detail.supported;
+      updateEntry();
+    });
+    enter.addEventListener('click', () => {
+      canvas.focus();
+      game.Module.WebXR.toggleVR();
+    });
+    createUnityInstance(canvas, {
+      dataUrl: 'Build/{{{ DATA_FILENAME }}}',
+      frameworkUrl: 'Build/{{{ FRAMEWORK_FILENAME }}}',
+      codeUrl: 'Build/{{{ CODE_FILENAME }}}',
+      streamingAssetsUrl: 'StreamingAssets',
+      companyName: '{{{ COMPANY_NAME }}}',
+      productName: '{{{ PRODUCT_NAME }}}',
+      productVersion: '{{{ PRODUCT_VERSION }}}'
+    }, progress => { status.textContent = 'Loading game… ' + Math.round(progress * 100) + '%'; })
+    .then(instance => { game = instance; updateEntry(); })
+    .catch(error => { status.textContent = 'Game could not load. ' + error; });
+  </script>
+</body>
+</html>

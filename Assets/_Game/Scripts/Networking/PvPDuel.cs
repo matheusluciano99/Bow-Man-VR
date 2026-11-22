@@ -52,9 +52,11 @@ namespace BowMan.Networking
         {
             rematch = new InputAction("Rematch", InputActionType.Button, "<XRController>{RightHand}/primaryButton");
             rematch.AddBinding("<Keyboard>/r");
+            rematch.AddBinding("<WebXRController>{RightHand}/buttonA");
             rematch.Enable();
             switchHand = new InputAction("Switch bow hand", InputActionType.Button, "<XRController>{RightHand}/secondaryButton");
             switchHand.AddBinding("<Keyboard>/h");
+            switchHand.AddBinding("<WebXRController>{RightHand}/buttonB");
             switchHand.Enable();
             cutaway = rig.Head.gameObject.AddComponent<FatalCutaway>();
             bow.SetShotAllowed(false);
@@ -62,7 +64,7 @@ namespace BowMan.Networking
             bow.Fired += Released;
             connection.StatusChanged += ConnectionChanged;
             vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
-            desktopMode = DesktopXR.Requested(Environment.GetCommandLineArgs());
+            desktopMode = DesktopXR.CommandLineRequested;
         }
 
         // Starts the first round only for the admitted second player.
@@ -330,6 +332,7 @@ namespace BowMan.Networking
         private void Update()
         {
             if (Flow == null) return;
+            desktop.FollowBrowserSession(ref desktopMode);
             if (rematch.WasPressedThisFrame()) RequestRematch();
             var keyboard = Keyboard.current;
             if (keyboard != null && keyboard.tabKey.wasPressedThisFrame)

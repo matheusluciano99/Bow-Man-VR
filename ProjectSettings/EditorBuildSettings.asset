@@ -21,6 +21,7 @@ EditorBuildSettings:
     path: Assets/_Game/Scenes/VRTrackingTest.unity
     guid: 237248f26c9a20e4aaa5fd517c29437a
   m_configObjects:
+    WebXR.Settings: {fileID: 11400000, guid: 73b656fdc3946734e871bd55ebe903dd, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: f778d447fbf7cc14dba78a97403ab6a4, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: c8e4f9208171d494f95bda27478d33aa, type: 2}

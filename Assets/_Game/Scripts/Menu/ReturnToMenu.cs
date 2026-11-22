@@ -21,6 +21,7 @@ namespace BowMan.Menu
         {
             back = new InputAction("Return to menu", InputActionType.Button, "<XRController>{LeftHand}/menu");
             back.AddBinding("<Keyboard>/escape");
+            back.AddBinding("<WebXRController>{LeftHand}/thumbstickPressed");
             back.Enable();
         }
 

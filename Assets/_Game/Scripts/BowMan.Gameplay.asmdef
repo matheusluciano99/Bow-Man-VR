@@ -1,4 +1,4 @@
 {
   "name": "BowMan.Gameplay",
-  "references": ["Unity.InputSystem"]
+  "references": ["Unity.InputSystem", "WebXR"]
 }

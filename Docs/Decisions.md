@@ -70,10 +70,10 @@ with roles swapped for left-handed play. Use hand and cuff surfaces from the pre
 
 Use three baked scenery prefabs around the same level spawns. The host sends the selected setting in the round-start message, including on rematch. Shared scenery materials and combined meshes reduce draw calls. The distant woodland uses two profiles rendered from a full-resolution fir. The [environment art inventory](../Assets/ThirdParty/PolyHaven/Attribution.md) records each source and license.
 
-## D005 — PC VR on the classroom Quest 2
+## D005 — Browser VR release and Quest 2 lab testing
 
 Players launch the HTML game on itch.io and enter immersive VR from a WebXR-capable browser.
-Browser multiplayer uses secure WebSockets through Relay. For classroom testing, use Windows PC VR
+Use WebXR Export and WebXR Interactions 0.25.0 for stereo rendering and tracked controller input. Browser multiplayer uses secure WebSockets through Relay. The online lobby accepts join codes through the controller so a headset user can join without typing on the PC. For classroom testing, use Windows PC VR
 through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
 and the Oculus Touch profile. This matches the available test hardware. Keep
 desktop scene checks useful when the headset is unavailable, and distinguish

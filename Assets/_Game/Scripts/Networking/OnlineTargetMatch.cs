@@ -41,11 +41,13 @@ namespace BowMan.Networking
         {
             hand = new InputAction("Bow hand", binding: "<XRController>{RightHand}/secondaryButton");
             hand.AddBinding("<Keyboard>/h");
+            hand.AddBinding("<WebXRController>{RightHand}/buttonB");
             hand.Enable();
             rematch = new InputAction("Rematch", binding: "<XRController>{RightHand}/primaryButton");
             rematch.AddBinding("<Keyboard>/r");
+            rematch.AddBinding("<WebXRController>{RightHand}/buttonA");
             rematch.Enable();
-            desktopMode = !XRSettings.isDeviceActive;
+            desktopMode = !VRBowInput.HeadsetActive;
             vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
             bow.SetShotAllowed(false);
             bow.gameObject.SetActive(false);
@@ -242,6 +244,7 @@ namespace BowMan.Networking
         private void Update()
         {
             if (!Playing) return;
+            desktop.FollowBrowserSession(ref desktopMode);
             if (rematch.WasPressedThisFrame()) RequestRematch();
             if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
             {

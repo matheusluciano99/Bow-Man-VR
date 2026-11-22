@@ -9,6 +9,12 @@ For lab tests, use Meta Quest 2 through Quest Link with the Windows review playe
 Open the project with Unity **6000.3.25f1**. Game requirements, scene instructions,
 hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 
+## Browser build
+
+Use Unity 6000.3.25f1 with Web Build Support. Switch the active build profile to **Web** and run **Bow Man VR → Build itch.io WebXR Game**. The output is `Builds/ItchIO/BowManVR-WebXR.zip`, with `index.html` at its root. Select **HTML** on the itch.io project page and upload that ZIP as playable in the browser. [itch.io HTML game instructions](https://itch.io/docs/creators/html5)
+
+On the game page, select **Play**, then **Enter VR** when the headset is available. Each online player opens the same mode on a separate device. In VR, point the right controller at **Host** or **Join** and press the trigger. The joining player selects the six characters of the host's code and presses **Join** again. Click the left thumbstick to return to the mode menu. Keyboard and mouse controls are available in the browser before entering VR.
+
 ## Repository layout
 
 | Location | Purpose |

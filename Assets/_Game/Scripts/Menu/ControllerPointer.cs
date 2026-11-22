@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.XR;
 
 namespace BowMan.Menu
 {
@@ -37,7 +36,7 @@ namespace BowMan.Menu
         private void Update()
         {
             var mouse = Mouse.current;
-            var useMouse = !XRSettings.isDeviceActive && desktopCamera != null && mouse != null;
+            var useMouse = !VRBowInput.HeadsetActive && desktopCamera != null && mouse != null;
             var ray = useMouse
                 ? desktopCamera.ScreenPointToRay(mouse.position.ReadValue())
                 : new Ray(rayOrigin.position, rayOrigin.forward);

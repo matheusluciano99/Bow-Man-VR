@@ -51,6 +51,7 @@ namespace BowMan
             AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey, 0.75f));
             volume = new InputAction("Duel volume", InputActionType.Button, "<XRController>{LeftHand}/primaryButton");
             volume.AddBinding("<Keyboard>/v");
+            volume.AddBinding("<WebXRController>{LeftHand}/buttonA");
             volume.Enable();
         }
 
