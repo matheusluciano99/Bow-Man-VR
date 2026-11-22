@@ -77,14 +77,14 @@ public static class LocalDuelBuilder
     }
 
     // Places a dark surface behind the match text so it stays legible over bright arena floors.
-    internal static void AddFeedbackPanel(Transform head)
+    internal static void AddFeedbackPanel(Transform head, float width = 2f)
     {
         var panel = GameObject.CreatePrimitive(PrimitiveType.Quad);
         panel.name = "Match feedback background";
         Object.DestroyImmediate(panel.GetComponent<Collider>());
         panel.transform.SetParent(head, false);
         panel.transform.localPosition = new Vector3(0f, -0.37f, 1.8f);
-        panel.transform.localScale = new Vector3(2f, 0.36f, 1f);
+        panel.transform.localScale = new Vector3(width, 0.36f, 1f);
         var renderer = panel.GetComponent<MeshRenderer>();
         renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Materials/Menu/ModePanel.mat");
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;

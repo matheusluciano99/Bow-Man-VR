@@ -55,7 +55,7 @@ public static class TargetRangeBuilder
         var label = (TextMesh)source.FindProperty("feedback").objectReferenceValue;
         label.text = "Tiro ao alvo   •   10 arrows per archer";
         label.characterSize = 0.030f;
-        LocalDuelBuilder.AddFeedbackPanel(label.transform.parent);
+        LocalDuelBuilder.AddFeedbackPanel(label.transform.parent, 2.5f);
         label.transform.localScale = Vector3.one * 0.55f;
         Object.DestroyImmediate(duel);
         Object.DestroyImmediate(host.GetComponent<VRInjuryView>());
