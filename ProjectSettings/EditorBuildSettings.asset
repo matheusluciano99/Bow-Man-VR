@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/_Game/Scenes/PvPConnectionTest.unity
     guid: ac73770bc9b7abe4ba91cd60331e2508
   - enabled: 1
+    path: Assets/_Game/Scenes/TargetRange.unity
+    guid: 08248bbfed698ca4fa2fbac5de7cccc2
+  - enabled: 1
     path: Assets/_Game/Scenes/VRTrackingTest.unity
     guid: 237248f26c9a20e4aaa5fd517c29437a
   m_configObjects:

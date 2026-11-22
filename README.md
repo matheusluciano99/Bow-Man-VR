@@ -1,6 +1,9 @@
 # Bow Man VR
 
-A turn-based VR archery duel for PC, using a Meta Quest 2 through Quest Link.
+PC VR archery for Meta Quest 2 through Quest Link. Play against the AI, duel
+online, or select **Tiro ao alvo** for two archers sharing one headset. Each
+archer gets ten arrows at the same target. On desktop, press **3** in the menu
+and use the arrow keys to aim and Space to draw and release.
 Open the project with Unity **6000.3.25f1**. Game requirements, scene instructions,
 hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 

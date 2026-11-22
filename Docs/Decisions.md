@@ -340,10 +340,10 @@ servers and duel synchronization are outside this choice (#12, #13).
 ## D025 — The mode menu is the game's entry scene
 
 Start the game on `MainMenu`, where a right-controller ray and trigger choose
-PvE (local duel against the AI) or PvP (online connection). Pointing at world
+PvE (local duel against the AI), PvP (online connection), or Tiro ao alvo (local target competition). Pointing at world
 panels is the expected VR menu interaction and needs no new package; XR
 Interaction Toolkit would add a dependency that touches the shared rig. The
-menu generator puts MainMenu, LocalDuel and PvPConnectionTest first in the build
+menu generator puts MainMenu, LocalDuel, PvPConnectionTest and TargetRange first in the build
 list so scenes can load each other, and other scenes stay after them. Single-scene
 test players are still built explicitly. The left Menu button or Esc returns to
 the menu; leaving the PvP scene ends the session because the network object
@@ -368,6 +368,16 @@ Sample the visible opponent’s recorded bow action from the AI turn clock in Pv
 ## Duel sound
 
 Use recorded spatial cues for the two archers and their equipment. Start the string creak above 60% of maximum draw. Increase pitch and volume toward full draw, with a softer sustained sound while the player holds tension. Falling back to 60% or below, cancelling or releasing stops the stretch cue. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.
+
+## Local target archery competition
+
+Tiro ao alvo runs on one PC with one headset. Each archer shoots an uninterrupted
+end of ten arrows so the headset changes hands once. Archer 2 confirms readiness
+before the bow unlocks. Both use the same firing line, target and score scale.
+Score the actual tip contact from 1 on the outer ring to 10 at the center, give
+a dividing line to the higher ring, and count a miss or expired arrow as zero.
+A cancelled draw spends no arrow. Higher total wins and equal totals tie.
+The initial range distance of 15 metres is provisional pending headset review.
 
 ## Open questions and provisional values
 

@@ -9,6 +9,7 @@ public class GameScenesTests
     {
         Assert.AreEqual("LocalDuel", GameScenes.For(GameMode.PvE));
         Assert.AreEqual("PvPConnectionTest", GameScenes.For(GameMode.PvP));
+        Assert.AreEqual("TargetRange", GameScenes.For(GameMode.Target));
         Assert.AreEqual("MainMenu", GameScenes.MainMenu);
     }
 
@@ -16,7 +17,7 @@ public class GameScenesTests
     [Test]
     public void BuildOrderStartsWithTheMenu()
     {
-        CollectionAssert.AreEqual(new[] { "MainMenu", "LocalDuel", "PvPConnectionTest" }, GameScenes.BuildOrder);
+        CollectionAssert.AreEqual(new[] { "MainMenu", "LocalDuel", "PvPConnectionTest", "TargetRange" }, GameScenes.BuildOrder);
     }
 
     // Maps the desktop keys 1 and 2 to PvE and PvP and ignores other keys.
@@ -25,7 +26,7 @@ public class GameScenesTests
     {
         Assert.AreEqual(GameMode.PvE, GameScenes.ModeForKey('1'));
         Assert.AreEqual(GameMode.PvP, GameScenes.ModeForKey('2'));
-        Assert.IsNull(GameScenes.ModeForKey('3'));
+        Assert.AreEqual(GameMode.Target, GameScenes.ModeForKey('3'));
         Assert.IsNull(GameScenes.ModeForKey('a'));
     }
 

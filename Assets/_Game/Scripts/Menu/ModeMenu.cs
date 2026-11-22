@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace BowMan.Menu
 {
-    // Opens the scene for the mode chosen with the pointer or the desktop keys 1 and 2.
+    // Opens the scene for the mode chosen with the pointer or the numbered desktop shortcuts.
     public sealed class ModeMenu : MonoBehaviour
     {
         [SerializeField] private ControllerPointer pointer;

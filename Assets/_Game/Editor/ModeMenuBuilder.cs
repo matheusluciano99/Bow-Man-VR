@@ -18,20 +18,21 @@ public static class ModeMenuBuilder
     private const string XRPlayerPath = "Assets/_Game/Prefabs/XRPlayer.prefab";
     private const string PlayerPath = "Builds/PCVRGame/BowManVR.exe";
 
-    // Regenerates the local duel, PvP and menu scenes, then puts them first in the build list.
+    // Regenerates the playable scenes and puts them first in the build list.
     [MenuItem("Bow Man VR/Build Mode Menu And Game Scenes")]
     public static void BuildAll()
     {
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         LocalDuelBuilder.Build();
         PvPConnectionSceneBuilder.BuildScene();
+        TargetRangeBuilder.Build();
         BuildMenuScene();
         UseGameBuildList();
         AssetDatabase.SaveAssets();
-        Debug.Log("Mode menu, local duel and PvP scenes generated; MainMenu is the first build scene.");
+        Debug.Log("Playable scenes generated. MainMenu is the first build scene.");
     }
 
-    // Builds the menu, local duel and PvP scenes into one Windows x86_64 player.
+    // Builds all playable modes into the Windows x86_64 player.
     [MenuItem("Bow Man VR/Build Windows Game Player")]
     public static void BuildPlayer()
     {
@@ -53,7 +54,7 @@ public static class ModeMenuBuilder
         else Debug.LogError($"Game player build {report.summary.result} with {report.summary.totalErrors} errors");
     }
 
-    // Creates the menu scene: rig, floor, title, two mode panels and the controller pointer.
+    // Creates the menu scene: rig, floor, game choices and controller pointer.
     public static void BuildMenuScene()
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -75,12 +76,14 @@ public static class ModeMenuBuilder
 
         var choices = new GameObject("Mode choices").transform;
         Label(choices, "Bow Man VR", new Vector3(0f, 2.20f, 2.5f), 0.05f);
-        Label(choices, "Point and pull the right trigger to select  •  Desktop: click or press 1 / 2",
+        Label(choices, "Point and pull the right trigger to select  •  Desktop: click or press 1 / 2 / 3",
             new Vector3(0f, 1.93f, 2.5f), 0.018f);
         var panelMaterial = MenuMaterial(PanelMaterialPath, new Color(0.16f, 0.2f, 0.28f));
-        var modeSize = new Vector2(1.3f, 0.72f);
-        Panel(choices, "PvE option", GameScenes.Title(GameMode.PvE), -0.8f, 1.45f, modeSize, 0.032f, panelMaterial);
-        Panel(choices, "PvP option", GameScenes.Title(GameMode.PvP), 0.8f, 1.45f, modeSize, 0.032f, panelMaterial, GameMode.PvP);
+        var modeSize = new Vector2(1.3f, 0.42f);
+        Panel(choices, "PvE option", GameScenes.Title(GameMode.PvE), -0.8f, 1.63f, modeSize, 0.026f, panelMaterial);
+        Panel(choices, "PvP option", GameScenes.Title(GameMode.PvP), 0.8f, 1.63f, modeSize, 0.026f, panelMaterial, GameMode.PvP);
+        Panel(choices, "Target option", GameScenes.Title(GameMode.Target), 0f, 1.17f,
+            new Vector2(2.9f, 0.35f), 0.025f, panelMaterial, GameMode.Target);
         var handOption = Panel(choices, "Bow hand option", "Bow in left hand  •  Draw with right", -0.49f, 0.78f,
             new Vector2(1.92f, 0.34f), 0.018f, panelMaterial);
         var handLabel = handOption.GetComponentInChildren<TextMesh>();
@@ -187,7 +190,7 @@ public static class ModeMenuBuilder
         return material;
     }
 
-    // Puts MainMenu, LocalDuel and PvPConnectionTest first in the build list and keeps other scenes after them.
+    // Lists each playable scene once before the project’s remaining scenes.
     private static void UseGameBuildList()
     {
         var game = GameScenes.BuildOrder.Select(name => new EditorBuildSettingsScene(ScenePath(name), true));

@@ -207,6 +207,34 @@ public class ModeMenuTests
     }
 #endif
 
+    // Confirms the range panel on the saved main menu using the same ray as the headset.
+#if UNITY_EDITOR
+    [UnityTest]
+    public IEnumerator TargetPanelOpensTheLocalCompetition()
+    {
+        const string path = "Assets/_Game/Scenes/MainMenu.unity";
+        yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+        var scene = SceneManager.GetSceneByPath(path);
+        try
+        {
+            yield return null;
+            var roots = scene.GetRootGameObjects();
+            var menu = roots.SelectMany(g => g.GetComponentsInChildren<ModeMenu>()).Single();
+            var panel = roots.SelectMany(g => g.GetComponentsInChildren<ModeOption>()).Single(o => o.Mode == GameMode.Target);
+            var pointer = roots.SelectMany(g => g.GetComponentsInChildren<ControllerPointer>()).Single();
+            var camera = roots.SelectMany(g => g.GetComponentsInChildren<Camera>()).Single();
+            string route = null;
+            menu.Loader = name => route = name;
+            Physics.SyncTransforms();
+            pointer.Point(new Ray(camera.transform.position, panel.transform.position - camera.transform.position));
+            pointer.Confirm();
+            Assert.AreEqual(GameScenes.TargetRange, route);
+            Assert.IsTrue(Application.CanStreamedLevelBeLoaded(route));
+        }
+        finally { if (scene.IsValid() && scene.isLoaded) SceneManager.UnloadSceneAsync(scene); }
+    }
+#endif
+
     // Highlights the panel the ray hits and clears it when the ray moves away.
     [UnityTest]
     public IEnumerator PointerHighlightsOnlyTheHoveredPanel()
