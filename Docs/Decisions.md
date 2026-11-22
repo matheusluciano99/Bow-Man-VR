@@ -72,7 +72,8 @@ Use three baked scenery prefabs around the same level spawns. The host sends the
 
 ## D005 — PC VR on the classroom Quest 2
 
-Distribute the game on itch.io. For classroom testing, use Windows PC VR
+Players launch the HTML game on itch.io and enter immersive VR from a WebXR-capable browser.
+Browser multiplayer uses secure WebSockets through Relay. For classroom testing, use Windows PC VR
 through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
 and the Oculus Touch profile. This matches the available test hardware. Keep
 desktop scene checks useful when the headset is unavailable, and distinguish

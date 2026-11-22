@@ -88,7 +88,7 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Distribution and lab hardware
 
-- Distribute the game through itch.io. The Windows game player is a lab test artifact.
+- Deliver an HTML game on itch.io. Players select Play, then Enter VR in a WebXR-capable browser. The Windows game player is a lab test artifact.
 
 - Use the classroom-provided Meta Quest 2 for development and testing.
 - Run PC VR lab checks with the Quest 2 connected to the test PC.

@@ -35,6 +35,7 @@ namespace BowMan.Networking
         {
             if (networkManager == null) networkManager = GetComponent<NetworkManager>();
             if (transport == null) transport = GetComponent<UnityTransport>();
+            if (Application.platform == RuntimePlatform.WebGLPlayer) transport.UseWebSockets = true;
             networkManager.NetworkConfig.EnableSceneManagement = false;
             networkManager.NetworkConfig.ConnectionApproval = true;
             if (targetCompetition) networkManager.NetworkConfig.ConnectionData = new byte[] { 1 };
@@ -234,8 +235,8 @@ namespace BowMan.Networking
             StatusChanged?.Invoke(Status);
         }
 
-        // Gives this process its own anonymous player so two instances on one PC can connect.
-        private static string Profile() =>
+        // Keeps a stable browser profile and independent identities for concurrently running native players.
+        private static string Profile() => Application.platform == RuntimePlatform.WebGLPlayer ? "web" :
             AuthProfile.ForProcess(System.Diagnostics.Process.GetCurrentProcess().Id, Application.isEditor ? "editor" : null);
     }
 }
