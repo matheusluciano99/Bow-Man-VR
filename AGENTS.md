@@ -86,10 +86,12 @@ Use GitHub's Assignees field to record task responsibility.
 
 - A two-week project developed by two people.
 
-## Target hardware
+## Distribution and lab hardware
+
+- Distribute the game through itch.io. The Windows game player is a lab test artifact.
 
 - Use the classroom-provided Meta Quest 2 for development and testing.
-- Run the game on a PC with the Quest 2 connected as the VR headset.
+- Run PC VR lab checks with the Quest 2 connected to the test PC.
 - Use Unity OpenXR 1.16.1 for PC VR with the Oculus Touch controller profile.
 
 ## Running the VR tracking scene

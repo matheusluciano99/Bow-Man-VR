@@ -1,9 +1,11 @@
 # Bow Man VR
 
-PC VR archery for Meta Quest 2 through Quest Link. Duel against the AI or an
+VR archery for release on itch.io. Duel against the AI or an
 online opponent. For **Tiro ao alvo**, select the target competition on both PCs.
 One player selects **Host**, the other enters the code and selects **Join**.
 Alternate ten arrows each. The highest total wins.
+
+For lab tests, use Meta Quest 2 through Quest Link with the Windows review player.
 Open the project with Unity **6000.3.25f1**. Game requirements, scene instructions,
 hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 
