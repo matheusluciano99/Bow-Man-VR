@@ -394,6 +394,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
+- Carry the standing pelvis shift into the start of a surviving reaction.
+  Keep the recorded foot contacts and apply the impact recoil immediately.
 - Chest hit: fall backward and land with the back on the ground. After the
   hold, return to relaxed standing with both arms lowered if alive.
 - Left-leg hit: kneel on the injured left leg, place the left hand on the ground

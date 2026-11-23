@@ -4,6 +4,28 @@ namespace BowMan
 {
     public static class ArcherLimbIK
     {
+        // Moves the hips while retaining the sampled boot positions, orientations and knee bend directions.
+        internal static void ShiftPelvisKeepingFeet(Animator rig, Vector3 offset)
+        {
+            var leftBoot = rig.GetBoneTransform(HumanBodyBones.LeftFoot);
+            var rightBoot = rig.GetBoneTransform(HumanBodyBones.RightFoot);
+            var leftPosition = leftBoot.position;
+            var rightPosition = rightBoot.position;
+            var leftRotation = leftBoot.rotation;
+            var rightRotation = rightBoot.rotation;
+            var leftBend = rig.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position -
+                rig.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position;
+            var rightBend = rig.GetBoneTransform(HumanBodyBones.RightLowerLeg).position -
+                rig.GetBoneTransform(HumanBodyBones.RightUpperLeg).position;
+            rig.GetBoneTransform(HumanBodyBones.Hips).position += offset;
+            Solve(rig, HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg,
+                HumanBodyBones.LeftFoot, leftPosition, leftBend);
+            Solve(rig, HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg,
+                HumanBodyBones.RightFoot, rightPosition, rightBend);
+            leftBoot.rotation = leftRotation;
+            rightBoot.rotation = rightRotation;
+        }
+
         // Reaches early in the descent and keeps the wound covered until standing is underway.
         public static float AbdomenReachWeight(float progress, bool recovering) => recovering
             ? 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.4f, 0.85f, progress))

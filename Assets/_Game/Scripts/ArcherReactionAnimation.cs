@@ -8,6 +8,7 @@ namespace BowMan
     {
         private const float FootRecoveryDuration = 0.8f;
         private const float ChestRecoveryDuration = 3.6f;
+        private const float PelvisEntryBlendDuration = 0.12f;
 
         [SerializeField] private AnimationClip standingIdle;
         [SerializeField] private AnimationClip bowInLeftHand;
@@ -42,6 +43,9 @@ namespace BowMan
         private Vector3[] deathBlendPositions;
         private Quaternion[] deathBlendRotations;
         private Animator poseAnimator;
+        private Transform pelvis;
+        private bool measureEntryOffset;
+        private Vector3 entryPelvisOffset;
         private Transform woundAnchor;
         private Vector3 woundPoint;
         private Vector3 woundOutward;
@@ -118,6 +122,7 @@ namespace BowMan
             Detach();
             health = actor;
             poseAnimator = GetComponentInChildren<Animator>();
+            pelvis = poseAnimator != null && poseAnimator.isHuman ? poseAnimator.GetBoneTransform(HumanBodyBones.Hips) : null;
             if (standingIdle != null && poseAnimator != null && poseAnimator.isHuman)
             {
                 idleArms = new[] { HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm,
@@ -145,6 +150,8 @@ namespace BowMan
             elapsed = 0f;
             playing = clip;
             entryImpact = hit;
+            measureEntryOffset = !lethal && pelvis != null;
+            entryPelvisOffset = measureEntryOffset ? pelvis.localPosition : Vector3.zero;
             if (region is BodyRegion.Neck or BodyRegion.Abdomen)
             {
                 woundAnchor = hit.Collider.transform;
@@ -199,7 +206,18 @@ namespace BowMan
                 _ => 1f
             } : 1f;
             elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
+            if (measureEntryOffset)
+            {
+                playing.SampleAnimation(gameObject, 0f);
+                entryPelvisOffset -= pelvis.localPosition;
+                measureEntryOffset = false;
+            }
             playing.SampleAnimation(gameObject, elapsed);
+            if (!recovering && !finishingDeath && elapsed < PelvisEntryBlendDuration && entryPelvisOffset.sqrMagnitude > 0.000001f)
+            {
+                var weight = Mathf.SmoothStep(1f, 0f, elapsed / PelvisEntryBlendDuration);
+                ArcherLimbIK.ShiftPelvisKeepingFeet(poseAnimator, pelvis.parent.TransformVector(entryPelvisOffset) * weight);
+            }
             if (finishingDeath && elapsed < 0.15f)
             {
                 var blend = Mathf.SmoothStep(0f, 1f, elapsed / 0.15f);
@@ -290,6 +308,7 @@ namespace BowMan
             deathBlendRotations = deathBlendBones.Select(t => t.localRotation).ToArray();
             fatalPlayback = true;
             finishingDeath = true;
+            measureEntryOffset = false;
             recovering = false;
             elapsed = 0f;
             playing = clip;
@@ -317,6 +336,8 @@ namespace BowMan
             fatalPlayback = false;
             finishingDeath = false;
             injured = false;
+            measureEntryOffset = false;
+            entryPelvisOffset = Vector3.zero;
             deathBlendBones = null;
             deathBlendPositions = null;
             deathBlendRotations = null;

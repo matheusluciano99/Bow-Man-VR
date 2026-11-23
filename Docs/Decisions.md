@@ -157,6 +157,10 @@ turn after recovery. This keeps turn ownership
 consistent with the visible recovery. Death ends the match immediately; misses
 resolve at scenery impact or flight expiry, with one outcome per shot.
 
+Ease the live pelvis offset out over the first 0.12 seconds of a surviving
+reaction. Hold the boots at their sampled contacts so the recorded motion can
+start from the archer's current weight shift without a jump or a slide.
+
 During local knockdown, kneeling and recovery, move the VR viewpoint with the
 character's animated eyes so the player sees the injury sequence in first
 person. Keep live headset tracking for looking around and calibrate the eye
