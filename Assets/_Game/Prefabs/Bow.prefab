@@ -329,7 +329,7 @@ MonoBehaviour:
   stringBottom: {fileID: 1207801371120829775}
   bowString: {fileID: 4093409070615206832}
   firingArcher: {fileID: 0}
-  maximumDrawDistance: 0.5
+  maximumDrawDistance: 0.425
   minimumDrawDistance: 0.03
   maximumLaunchSpeed: 25
   stringGrabRadius: 0.12

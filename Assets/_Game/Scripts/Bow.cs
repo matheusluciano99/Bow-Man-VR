@@ -11,7 +11,7 @@ namespace BowMan
         [SerializeField] private Transform stringBottom;
         [SerializeField] private LineRenderer bowString;
         [SerializeField] private Transform firingArcher;
-        [SerializeField, Min(0.01f)] private float maximumDrawDistance = 0.50f;
+        [SerializeField, Min(0.01f)] private float maximumDrawDistance = 0.425f;
         [SerializeField, Min(0.001f)] private float minimumDrawDistance = 0.03f;
         [SerializeField, Min(0.01f)] private float maximumLaunchSpeed = 25f;
         [SerializeField, Min(0.01f)] private float stringGrabRadius = 0.12f;
