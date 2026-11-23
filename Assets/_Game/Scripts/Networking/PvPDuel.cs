@@ -287,7 +287,7 @@ namespace BowMan.Networking
         }
 
         // Presents internal feedback exclusively for the confirmed lethal arrow.
-        private void Fatal(int target, AnatomicalImpact report) => cutaway.Show(report);
+        private void Fatal(int target, AnatomicalImpact report) => cutaway.Show(report, arrowPrefab);
 
         // Publishes authoritative transitions and updates the local bow whenever the turn changes.
         private void Changed()
@@ -364,8 +364,7 @@ namespace BowMan.Networking
             var status = Flow.StatusFor(LocalIndex);
             feedback.text = $"<color=#ECC67D>{status}</color>\nYou {actors[LocalIndex].CurrentHealth}     ·     Opponent {actors[1 - LocalIndex].CurrentHealth}     ·     {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? (RematchRequested ? "Waiting for opponent" :
-                    votes != 0 ? "Opponent wants a rematch — A: accept" : "A: rematch") +
-                    (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : Flow.CanShoot(LocalIndex) ? vrInput.ShotHint(desktopMode) :
+                    votes != 0 ? "Opponent wants a rematch — A: accept" : "A: rematch") : Flow.CanShoot(LocalIndex) ? vrInput.ShotHint(desktopMode) :
                     "Your bow unlocks on your turn");
         }
 

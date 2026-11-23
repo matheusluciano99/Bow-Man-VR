@@ -106,7 +106,7 @@ namespace BowMan
         }
 
         // Presents the shared anatomy report after the duel confirms a fatal arrow.
-        private void OnFatality(int target, AnatomicalImpact report) => cutaway.Show(report);
+        private void OnFatality(int target, AnatomicalImpact report) => cutaway.Show(report, arrowPrefab);
 
         // Cancels the player's nock whenever the duel leaves their legal aiming turn.
         private void OnFlowChanged() => bow.SetShotAllowed(Flow.CanShoot(0));
@@ -132,7 +132,7 @@ namespace BowMan
             var status = Flow.StatusFor(0);
             if (cutaway.IsVisible)
             {
-                feedback.text = $"{status}     A: restart\n{cutaway.Caption}";
+                feedback.text = $"<color=#ECC67D>{status}</color>\nA: restart";
                 return;
             }
             feedback.text = $"<color=#ECC67D>{status}</color>\n" +

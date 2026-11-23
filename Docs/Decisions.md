@@ -262,13 +262,16 @@ Each body region has its own entry. Surviving reactions use the actual entry, ho
 
 Use free human performance recordings with verified game-use terms. Review the full source on both rigs, then select the short movement that matches the wound. Preserve the impact recoil and measured limb lengths when fitting the hand or boot. For live wound contact, use the baked pose as a cleared starting point and limit the change against the model’s fitted colliders. This keeps the glove near the actual arrow while the archer moves. The per-region sources, timings and authoring commands are in [Injury reactions](InjuryReactions.md).
 
-## D016 — Brief in-body X-ray injury presentation
+## D016 — Cinematic replay of the finishing arrow
 
-Show the struck interior only after the match confirms a fatal arrow. A
-camera-relative stereo close-up keeps the headset wearer in control of their
-view while the injury geometry follows the defeated archer. Reveal the finite
-path through the contacted surfaces and show the matching result in the HUD.
-Three seconds, display size and colors are provisional pending Quest 2 review.
+Start the replay only after the duel confirms a lethal arrow. Open on the
+original projectile approaching a frozen pose of the struck archer, cut to its
+contact inside the body, then pull out to the duel. Use the exact shot path and
+the fitted game anatomy. Show separation only for a bone marked fractured by
+the match. Play the close-up on a surface at a fixed depth in front of the
+viewer so their own head movement remains live throughout. The match result and
+regional defeat animation proceed in parallel. Timing, reading distance and
+headset comfort remain subject to Quest 2 testing.
 
 ## D017 — Bone fracture depends on shot strength
 

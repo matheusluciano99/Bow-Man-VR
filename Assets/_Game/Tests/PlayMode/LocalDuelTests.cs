@@ -334,14 +334,23 @@ public class LocalDuelTests
         Assert.That(cutaway.IsVisible, Is.True);
         Assert.That(cutaway.Caption, Does.Contain("Head"));
         var window = cutaway.transform.Find("Fatal cutaway");
-        Assert.That(window.Find("Arrow path"), Is.Not.Null);
-        Assert.That(window.childCount, Is.EqualTo(2 + lastFatality.Bones.Count +
-            lastFatality.Organs.Sum(h => h.Organ.Surfaces.Count)));
+        Assert.That(window.Find("Replay image"), Is.Not.Null);
+        var replayCamera = GameObject.Find("Replay camera").GetComponent<Camera>();
+        if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            Assert.That(replayCamera.enabled, Is.False);
+        else
+            Assert.That(replayCamera.targetTexture, Is.Not.Null);
+        Assert.That(replayCamera.stereoTargetEye, Is.EqualTo(StereoTargetEyeMask.None));
+        var replay = replayCamera.transform.parent;
+        var replayArrow = replay.Find("Replay arrow");
+        Assert.That(replayArrow.GetComponentsInChildren<MeshFilter>().Length, Is.GreaterThan(0));
+        Assert.That(replayArrow.GetComponentInChildren<ArrowFlight>(), Is.Null);
+        var anatomy = replay.Find("Contact anatomy");
         foreach (var organ in lastFatality.Organs)
         {
             Assert.That(cutaway.Caption, Does.Contain(organ.Organ.DisplayName));
-            Assert.That(window.Find(organ.Organ.DisplayName).GetComponent<MeshFilter>().sharedMesh,
-                Is.SameAs(organ.Organ.Surfaces[0]));
+            var surfaces = anatomy.GetComponentsInChildren<MeshFilter>(true);
+            Assert.That(surfaces.Any(mesh => mesh.sharedMesh == organ.Organ.Surfaces[0]), Is.True);
         }
         var wounds = duel.Opponent.GetComponentsInChildren<ParticleSystem>();
         Assert.That(wounds.Length, Is.GreaterThan(0));
@@ -353,6 +362,7 @@ public class LocalDuelTests
         yield return null;
         Assert.That(old == null, Is.True);
         Assert.That(cutaway.IsVisible, Is.False);
+        Assert.That(replayCamera == null, Is.True);
         Assert.That(wounds.All(w => w == null), Is.True, "Restart must remove wounds still emitting on the old actor");
         Assert.That(duel.LocalArcher.CurrentHealth, Is.EqualTo(100));
         Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(100));

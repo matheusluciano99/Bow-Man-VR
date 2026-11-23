@@ -359,9 +359,9 @@ Use GitHub's Assignees field to record task responsibility.
 - Present internal injury only after a confirmed fatal arrow hit, as a brief
   X-ray finishing sequence inside the defeated archer. Surviving hits must not
   trigger this view; their normal blood and regional reactions still apply.
-  The local duel shows a stereo cutaway with the recorded path, contacted
-  organs and fractured rig bones. Its three-second duration and headset
-  readability remain provisional until VR review.
+  The duel replays the real arrow approaching the struck archer, cuts to its
+  recorded internal contact on a fixed-depth replay window, then returns to the
+  arena. Timing and headset readability remain provisional until VR review.
 - The shared arrow emits blood at the actual wound and follows its hit volume.
   Spilled droplets move in world space. See [wound blood](Docs/BloodEffects.md)
   for rebuild controls and provisional visual settings.
