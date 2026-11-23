@@ -76,7 +76,7 @@ public class PvPRelayMatchTests
     private static void Release(Bow bow, Vector3 start, Vector3 direction)
     {
         bow.transform.rotation = Quaternion.LookRotation(direction);
-        bow.transform.position += start - bow.RestPosition;
+        bow.transform.position += start - bow.FullDrawTip;
         bow.SetHeld(true);
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
         bow.PullTo(bow.RestPosition - direction * bow.MaximumDrawDistance);

@@ -15,7 +15,11 @@ namespace BowMan
         private Quaternion aim;
         private Vector3? trackedGrip;
         private Vector3 pullOffset;
-        private Transform[] upper;
+        private Transform[] fingers;
+        private Quaternion[] closedFingers;
+        private BoxCollider head;
+        private CapsuleCollider leftPalm, rightPalm;
+        private Transform[] body;
         private Quaternion[] baseRotations;
         private Vector3[] basePositions;
 
@@ -30,11 +34,15 @@ namespace BowMan
         {
             reaction = GetComponent<ArcherReactionAnimation>();
             rig = GetComponentInChildren<Animator>();
-            var spine = rig.GetBoneTransform(HumanBodyBones.Spine);
-            upper = Enumerable.Range(0, (int)HumanBodyBones.LastBone).Select(i => rig.GetBoneTransform((HumanBodyBones)i))
-                .Where(t => t != null && (t == spine || t.IsChildOf(spine))).ToArray();
-            baseRotations = new Quaternion[upper.Length];
-            basePositions = new Vector3[upper.Length];
+            var regions = GetComponentsInChildren<BodyHitRegion>();
+            head = regions.First(r => r.Region == BodyRegion.Head).GetComponent<BoxCollider>();
+            leftPalm = regions.First(r => r.Region == BodyRegion.LeftHand).GetComponent<CapsuleCollider>();
+            rightPalm = regions.First(r => r.Region == BodyRegion.RightHand).GetComponent<CapsuleCollider>();
+            CacheGrip();
+            body = Enumerable.Range(0, (int)HumanBodyBones.LastBone).Select(i => rig.GetBoneTransform((HumanBodyBones)i))
+                .Where(t => t != null).ToArray();
+            baseRotations = new Quaternion[body.Length];
+            basePositions = new Vector3[body.Length];
             equipment = new GameObject("Opponent bow").transform;
             equipment.SetParent(transform, false);
             source.CopyVisuals(equipment, out bowString, out top, out rest, out bottom);
@@ -47,6 +55,29 @@ namespace BowMan
             arrow.gameObject.SetActive(false);
             aim = transform.rotation;
             reaction.UseBowPresentation(this);
+        }
+
+        // Maps the wrapped-finger pose to this avatar once and returns the rig to its current pose.
+        private void CacheGrip()
+        {
+            var skeleton = rig.GetComponentsInChildren<Transform>();
+            var positions = skeleton.Select(b => b.localPosition).ToArray();
+            var rotations = skeleton.Select(b => b.localRotation).ToArray();
+            int first = (int)HumanBodyBones.LeftThumbProximal;
+            int count = (int)HumanBodyBones.RightLittleDistal - first + 1;
+            fingers = Enumerable.Range(first, count).Select(i => rig.GetBoneTransform((HumanBodyBones)i)).ToArray();
+            using var handler = new HumanPoseHandler(rig.avatar, rig.transform);
+            var pose = new HumanPose();
+            handler.GetHumanPose(ref pose);
+            for (int i = 0; i < pose.muscles.Length; i++)
+            {
+                string muscle = HumanTrait.MuscleName[i];
+                if (muscle.Contains("Stretched")) pose.muscles[i] = muscle.Contains("Thumb") ? -0.32f : -0.78f;
+            }
+            handler.SetHumanPose(ref pose);
+            closedFingers = fingers.Select(b => b.localRotation).ToArray();
+            for (int i = 0; i < skeleton.Length; i++)
+                skeleton[i].SetLocalPositionAndRotation(positions[i], rotations[i]);
         }
 
         // Drives the captured reach, nock and draw from the AI's actual pre-shot clock.
@@ -97,8 +128,8 @@ namespace BowMan
         internal void Restore()
         {
             if (!overlaid) return;
-            for (var i = 0; i < upper.Length; i++)
-                upper[i].SetLocalPositionAndRotation(basePositions[i], baseRotations[i]);
+            for (var i = 0; i < body.Length; i++)
+                body[i].SetLocalPositionAndRotation(basePositions[i], baseRotations[i]);
             overlaid = false;
         }
 
@@ -122,30 +153,42 @@ namespace BowMan
                 releasing = elapsed < 0.3f;
             }
             weight = Mathf.MoveTowards(weight, posing || releasing ? 1f : 0f, Time.deltaTime * 8f);
+            for (var i = 0; i < body.Length; i++)
+            {
+                basePositions[i] = body[i].localPosition;
+                baseRotations[i] = body[i].localRotation;
+            }
+            overlaid = true;
             if (weight > 0f)
             {
-                for (var i = 0; i < upper.Length; i++)
-                {
-                    basePositions[i] = upper[i].localPosition;
-                    baseRotations[i] = upper[i].localRotation;
-                }
                 reaction.BowAction(left).SampleAnimation(gameObject, sampleTime);
-                for (var i = 0; i < upper.Length; i++)
+                for (var i = 0; i < body.Length; i++)
                 {
-                    upper[i].localRotation = Quaternion.Slerp(baseRotations[i], upper[i].localRotation, weight);
-                    upper[i].localPosition = Vector3.Lerp(basePositions[i], upper[i].localPosition, weight);
+                    body[i].localRotation = Quaternion.Slerp(baseRotations[i], body[i].localRotation, weight);
+                    body[i].localPosition = Vector3.Lerp(basePositions[i], body[i].localPosition, weight);
                 }
-                overlaid = true;
             }
-            var rotation = Quaternion.Slerp(transform.rotation * Quaternion.Euler(0f, 0f, left ? 22f : -22f), aim, weight);
+            int half = fingers.Length / 2;
+            for (int i = left ? 0 : half, end = i + half; i < end; i++)
+                fingers[i].localRotation = closedFingers[i];
+            var index = rig.GetBoneTransform(left ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal);
+            var little = rig.GetBoneTransform(left ? HumanBodyBones.LeftLittleProximal : HumanBodyBones.RightLittleProximal);
+            var wrist = rig.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+            var gripAxis = (index.position - little.position).normalized;
+
+            var restRotation = Quaternion.FromToRotation(transform.up, gripAxis) * transform.rotation;
+            var rotation = Quaternion.Slerp(restRotation, aim, weight);
+            wrist.rotation = Quaternion.FromToRotation(gripAxis, rotation * Vector3.up) * wrist.rotation;
             if (trackedGrip.HasValue && weight > 0f)
                 FitHand(left, trackedGrip.Value, false, weight);
             equipment.SetPositionAndRotation(Contact(left, false), rotation);
             var offset = trackedGrip.HasValue ? pullOffset : -equipment.forward * (draw * maxDraw);
             var middle = equipment.TransformPoint(rest) + (nocked ? offset : Vector3.zero);
             if (nocked) FitHand(!left, middle, true, weight);
+            if (weight > 0f) ClearDrawingHand();
+            if (nocked) middle = Contact(!left, true);
             Bow.SetString(bowString, equipment.TransformPoint(top), middle, equipment.TransformPoint(bottom));
-            var direction = offset.sqrMagnitude > 0.000001f ? -offset.normalized : equipment.forward;
+            var direction = nocked && draw > 0.01f ? (equipment.TransformPoint(rest) - middle).normalized : equipment.forward;
             arrow.SetPositionAndRotation(middle + direction * arrowLength, Quaternion.LookRotation(direction, equipment.up));
             arrow.gameObject.SetActive(nocked);
         }
@@ -154,10 +197,28 @@ namespace BowMan
         private Vector3 Contact(bool onLeft, bool pinch)
         {
             var a = pinch ? (onLeft ? HumanBodyBones.LeftIndexDistal : HumanBodyBones.RightIndexDistal) :
-                (onLeft ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
-            var b = pinch ? (onLeft ? HumanBodyBones.LeftThumbDistal : HumanBodyBones.RightThumbDistal) :
                 (onLeft ? HumanBodyBones.LeftMiddleProximal : HumanBodyBones.RightMiddleProximal);
-            return Vector3.Lerp(rig.GetBoneTransform(a).position, rig.GetBoneTransform(b).position, pinch ? 0.5f : 0.7f);
+            var b = pinch ? (onLeft ? HumanBodyBones.LeftThumbDistal : HumanBodyBones.RightThumbDistal) :
+                (onLeft ? HumanBodyBones.LeftMiddleDistal : HumanBodyBones.RightMiddleDistal);
+            return Vector3.Lerp(rig.GetBoneTransform(a).position, rig.GetBoneTransform(b).position, 0.5f);
+        }
+
+        // Guides the palm around the drawing-side cheek throughout the reach, pull and follow-through.
+        private void ClearDrawingHand()
+        {
+            var palm = left ? rightPalm : leftPalm;
+            var center = head.transform.TransformPoint(head.center);
+            var delta = palm.transform.TransformPoint(palm.center) - center;
+            var side = transform.right * (left ? 1f : -1f);
+            float forward = Mathf.Abs(Vector3.Dot(delta, transform.forward));
+            float height = Mathf.Abs(Vector3.Dot(delta, transform.up));
+            float nearFace = Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(0.14f, 0.27f, forward))
+                * Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(0.12f, 0.23f, height));
+            float clearance = Mathf.Max(0f, 0.21f - Vector3.Dot(delta, side)) * nearFace;
+            if (clearance > 0f) FitHand(!left, Contact(!left, true) + side * clearance, true, 1f);
+            for (int pass = 0; pass < 3 && Physics.ComputePenetration(palm, palm.transform.position, palm.transform.rotation,
+                head, head.transform.position, head.transform.rotation, out var away, out float depth); pass++)
+                FitHand(!left, Contact(!left, true) + away * (depth + 0.008f), true, 1f);
         }
 
         // Retains the captured wrist orientation and elbow bend while solving hand contact within the arm's reach.

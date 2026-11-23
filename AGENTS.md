@@ -266,8 +266,10 @@ Use GitHub's Assignees field to record task responsibility.
   with controller grip +Z using a +90-degree local X rotation. Both bow hands
   are supported; left is the initial default. The test panel's **Bow hand**
   button switches sides and cancels a pending tracked draw.
-- Losing either controller's tracking, pausing, losing application focus or a
-  shooting lock cancels the pending shot without firing. The bow remains
+- While the trigger stays held, a temporary loss of the drawing hand's pose
+  holds the last valid pull relative to the bow. Losing bow-hand tracking,
+  releasing while untracked, pausing, losing focus or a shooting lock cancels.
+  The 0.96-metre arrow keeps its tip beyond the grip at full draw. The bow remains
   visually attached during a shooting lock. `Bow.SetShotAllowed` gates both
   input paths without changing tracked head/controller poses.
 

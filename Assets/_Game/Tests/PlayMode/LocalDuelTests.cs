@@ -65,7 +65,7 @@ public class LocalDuelTests
         Assert.That(ArrowBallistics.TryVelocity(start, point, 25f, out var velocity), Is.True);
         var direction = velocity.normalized;
         bow.transform.rotation = Quaternion.LookRotation(direction);
-        bow.transform.position += start - bow.RestPosition;
+        bow.transform.position += start - bow.FullDrawTip;
         bow.SetHeld(true);
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
         bow.PullTo(bow.RestPosition - direction * bow.MaximumDrawDistance);

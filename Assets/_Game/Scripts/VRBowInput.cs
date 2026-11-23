@@ -17,6 +17,7 @@ namespace BowMan
         private InputAction drawTracked;
         private SkinnedMeshRenderer leftHand, rightHand;
         private float pinch;
+        private Vector3 lastPullLocal;
         private bool focused = true;
         private bool paused;
 
@@ -109,7 +110,9 @@ namespace BowMan
         {
             if (bow == null || BowHand == null || DrawHand == null) return;
             pinch = Mathf.MoveTowards(pinch, bow.IsDrawing ? 100f : 0f, Time.unscaledDeltaTime * 1200f);
-            if (!focused || paused || !bowTracked.IsPressed() || !drawTracked.IsPressed())
+            bool drawTrackedNow = drawTracked.IsPressed();
+            bool holdLastPose = bow.IsDrawing && drawAction.IsPressed();
+            if (!focused || paused || !bowTracked.IsPressed() || (!drawTrackedNow && !holdLastPose))
             {
                 bow.SetHeld(false);
                 UpdatePose();
@@ -117,10 +120,10 @@ namespace BowMan
             }
             bow.SetHeld(true);
             UpdatePose();
-            if (!bow.IsHeld) return;
-            if (drawAction.WasPressedThisFrame()) bow.TryBeginDraw(DrawHand.position);
-            if (bow.IsDrawing) bow.PullTo(DrawHand.position);
-            if (drawAction.WasReleasedThisFrame()) bow.Release();
+            if (!bow.IsHeld || !drawTrackedNow) return;
+            if (drawAction.WasPressedThisFrame() && bow.TryBeginDraw(DrawHand.position))
+                lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
+            if (drawAction.WasReleasedThisFrame() && !drawAction.IsPressed()) bow.Release();
         }
 
         // Keeps the bow attached to the tracked grip even while shooting is locked or a draw is cancelled.
@@ -130,7 +133,11 @@ namespace BowMan
             if (bow == null || BowHand == null || DrawHand == null) return;
             bow.transform.SetPositionAndRotation(BowHand.TransformPoint(gripPositionOffset),
                 BowHand.rotation * Quaternion.Euler(gripRotationOffset));
-            if (bow.IsDrawing) bow.PullTo(DrawHand.position);
+            if (bow.IsDrawing && focused && !paused && bowTracked.IsPressed())
+            {
+                if (drawTracked.IsPressed()) lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
+                bow.PullTo(bow.transform.TransformPoint(lastPullLocal));
+            }
             if (leftHand == null) return;
             var grip = bowInLeftHand ? leftHand : rightHand;
             var draw = bowInLeftHand ? rightHand : leftHand;
@@ -164,6 +171,7 @@ namespace BowMan
         {
             var action = new InputAction(name, InputActionType.Button,
                 $"<XRController>{{{hand}}}/{control}");
+            if (control == "triggerPressed") action.AddBinding($"<XRController>{{{hand}}}/trigger");
             action.wantsInitialStateCheck = checkInitialState;
             action.Enable();
             return action;

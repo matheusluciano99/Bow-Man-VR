@@ -60,7 +60,7 @@ namespace BowMan
             pitch = Mathf.Clamp(pitch + (keyboard.upArrowKey.ReadValue() - keyboard.downArrowKey.ReadValue()) * 30f * Time.deltaTime, -60f, 80f);
             yaw += (keyboard.rightArrowKey.ReadValue() - keyboard.leftArrowKey.ReadValue()) * 30f * Time.deltaTime;
             bow.transform.rotation = parkedRotation * Quaternion.Euler(-pitch, yaw, 0f);
-            if (keyboard.spaceKey.wasPressedThisFrame)
+            if (!bow.IsDrawing && keyboard.spaceKey.wasPressedThisFrame)
             {
                 draw = 0f;
                 bow.TryBeginDraw(bow.RestPosition);

@@ -36,7 +36,7 @@ public class OnlineTargetRelayTests
         Assert.IsTrue(ArrowBallistics.TryVelocity(start, target, bow.MaximumLaunchSpeed, out var speed));
         var direction = speed.normalized;
         bow.transform.rotation = Quaternion.LookRotation(direction);
-        bow.transform.position += start - bow.RestPosition;
+        bow.transform.position += start - bow.FullDrawTip;
         bow.SetHeld(true);
         Assert.IsTrue(bow.TryBeginDraw(bow.RestPosition));
         bow.PullTo(bow.RestPosition - direction * bow.MaximumDrawDistance);

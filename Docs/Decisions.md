@@ -369,6 +369,8 @@ Use recorded breathing, shoulder movement and small weight shifts on both standi
 
 Sample the visible opponent’s recorded bow action from the AI turn clock in PvE and from the owner’s draw in PvP. This lets a human pause or cancel a draw and switch bow hands. A mesh represents the nocked arrow on the observing side. The existing duel authority creates the flying projectile when it accepts the release.
 
+Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Keep the last valid draw during brief drawing-hand occlusion with the trigger held. The shared 0.96-metre arrow leaves its tip visible at the maximum 0.70-metre pull.
+
 ## Duel sound
 
 Use recorded spatial cues for the two archers and their equipment. Start the string creak above 60% of maximum draw. Increase pitch and volume toward full draw, with a softer sustained sound while the player holds tension. Falling back to 60% or below, cancelling or releasing stops the stretch cue. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.

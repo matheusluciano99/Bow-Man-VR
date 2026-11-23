@@ -262,6 +262,18 @@ public class BowTests
         yield return new WaitForSecondsRealtime(.12f);
         Assert.That(drawMesh.GetBlendShapeWeight(1), Is.EqualTo(100f));
         Assert.That(Vector3.Distance(drawMesh.transform.position, bow.StringPosition), Is.LessThan(.001f));
+        var projectile = bow.GetComponentInChildren<ArrowFlight>();
+        Assert.That(bow.transform.InverseTransformPoint(projectile.transform.position).z, Is.GreaterThan(0.10f));
+        Button(drawing, "isTracked", false);
+        drawPose.position = Vector3.zero;
+        yield return null;
+        yield return null;
+        Assert.That(bow.IsDrawing, Is.True, "The pressed trigger retains the last good pose");
+        Assert.That(bow.DrawStrength, Is.EqualTo(1f).Within(0.001f));
+        drawPose.position = bow.RestPosition - bow.transform.forward * 0.8f;
+        Button(drawing, "isTracked", true);
+        yield return null;
+        Assert.That(bow.GetComponentInChildren<ArrowFlight>(), Is.SameAs(projectile));
         Button(drawing, "triggerPressed", false);
         yield return null;
         yield return null;
