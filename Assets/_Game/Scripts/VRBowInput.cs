@@ -16,7 +16,7 @@ namespace BowMan
         [SerializeField] private Vector3 gripPositionOffset;
         [SerializeField] private Vector3 gripRotationOffset = new Vector3(90f, 0f, 0f);
 
-        private const float DrawDropoutGrace = .35f;
+        private const float DrawDropoutGrace = .75f;
         private InputAction drawAction;
         private InputAction bowTracked;
         private InputAction drawTracked;
@@ -145,9 +145,10 @@ namespace BowMan
                 UpdatePose();
                 return;
             }
-            if (!Tracking(drawTracked))
+            bool triggerHeld = drawAction.IsPressed();
+            if (!Tracking(drawTracked) || (drawPoseLostAt >= 0f && !triggerHeld))
             {
-                if (drawPoseLostAt < 0f || drawAction.IsPressed()) drawPoseLostAt = Time.unscaledTime;
+                if (drawPoseLostAt < 0f || triggerHeld) drawPoseLostAt = Time.unscaledTime;
                 if (!bow.IsDrawing || Time.unscaledTime - drawPoseLostAt > DrawDropoutGrace) CancelTrackedDraw();
                 UpdatePose();
                 return;
@@ -155,27 +156,26 @@ namespace BowMan
 
             bool recoveredPose = drawPoseLostAt >= 0f;
             drawPoseLostAt = -1f;
-            if (recoveredPose && !drawAction.IsPressed() && bow.IsDrawing) CancelTrackedDraw();
             bow.SetHeld(true);
             UpdatePose();
             if (recoveredPose) return;
             if (!freshTrigger)
             {
-                freshTrigger = !drawAction.IsPressed() && !drawAction.WasPressedThisFrame();
+                freshTrigger = !triggerHeld && !drawAction.WasPressedThisFrame();
                 return;
             }
             if (!bow.IsHeld)
             {
-                if (drawAction.IsPressed()) freshTrigger = false;
+                if (triggerHeld) freshTrigger = false;
                 return;
             }
-            if (!bow.IsDrawing && drawAction.IsPressed() && bow.TryBeginDraw(DrawHand.position))
+            if (!bow.IsDrawing && triggerHeld && bow.TryBeginDraw(DrawHand.position))
             {
                 fullDrawPulseSent = false;
                 PulseDrawHand(.22f, .035f);
             }
-            if (bow.IsDrawing && drawAction.IsPressed()) UpdateFullDrawFeedback();
-            if (drawAction.WasReleasedThisFrame() && !drawAction.IsPressed()) bow.Release();
+            if (bow.IsDrawing && triggerHeld) UpdateFullDrawFeedback();
+            if (!triggerHeld && drawAction.WasReleasedThisFrame()) bow.Release();
         }
 
         // Pulses the drawing controller at full power and rearms below the jitter band.
@@ -220,7 +220,7 @@ namespace BowMan
             bool usable = !InputBlocked;
             bool gripTracked = usable && Tracking(bowTracked);
             bool stringTracked = usable && Tracking(drawTracked);
-            if (gripTracked && stringTracked)
+            if (gripTracked && stringTracked && drawPoseLostAt < 0f)
             {
                 lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
                 lastDrawRotationLocal = Quaternion.Inverse(bow.transform.rotation) * DrawHand.rotation;

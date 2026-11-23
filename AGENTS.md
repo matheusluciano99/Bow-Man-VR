@@ -272,8 +272,8 @@ Use GitHub's Assignees field to record task responsibility.
   are supported; left is the initial default. The test panel's **Bow hand**
   button switches sides and cancels a pending tracked draw.
 - Keep the last valid pull and draw-hand pose through occlusion while the trigger
-  stays held, with up to 350 ms for a simultaneous pose and trigger dropout.
-  A release requires a recovered pose and a subsequent tracked trigger edge.
+  stays held. Allow up to 750 ms for the trigger signal to recover, including
+  when the pose comes back first. A shot requires a subsequent tracked release.
   A disconnect, lost bow-hand tracking, pause, lost headset focus or a
   shooting lock cancels. The 0.96-metre arrow keeps its tip beyond the grip. The bow remains
   visually attached during a shooting lock. `Bow.SetShotAllowed` gates both

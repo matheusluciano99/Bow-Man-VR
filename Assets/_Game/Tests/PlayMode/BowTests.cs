@@ -320,11 +320,16 @@ public class BowTests
         Assert.That(Vector3.Distance(drawMesh.transform.position, bow.StringPosition), Is.LessThan(.001f));
         Assert.That(Quaternion.Angle(drawMesh.transform.rotation, lastDrawRotation), Is.LessThan(.1f));
         Button(drawing, "triggerPressed", false);
-        yield return null;
+        yield return new WaitForSecondsRealtime(.42f);
         Assert.That(bow.IsDrawing, Is.True, "A brief dropout can lose both pose and trigger");
         Assert.That(shots, Is.Zero);
-        drawPose.position = bow.RestPosition - bow.transform.forward * 0.8f;
+        drawPose.position = bow.RestPosition;
         Button(drawing, "isTracked", true);
+        yield return null;
+        yield return null;
+        Assert.That(bow.GetComponentInChildren<ArrowFlight>(), Is.SameAs(projectile));
+        Assert.That(bow.DrawStrength, Is.EqualTo(1f), "The draw stays held while the trigger signal catches up");
+        drawPose.position = bow.RestPosition - bow.transform.forward * 0.8f;
         Button(drawing, "triggerPressed", true);
         yield return null;
         Assert.That(bow.GetComponentInChildren<ArrowFlight>(), Is.SameAs(projectile));
@@ -373,7 +378,7 @@ public class BowTests
         yield return null;
         Button(drawing, "isTracked", false);
         Button(drawing, "triggerPressed", false);
-        yield return new WaitForSecondsRealtime(.45f);
+        yield return new WaitForSecondsRealtime(.85f);
         Assert.That(bow.IsHeld, Is.False);
         Assert.That(bow.IsDrawing, Is.False);
         Assert.That(shots, Is.EqualTo(1));

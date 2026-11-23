@@ -387,7 +387,7 @@ Use recorded breathing, shoulder movement and small weight shifts on both standi
 
 Sample the visible opponent’s recorded bow action from the AI turn clock in PvE and from the owner’s draw in PvP. This lets a human pause or cancel a draw and switch bow hands. A mesh represents the nocked arrow on the observing side. The existing duel authority creates the flying projectile when it accepts the release.
 
-Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Retain the last valid draw during drawing-hand occlusion, with a 350 ms window to recover a missing trigger signal. Resume only with a tracked, held trigger. Measure power from the backward hand displacement before clamping the string visual. The Quest 2 lab review found that 42.5 cm still reached the tracking limit. The provisional full-power threshold is 36 cm to leave more room. The shared 0.96-metre arrow keeps its tip visible at full draw.
+Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Retain the last valid draw and hand pose during drawing-hand occlusion. Give a missing trigger signal up to 750 ms to return, including when the pose recovers first. Resume with a tracked, held trigger and fire on a subsequent tracked release. Measure power from the backward hand displacement before clamping the string visual. The Quest 2 lab review found that 42.5 cm still reached the tracking limit. The provisional full-power threshold is 36 cm to leave more room. The shared 0.96-metre arrow keeps its tip visible at full draw.
 
 ## Duel sound
 
