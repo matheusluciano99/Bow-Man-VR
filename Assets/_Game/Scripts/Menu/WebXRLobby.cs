@@ -10,7 +10,7 @@ namespace BowMan.Menu
         private PvPConnectionController connection;
         private ControllerPointer pointer;
         private GameObject board, keypad;
-        private ModeOption join, distance;
+        private ModeOption join, distance, cpu;
         private OnlineTargetMatch range;
         private TextMesh distanceLabel;
         private TextMesh prompt;
@@ -46,9 +46,11 @@ namespace BowMan.Menu
             if (controller.IsTargetCompetition)
             {
                 range = FindAnyObjectByType<OnlineTargetMatch>();
-                distance = Key(board.transform, "Host distance", 0, .73f, 1.36f);
+                prompt.text = "Tiro ao alvo";
+                cpu = Key(board.transform, "Play against CPU", 0f, .04f, 1.36f);
+                distance = Key(board.transform, "Distance", 0, .73f, 1.36f);
                 distanceLabel = distance.GetComponentInChildren<TextMesh>();
-                distanceLabel.text = $"Host distance: {range.HostDistance} m";
+                distanceLabel.text = $"Distance: {range.HostDistance} m";
             }
             keypad = new GameObject("Join code");
             keypad.transform.SetParent(board.transform, false);
@@ -100,17 +102,26 @@ namespace BowMan.Menu
         private void Press(ModeOption key)
         {
             if (!board.activeSelf || !connection.Status.CanStart) return;
+            if (cpu != null && key == cpu)
+            {
+                range.StartCpuMatch();
+                return;
+            }
             if (distance != null && key == distance)
             {
                 var options = OnlineTargetMatch.Distances;
                 range.ChooseHostDistance(options[(options.IndexOf(range.HostDistance) + 1) % options.Count]);
-                distanceLabel.text = $"Host distance: {range.HostDistance} m";
+                distanceLabel.text = $"Distance: {range.HostDistance} m";
                 return;
             }
             if (key.name == "Host") { _ = connection.HostAsync(); return; }
             if (key == join)
             {
-                if (!keypad.activeSelf) keypad.SetActive(true);
+                if (!keypad.activeSelf)
+                {
+                    keypad.SetActive(true);
+                    if (cpu != null) cpu.gameObject.SetActive(false);
+                }
                 else if (code.Length == 6) { _ = connection.JoinAsync(code); return; }
             }
             else if (key.name == "Delete")
@@ -124,9 +135,9 @@ namespace BowMan.Menu
         // Removes the keyboard and its solid hit areas before either bow is unlocked.
         private void Update()
         {
-            bool show = VRBowInput.HeadsetActive && connection != null && connection.Status.CanStart;
+            bool show = VRBowInput.HeadsetActive && connection != null && connection.Status.CanStart && (range == null || !range.Playing);
             if (show == board.activeSelf) return;
-            if (show && distanceLabel != null) distanceLabel.text = $"Host distance: {range.HostDistance} m";
+            if (show && distanceLabel != null) distanceLabel.text = $"Distance: {range.HostDistance} m";
             board.SetActive(show);
             pointer.enabled = show;
         }

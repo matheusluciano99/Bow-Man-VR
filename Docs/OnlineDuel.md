@@ -27,10 +27,12 @@ region and side, local entry, anatomy, health, turn handoff and final result.
 The empty directory keeps previous join codes and test observations separate.
 Physical Quest 2 review and the two-network session use the lab checklist.
 
-## Online target competition
+## Target competition
 
-Select **Tiro ao alvo** (keyboard **3**) on both PCs. Host on one and join with
-its code on the other. Before hosting, select **15, 30, 50, 60 or 70 m** in the desktop lobby or cycle **Host distance** with the right trigger in VR. Both seats use the host’s distance for all twenty arrows and rematches. Leave the lobby and host again to change courses. Each archer sees the target from the same firing line.
+Choose **Tiro ao alvo** (keyboard **3**), select a distance and choose **Play against CPU** for a solo competition. The computer stands on your right. Alternate ten arrows each and press A or R to play again at the same distance. Menu or Esc returns to mode selection.
+
+For online play, enter **Tiro ao alvo** on both PCs. Host on one and join with
+its code on the other. Before hosting, select **15, 30, 50, 60 or 70 m** in the desktop lobby or cycle **Distance** with the right trigger in VR. Both seats use the host’s distance for all twenty arrows and rematches. Leave the lobby and host again to change courses. Each archer sees the target from the same firing line.
 Use the usual bow controls, or aim with the arrow keys and hold/release Space
 on desktop. Tab toggles desktop input. The host shoots first. The bow unlocks
 for the other seat once the arrow lands or expires. The upper-right target marks the host’s confirmed scoring point on both screens. A miss clears the mark. After twenty shots, each

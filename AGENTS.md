@@ -78,8 +78,11 @@ Use GitHub's Assignees field to record task responsibility.
   through Unity Relay with a host-issued join code; the host is Archer 1 and the
   joining player is Archer 2 (see D024).
 - PvE: duel against an AI-controlled archer.
-- Tiro ao alvo: two archers compete online on separate PCs. Both select the
-  target competition, then host/join with a Relay code. Alternate ten arrows per
+- Tiro ao alvo offers a local CPU rival or two online players on separate PCs.
+  Pick the distance and choose **Play against CPU** to start solo. The player
+  shoots first and can start a rematch with A or R. The CPU uses the other
+  archer model and fires a physical arrow at the target. For online play,
+  host/join with a Relay code. Alternate ten arrows per
   archer at the same target. Before hosting, choose 15 (default), 30, 50, 60 or
   70 metres. Both seats and rematches use the host’s distance. The match HUD
   marks the last scored contact on a copy of the target. The host scores each tip contact, and both

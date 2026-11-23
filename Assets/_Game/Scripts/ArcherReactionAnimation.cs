@@ -102,13 +102,22 @@ namespace BowMan
         {
             if (match == null || actor == null || index < 0 || index > 1)
                 throw new ArgumentException("Reaction playback requires a match, actor and side.");
-            Detach();
+            PrepareStanding(actor);
             flow = match;
-            health = actor;
             archerIndex = index;
-            poseAnimator = GetComponentInChildren<Animator>();
             if (poseAnimator != null && poseAnimator.isHuman && (Supports(BodyRegion.Abdomen) || Supports(BodyRegion.Neck)))
                 woundContact = new ArcherWoundContact(poseAnimator, GetComponentsInChildren<BodyHitRegion>());
+            flow.ReactionRequested += OnReaction;
+            flow.RecoveryRequested += OnRecovery;
+            flow.Changed += OnFlowChanged;
+        }
+
+        // Starts the archer's standing performance for either a duel or a target competition.
+        public void PrepareStanding(ArcherHealth actor)
+        {
+            Detach();
+            health = actor;
+            poseAnimator = GetComponentInChildren<Animator>();
             if (standingIdle != null && poseAnimator != null && poseAnimator.isHuman)
             {
                 idleArms = new[] { HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm,
@@ -118,9 +127,6 @@ namespace BowMan
                 restingArms = idleArms.Select(bone => bone.localRotation).ToArray();
                 BeginArmBlend();
             }
-            flow.ReactionRequested += OnReaction;
-            flow.RecoveryRequested += OnRecovery;
-            flow.Changed += OnFlowChanged;
         }
 
         // Plays this exact region's entry; unsupported regions remain pending for their own implementations.

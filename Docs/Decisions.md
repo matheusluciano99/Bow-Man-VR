@@ -342,7 +342,7 @@ servers and duel synchronization are outside this choice (#12, #13).
 ## D025 — The mode menu is the game's entry scene
 
 Start the game on `MainMenu`, where a right-controller ray and trigger choose
-PvE (local duel against the AI), PvP (online duel) or Tiro ao alvo (online target competition). Pointing at world
+PvE (local duel against the AI), PvP (online duel) or Tiro ao alvo (CPU or online target competition). Pointing at world
 panels is the expected VR menu interaction and needs no new package; XR
 Interaction Toolkit would add a dependency that touches the shared rig. The
 menu generator puts MainMenu, LocalDuel, PvPConnectionTest and TargetRange first in the build
@@ -375,9 +375,11 @@ Both archers use recorded pelvis motion and planted-foot leg movement while stan
 
 Use recorded spatial cues for the two archers and their equipment. Start the string creak above 60% of maximum draw. Increase pitch and volume toward full draw, with a softer sustained sound while the player holds tension. Falling back to 60% or below, cancelling or releasing stops the stretch cue. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.
 
-## Online target competition
+## Target competition
 
-Two players connect on separate PCs using the existing Relay host and join-code flow.
+A player can compete locally against the other archer model without signing in or finding another player. The player shoots first. The CPU plays its recorded draw and releases one simulated arrow at the same target. Score the actual impact with the shared ring rules. In solo play the player can accept a rematch immediately.
+
+For online competition, two players connect on separate PCs using the existing Relay host and join-code flow.
 Alternate shots so both archers see each outcome and shoot at the same distance.
 Each archer releases ten arrows. The host scores the tip contact on ten concentric
 rings, awarding a dividing line to the higher ring. A miss or flight expiry earns

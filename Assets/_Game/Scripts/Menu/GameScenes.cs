@@ -42,7 +42,7 @@ namespace BowMan.Menu
         // Returns the title printed on a mode's panel.
         public static string Title(GameMode mode) => mode switch
         {
-            GameMode.Target => "Tiro ao alvo   •   Online 1v1",
+            GameMode.Target => "Tiro ao alvo   •   CPU or online",
             GameMode.PvP => "PvP\nonline duel",
             _ => "PvE\nvs AI archer"
         };

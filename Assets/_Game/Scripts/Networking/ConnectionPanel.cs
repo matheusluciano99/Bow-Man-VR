@@ -31,10 +31,11 @@ namespace BowMan.Networking
         // Draws the status, Host, code field, Join and Leave controls in the desktop window.
         private void OnGUI()
         {
+            if (range != null && range.AgainstCpu) return;
             var status = controller.Status;
             GUILayout.BeginArea(new Rect(16, 16, 360, Screen.height - 32));
             GUILayout.BeginVertical(GUI.skin.box);
-            GUILayout.Label(controller.IsTargetCompetition ? "Tiro ao alvo  •  Online" : "PvP connection test");
+            GUILayout.Label(controller.IsTargetCompetition ? "Tiro ao alvo" : "PvP connection test");
             GUILayout.Label(status.Describe());
             GUI.enabled = status.CanStart;
             if (GUILayout.Button("Host")) _ = controller.HostAsync();
@@ -47,7 +48,7 @@ namespace BowMan.Networking
             if (range != null && status.CanStart)
             {
                 GUI.enabled = true;
-                GUILayout.Label($"Host distance: {range.HostDistance} m");
+                GUILayout.Label($"Distance: {range.HostDistance} m");
                 GUILayout.BeginHorizontal();
                 foreach (var metres in OnlineTargetMatch.Distances)
                 {
@@ -55,6 +56,8 @@ namespace BowMan.Networking
                     if (GUILayout.Button($"{metres} m")) range.ChooseHostDistance(metres);
                 }
                 GUILayout.EndHorizontal();
+                GUI.enabled = true;
+                if (GUILayout.Button("Play against CPU")) range.StartCpuMatch();
             }
             GUI.enabled = true;
             GUILayout.Label(MenuHint);

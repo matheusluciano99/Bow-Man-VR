@@ -1192,7 +1192,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 719603314}
-  m_Text: "Tiro ao alvo   \u2022   Online 1v1"
+  m_Text: "Tiro ao alvo   \u2022   CPU or online"
   m_OffsetZ: 0
   m_CharacterSize: 0.025
   m_LineSpacing: 1

@@ -45,7 +45,7 @@ public static class TargetRangeBuilder
             AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Materials/TargetFace.mat"));
 
         var target = new SerializedObject(host.AddComponent<OnlineTargetMatch>());
-        foreach (var field in new[] { "bow", "vrInput", "desktop", "feedback", "arrowPrefab", "connection" })
+        foreach (var field in new[] { "bow", "vrInput", "desktop", "feedback", "arrowPrefab", "connection", "rig", "firstPrefab", "secondPrefab" })
             target.FindProperty(field).objectReferenceValue = source.FindProperty(field).objectReferenceValue;
         target.FindProperty("face").objectReferenceValue = face.GetComponent<Collider>();
         target.FindProperty("stand").objectReferenceValue = first;

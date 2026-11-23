@@ -704,6 +704,9 @@ MonoBehaviour:
   bow: {fileID: 625193089}
   vrInput: {fileID: 721863565}
   desktop: {fileID: 721863564}
+  firstPrefab: {fileID: 667351378350635231, guid: b7ce9265358c2a24ba76b5469a63dfeb, type: 3}
+  secondPrefab: {fileID: 5125899312878103343, guid: acd6c09ad0d3bae4588d6d1c26bb50c7, type: 3}
+  rig: {fileID: 245063405}
   arrowPrefab: {fileID: 7838939950186234352, guid: 58dd95bcc9cb81c4388189dfa3343d77, type: 3}
   stand: {fileID: 1479968980}
   face: {fileID: 1536245484}

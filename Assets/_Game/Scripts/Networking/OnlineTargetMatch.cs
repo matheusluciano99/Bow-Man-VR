@@ -5,7 +5,7 @@ using UnityEngine.XR;
 
 namespace BowMan.Networking
 {
-    // Two online archers alternate at one firing line; the host simulates and scores every shot.
+    // Scores ten alternating arrows per archer, locally against the CPU or through the Relay host.
     public sealed class OnlineTargetMatch : MonoBehaviour
     {
         public const int ArrowsPerSeat = 10;
@@ -24,6 +24,10 @@ namespace BowMan.Networking
         [SerializeField] private Collider face;
         [SerializeField] private TextMesh feedback;
 
+        [SerializeField] private GameObject firstPrefab, secondPrefab;
+        [SerializeField] private LocalRigBinder rig;
+        private OpponentBowAction cpuBow;
+        public bool AgainstCpu { get; private set; }
         private Transform match;
         private DuelAudio sounds;
         private TargetImpactDisplay impactDisplay;
@@ -41,7 +45,7 @@ namespace BowMan.Networking
         public bool Playing => match != null;
         public bool Finished => Completed == 2 * ArrowsPerSeat;
         private NetworkManager Net => connection.GetComponent<NetworkManager>();
-        private int LocalSeat => Net.IsServer ? 0 : 1;
+        private int LocalSeat => AgainstCpu || Net.IsServer ? 0 : 1;
         private PlayerPresence Seat => Net.LocalClient.PlayerObject.GetComponent<PlayerPresence>();
 
         // Moves the entire target assembly down the common firing line without resizing the rings.
@@ -78,6 +82,15 @@ namespace BowMan.Networking
             connection.StatusChanged += ConnectionChanged;
         }
 
+        // Seats the player at the firing line and starts a local competition at the chosen distance.
+        public void StartCpuMatch()
+        {
+            if (Playing || !connection.Status.CanStart) return;
+            AgainstCpu = true;
+            rig.PlaceAt(ArcherRole.Archer1);
+            NewRound();
+        }
+
         // Starts a clean scorecard once the admitted opponent has its network player.
         public void PeerReady(ulong peer)
         {
@@ -106,6 +119,7 @@ namespace BowMan.Networking
         {
             bow.SetShotAllowed(false);
             bow.gameObject.SetActive(false);
+            StopAllCoroutines();
             if (pending != null) { pending.Hit -= Hit; pending.Expired -= Expired; }
             pending = replica = null;
             if (match != null) { match.gameObject.SetActive(false); Destroy(match.gameObject); }
@@ -133,7 +147,22 @@ namespace BowMan.Networking
                 impactDisplay = new GameObject("Target impact inset").AddComponent<TargetImpactDisplay>();
                 impactDisplay.Build(feedback.transform.parent, face.transform);
                 sounds = match.gameObject.AddComponent<DuelAudio>();
-                sounds.BindBow(bow, ArenaSetting.WoodlandRange, connection.FirstArcher, connection.SecondArcher);
+                if (AgainstCpu)
+                {
+                    var player = ArcherSelection.Preferred;
+                    var opponent = ArcherSelection.Other(player);
+                    var prefab = opponent == ArcherModel.English ? firstPrefab : secondPrefab;
+                    var position = stand.position + stand.right * 1.5f;
+                    var facing = Quaternion.LookRotation(Vector3.ProjectOnPlane(face.transform.position - position, Vector3.up));
+                    var actor = Instantiate(prefab, position, facing, match);
+                    var health = actor.GetComponent<ArcherHealth>() ?? actor.AddComponent<ArcherHealth>();
+                    actor.GetComponent<ArcherReactionAnimation>().PrepareStanding(health);
+                    cpuBow = actor.AddComponent<OpponentBowAction>();
+                    cpuBow.Bind(bow, arrowPrefab);
+                    foreach (var volume in actor.GetComponentsInChildren<Collider>()) volume.enabled = false;
+                    sounds.BindBow(bow, ArenaSetting.WoodlandRange, player, opponent);
+                }
+                else sounds.BindBow(bow, ArenaSetting.WoodlandRange, connection.FirstArcher, connection.SecondArcher);
             }
             if (replica != null && !inFlight) { Destroy(replica.gameObject); replica = null; }
             Round = round;
@@ -150,7 +179,10 @@ namespace BowMan.Networking
         }
 
         // Sends the complete authoritative scorecard including any in-flight lock.
-        private void Publish() => Seat.TargetScoreRpc(Round, Completed, FirstScore, SecondScore, last, flying, votes, RoundDistance, lastContact);
+        private void Publish()
+        {
+            if (!AgainstCpu) Seat.TargetScoreRpc(Round, Completed, FirstScore, SecondScore, last, flying, votes, RoundDistance, lastContact);
+        }
 
         // Unlocks the shared bow input only while this peer owns the next release.
         private void GateBow() => bow.SetShotAllowed(Playing && !Finished && !flying && !awaiting && Completed % 2 == LocalSeat);
@@ -159,7 +191,7 @@ namespace BowMan.Networking
         private void Released(ArrowFlight arrow)
         {
             if (!Playing || Finished || flying || awaiting || Completed % 2 != LocalSeat) { Destroy(arrow.gameObject); return; }
-            if (Net.IsServer) Track(arrow);
+            if (AgainstCpu || Net.IsServer) Track(arrow);
             else
             {
                 awaiting = true;
@@ -195,7 +227,7 @@ namespace BowMan.Networking
             flying = true;
             GateBow();
             sounds.Flight(Completed, arrow);
-            Seat.FlightRpc(Round, Completed, arrow.transform.position, arrow.Velocity);
+            if (!AgainstCpu) Seat.FlightRpc(Round, Completed, arrow.transform.position, arrow.Velocity);
         }
 
         // Scores the painted disc in face-local coordinates, awarding a dividing line to its higher ring.
@@ -211,7 +243,7 @@ namespace BowMan.Networking
             var onFace = hit.collider == face;
             var surface = onFace ? ImpactSound.Wood : sounds.Surface(hit.collider);
             sounds.Impact(hit.point, surface);
-            Seat.SceneryRpc(Round, Completed, hit.point, pending.transform.rotation, pending.SceneryLifetime, surface);
+            if (!AgainstCpu) Seat.SceneryRpc(Round, Completed, hit.point, pending.transform.rotation, pending.SceneryLifetime, surface);
             Vector2 contact = face.transform.InverseTransformPoint(hit.point);
             Settle(onFace ? RingScore(contact) : 0, contact);
         }
@@ -234,6 +266,28 @@ namespace BowMan.Networking
             impactDisplay.Mark(points > 0 ? (Vector2?)contact : null);
             GateBow();
             Publish();
+            if (AgainstCpu && !Finished && Completed % 2 == 1) StartCoroutine(ShootCpuArrow());
+        }
+
+        // Plays the rival's recorded draw, then launches one physical arrow toward a varied point near the bullseye.
+        private System.Collections.IEnumerator ShootCpuArrow()
+        {
+            var error = Random.insideUnitCircle * (.32f + RoundDistance * .012f);
+            var target = face.bounds.center + stand.right * error.x + stand.up * error.y;
+            var shoulder = cpuBow.transform.position + stand.up * 1.45f;
+            ArrowBallistics.TryVelocity(shoulder, target, TargetLaunchSpeed, out var aim);
+            const float drawTime = 1.6f;
+            for (float elapsed = 0; elapsed < drawTime; elapsed += Time.deltaTime)
+            {
+                cpuBow.PrepareAI(Mathf.Clamp01(elapsed / (drawTime * .85f)), aim.normalized);
+                yield return null;
+            }
+            var origin = cpuBow.ArrowTip;
+            ArrowBallistics.TryVelocity(origin, target, TargetLaunchSpeed, out var speed);
+            var arrow = Instantiate(arrowPrefab, origin, Quaternion.LookRotation(speed), match);
+            cpuBow.Release();
+            arrow.Launch(speed, cpuBow.transform);
+            Track(arrow);
         }
 
         // Replays the host-approved trajectory without any client-side collision scoring.
@@ -263,7 +317,8 @@ namespace BowMan.Networking
         public void RequestRematch()
         {
             if (!Playing || !Finished) return;
-            if (Net.IsServer) ReceiveRematch(Net.LocalClientId, Round);
+            if (AgainstCpu) NewRound();
+            else if (Net.IsServer) ReceiveRematch(Net.LocalClientId, Round);
             else Seat.RematchRpc(Round);
         }
 
@@ -297,16 +352,18 @@ namespace BowMan.Networking
                     Quaternion.LookRotation(velocity + Physics.gravity * t));
             }
             int used = Completed + (flying ? 1 : 0);
+            string first = AgainstCpu ? "You" : "Archer 1";
+            string second = AgainstCpu ? "CPU" : "Archer 2";
             string action;
             if (Finished)
             {
-                var result = FirstScore == SecondScore ? "Tie" : FirstScore > SecondScore ? "Archer 1 wins" : "Archer 2 wins";
+                var result = FirstScore == SecondScore ? "Tie" : FirstScore > SecondScore ? (AgainstCpu ? "You win" : "Archer 1 wins") : second + " wins";
                 action = result + ((votes & (1 << LocalSeat)) != 0 ? "   •   Waiting for opponent" : "   •   A / R: rematch");
             }
             else action = flying || awaiting ? "Arrow in flight" : Completed % 2 == LocalSeat ?
-                vrInput.ShotHint(desktopMode) : "Opponent's turn";
-            feedback.text = $"Archer 1: {FirstScore} pts ({ArrowsPerSeat - (used + 1) / 2} left)    |    Archer 2: {SecondScore} pts ({ArrowsPerSeat - used / 2} left)\n" +
-                $"{RoundDistance} m   •   Archer {LocalSeat + 1}   •   {(last < 0 ? "Center: 10 pts" : last == 0 ? "Miss" : $"Archer {(Completed - 1) % 2 + 1}: +{last}")}\n{action}";
+                vrInput.ShotHint(desktopMode) : AgainstCpu ? "CPU is drawing" : "Opponent's turn";
+            feedback.text = $"{first}: {FirstScore} pts ({ArrowsPerSeat - (used + 1) / 2} left)    |    {second}: {SecondScore} pts ({ArrowsPerSeat - used / 2} left)\n" +
+                $"{RoundDistance} m   •   Archer {LocalSeat + 1}   •   {(last < 0 ? "Center: 10 pts" : last == 0 ? "Miss" : $"{((Completed - 1) % 2 == 0 ? first : second)}: +{last}")}\n{action}";
         }
 
         // Releases round-owned objects and listeners when the player exits to the menu.

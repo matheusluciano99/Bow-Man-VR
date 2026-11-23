@@ -36,6 +36,6 @@ public class GameScenesTests
     {
         Assert.AreEqual("PvE\nvs AI archer", GameScenes.Title(GameMode.PvE));
         Assert.AreEqual("PvP\nonline duel", GameScenes.Title(GameMode.PvP));
-        Assert.That(GameScenes.Title(GameMode.Target), Does.Contain("Online 1v1"));
+        Assert.That(GameScenes.Title(GameMode.Target), Does.Contain("CPU or online"));
     }
 }

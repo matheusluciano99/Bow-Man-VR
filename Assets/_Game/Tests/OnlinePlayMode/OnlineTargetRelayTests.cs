@@ -88,6 +88,74 @@ public class OnlineTargetRelayTests
         }
     }
 
+    // Completes ten turns per side offline, compares CPU points to real impacts and restarts at the chosen distance.
+    [UnityTest]
+    public IEnumerator CpuCompetitionScoresPhysicalArrowsAndRematches()
+    {
+        const string path = "Assets/_Game/Scenes/TargetRange.unity";
+        var previous = SceneManager.GetActiveScene();
+        yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+        var scene = SceneManager.GetSceneByPath(path);
+        SceneManager.SetActiveScene(scene);
+        yield return null;
+        var range = Object.FindAnyObjectByType<OnlineTargetMatch>();
+        var connection = Object.FindAnyObjectByType<PvPConnectionController>();
+        var face = GameObject.Find("Scoring face").transform;
+        var line = GameObject.Find("Archer1Spawn").transform;
+        float originalScale = Time.timeScale;
+        try
+        {
+            Time.timeScale = 3f;
+            range.ChooseHostDistance(70);
+            range.StartCpuMatch();
+            range.StartCpuMatch();
+            var bow = Object.FindAnyObjectByType<Bow>();
+            Assert.IsTrue(range.AgainstCpu && range.Playing);
+            var opponent = Object.FindAnyObjectByType<OpponentBowAction>();
+            Assert.That(opponent.name, Does.StartWith(ArcherSelection.Other(ArcherSelection.Preferred) == ArcherModel.Erika
+                ? "ErikaArcher" : "EnglishArcher"));
+            int cpuPoints = 0;
+            for (int turn = 0; turn < OnlineTargetMatch.ArrowsPerSeat; turn++)
+            {
+                Assert.IsTrue(bow.ShotAllowed);
+                Shoot(bow, line, face.position);
+                yield return Until(() => range.Completed == turn * 2 + 1, "Player shot scored");
+                Assert.IsFalse(bow.ShotAllowed);
+                yield return Until(() => opponent.IsNocked, "CPU has drawn its bow");
+                ArrowFlight shot = null;
+                yield return Until(() =>
+                {
+                    foreach (var arrow in range.GetComponentsInChildren<ArrowFlight>())
+                        if (arrow.IsFlying) { shot = arrow; return true; }
+                    return false;
+                }, "CPU projectile in flight");
+                shot.Hit += hit =>
+                {
+                    if (hit.collider.transform == face)
+                        cpuPoints += OnlineTargetMatch.RingScore(face.InverseTransformPoint(hit.point));
+                };
+                yield return Until(() => range.Completed == (turn + 1) * 2, "CPU shot settled");
+                Assert.AreEqual(cpuPoints, range.SecondScore);
+                Assert.AreEqual((turn + 1) * 10, range.FirstScore);
+            }
+            Assert.IsTrue(range.Finished);
+            Assert.IsFalse(bow.ShotAllowed);
+            Assert.That(GameObject.Find("HeadsetStatus").GetComponent<TextMesh>().text, Does.Contain("CPU"));
+            Assert.AreEqual(ConnectionPhase.Offline, connection.Status.Phase);
+            range.RequestRematch();
+            Assert.AreEqual(2, range.Round);
+            Assert.AreEqual(70, range.RoundDistance);
+            Assert.AreEqual(0, range.Completed + range.FirstScore + range.SecondScore);
+            Assert.IsTrue(bow.ShotAllowed);
+        }
+        finally
+        {
+            Time.timeScale = originalScale;
+            if (previous.isLoaded) SceneManager.SetActiveScene(previous);
+            SceneManager.UnloadSceneAsync(scene);
+        }
+    }
+
     // Joins two independent players, compares all twenty score updates, votes for a rematch and ties it.
     [UnityTest, Timeout(360000)]
     public IEnumerator TwoEditorsScoreTheMatch()
