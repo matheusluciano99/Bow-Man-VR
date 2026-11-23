@@ -33,7 +33,7 @@ Select **Tiro ao alvo** (keyboard **3**) on both PCs. Host on one and join with
 its code on the other. Before hosting, select **15, 30, 50, 60 or 70 m** in the desktop lobby or cycle **Host distance** with the right trigger in VR. Both seats use the host’s distance for all twenty arrows and rematches. Leave the lobby and host again to change courses. Each archer sees the target from the same firing line.
 Use the usual bow controls, or aim with the arrow keys and hold/release Space
 on desktop. Tab toggles desktop input. The host shoots first. The bow unlocks
-for the other seat once the arrow lands or expires. After twenty shots, each
+for the other seat once the arrow lands or expires. The upper-right target marks the host’s confirmed scoring point on both screens. A miss clears the mark. After twenty shots, each
 player can press A or R to accept a new match. Menu or Esc leaves the session.
 
 For a desktop spectator demo with both archers, use **Bow Man VR → Arenas → Watch target competition**. Choose a distance in the top-left panel. After the current shot, the scorecard restarts at that distance. The upper-right target view marks the last impact and its score.
