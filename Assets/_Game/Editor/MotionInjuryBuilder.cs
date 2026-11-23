@@ -51,6 +51,8 @@ public static class MotionInjuryBuilder
             var leftArm = ForearmVolumes(regions, rig.GetBoneTransform(HumanBodyBones.LeftLowerArm), rig.GetBoneTransform(HumanBodyBones.LeftHand));
             var rightArm = ForearmVolumes(regions, rig.GetBoneTransform(HumanBodyBones.RightLowerArm), rig.GetBoneTransform(HumanBodyBones.RightHand));
             var chest = regions.Single(r => r.Region == BodyRegion.Chest).transform;
+            var leftUpperArm = rig.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+            var rightUpperArm = rig.GetBoneTransform(HumanBodyBones.RightUpperArm);
             var supportUpper = left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm;
             var supportLower = left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm;
             var supportHand = left ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand;
@@ -79,9 +81,10 @@ public static class MotionInjuryBuilder
                 var lowerRecorded = elbow.localRotation;
                 var wristRecorded = hand.localRotation;
                 var arc = Mathf.Sin(Mathf.PI * weight);
-                var target = Vector3.Lerp(handStart, handEnd, weight) + root.transform.forward * (0.16f * arc);
-                var bend = Vector3.Lerp(elbowStart, elbowEnd, weight) + root.transform.forward * (0.12f * arc) +
-                    root.transform.right * ((left ? 0.09f : -0.09f) * arc);
+                var target = Vector3.Lerp(handStart, handEnd, weight) + root.transform.forward * (0.08f * arc);
+                var bend = Vector3.Lerp(elbowStart, elbowEnd, weight) +
+                    (root.transform.forward * 0.10f - root.transform.up * 0.065f +
+                    root.transform.right * (left ? 0.045f : -0.045f)) * arc;
                 var forward = root.transform.forward;
                 var ahead = float.NegativeInfinity;
                 foreach (var volume in core.OfType<BoxCollider>())
@@ -140,10 +143,12 @@ public static class MotionInjuryBuilder
                 hips.position = start + new Vector3(delta.x * 0.22f, Mathf.Clamp(delta.y, -0.10f, 0f) - 0.036f, delta.z * 0.22f);
                 hips.rotation = yaw * hips.rotation;
                 if (left) MirrorBody(root.transform, hips, start, bones, positions, neutral, world, opposite);
+                var armWeight = blend * (1f - 0.56f * Ease(seconds, 25.75f, 25.93f));
                 for (var i = 0; i < bones.Length; i++)
                 {
                     bones[i].localPosition = Vector3.Lerp(positions[i], bones[i].localPosition, blend);
-                    bones[i].localRotation = Quaternion.Slerp(neutral[i], bones[i].localRotation, blend);
+                    var weight = bones[i] == leftUpperArm || bones[i] == rightUpperArm ? armWeight : blend;
+                    bones[i].localRotation = Quaternion.Slerp(neutral[i], bones[i].localRotation, weight);
                 }
                 Plant(HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot, 0);
                 Plant(HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot, 1);
@@ -168,9 +173,11 @@ public static class MotionInjuryBuilder
                     var palm = (hand.position + middle.position) * 0.5f;
                     var contact = Vector3.Lerp(elbow.position, wrist.position, 0.55f) - Vector3.up * 0.032f;
                     var rotation = hand.rotation;
-                    ArcherLimbIK.Solve(rig, upperId, lowerId, handId, hand.position + (contact - palm) * reach + chest.forward * (0.25f * Mathf.Sin(Mathf.PI * reach)),
+                    var releaseArc = Mathf.Sin(Mathf.PI * reach);
+                    ArcherLimbIK.Solve(rig, upperId, lowerId, handId, hand.position + (contact - palm) * reach + chest.forward * (0.10f * releaseArc),
                         rig.GetBoneTransform(lowerId).position - rig.GetBoneTransform(upperId).position +
-                        (chest.forward * 0.27f + chest.right * (left ? 0.22f : -0.22f)) * Mathf.Sin(Mathf.PI * reach));
+                        (chest.forward * 0.065f - Vector3.up * 0.16f) * reach +
+                        (chest.forward * 0.15f - Vector3.up * 0.08f + chest.right * (left ? 0.10f : -0.10f)) * releaseArc);
                     hand.rotation = rotation;
                 }
                 FitForearm(rig, chest, core, true, leftArm);
@@ -379,6 +386,9 @@ public static class MotionInjuryBuilder
                 var positions = bones.Select(b => b.localPosition).ToArray();
                 var left = region == BodyRegion.LeftShoulder;
                 var cap = rig.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+                var injuredElbow = rig.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
+                var restingCap = cap.localRotation;
+                var restingElbow = injuredElbow.localRotation;
                 var hitCollar = rig.GetBoneTransform(left ? HumanBodyBones.LeftShoulder : HumanBodyBones.RightShoulder);
                 var freeCollar = rig.GetBoneTransform(left ? HumanBodyBones.RightShoulder : HumanBodyBones.LeftShoulder);
                 var english = model == "EnglishArcher";
@@ -396,9 +406,11 @@ public static class MotionInjuryBuilder
                 var torso = chestBox.transform;
                 var chest = rig.GetBoneTransform(HumanBodyBones.UpperChest);
                 var folder = $"Assets/_Game/Animations/Injuries/{model}/{region}";
-                var entry = Bake("Entry", 0.90f, t => Pose(t, 1f));
-                var hold = Bake("Hold", 0.30f, t => Pose(0.90f + t, 1f));
-                var recovery = Bake("Recovery", 0.95f, t => Pose(Mathf.Lerp(1.20f, 0.59f, Ease(t, 0f, 0.90f)),
+                const float contactTime = 0.90f;
+                const float standingEnd = 0.94f;
+                var entry = Bake("Entry", contactTime, t => Pose(t, 1f));
+                var hold = Bake("Hold", 0.30f, t => Pose(Mathf.Lerp(contactTime, standingEnd, t / 0.30f), 1f));
+                var recovery = Bake("Recovery", 0.95f, t => Pose(Mathf.Lerp(standingEnd, 0.59f, Ease(t, 0f, 0.90f)),
                     1f - Ease(t, 0.26f, 0.95f)));
                 var prefab = PrefabUtility.LoadPrefabContents(path);
                 try
@@ -435,6 +447,9 @@ public static class MotionInjuryBuilder
                     hitCollar.rotation = Quaternion.AngleAxis(sign * 30f * shrug, torso.forward) *
                         Quaternion.AngleAxis(-sign * 22.5f * shrug, torso.up) * hitCollar.rotation;
                     freeCollar.rotation = Quaternion.AngleAxis(sign * 26f * shrug, torso.up) * freeCollar.rotation;
+                    var guard = Ease(t, 0.14f, 0.46f);
+                    cap.localRotation = Quaternion.Slerp(cap.localRotation, restingCap, 0.86f * guard);
+                    injuredElbow.localRotation = Quaternion.Slerp(injuredElbow.localRotation, restingElbow, 0.72f * guard);
                     hand.rotation = Quaternion.Slerp(recordedHandRotation, hand.rotation, touch);
                     var fingerLine = knuckle.position - hand.position;
                     var desired = english ? outward * 0.8f - torso.up * 0.5f - torso.forward * 0.5f : fingerLine;

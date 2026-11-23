@@ -1471,9 +1471,23 @@ public class InjuryAnimationTests
             HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm }.Select(rig.GetBoneTransform).ToArray();
         foreach (var side in new[] { BodyRegion.LeftShoulder, BodyRegion.RightShoulder })
         {
+            var left = side == BodyRegion.LeftShoulder;
+            var struckUpper = rig.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+            var struckElbow = rig.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm);
+            var supportUpper = rig.GetBoneTransform(left ? HumanBodyBones.RightUpperArm : HumanBodyBones.LeftUpperArm);
+            var supportElbow = rig.GetBoneTransform(left ? HumanBodyBones.RightLowerArm : HumanBodyBones.LeftLowerArm);
             var clips = new[] { actor.Entry(side), actor.Hold(side), actor.Recovery(side) };
             Assert.That(clips[1], Is.Not.Null, side.ToString());
             foreach (var clip in clips) RequireCoreClearance(root, clip, 0.06f);
+            var held = clips[1];
+            for (var frame = 0; frame <= 18; frame++)
+            {
+                held.SampleAnimation(root, held.length * frame / 18f);
+                Assert.That(Vector3.Angle(struckElbow.position - struckUpper.position, Vector3.down),
+                    Is.LessThan(70f), side + " injured arm");
+                Assert.That(Vector3.Angle(supportElbow.position - supportUpper.position, Vector3.down),
+                    Is.LessThan(104f), side + " support arm");
+            }
             for (var join = 1; join < clips.Length; join++)
             {
                 clips[join - 1].SampleAnimation(root, clips[join - 1].length);

@@ -163,6 +163,10 @@ and live turn flow. [Adobe Mixamo](https://www.mixamo.com/) and
 
 Both arm reactions use Azumi’s **accident-05-damage right arm** performance. The opposite palm catches the injured forearm while the archer looks down at the contact. The left-arm sequence mirrors the recording. Both boots stay planted. The captured hold plays throughout the three-second injury window, then the performer releases the arm. A lethal arm hit continues from the recoil into the recorded collapse. Attribution and the adaptation license are in [the source record](../Assets/ThirdParty/EyesJapan/Source.md).
 
+The supporting elbow stays closer to the body through the catch and drops
+as the hand releases the cradle. The fitted palm stays against the forearm
+through the hold.
+
 Use **Bow Man VR > Injuries > Rebuild Captured Arm Reactions** to bake both sides on both rigs. The injury Play Mode tests sample the fitted forearms against the head and torso, check the supporting palm and boots, and exercise the turn handoff after real arrows.
 
 ### Supported leg injuries
@@ -172,6 +176,10 @@ The weight shift in **Kneeling Down** and **Standing** times the descent and ris
 ### Standing shoulder reach
 
 A surviving shoulder hit uses the reach before the fall in **Shoulder Hit And Fall**. The injured shoulder recoils, the opposite hand cups it and both boots remain planted. The three-second hold follows the captured shoulder movement. On release the hand clears the body and the archer resumes the duel stance. A lethal shoulder hit still plays the complete recorded fall. **Bow Man VR > Injuries > Rebuild Surviving Shoulders** regenerates the standing reactions on both rigs.
+
+After recoil, the struck arm drops toward a guarded stance. The hold uses
+the early contact segment of the recorded take, before the performer raises
+the supporting elbow to start the fall.
 
 ### Captured wrist support
 
