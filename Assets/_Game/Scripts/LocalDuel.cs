@@ -136,7 +136,7 @@ namespace BowMan
                 return;
             }
             feedback.text = $"<color=#ECC67D>{status}</color>\n" +
-                $"You  {LocalArcher.CurrentHealth}     ·     Opponent  {Opponent.CurrentHealth}\n" +
+                $"You {LocalArcher.CurrentHealth}     ·     Opponent {Opponent.CurrentHealth}     ·     {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? "A: restart" :
                 Flow.CanShoot(0) ? vrInput.ShotHint(desktopMode) : "Your bow unlocks on your turn");
         }

@@ -362,7 +362,7 @@ namespace BowMan.Networking
                 if (i != LocalIndex) ShowDraw(presence.Draw, i, actor.transform.position);
             }
             var status = Flow.StatusFor(LocalIndex);
-            feedback.text = $"<color=#ECC67D>{status}</color>\nYou  {actors[LocalIndex].CurrentHealth}     ·     Opponent  {actors[1 - LocalIndex].CurrentHealth}\n" +
+            feedback.text = $"<color=#ECC67D>{status}</color>\nYou {actors[LocalIndex].CurrentHealth}     ·     Opponent {actors[1 - LocalIndex].CurrentHealth}     ·     {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? (RematchRequested ? "Waiting for opponent" :
                     votes != 0 ? "Opponent wants a rematch — A: accept" : "A: rematch") +
                     (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : Flow.CanShoot(LocalIndex) ? vrInput.ShotHint(desktopMode) :

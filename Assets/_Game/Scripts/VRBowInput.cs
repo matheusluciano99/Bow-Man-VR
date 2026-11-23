@@ -207,7 +207,7 @@ namespace BowMan
         {
             if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
             if (!HeadsetActive) return DesktopBowTest.DesktopAvailable ? "Press Tab for desktop controls" : "Enter VR to use your bow";
-            if (bow.IsDrawing) return "Aim and release the trigger";
+            if (bow.IsDrawing) return $"{Mathf.RoundToInt(bow.DrawStrength * 100f)}% draw · Release to shoot";
             var hand = BowInLeftHand ? "right" : "left";
             return $"{hand[0].ToString().ToUpperInvariant() + hand.Substring(1)} hand to string · Hold trigger";
         }
