@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.XR.OpenXR;
+using UnityEngine.XR.OpenXR.Input;
 
 namespace BowMan
 {
@@ -24,6 +26,7 @@ namespace BowMan
         private bool focused = true;
         private bool paused;
         private bool freshTrigger = true;
+        private bool fullDrawPulseSent;
         private float drawPoseLostAt = -1f;
         private System.Func<bool> headsetInputBlocked = () => HeadsetInputBlocked;
 
@@ -162,8 +165,30 @@ namespace BowMan
             }
             if (!bow.IsHeld) return;
             if (drawAction.WasPressedThisFrame() && bow.TryBeginDraw(DrawHand.position))
+            {
                 lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
+                fullDrawPulseSent = false;
+            }
+            if (bow.IsDrawing && drawAction.IsPressed()) UpdateFullDrawFeedback();
             if (drawAction.WasReleasedThisFrame() && !drawAction.IsPressed()) bow.Release();
+        }
+
+        // Pulses the drawing controller at full power and rearms below the jitter band.
+        private void UpdateFullDrawFeedback()
+        {
+            float strength = bow.DrawStrength;
+            if (strength < .95f) fullDrawPulseSent = false;
+            if (fullDrawPulseSent || strength < 1f) return;
+            fullDrawPulseSent = true;
+            if (UsesOpenXRFocus)
+            {
+                var hand = bowInLeftHand ? UnityEngine.XR.XRNode.RightHand : UnityEngine.XR.XRNode.LeftHand;
+                OpenXRInput.SendHapticImpulse(UnityEngine.XR.InputDevices.GetDeviceAtXRNode(hand), .45f, 0f, .08f);
+            }
+            else if (drawAction.activeControl?.device is XRControllerWithRumble controller)
+            {
+                controller.SendImpulse(.45f, .08f);
+            }
         }
 
         // Discards the pending shot and requires the trigger to cycle before another nock.
@@ -250,14 +275,22 @@ namespace BowMan
         // Shows the next action for the player's input method and current string state.
         public string ShotHint(bool desktop)
         {
-            if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
+            if (desktop) return bow.IsDrawing ? DrawHint("Release Space to shoot") : "Arrow keys to aim • Hold Space to draw";
             if (!HeadsetActive) return DesktopBowTest.DesktopAvailable ? "Press Tab for desktop controls" : "Enter VR to use your bow";
             if (InputBlocked) return "Return to the game in your headset";
             if (bow.IsDrawing && drawPoseLostAt >= 0f) return "Draw held · Bring your controller into view";
             if (!Tracking(bowTracked) || !Tracking(drawTracked)) return "Wake both Touch controllers";
-            if (bow.IsDrawing) return $"{Mathf.RoundToInt(bow.DrawStrength * 100f)}% draw · Release to shoot";
+            if (bow.IsDrawing) return DrawHint("Release trigger to shoot");
             var hand = BowInLeftHand ? "right" : "left";
             return $"{hand[0].ToString().ToUpperInvariant() + hand.Substring(1)} hand to string · Hold trigger";
+        }
+
+        // Distinguishes full power from a pull just short of the cap.
+        private string DrawHint(string release)
+        {
+            float strength = bow.DrawStrength;
+            var draw = strength >= 1f ? "<color=#ECC67D>FULL DRAW</color>" : $"{Mathf.FloorToInt(strength * 100f)}% draw";
+            return $"{draw} · {release}";
         }
     }
 }

@@ -278,6 +278,8 @@ Use GitHub's Assignees field to record task responsibility.
   shooting lock cancels. The 0.96-metre arrow keeps its tip beyond the grip. The bow remains
   visually attached during a shooting lock. `Bow.SetShotAllowed` gates both
   input paths without changing tracked head/controller poses.
+- At full power, the HUD shows **FULL DRAW** and the drawing controller gives
+  one short pulse. Easing below 95% or nocking a new arrow rearms the pulse.
 
 ## Reviewing the medieval environments
 

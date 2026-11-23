@@ -131,6 +131,11 @@ Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
 panel switches hands without an Inspector edit and cancels a tracked draw before
 rebinding. Final game-menu presentation remains part of menu integration.
 
+Show **FULL DRAW** at the shot's actual power cap and pulse the drawing
+controller so the player can keep looking at the target. Rearm below 95% to
+avoid repeated pulses from small tracking changes near the cap. The HUD gives
+the same confirmation when controller vibration is unavailable.
+
 ## D009 — Distinct injury regions with a first-person eye viewpoint
 
 Use fifteen hit regions: head, neck, chest, abdomen, pelvis and separate left/right
