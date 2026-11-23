@@ -83,7 +83,7 @@ namespace BowMan
                     Place(organ.transform, hit.Organ.transform);
                     Color(organ, new Color(.74f, .19f, .23f, .63f));
                 }
-            foreach (var hit in report.Bones) StageBone(hit);
+            foreach (var hit in report.Bones) StageBone(hit, root);
 
             arrow = new GameObject("Replay arrow").transform;
             arrow.SetParent(stage, false);
@@ -124,7 +124,7 @@ namespace BowMan
         }
 
         // Fits archived bone geometry into the contact's animated frame.
-        private void StageBone(BoneHit hit)
+        private void StageBone(BoneHit hit, ArcherHealth archer)
         {
             var name = hit.Bone switch
             {
@@ -145,14 +145,37 @@ namespace BowMan
             var mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
             var bone = CopyMesh(name, anatomy, mesh, new[] { cutawayMaterial });
             Place(bone.transform, hit.Frame);
-            bone.transform.localPosition = view * (hit.Frame.TransformPoint(hit.LocalBounds.center) - entry);
+            var center = hit.LocalBounds.center;
             var size = hit.LocalBounds.size;
             if (hit.Frame.TryGetComponent<BoxCollider>(out var box)) size = box.size * .94f;
+            if (hit.Bone == HumanBodyBones.Head) FitSkull(archer, hit.Frame, ref center, ref size);
+            bone.transform.localPosition = view * (hit.Frame.TransformPoint(center) - entry);
             var bounds = mesh.bounds.size;
             bone.transform.localScale = Vector3.Scale(hit.Frame.lossyScale,
                 new Vector3(size.x / bounds.x, size.y / bounds.y, size.z / bounds.z));
             Color(bone, hit.Fractured ? new Color(.94f, .75f, .50f, .53f) : new Color(.79f, .88f, .90f, .48f));
             if (hit.Fractured) fractures.Add((bone.transform, bone.transform.localPosition, Vector3.right * .016f));
+        }
+
+        // Aligns the cranial cavity to the fitted brain rather than the front-biased head hitbox.
+        private static void FitSkull(ArcherHealth actor, Transform frame, ref Vector3 center, ref Vector3 size)
+        {
+            var brain = actor.GetComponentsInChildren<AnatomyOrgan>().FirstOrDefault(part => part.Kind == OrganKind.Brain);
+            if (brain == null) return;
+            Bounds fitted = new Bounds(frame.InverseTransformPoint(brain.transform.TransformPoint(brain.Surfaces[0].bounds.center)), Vector3.zero);
+            foreach (var surface in brain.Surfaces)
+            {
+                var bounds = surface.bounds;
+                for (int x = -1; x <= 1; x += 2)
+                    for (int y = -1; y <= 1; y += 2)
+                        for (int z = -1; z <= 1; z += 2)
+                        {
+                            var corner = bounds.center + Vector3.Scale(bounds.extents, new Vector3(x, y, z));
+                            fitted.Encapsulate(frame.InverseTransformPoint(brain.transform.TransformPoint(corner)));
+                        }
+            }
+            center = fitted.center + new Vector3(0f, -fitted.size.y * .20f, fitted.size.z * .09f);
+            size = Vector3.Max(size, Vector3.Scale(fitted.size, new Vector3(1.18f, 1.57f, 1.28f)));
         }
 
         // Copies render geometry without physics, weapons or gameplay scripts.

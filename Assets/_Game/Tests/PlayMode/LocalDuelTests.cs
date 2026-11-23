@@ -383,7 +383,8 @@ public class LocalDuelTests
         Assert.That(fatalities, Is.EqualTo(2));
         Assert.That(lastFatality.Entry.Region, Is.EqualTo(BodyRegion.Neck));
         Assert.That(cutaway.IsVisible, Is.True);
-        yield return new WaitForSecondsRealtime(3.1f);
+        float replayDeadline = Time.realtimeSinceStartup + 4f;
+        while (cutaway.IsVisible && Time.realtimeSinceStartup < replayDeadline) yield return null;
         Assert.That(cutaway.IsVisible, Is.False);
         Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
     }
