@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.XR.OpenXR;
 
 namespace BowMan
 {
@@ -20,11 +22,15 @@ namespace BowMan
         private Vector3 lastPullLocal;
         private bool focused = true;
         private bool paused;
+        private bool freshTrigger = true;
         private System.Func<bool> headsetInputBlocked = () => HeadsetInputBlocked;
 
         private Transform BowHand => bowInLeftHand ? leftController : rightController;
         private Transform DrawHand => bowInLeftHand ? rightController : leftController;
         public bool BowInLeftHand => bowInLeftHand;
+        private static bool UsesOpenXRFocus => HeadsetActive &&
+            (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer);
+        private bool InputBlocked => paused || headsetInputBlocked() || (!UsesOpenXRFocus && !focused);
 
         // The browser can keep its XR loader alive between immersive sessions.
         public static bool HeadsetActive => Application.platform == RuntimePlatform.WebGLPlayer
@@ -39,6 +45,7 @@ namespace BowMan
                 if (!HeadsetActive) return true;
                 if (Application.platform == RuntimePlatform.WebGLPlayer)
                     return WebXR.WebXRManager.Instance.visibilityState != WebXR.WebXRVisibilityState.VISIBLE;
+                if (UsesOpenXRFocus && !OpenXRUtility.IsSessionFocused) return true;
                 var head = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.Head);
                 return head.TryGetFeatureValue(UnityEngine.XR.CommonUsages.userPresence, out bool worn) && !worn;
             }
@@ -68,6 +75,7 @@ namespace BowMan
         private void OnEnable()
         {
             focused = Application.isFocused;
+            freshTrigger = true;
             var holdingHand = bowInLeftHand ? "LeftHand" : "RightHand";
             var drawingHand = bowInLeftHand ? "RightHand" : "LeftHand";
             drawAction = Button("Draw string", drawingHand, "triggerPressed", false);
@@ -124,17 +132,24 @@ namespace BowMan
         {
             if (bow == null || BowHand == null || DrawHand == null) return;
             pinch = Mathf.MoveTowards(pinch, bow.IsDrawing ? 100f : 0f, Time.unscaledDeltaTime * 1200f);
-            bool drawTrackedNow = drawTracked.IsPressed();
-            bool holdLastPose = bow.IsDrawing && drawAction.IsPressed();
-            if (headsetInputBlocked() || !focused || paused || !bowTracked.IsPressed() || (!drawTrackedNow && !holdLastPose))
+            bool drawTrackedNow = Tracking(drawTracked);
+            bool holdLastPose = bow.IsDrawing && drawAction.controls.Count > 0 && drawAction.IsPressed();
+            if (InputBlocked || !Tracking(bowTracked) || (!drawTrackedNow && !holdLastPose))
             {
+                freshTrigger = false;
                 bow.SetHeld(false);
                 UpdatePose();
                 return;
             }
             bow.SetHeld(true);
             UpdatePose();
-            if (!bow.IsHeld || !drawTrackedNow) return;
+            if (!drawTrackedNow) return;
+            if (!freshTrigger)
+            {
+                freshTrigger = !drawAction.IsPressed() && !drawAction.WasPressedThisFrame();
+                return;
+            }
+            if (!bow.IsHeld) return;
             if (drawAction.WasPressedThisFrame() && bow.TryBeginDraw(DrawHand.position))
                 lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
             if (drawAction.WasReleasedThisFrame() && !drawAction.IsPressed()) bow.Release();
@@ -147,16 +162,19 @@ namespace BowMan
             if (bow == null || BowHand == null || DrawHand == null) return;
             bow.transform.SetPositionAndRotation(BowHand.TransformPoint(gripPositionOffset),
                 BowHand.rotation * Quaternion.Euler(gripRotationOffset));
-            if (bow.IsDrawing && focused && !paused && bowTracked.IsPressed())
+            bool usable = !InputBlocked;
+            bool gripTracked = usable && Tracking(bowTracked);
+            bool stringTracked = usable && Tracking(drawTracked);
+            if (bow.IsDrawing && gripTracked)
             {
-                if (drawTracked.IsPressed()) lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
+                if (stringTracked) lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
                 bow.PullTo(bow.transform.TransformPoint(lastPullLocal));
             }
             if (leftHand == null) return;
             var grip = bowInLeftHand ? leftHand : rightHand;
             var draw = bowInLeftHand ? rightHand : leftHand;
-            grip.gameObject.SetActive(focused && !paused && bowTracked.IsPressed());
-            draw.gameObject.SetActive(focused && !paused && drawTracked.IsPressed());
+            grip.gameObject.SetActive(gripTracked);
+            draw.gameObject.SetActive(stringTracked);
             grip.transform.SetPositionAndRotation(bow.transform.position,
                 bow.transform.rotation * Quaternion.Euler(-90f, 0f, 0f));
             draw.transform.SetPositionAndRotation(bow.IsDrawing ? bow.StringPosition : DrawHand.position, DrawHand.rotation);
@@ -170,14 +188,30 @@ namespace BowMan
         private void OnApplicationFocus(bool hasFocus)
         {
             focused = hasFocus;
-            if (!focused && bow != null) bow.SetHeld(false);
+            if (!focused && !UsesOpenXRFocus && bow != null)
+            {
+                freshTrigger = false;
+                bow.SetHeld(false);
+            }
         }
 
         // Cancels a nocked shot when the XR application pauses.
         private void OnApplicationPause(bool isPaused)
         {
             paused = isPaused;
-            if (paused && bow != null) bow.SetHeld(false);
+            if (paused && bow != null)
+            {
+                freshTrigger = false;
+                bow.SetHeld(false);
+            }
+        }
+
+        // Reads each newly resolved tracking control even before its input action reports an edge.
+        private static bool Tracking(InputAction action)
+        {
+            foreach (var control in action.controls)
+                if (control.device.enabled && control is ButtonControl button && button.isPressed) return true;
+            return false;
         }
 
         // Creates and enables a button action scoped to one tracked controller hand.
@@ -207,6 +241,8 @@ namespace BowMan
         {
             if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
             if (!HeadsetActive) return DesktopBowTest.DesktopAvailable ? "Press Tab for desktop controls" : "Enter VR to use your bow";
+            if (InputBlocked) return "Return to the game in your headset";
+            if (!Tracking(bowTracked) || !Tracking(drawTracked)) return "Wake both Touch controllers";
             if (bow.IsDrawing) return $"{Mathf.RoundToInt(bow.DrawStrength * 100f)}% draw · Release to shoot";
             var hand = BowInLeftHand ? "right" : "left";
             return $"{hand[0].ToString().ToUpperInvariant() + hand.Substring(1)} hand to string · Hold trigger";
