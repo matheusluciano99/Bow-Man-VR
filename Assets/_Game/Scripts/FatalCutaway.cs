@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace BowMan
 {
@@ -17,7 +18,7 @@ namespace BowMan
 
         private readonly List<Mesh> snapshots = new();
         private readonly List<Renderer> shell = new();
-        private readonly List<(Transform part, Vector3 rest, Vector3 offset)> fragments = new();
+        private readonly List<(Transform part, Vector3 rest, Vector3 offset)> fractures = new();
         private Transform window, stage, arrow, anatomy;
         private Camera replayCamera;
         private RenderTexture picture;
@@ -51,8 +52,9 @@ namespace BowMan
             stage.position = StageOrigin;
             replayCamera = new GameObject("Replay camera").AddComponent<Camera>();
             replayCamera.transform.SetParent(stage, false);
-            replayCamera.stereoTargetEye = StereoTargetEyeMask.None;
+            replayCamera.GetUniversalAdditionalCameraData().allowXRRendering = false;
             replayCamera.enabled = picture != null;
+            if (replayCamera.TryGetComponent<AudioListener>(out var listener)) listener.enabled = false;
             replayCamera.targetTexture = picture;
             replayCamera.depth = -20;
             replayCamera.nearClipPlane = .015f;
@@ -121,36 +123,36 @@ namespace BowMan
             sound.PlayOneShot(Resources.Load<AudioClip>("DuelAudio/Flight"), .5f);
         }
 
-        // Adds a rounded bone form at the game contact and lets only confirmed fractures separate.
+        // Fits archived bone geometry into the contact's animated frame.
         private void StageBone(BoneHit hit)
         {
-            var size = hit.LocalBounds.size;
-            var axis = size.x > size.y ? (size.x > size.z ? 0 : 2) : (size.y > size.z ? 1 : 2);
-            var span = Vector3.zero;
-            span[axis] = size[axis];
-            var center = hit.LocalBounds.center;
-            for (int i = 0; i < (hit.Fractured ? 2 : 1); i++)
+            var name = hit.Bone switch
             {
-                float sign = i == 0 ? -1f : 1f;
-                var segment = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                segment.name = hit.Bone.ToString();
-                var collider = segment.GetComponent<Collider>();
-                collider.enabled = false;
-                Destroy(collider);
-                segment.transform.SetParent(anatomy, false);
-                segment.transform.localPosition = view * (hit.Frame.TransformPoint(center +
-                    (hit.Fractured ? span * (.24f * sign) : Vector3.zero)) - entry);
-                segment.transform.localRotation = view * hit.Frame.rotation;
-                var dimensions = size;
-                if (hit.Fractured) dimensions[axis] *= .58f;
-                segment.transform.localScale = Vector3.Scale(hit.Frame.lossyScale, dimensions);
-                var renderer = segment.GetComponent<MeshRenderer>();
-                renderer.sharedMaterial = cutawayMaterial;
-                Color(renderer, new Color(.96f, .81f, .6f, .88f));
-                if (hit.Fractured)
-                    fragments.Add((segment.transform, segment.transform.localPosition,
-                        view * hit.Frame.TransformDirection(span.normalized) * (.022f * sign)));
-            }
+                HumanBodyBones.Head => "Skull",
+                HumanBodyBones.Chest or HumanBodyBones.UpperChest => "Ribs",
+                HumanBodyBones.Neck or HumanBodyBones.Spine => "Vertebra",
+                HumanBodyBones.Hips => "Pelvis",
+                HumanBodyBones.LeftShoulder or HumanBodyBones.RightShoulder => "Shoulder",
+                HumanBodyBones.LeftUpperArm or HumanBodyBones.RightUpperArm => "Humerus",
+                HumanBodyBones.LeftLowerArm or HumanBodyBones.RightLowerArm => "Forearm",
+                HumanBodyBones.LeftUpperLeg or HumanBodyBones.RightUpperLeg => "Femur",
+                HumanBodyBones.LeftLowerLeg or HumanBodyBones.RightLowerLeg => "Tibia",
+                _ => null
+            };
+            if (name == null) return;
+            var prefab = Resources.Load<GameObject>("ReplayBones/" + name);
+            if (prefab == null) return;
+            var mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+            var bone = CopyMesh(name, anatomy, mesh, new[] { cutawayMaterial });
+            Place(bone.transform, hit.Frame);
+            bone.transform.localPosition = view * (hit.Frame.TransformPoint(hit.LocalBounds.center) - entry);
+            var size = hit.LocalBounds.size;
+            if (hit.Frame.TryGetComponent<BoxCollider>(out var box)) size = box.size * .94f;
+            var bounds = mesh.bounds.size;
+            bone.transform.localScale = Vector3.Scale(hit.Frame.lossyScale,
+                new Vector3(size.x / bounds.x, size.y / bounds.y, size.z / bounds.z));
+            Color(bone, hit.Fractured ? new Color(.94f, .75f, .50f, .53f) : new Color(.79f, .88f, .90f, .48f));
+            if (hit.Fractured) fractures.Add((bone.transform, bone.transform.localPosition, Vector3.right * .016f));
         }
 
         // Copies render geometry without physics, weapons or gameplay scripts.
@@ -209,8 +211,8 @@ namespace BowMan
             float approach = Mathf.Clamp01(elapsed / ImpactTime);
             arrow.localPosition = inside ? pathEnd * Mathf.SmoothStep(0, 1, entryTime) :
                 Vector3.left * Mathf.Lerp(.66f, 0f, 1f - (1f - approach) * (1f - approach));
-            foreach (var fragment in fragments)
-                fragment.part.localPosition = fragment.rest + fragment.offset * Mathf.SmoothStep(0, 1, entryTime);
+            foreach (var fracture in fractures)
+                fracture.part.localPosition = fracture.rest + fracture.offset * Mathf.Sin(entryTime * Mathf.PI);
 
             float exit = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(InspectTime, Duration, elapsed));
             var aim = inside ? pathEnd * .44f : new Vector3(Mathf.Lerp(-.26f, .025f, approach), .065f, 0);
@@ -238,7 +240,7 @@ namespace BowMan
             if (cutawayMaterial != null) Destroy(cutawayMaterial);
             foreach (var mesh in snapshots) Destroy(mesh);
             snapshots.Clear();
-            fragments.Clear();
+            fractures.Clear();
             shell.Clear();
             window = null;
             stage = null;

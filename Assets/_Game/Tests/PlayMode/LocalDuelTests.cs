@@ -340,7 +340,7 @@ public class LocalDuelTests
             Assert.That(replayCamera.enabled, Is.False);
         else
             Assert.That(replayCamera.targetTexture, Is.Not.Null);
-        Assert.That(replayCamera.stereoTargetEye, Is.EqualTo(StereoTargetEyeMask.None));
+        Assert.That(replayCamera.stereoEnabled, Is.False);
         var replay = replayCamera.transform.parent;
         var replayArrow = replay.Find("Replay arrow");
         Assert.That(replayArrow.GetComponentsInChildren<MeshFilter>().Length, Is.GreaterThan(0));

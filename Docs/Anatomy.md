@@ -45,10 +45,9 @@ The event does not delay the match result or alter the existing death sequence.
 The duel shows a fixed-depth replay window with a separate presentation camera.
 The camera frames the game arrow moving toward a frozen copy of the struck
 archer, then cuts closer as the tip travels along the confirmed internal path.
-The shell becomes translucent and reveals contacted tissue meshes and rounded
-representations of the contacted rig bones. Confirmed fractures separate during
-the internal shot. The presentation contains the original arrow geometry and
-uses the recorded hit. It releases the snapshot, texture and stage at the end
+The shell becomes translucent and reveals contacted tissue meshes and fitted
+BodyParts3D bone meshes for the mapped contacts. Confirmed fractures receive an impact accent during the internal shot. The presentation contains the original arrow geometry and
+uses the recorded hit. Rebuild the presentation bone meshes with `SourceAssets/BodyParts3D/PrepareReplayBones.py`. It releases the snapshot, texture and stage at the end
 or when the player restarts.
 
 The initial replay runs for 3.65 seconds. Head and hand tracking remain live.

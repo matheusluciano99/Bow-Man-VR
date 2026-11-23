@@ -267,8 +267,7 @@ Use free human performance recordings with verified game-use terms. Review the f
 Start the replay only after the duel confirms a lethal arrow. Open on the
 original projectile approaching a frozen pose of the struck archer, cut to its
 contact inside the body, then pull out to the duel. Use the exact shot path and
-the fitted game anatomy. Show separation only for a bone marked fractured by
-the match. Play the close-up on a surface at a fixed depth in front of the
+the fitted game anatomy. The contacted bone receives an impact accent when the match marks it fractured. Play the close-up on a surface at a fixed depth in front of the
 viewer so their own head movement remains live throughout. The match result and
 regional defeat animation proceed in parallel. Timing, reading distance and
 headset comfort remain subject to Quest 2 testing.
