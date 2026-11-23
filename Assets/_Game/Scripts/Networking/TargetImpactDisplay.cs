@@ -5,13 +5,17 @@ namespace BowMan.Networking
     public sealed class TargetImpactDisplay : MonoBehaviour
     {
         private Transform reticle;
+        private TextMesh caption;
 
         // Copies the scoring face into the upper-right HUD and builds an open-center mark with contrasting edges.
         public void Build(Transform head, Transform scoringFace)
         {
             transform.SetParent(head, false);
-            transform.localPosition = new Vector3(.72f, .39f, 1.7f);
-            transform.localScale = Vector3.one * .42f;
+            transform.localPosition = new Vector3(.67f, .43f, 1.7f);
+            transform.localScale = Vector3.one * .38f;
+            ArcherInterface.Surface(transform, "Impact frame", new Vector3(0, .084f, .028f), new Vector2(1.19f, 1.31f), ArcherInterface.Frame);
+            ArcherInterface.Surface(transform, "Impact backing", new Vector3(0, .084f, .019f), new Vector2(1.16f, 1.28f), ArcherInterface.Ink);
+            caption = ArcherInterface.Label(transform, "Last shot", new Vector3(0, .586f, -.015f), .039f);
             var mesh = scoringFace.GetComponent<MeshFilter>().sharedMesh;
             var material = scoringFace.GetComponent<Renderer>().sharedMaterial;
             gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
@@ -37,13 +41,14 @@ namespace BowMan.Networking
                     renderer.SetPropertyBlock(tint);
                 }
             }
-            Mark(null);
+            Mark(null, -1);
         }
 
         // Keeps the registered impact in face-local coordinates until the next result.
-        public void Mark(Vector2? contact)
+        public void Mark(Vector2? contact, int points)
         {
             reticle.gameObject.SetActive(contact.HasValue);
+            caption.text = points < 0 ? "Last shot" : points == 0 ? "Miss" : $"+{points} points";
             if (contact.HasValue) reticle.localPosition = contact.Value;
         }
     }

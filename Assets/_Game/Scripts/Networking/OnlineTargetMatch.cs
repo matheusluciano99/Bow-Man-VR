@@ -171,7 +171,7 @@ namespace BowMan.Networking
             SecondScore = second;
             last = points;
             lastContact = contact;
-            impactDisplay.Mark(points > 0 ? (Vector2?)contact : null);
+            impactDisplay.Mark(points > 0 ? (Vector2?)contact : null, points);
             votes = ready;
             awaiting = false;
             flying = inFlight;
@@ -263,7 +263,7 @@ namespace BowMan.Networking
             flying = false;
             last = points;
             lastContact = contact;
-            impactDisplay.Mark(points > 0 ? (Vector2?)contact : null);
+            impactDisplay.Mark(points > 0 ? (Vector2?)contact : null, points);
             GateBow();
             Publish();
             if (AgainstCpu && !Finished && Completed % 2 == 1) StartCoroutine(ShootCpuArrow());
@@ -361,8 +361,8 @@ namespace BowMan.Networking
             }
             else action = flying || awaiting ? "Arrow in flight" : Completed % 2 == LocalSeat ?
                 vrInput.ShotHint(desktopMode) : AgainstCpu ? "CPU is drawing" : "Opponent's turn";
-            feedback.text = $"{first}: {FirstScore} pts ({ArrowsPerSeat - (used + 1) / 2} left)    |    {second}: {SecondScore} pts ({ArrowsPerSeat - used / 2} left)\n" +
-                $"{RoundDistance} m   •   Archer {LocalSeat + 1}   •   {(last < 0 ? "Center: 10 pts" : last == 0 ? "Miss" : $"{((Completed - 1) % 2 == 0 ? first : second)}: +{last}")}\n{action}";
+            feedback.text = $"<color=#ECC67D>{first} {FirstScore} ({ArrowsPerSeat - (used + 1) / 2} left)     ·     {second} {SecondScore} ({ArrowsPerSeat - used / 2} left)</color>\n" +
+                $"{RoundDistance} m\n{action}";
         }
 
         // Releases round-owned objects and listeners when the player exits to the menu.

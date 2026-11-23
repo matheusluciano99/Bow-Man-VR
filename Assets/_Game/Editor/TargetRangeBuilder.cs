@@ -55,9 +55,8 @@ public static class TargetRangeBuilder
         connection.ApplyModifiedPropertiesWithoutUndo();
         var label = (TextMesh)source.FindProperty("feedback").objectReferenceValue;
         label.text = "Tiro ao alvo   •   10 arrows per archer";
-        label.characterSize = 0.030f;
-        LocalDuelBuilder.AddFeedbackPanel(label.transform.parent, 2.5f);
-        label.transform.localScale = Vector3.one * 0.55f;
+        label.transform.Find("HUD backing").localScale = new Vector3(1.58f, .31f, 1f);
+        label.transform.Find("HUD top rule").localScale = new Vector3(1.58f, .005f, 1f);
         Object.DestroyImmediate(duel);
         Object.DestroyImmediate(host.GetComponent<VRInjuryView>());
         EditorSceneManager.SaveScene(scene);

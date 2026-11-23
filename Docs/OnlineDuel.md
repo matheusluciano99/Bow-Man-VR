@@ -31,7 +31,7 @@ Physical Quest 2 review and the two-network session use the lab checklist.
 Choose **Tiro ao alvo**, select a distance and choose **Play against CPU** for a solo competition. The computer stands on your right. Alternate ten arrows each and press A to play again at the same distance. The controller menu button returns to mode selection.
 
 For online play, enter **Tiro ao alvo** on both PCs. Host on one and join with
-its code on the other. Before hosting, select **15, 30, 50, 60 or 70 m** by cycling **Distance** with the right trigger. Both seats use the host’s distance for all twenty arrows and rematches. Leave the lobby and host again to change courses. Each archer sees the target from the same firing line.
+its code on the other. Before hosting, select **15, 30, 50, 60 or 70 m** with the right trigger in the **Target distance** row. Both seats use the host’s distance for all twenty arrows and rematches. Leave the lobby and host again to change courses. Each archer sees the target from the same firing line.
 Use the tracked bow controls. The host shoots first. The bow unlocks
 for the other seat once the arrow lands or expires. The upper-right target marks the host’s confirmed scoring point on both screens. A miss clears the mark. After twenty shots, each
 player can press A to accept a new match. The controller menu button leaves the session.

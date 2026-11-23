@@ -150,7 +150,8 @@ namespace BowMan.Menu
             var split = content.IndexOf('\n');
             heading.text = showingNotices ? "Source and license notices" : content.Substring(0, split);
             body.text = showingNotices ? content : content.Substring(split + 1);
-            body.characterSize = showingNotices ? 0.019f : 0.022f;
+            heading.characterSize = 0.029f;
+            body.characterSize = showingNotices ? 0.016f : 0.019f;
             noticesLabel.text = showingNotices ? "Credits" : "Notices";
             counter.text = $"{page + 1} / {set.Length}";
             previous.gameObject.SetActive(page > 0);

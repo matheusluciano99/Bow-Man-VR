@@ -347,21 +347,27 @@ panels is the expected VR menu interaction and needs no new package; XR
 Interaction Toolkit would add a dependency that touches the shared rig. The
 menu generator puts MainMenu, LocalDuel, PvPConnectionTest and TargetRange first in the build
 list so scenes can load each other, and other scenes stay after them. Single-scene
-test players are still built explicitly. The left Menu button or Esc returns to
+test players are still built explicitly. The left Menu button returns to
 the menu; leaving the PvP scene ends the session because the network object
 persists across scene loads.
 
-Players choose English Archer or Erika Archer on the mode menu (G on desktop). Save the choice independently from the bow hand. In PvE the other model plays the opponent. In online play each seat chooses freely, including matching characters. Each archer has a distinct recorded idle, bow performance, breath, exertion, injury and defeat voice. The shared injury rules and shot timing keep both choices equivalent in play.
+Players choose English Archer or Erika Archer on the mode menu. Save the choice independently from the bow hand. In PvE the other model plays the opponent. In online play each seat chooses freely, including matching characters. Each archer has a distinct recorded idle, bow performance, breath, exertion, injury and defeat voice. The shared injury rules and shot timing keep both choices equivalent in play.
 
 A player chooses the bow hand on the mode menu before entering either duel.
-The panel names both the bow hand and drawing hand. Save that choice locally so
+The panel names the bow hand and the match prompts name the drawing hand. Save that choice locally so
 entering the other mode or returning on another day preserves it. The duel HUD
 shows the next step when the player can shoot and a waiting prompt during the
 opponent’s turn.
 
 Keep release credits inside the mode menu so the player can read them and return
-with the same controller or mouse. Source and license notices are also packaged
+with the same controller. Source and license notices are also packaged
 as plain text in `StreamingAssets/BowMan-Credits.txt` for offline access.
+
+Use the same dark panels, brass focus accents and readable type throughout the
+spatial interface. Show choices on the main menu and a separate six-character
+join screen. In Tiro ao alvo, show every available distance as a direct choice.
+Keep score, turn prompts and the last impact off the center of the firing lane
+so the target and the drawing hand remain visible.
 
 ## Standing archers between shots
 

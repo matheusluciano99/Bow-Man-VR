@@ -24,7 +24,7 @@ public static class ArcherHandBuilder
             foreach (var left in new[] { true, false })
             {
                 var actor = Object.Instantiate(prefab);
-                try { BakeHand(actor, left, folder); }
+                try { BakeHand(actor, left, folder, model == "EnglishArcher"); }
                 finally { Object.DestroyImmediate(actor); }
             }
         }
@@ -32,9 +32,13 @@ public static class ArcherHandBuilder
     }
 
     // Bakes three gestures onto the same surface vertices in controller space, including the grip offset.
-    private static void BakeHand(GameObject actor, bool left, string folder)
+    private static void BakeHand(GameObject actor, bool left, string folder, bool english)
     {
         var side = left ? "Left" : "Right";
+        // Both English hands use the same clean cuff and skin geometry.
+        bool mirrored = english && !left;
+        if (mirrored) left = true;
+        var sourceSide = left ? "Left" : "Right";
         var rig = actor.GetComponentInChildren<Animator>();
         using var handler = new HumanPoseHandler(rig.avatar, rig.transform);
         var wrist = rig.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
@@ -81,8 +85,12 @@ public static class ArcherHandBuilder
                     }
                 }
                 if (kept.Count == 0) continue;
+                if (mirrored)
+                    for (int i = 0; i < kept.Count; i += 3)
+                        (kept[i + 1], kept[i + 2]) = (kept[i + 2], kept[i + 1]);
                 triangles.Add(kept.ToArray());
-                materials.Add(skin.sharedMaterials[sub]);
+                var material = skin.sharedMaterials[sub];
+                materials.Add(english ? EnglishFinish(material) : material);
             }
             if (selected.Count == 0) continue;
             source.Add((skin,selected.ToArray()));
@@ -105,13 +113,13 @@ public static class ArcherHandBuilder
             for (var i=0; i<pose.muscles.Length; i++)
             {
                 var name = HumanTrait.MuscleName[i];
-                if (!name.StartsWith(side+" ") || !name.Contains("Stretched")) continue;
+                if (!name.StartsWith(sourceSide+" ") || !name.Contains("Stretched")) continue;
                 var thumb = name.Contains("Thumb");
                 var index = name.Contains("Index");
                 pose.muscles[i] = gesture switch {
-                    1 => thumb ? -.28f : -.74f,
-                    2 => thumb || index ? -.4f : -.56f,
-                    _ => thumb ? .02f : .22f
+                    1 => thumb ? -.24f : english ? -.62f : -.74f,
+                    2 => thumb || index ? -.4f : english ? -.38f : -.56f,
+                    _ => thumb ? .02f : english ? .09f : .22f
                 };
             }
             handler.SetHumanPose(ref pose);
@@ -144,16 +152,22 @@ public static class ArcherHandBuilder
                     var point = part.skin.transform.TransformPoint(v[original]);
                     var surfaceNormal = part.skin.transform.TransformDirection(n[original]).normalized;
                     var behind = Vector3.Dot(point - wrist.position, forearm);
-                    if (behind > .052f)
+                    var cuff = english ? .038f : .052f;
+                    if (behind > cuff)
                     {
                         // Roll the original forearm surface into a closed cuff at the back of the wrist.
-                        var end = Mathf.Clamp01((behind - .052f) / .015f);
+                        var end = Mathf.Clamp01((behind - cuff) / .015f);
                         var radial = point - wrist.position - forearm * behind;
-                        point = wrist.position + forearm * (.052f + .006f * end) + radial * (1f - end);
+                        point = wrist.position + forearm * (cuff + .006f * end) + radial * (1f - end);
                         surfaceNormal = Vector3.Slerp(surfaceNormal, forearm, end);
                     }
                     var position = toController * (point - anchor);
                     var normal = toController * surfaceNormal;
+                    if (mirrored)
+                    {
+                        position.x = -position.x;
+                        normal.x = -normal.x;
+                    }
                     if (gesture == 0)
                     {
                         vertices[indexInHand] = position;
@@ -186,7 +200,18 @@ public static class ArcherHandBuilder
                     var lower = Vector3.back * Mathf.Max(0f, top-ceiling);
                     for (var i=0; i<delta.Length; i++) delta[i] += lower;
                 }
-                result.AddBlendShapeFrame(gesture == 1 ? "Grip" : "Pinch",100,delta,normalDelta,null);
+                Vector3[] tangentDelta = null;
+                if (english)
+                {
+                    var shaped = Object.Instantiate(result);
+                    shaped.vertices = vertices.Select((v, i) => v + delta[i]).ToArray();
+                    shaped.normals = normals.Select((n, i) => n + normalDelta[i]).ToArray();
+                    shaped.RecalculateTangents();
+                    var originalTangents = result.tangents;
+                    tangentDelta = shaped.tangents.Select((t, i) => (Vector3)(t - originalTangents[i])).ToArray();
+                    Object.DestroyImmediate(shaped);
+                }
+                result.AddBlendShapeFrame(gesture == 1 ? "Grip" : "Pinch", 100, delta, normalDelta, tangentDelta);
             }
         }
         var path = $"{folder}/{side}.asset";
@@ -204,6 +229,23 @@ public static class ArcherHandBuilder
             PrefabUtility.SaveAsPrefabAsset(hand,$"{folder}/{side}.prefab");
         }
         finally { Object.DestroyImmediate(hand); }
+    }
+
+    // Sets the close-up normal and roughness response without changing the opponent's body material.
+    private static Material EnglishFinish(Material source)
+    {
+        var path = $"{Output}/English/{source.name} Closeup.mat";
+        var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (material == null)
+        {
+            material = new Material(source);
+            AssetDatabase.CreateAsset(material, path);
+        }
+        material.CopyPropertiesFromMaterial(source);
+        material.SetFloat("_BumpScale", .38f);
+        material.SetFloat("_Smoothness", .23f);
+        EditorUtility.SetDirty(material);
+        return material;
     }
 
     // Finds the tip marker at the end of a modeled finger chain.

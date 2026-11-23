@@ -164,14 +164,14 @@ public class ModeMenuTests
             var roots = menuScene.GetRootGameObjects();
             var menu = roots.SelectMany(g => g.GetComponentsInChildren<ModeMenu>()).Single();
             var pointer = roots.SelectMany(g => g.GetComponentsInChildren<ControllerPointer>()).Single();
-            var choices = roots.Single(g => g.name == "Mode choices").transform;
+            var choices = roots.Single(g => g.name == "Mode choices").transform.Find("Menu layout");
             var hand = choices.Find("Bow hand option").gameObject;
             var camera = roots.SelectMany(g => g.GetComponentsInChildren<Camera>()).Single();
             Physics.SyncTransforms();
             pointer.Point(new Ray(camera.transform.position, hand.transform.position - camera.transform.position));
             Assert.That(pointer.Hovered.gameObject, Is.EqualTo(hand));
             pointer.Confirm();
-            Assert.That(hand.GetComponentInChildren<TextMesh>().text, Does.Contain("Draw with left"));
+            Assert.That(hand.GetComponentInChildren<TextMesh>().text, Does.Contain("Bow hand · Right"));
             var character = choices.Find("Archer option");
             pointer.Point(new Ray(camera.transform.position, character.position - camera.transform.position));
             Assert.That(pointer.Hovered.transform, Is.SameAs(character));

@@ -5,23 +5,27 @@ namespace BowMan.Menu
     // A selectable mode panel that brightens while the pointer is on it.
     public sealed class ModeOption : MonoBehaviour
     {
-        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
-        private static readonly int LegacyColor = Shader.PropertyToID("_Color");
-        private static readonly Color Idle = new Color(0.16f, 0.2f, 0.28f);
-        private static readonly Color Highlight = new Color(0.85f, 0.55f, 0.12f);
-
         [SerializeField] private GameMode mode;
         [SerializeField] private Renderer panel;
+        [SerializeField] private Color restingColor = new Color32(32, 43, 46, 255);
 
         public GameMode Mode => mode;
         public bool IsHighlighted { get; private set; }
 
         // Sets the mode and the renderer to tint, used by the scene builder and tests.
-        public void Configure(GameMode chosenMode, Renderer panelRenderer)
+        public void Configure(GameMode chosenMode, Renderer panelRenderer, Color? idleColor = null)
         {
             mode = chosenMode;
             panel = panelRenderer;
+            if (idleColor.HasValue) restingColor = idleColor.Value;
             SetHighlighted(false);
+        }
+
+        // Updates the resting tint used for a selected course.
+        public void SetRestingColor(Color color)
+        {
+            restingColor = color;
+            SetHighlighted(IsHighlighted);
         }
 
         // Starts every panel in its idle color.
@@ -32,12 +36,7 @@ namespace BowMan.Menu
         {
             IsHighlighted = highlighted;
             if (panel == null) return;
-            var block = new MaterialPropertyBlock();
-            panel.GetPropertyBlock(block);
-            var color = highlighted ? Highlight : Idle;
-            block.SetColor(BaseColor, color);
-            block.SetColor(LegacyColor, color);
-            panel.SetPropertyBlock(block);
+            ArcherInterface.Tint(panel, highlighted ? new Color32(100, 74, 36, 255) : restingColor);
         }
     }
 }

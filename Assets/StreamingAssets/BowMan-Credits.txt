@@ -107,3 +107,11 @@ https://opengameart.org/content/female-hurt-grunts-groans
 
 helenavelikaja — Slow Breathing (Woman). Erika Archer's breathing loop.
 https://freesound.org/people/helenavelikaja/sounds/361923/
+
+INTERFACE TYPE
+
+Cinzel by the Cinzel Project Authors. SIL Open Font License 1.1.
+https://github.com/google/fonts/tree/main/ofl/cinzel
+
+Source Sans 3 by Adobe. SIL Open Font License 1.1.
+https://github.com/adobe-fonts/source-sans

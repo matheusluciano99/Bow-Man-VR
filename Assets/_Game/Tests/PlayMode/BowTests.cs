@@ -230,7 +230,13 @@ public class BowTests
         bow.Fired += _ => shots++;
         inputObject.SetActive(true);
         input.SetBowHand(leftBow);
-        input.ShowArcherHands();
+        var previousArcher = ArcherSelection.Preferred;
+        try
+        {
+            ArcherSelection.Preferred = ArcherModel.English;
+            input.ShowArcherHands();
+        }
+        finally { ArcherSelection.Preferred = previousArcher; }
         var gripMesh = holdingPose.GetComponentInChildren<SkinnedMeshRenderer>(true);
         var drawMesh = drawPose.GetComponentInChildren<SkinnedMeshRenderer>(true);
         Assert.That(gripMesh.sharedMesh.vertexCount, Is.GreaterThan(150));

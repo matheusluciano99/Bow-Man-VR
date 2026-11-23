@@ -83,7 +83,7 @@ Use GitHub's Assignees field to record task responsibility.
   shoots first and can start a rematch with A. The CPU uses the other
   archer model and fires a physical arrow at the target. For online play,
   host/join with a Relay code. Alternate ten arrows per
-  archer at the same target. Before hosting, choose 15 (default), 30, 50, 60 or
+  archer at the same target. In the lobby, choose 15 (default), 30, 50, 60 or
   70 metres. Both seats and rematches use the host’s distance. The match HUD
   marks the last scored contact on a copy of the target. The host scores each tip contact, and both
   players see both totals, arrows remaining and the winner or tie.
@@ -196,6 +196,8 @@ Use GitHub's Assignees field to record task responsibility.
   and match outcomes belong to later tasks.
 
 ## Starting the game
+
+- Keep world-space options readable with the right-controller pointer. Keep match prompts and the impact inset clear of the center of the aiming view.
 
 - `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Its panels offer
   **PvE — vs AI archer** (opens `LocalDuel`), **PvP — online duel** (opens

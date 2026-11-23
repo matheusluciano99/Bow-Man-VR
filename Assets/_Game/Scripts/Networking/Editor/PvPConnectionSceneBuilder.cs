@@ -163,6 +163,7 @@ namespace BowMan.Networking.Editor
             label.characterSize = 0.012f;
             label.color = Color.white;
             label.text = ConnectionStatus.Offline.Describe();
+            ArcherInterface.MatchPanel(label, 1.42f);
             return label;
         }
 

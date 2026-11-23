@@ -12,7 +12,7 @@ Each duel archer uses a different eight-second excerpt from Sam Lazarus’s stan
 
 For a shot, the opposing archer reaches, draws and releases with an upper-body segment of the free Rokoko archery recording. English and Erika use different draws from that performance, each baked for both bow hands. The equipment follows the grip and the drawing fingers meet the active string. The source and Unity bake menu are documented in the [archery recording attribution](../../Assets/ThirdParty/Rokoko/Attribution.md#bow-action-recording).
 
-First-person hands use the selected archer’s own skin, cuffs and materials. Unity extracts each rig’s hand and cuff triangles and bakes relaxed, grip and pinch shapes into four hand prefabs. Rebuild them with **Bow Man VR > Characters > Bake first-person hands**. The English Archer and Mixamo sources and terms are listed below.
+First-person hands use the selected archer’s own skin, cuffs and materials. Unity extracts each rig’s hand and cuff triangles and bakes relaxed, grip and pinch shapes into four hand prefabs. Rebuild them with **Bow Man VR > Characters > Bake first-person hands**. The English first-person right hand mirrors the left hand mesh and gestures in controller space. Both use a shorter cuff and a separate matte close-up material. The English Archer and Mixamo sources and terms are listed below.
 
 ## Retained Templar Knight
 

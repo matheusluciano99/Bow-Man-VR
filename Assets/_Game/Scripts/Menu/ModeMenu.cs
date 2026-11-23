@@ -79,7 +79,7 @@ namespace BowMan.Menu
         // Restores the character label when returning to the mode menu.
         private void ShowArcher()
         {
-            if (archerLabel != null) archerLabel.text = "Archer: " + ArcherSelection.Name(ArcherSelection.Preferred);
+            if (archerLabel != null) archerLabel.text = ArcherSelection.Name(ArcherSelection.Preferred);
         }
 
         // Switches which controller holds the bow and updates the visible menu choice.
@@ -94,8 +94,8 @@ namespace BowMan.Menu
         private void RefreshHandLabel()
         {
             if (handLabel != null) handLabel.text = VRBowInput.PreferredBowLeft
-                ? "Bow in left hand  •  Draw with right"
-                : "Bow in right hand  •  Draw with left";
+                ? "Bow hand · Left"
+                : "Bow hand · Right";
         }
 
         // Navigates credits with the keyboard while the same panels remain available to the pointer.
