@@ -9,6 +9,12 @@ namespace BowMan.Networking
     public sealed class OnlineTargetMatch : MonoBehaviour
     {
         public const int ArrowsPerSeat = 10;
+        public const int DefaultDistance = 15;
+        public const float TargetLaunchSpeed = 32f;
+        public static readonly System.Collections.ObjectModel.ReadOnlyCollection<int> Distances =
+            System.Array.AsReadOnly(new[] { DefaultDistance, 30, 50, 60, 70 });
+        public int HostDistance { get; private set; } = DefaultDistance;
+        public int RoundDistance { get; private set; } = DefaultDistance;
         [SerializeField] private PvPConnectionController connection;
         [SerializeField] private Bow bow;
         [SerializeField] private VRBowInput vrInput;
@@ -20,12 +26,14 @@ namespace BowMan.Networking
 
         private Transform match;
         private DuelAudio sounds;
+        private TargetImpactDisplay impactDisplay;
         private ArrowFlight pending, replica;
         private Vector3 origin, velocity;
         private float launchTime;
         private InputAction hand, rematch;
         private bool awaiting, flying, desktopMode;
         private int votes, last;
+        private Vector2 lastContact;
         public int Round { get; private set; }
         public int Completed { get; private set; }
         public int FirstScore { get; private set; }
@@ -35,6 +43,20 @@ namespace BowMan.Networking
         private NetworkManager Net => connection.GetComponent<NetworkManager>();
         private int LocalSeat => Net.IsServer ? 0 : 1;
         private PlayerPresence Seat => Net.LocalClient.PlayerObject.GetComponent<PlayerPresence>();
+
+        // Moves the entire target assembly down the common firing line without resizing the rings.
+        public static void PlaceTarget(Transform firingLine, Transform scoringFace, int metres)
+        {
+            scoringFace.parent.position = firingLine.position + firingLine.forward * metres;
+        }
+
+        // Changes the proposed course only while the local player can still host a new competition.
+        public void ChooseHostDistance(int metres)
+        {
+            if (Playing || !connection.Status.CanStart || !Distances.Contains(metres)) return;
+            HostDistance = metres;
+            PlaceTarget(stand, face.transform, metres);
+        }
 
         // Allocates controller shortcuts and keeps the bow locked until the second player arrives.
         private void Start()
@@ -47,6 +69,7 @@ namespace BowMan.Networking
             rematch.AddBinding("<Keyboard>/r");
             rematch.AddBinding("<WebXRController>{RightHand}/buttonA");
             rematch.Enable();
+            bow.SetMaximumLaunchSpeed(TargetLaunchSpeed);
             desktopMode = !VRBowInput.HeadsetActive;
             vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
             bow.SetShotAllowed(false);
@@ -64,14 +87,18 @@ namespace BowMan.Networking
         // Broadcasts a fresh twenty-shot competition, including a new identifier for stale releases.
         private void NewRound()
         {
-            ApplyScore(Round + 1, 0, 0, 0, -1, false, 0);
+            ApplyScore(Round + 1, 0, 0, 0, -1, false, 0, HostDistance, Vector2.zero);
             Publish();
         }
 
         // Restores the lobby when a seat leaves, including during an unresolved shot.
         private void ConnectionChanged(ConnectionStatus status)
         {
-            if (Playing && status.Phase != ConnectionPhase.Connected) ClearRound();
+            if (Playing && status.Phase != ConnectionPhase.Connected)
+            {
+                ClearRound();
+                PlaceTarget(stand, face.transform, HostDistance);
+            }
         }
 
         // Discards remaining arrows and pending input without moving the headset.
@@ -82,23 +109,29 @@ namespace BowMan.Networking
             if (pending != null) { pending.Hit -= Hit; pending.Expired -= Expired; }
             pending = replica = null;
             if (match != null) { match.gameObject.SetActive(false); Destroy(match.gameObject); }
+            if (impactDisplay != null) Destroy(impactDisplay.gameObject);
             match = null;
             awaiting = flying = false;
         }
 
         // Applies one host snapshot and unlocks input only for the seat entitled to the next arrow.
-        public void ApplyScore(int round, int completed, int first, int second, int points, bool inFlight, int ready)
+        public void ApplyScore(int round, int completed, int first, int second, int points, bool inFlight, int ready, int metres, Vector2 contact)
         {
+            if (!Distances.Contains(metres)) return;
             if (Playing && (round < Round || (round == Round && completed < Completed))) return;
             if (!Playing || Round != round)
             {
                 ClearRound();
+                RoundDistance = metres;
+                PlaceTarget(stand, face.transform, metres);
                 match = new GameObject("Target match").transform;
                 match.SetParent(transform, false);
                 bow.gameObject.SetActive(true);
                 vrInput.ShowArcherHands();
                 desktop.PlaceStand(stand.TransformPoint(new Vector3(-0.45f, 1.3f, 0.6f)), stand.rotation);
                 desktop.UseDesktopControls(desktopMode);
+                impactDisplay = new GameObject("Target impact inset").AddComponent<TargetImpactDisplay>();
+                impactDisplay.Build(feedback.transform.parent, face.transform);
                 sounds = match.gameObject.AddComponent<DuelAudio>();
                 sounds.BindBow(bow, ArenaSetting.WoodlandRange, connection.FirstArcher, connection.SecondArcher);
             }
@@ -108,6 +141,8 @@ namespace BowMan.Networking
             FirstScore = first;
             SecondScore = second;
             last = points;
+            lastContact = contact;
+            impactDisplay.Mark(points > 0 ? (Vector2?)contact : null);
             votes = ready;
             awaiting = false;
             flying = inFlight;
@@ -115,7 +150,7 @@ namespace BowMan.Networking
         }
 
         // Sends the complete authoritative scorecard including any in-flight lock.
-        private void Publish() => Seat.TargetScoreRpc(Round, Completed, FirstScore, SecondScore, last, flying, votes);
+        private void Publish() => Seat.TargetScoreRpc(Round, Completed, FirstScore, SecondScore, last, flying, votes, RoundDistance, lastContact);
 
         // Unlocks the shared bow input only while this peer owns the next release.
         private void GateBow() => bow.SetShotAllowed(Playing && !Finished && !flying && !awaiting && Completed % 2 == LocalSeat);
@@ -177,14 +212,15 @@ namespace BowMan.Networking
             var surface = onFace ? ImpactSound.Wood : sounds.Surface(hit.collider);
             sounds.Impact(hit.point, surface);
             Seat.SceneryRpc(Round, Completed, hit.point, pending.transform.rotation, pending.SceneryLifetime, surface);
-            Settle(onFace ? RingScore(face.transform.InverseTransformPoint(hit.point)) : 0);
+            Vector2 contact = face.transform.InverseTransformPoint(hit.point);
+            Settle(onFace ? RingScore(contact) : 0, contact);
         }
 
         // Counts an arrow that flew out of the range as a miss.
         private void Expired() => Settle(0);
 
         // Charges one shot to its owner and publishes both totals before the next release.
-        private void Settle(int points)
+        private void Settle(int points, Vector2 contact = default)
         {
             pending.Hit -= Hit;
             pending.Expired -= Expired;
@@ -194,6 +230,8 @@ namespace BowMan.Networking
             Completed++;
             flying = false;
             last = points;
+            lastContact = contact;
+            impactDisplay.Mark(points > 0 ? (Vector2?)contact : null);
             GateBow();
             Publish();
         }
@@ -268,7 +306,7 @@ namespace BowMan.Networking
             else action = flying || awaiting ? "Arrow in flight" : Completed % 2 == LocalSeat ?
                 vrInput.ShotHint(desktopMode) : "Opponent's turn";
             feedback.text = $"Archer 1: {FirstScore} pts ({ArrowsPerSeat - (used + 1) / 2} left)    |    Archer 2: {SecondScore} pts ({ArrowsPerSeat - used / 2} left)\n" +
-                $"You: Archer {LocalSeat + 1}   •   {(last < 0 ? "Center: 10 pts" : last == 0 ? "Miss" : $"Last: +{last}")}\n{action}";
+                $"{RoundDistance} m   •   Archer {LocalSeat + 1}   •   {(last < 0 ? "Center: 10 pts" : last == 0 ? "Miss" : $"Archer {(Completed - 1) % 2 + 1}: +{last}")}\n{action}";
         }
 
         // Releases round-owned objects and listeners when the player exits to the menu.

@@ -382,8 +382,7 @@ Alternate shots so both archers see each outcome and shoot at the same distance.
 Each archer releases ten arrows. The host scores the tip contact on ten concentric
 rings, awarding a dividing line to the higher ring. A miss or flight expiry earns
 zero. Cancelling a draw preserves the arrow. Both players see the same scores
-and winner or tie. Both must accept a rematch. The 15-metre distance is provisional
-until headset review.
+and winner or tie. Both must accept a rematch. The host chooses 15, 30, 50, 60 or 70 metres before connecting. The first two options give new players shorter courses before the three long-distance challenges. Both seats and their rematch keep the host’s selection. Target mode uses one full-draw speed (32 game metres per second) across every distance so the longest course remains reachable. Headset readability still needs a lab check.
 
 ## Open questions and provisional values
 

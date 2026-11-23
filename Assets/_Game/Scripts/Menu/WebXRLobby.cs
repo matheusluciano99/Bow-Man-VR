@@ -10,7 +10,9 @@ namespace BowMan.Menu
         private PvPConnectionController connection;
         private ControllerPointer pointer;
         private GameObject board, keypad;
-        private ModeOption join;
+        private ModeOption join, distance;
+        private OnlineTargetMatch range;
+        private TextMesh distanceLabel;
         private TextMesh prompt;
         private string code = "";
 
@@ -18,7 +20,7 @@ namespace BowMan.Menu
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Register()
         {
-            if (Application.platform == RuntimePlatform.WebGLPlayer) SceneManager.sceneLoaded += EnterScene;
+            SceneManager.sceneLoaded += EnterScene;
         }
 
         // Binds the scene's own tracking rig so the board follows its assigned network spawn.
@@ -41,6 +43,13 @@ namespace BowMan.Menu
             prompt = Label(board.transform, "Online match", new Vector3(0, .48f, 0), .042f);
             Key(board.transform, "Host", -.36f, .28f, .62f);
             join = Key(board.transform, "Join", .36f, .28f, .62f);
+            if (controller.IsTargetCompetition)
+            {
+                range = FindAnyObjectByType<OnlineTargetMatch>();
+                distance = Key(board.transform, "Host distance", 0, .73f, 1.36f);
+                distanceLabel = distance.GetComponentInChildren<TextMesh>();
+                distanceLabel.text = $"Host distance: {range.HostDistance} m";
+            }
             keypad = new GameObject("Join code");
             keypad.transform.SetParent(board.transform, false);
             const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -91,6 +100,13 @@ namespace BowMan.Menu
         private void Press(ModeOption key)
         {
             if (!board.activeSelf || !connection.Status.CanStart) return;
+            if (distance != null && key == distance)
+            {
+                var options = OnlineTargetMatch.Distances;
+                range.ChooseHostDistance(options[(options.IndexOf(range.HostDistance) + 1) % options.Count]);
+                distanceLabel.text = $"Host distance: {range.HostDistance} m";
+                return;
+            }
             if (key.name == "Host") { _ = connection.HostAsync(); return; }
             if (key == join)
             {
@@ -110,6 +126,7 @@ namespace BowMan.Menu
         {
             bool show = VRBowInput.HeadsetActive && connection != null && connection.Status.CanStart;
             if (show == board.activeSelf) return;
+            if (show && distanceLabel != null) distanceLabel.text = $"Host distance: {range.HostDistance} m";
             board.SetActive(show);
             pointer.enabled = show;
         }

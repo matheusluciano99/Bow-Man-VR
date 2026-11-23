@@ -166,8 +166,8 @@ namespace BowMan.Networking
 
         // Synchronizes both target scores, accepted shots and rematch votes from the host.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
-        public void TargetScoreRpc(int round, int completed, int first, int second, int last, bool flying, int votes) =>
-            range?.ApplyScore(round, completed, first, second, last, flying, votes);
+        public void TargetScoreRpc(int round, int completed, int first, int second, int last, bool flying, int votes, int metres, Vector2 contact) =>
+            range?.ApplyScore(round, completed, first, second, last, flying, votes, metres, contact);
 
         // Distributes the host's phase and health after each transition or shot rejection.
         [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]

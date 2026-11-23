@@ -2,7 +2,7 @@
 
 VR archery targeting in-browser play on itch.io. The release flow is **Play → Enter VR** in a WebXR-capable browser. Duel against the AI or an
 online opponent. For **Tiro ao alvo**, select the target competition on both PCs.
-One player selects **Host**, the other enters the code and selects **Join**.
+Choose **15, 30, 50, 60 or 70 m** before hosting. One player selects **Host**, the other enters the code and selects **Join**.
 Alternate ten arrows each. The highest total wins.
 
 For lab tests, use Meta Quest 2 through Quest Link with the Windows review player.

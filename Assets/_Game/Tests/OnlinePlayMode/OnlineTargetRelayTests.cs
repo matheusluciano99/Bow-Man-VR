@@ -44,6 +44,50 @@ public class OnlineTargetRelayTests
         Assert.IsFalse(bow.ShotAllowed);
     }
 
+    // Fires a real arrow down each selected woodland lane and checks that its first collision scores ten.
+    [UnityTest]
+    public IEnumerator AllFiveDistancesReachTheScoringFace()
+    {
+        const string path = "Assets/_Game/Scenes/TargetRange.unity";
+        var previous = SceneManager.GetActiveScene();
+        yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+        var scene = SceneManager.GetSceneByPath(path);
+        SceneManager.SetActiveScene(scene);
+        yield return null;
+        var range = Object.FindAnyObjectByType<OnlineTargetMatch>();
+        var line = GameObject.Find("Archer1Spawn").transform;
+        var face = GameObject.Find("Scoring face").transform;
+        var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<ArrowFlight>("Assets/_Game/Prefabs/TestArrow.prefab");
+        try
+        {
+            CollectionAssert.AreEqual(new[] { 15, 30, 50, 60, 70 }, OnlineTargetMatch.Distances);
+            range.ChooseHostDistance(42);
+            Assert.AreEqual(15, range.HostDistance);
+            foreach (int metres in OnlineTargetMatch.Distances)
+            {
+                range.ChooseHostDistance(metres);
+                Physics.SyncTransforms();
+                Assert.AreEqual(metres, range.HostDistance);
+                Assert.That(Vector3.Dot(face.position - line.position, line.forward), Is.EqualTo(metres).Within(.001f));
+                var origin = line.TransformPoint(new Vector3(0, 1.4f, .6f));
+                Assert.IsTrue(ArrowBallistics.TryVelocity(origin, face.position, OnlineTargetMatch.TargetLaunchSpeed, out var velocity));
+                var arrow = Object.Instantiate(prefab, origin, Quaternion.LookRotation(velocity));
+                RaycastHit contact = default;
+                arrow.Hit += hit => contact = hit;
+                arrow.Launch(velocity);
+                yield return Until(() => contact.collider != null, $"First contact at {metres} metres", 8f);
+                Assert.AreEqual(face, contact.collider.transform);
+                Assert.AreEqual(10, OnlineTargetMatch.RingScore(face.InverseTransformPoint(contact.point)));
+                Object.Destroy(arrow.gameObject);
+            }
+        }
+        finally
+        {
+            if (previous.isLoaded) SceneManager.SetActiveScene(previous);
+            SceneManager.UnloadSceneAsync(scene);
+        }
+    }
+
     // Joins two independent players, compares all twenty score updates, votes for a rematch and ties it.
     [UnityTest, Timeout(360000)]
     public IEnumerator TwoEditorsScoreTheMatch()
@@ -65,6 +109,7 @@ public class OnlineTargetRelayTests
         {
             var bow = Object.FindAnyObjectByType<Bow>(FindObjectsInactive.Include);
             Assert.IsFalse(bow.ShotAllowed);
+            range.ChooseHostDistance(host ? 70 : 30);
             if (host)
             {
                 var start = connection.HostAsync();
@@ -86,6 +131,10 @@ public class OnlineTargetRelayTests
             for (int game = 1; game <= 2; ++game)
             {
                 yield return Until(() => range.Round == game, "Fresh round");
+                Assert.AreEqual(70, range.RoundDistance);
+                Assert.That(Vector3.Dot(face.position - stand.position, stand.forward), Is.EqualTo(70f).Within(.001f));
+                range.ChooseHostDistance(15);
+                Assert.AreEqual(70, range.RoundDistance);
                 for (int shot = 0; shot < 20; ++shot)
                 {
                     if ((shot % 2 == 0) == host)
@@ -99,6 +148,10 @@ public class OnlineTargetRelayTests
                         Shoot(bow, stand, point);
                     }
                     yield return Until(() => range.Completed >= shot + 1, "Both peers see settled shot " + shot);
+                    var reticle = GameObject.Find("Target impact inset").transform.Find("Last impact");
+                    bool scored = game != 1 || shot != 1;
+                    Assert.AreEqual(scored, reticle.gameObject.activeSelf);
+                    if (scored) Assert.That(reticle.localPosition.magnitude, Is.LessThan(.015f));
                     Assert.AreEqual((shot + 2) / 2 * 10, range.FirstScore);
                     Assert.AreEqual((shot + 1) / 2 * 10 - (game == 1 && shot >= 1 ? 10 : 0), range.SecondScore);
                 }

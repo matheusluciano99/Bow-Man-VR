@@ -202,7 +202,7 @@ public class BowTests
                 disabledControllers.Add(device);
                 InputSystem.DisableDevice(device);
             }
-        InputSystem.RegisterLayout(@"{""name"":""BowTestController"",""extend"":""XRController"",""controls"":[{""name"":""gripPressed"",""layout"":""Button""},{""name"":""triggerPressed"",""layout"":""Button""}]}");
+        InputSystem.RegisterLayout(@"{""name"":""BowTestController"",""extend"":""XRController"",""controls"":[{""name"":""gripPressed"",""layout"":""Button""},{""name"":""triggerPressed"",""layout"":""Button""},{""name"":""trigger"",""layout"":""Axis""}]}");
         var left = InputSystem.AddDevice("BowTestController");
         var right = InputSystem.AddDevice("BowTestController");
         devices.Add(left);
@@ -252,6 +252,16 @@ public class BowTests
         yield return null;
         yield return null;
         Assert.That(bow.IsDrawing, Is.True);
+        // The WebXR digital flag can drop below its threshold while the analog trigger is still held.
+        InputSystem.QueueDeltaStateEvent((AxisControl)drawing["trigger"], .78f);
+        yield return null;
+        Button(drawing, "triggerPressed", false);
+        yield return null;
+        Assert.That(bow.IsDrawing, Is.True);
+        Button(drawing, "triggerPressed", true);
+        yield return null;
+        InputSystem.QueueDeltaStateEvent((AxisControl)drawing["trigger"], 0f);
+        yield return null;
         Button(holding, "gripPressed", true);
         yield return null;
         Button(holding, "gripPressed", false);

@@ -80,7 +80,7 @@ Use GitHub's Assignees field to record task responsibility.
 - PvE: duel against an AI-controlled archer.
 - Tiro ao alvo: two archers compete online on separate PCs. Both select the
   target competition, then host/join with a Relay code. Alternate ten arrows per
-  archer at the same 15-metre target. The host scores each tip contact, and both
+  archer at the same target. Before hosting, choose 15 (default), 30, 50, 60 or 70 metres. Keep the host’s distance for both seats and rematches. The host scores each tip contact, and both
   players see both totals, arrows remaining and the winner or tie.
 
 ## Project scope

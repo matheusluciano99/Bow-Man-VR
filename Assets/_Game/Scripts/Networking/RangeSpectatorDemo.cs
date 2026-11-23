@@ -15,6 +15,8 @@ public sealed class RangeSpectatorDemo : MonoBehaviour
     private Camera closeup;
     private RenderTexture inset;
     private int shots, active;
+    private int requestedDistance = OnlineTargetMatch.DefaultDistance;
+    private int distance;
     private string status;
     private ArrowFlight arrowPrefab;
     private Vector3? lastImpact;
@@ -39,6 +41,7 @@ public sealed class RangeSpectatorDemo : MonoBehaviour
         if (state != PlayModeStateChange.EnteredPlayMode || !SessionState.GetBool(Pending, false)) return;
         SessionState.EraseBool(Pending);
         var view = EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView"));
+        view.maximized = true;
         view.Focus();
         new GameObject("Tiro ao alvo spectator").AddComponent<RangeSpectatorDemo>();
     };
@@ -88,10 +91,15 @@ public sealed class RangeSpectatorDemo : MonoBehaviour
         }
         while (true)
         {
+            distance = requestedDistance;
+            OnlineTargetMatch.PlaceTarget(line, face, distance);
+            closeup.transform.position = face.position - line.forward * 2.6f;
+            for (int i = 0; i < actors.Length; i++)
+                actors[i].transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(face.position - actors[i].transform.position, Vector3.up));
             score[0] = score[1] = 0;
             lastImpact = null;
             lastShot = "Waiting for the first arrow";
-            for (shots = 0; shots < 2 * OnlineTargetMatch.ArrowsPerSeat; shots++)
+            for (shots = 0; distance == requestedDistance && shots < 2 * OnlineTargetMatch.ArrowsPerSeat; shots++)
             {
                 active = shots % 2;
                 status = names[active] + " to shoot";
@@ -101,12 +109,12 @@ public sealed class RangeSpectatorDemo : MonoBehaviour
                 for (float t = 0f; t < 1.7f; t += Time.deltaTime)
                 {
                     var approximate = action.transform.position + Vector3.up * 1.45f;
-                    ArrowBallistics.TryVelocity(approximate, destination, bow.MaximumLaunchSpeed, out var draw);
+                    ArrowBallistics.TryVelocity(approximate, destination, OnlineTargetMatch.TargetLaunchSpeed, out var draw);
                     action.PrepareAI(Mathf.Clamp01(t / 1.4f), draw.normalized);
                     yield return null;
                 }
                 var start = action.ArrowTip;
-                if (!ArrowBallistics.TryVelocity(start, destination, bow.MaximumLaunchSpeed, out var speed)) yield break;
+                if (!ArrowBallistics.TryVelocity(start, destination, OnlineTargetMatch.TargetLaunchSpeed, out var speed)) yield break;
                 var flight = Instantiate(arrowPrefab, start, Quaternion.identity);
                 int points = -1;
                 Vector3? impact = null;
@@ -125,8 +133,10 @@ public sealed class RangeSpectatorDemo : MonoBehaviour
                 status = lastShot;
                 yield return new WaitForSeconds(1.35f);
             }
+            if (distance != requestedDistance) continue;
             status = score[0] == score[1] ? "Tie" : names[score[0] > score[1] ? 0 : 1] + " wins";
-            yield return new WaitForSeconds(5);
+            float end = Time.time + 5f;
+            yield return new WaitUntil(() => distance != requestedDistance || Time.time >= end);
         }
     }
 
@@ -138,13 +148,22 @@ public sealed class RangeSpectatorDemo : MonoBehaviour
         var title = new GUIStyle(GUI.skin.label) { fontSize = Mathf.RoundToInt(25 * unit), fontStyle = FontStyle.Bold };
         var text = new GUIStyle(GUI.skin.label) { fontSize = Mathf.RoundToInt(20 * unit) };
         title.normal.textColor = text.normal.textColor = Color.white;
-        var left = new Rect(14 * unit, 14 * unit, 340 * unit, 124 * unit);
+        var left = new Rect(14 * unit, 14 * unit, 340 * unit, 158 * unit);
         GUI.color = PanelColor;
         GUI.DrawTexture(left, Texture2D.whiteTexture);
         GUI.color = Color.white;
-        GUI.Label(new Rect(29 * unit, 18 * unit, left.width, 37 * unit), "Tiro ao alvo", title);
+        GUI.Label(new Rect(29 * unit, 18 * unit, left.width, 37 * unit), $"Tiro ao alvo   •   {distance} m", title);
         GUI.Label(new Rect(29 * unit, 53 * unit, left.width, 32 * unit), $"English   {score[0]}     •     Erika   {score[1]}", text);
         GUI.Label(new Rect(29 * unit, 86 * unit, left.width, 38 * unit), status, text);
+        int column = 0;
+        foreach (int metres in OnlineTargetMatch.Distances)
+        {
+            GUI.enabled = requestedDistance != metres;
+            if (GUI.Button(new Rect((25 + column * 64) * unit, 127 * unit, 59 * unit, 32 * unit), $"{metres} m"))
+                requestedDistance = metres;
+            column++;
+        }
+        GUI.enabled = true;
         float size = 225f * unit;
         var panel = new Rect(Screen.width - size - 18f * unit, 16f * unit, size, size + 36f * unit);
         GUI.color = PanelColor;

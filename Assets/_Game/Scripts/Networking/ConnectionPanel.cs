@@ -11,11 +11,13 @@ namespace BowMan.Networking
         private static string MenuHint => Application.platform == RuntimePlatform.WebGLPlayer
             ? "Left stick click / Esc: back to modes" : "Menu button / Esc: back to modes";
 
+        private OnlineTargetMatch range;
         private string codeInput = string.Empty;
 
         // Mirrors every status change onto the headset label.
         private void OnEnable()
         {
+            if (controller.IsTargetCompetition) range = FindAnyObjectByType<OnlineTargetMatch>();
             controller.StatusChanged += ShowInHeadset;
             ShowInHeadset(controller.Status);
         }
@@ -42,6 +44,18 @@ namespace BowMan.Networking
             GUILayout.EndHorizontal();
             GUI.enabled = !status.CanStart;
             if (GUILayout.Button("Leave")) controller.Leave();
+            if (range != null && status.CanStart)
+            {
+                GUI.enabled = true;
+                GUILayout.Label($"Host distance: {range.HostDistance} m");
+                GUILayout.BeginHorizontal();
+                foreach (var metres in OnlineTargetMatch.Distances)
+                {
+                    GUI.enabled = metres != range.HostDistance;
+                    if (GUILayout.Button($"{metres} m")) range.ChooseHostDistance(metres);
+                }
+                GUILayout.EndHorizontal();
+            }
             GUI.enabled = true;
             GUILayout.Label(MenuHint);
             GUILayout.EndVertical();

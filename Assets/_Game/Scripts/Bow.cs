@@ -39,6 +39,12 @@ namespace BowMan
 
         public event Action<ArrowFlight> Fired;
 
+        // Sets this bow instance's full-draw speed for its game mode.
+        public void SetMaximumLaunchSpeed(float speed)
+        {
+            if (IsPositiveFinite(speed)) maximumLaunchSpeed = speed;
+        }
+
         // Assigns the living local actor whose colliders this bow's arrows ignore.
         public void SetOwner(Transform owner) => firingArcher = owner;
 
