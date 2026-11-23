@@ -150,6 +150,7 @@ public class ModeMenuTests
     {
         const string path = "Assets/_Game/Scenes/TargetRange.unity";
         Scene lobby = default;
+        AsyncOperation unload = null;
         try
         {
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
@@ -164,9 +165,10 @@ public class ModeMenuTests
         }
         finally
         {
-            if (lobby.IsValid() && lobby.isLoaded) SceneManager.UnloadSceneAsync(lobby);
+            if (lobby.IsValid() && lobby.isLoaded) unload = SceneManager.UnloadSceneAsync(lobby);
         }
-        yield return null;
+        // Waits for the unload so the next test cannot find this scene's connection controller.
+        if (unload != null) yield return unload;
     }
 
     // Uses the authored menu panels and follows the selected hand into the playable duel.
