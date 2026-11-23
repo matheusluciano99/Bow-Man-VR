@@ -136,6 +136,11 @@ controller so the player can keep looking at the target. Rearm below 95% to
 avoid repeated pulses from small tracking changes near the cap. The HUD gives
 the same confirmation when controller vibration is unavailable.
 
+Let an already-held trigger grab the string when the controller reaches it.
+Confirm the grab with a lighter pulse and keep the visible hand on the string
+when a brief tracking loss preserves the draw. A turn lock requires a fresh
+trigger press before the next grab.
+
 ## D009 — Distinct injury regions with a first-person eye viewpoint
 
 Use fifteen hit regions: head, neck, chest, abdomen, pelvis and separate left/right

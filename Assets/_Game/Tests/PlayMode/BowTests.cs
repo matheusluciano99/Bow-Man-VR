@@ -256,10 +256,15 @@ public class BowTests
         Assert.That(Vector3.Distance(gripMesh.transform.position, bow.transform.position), Is.LessThan(.001f));
         Assert.That(Vector3.Dot(bow.transform.up, holdingPose.forward), Is.GreaterThan(0.9999f));
         Assert.That(Vector3.Dot(bow.transform.forward, -holdingPose.up), Is.GreaterThan(0.9999f));
+        drawPose.position = bow.RestPosition + bow.transform.right * .25f;
         Button(drawing, "triggerPressed", true);
         yield return null;
         yield return null;
-        Assert.That(bow.IsDrawing, Is.True);
+        Assert.That(bow.IsDrawing, Is.False);
+        drawPose.position = bow.RestPosition;
+        yield return null;
+        yield return null;
+        Assert.That(bow.IsDrawing, Is.True, "An already-held trigger can grab the nearby string");
         // The WebXR digital flag can drop below its threshold while the analog trigger is still held.
         InputSystem.QueueDeltaStateEvent((AxisControl)drawing["trigger"], .78f);
         yield return null;
@@ -303,12 +308,17 @@ public class BowTests
         yield return null;
         yield return null;
         Assert.That(pulse.GetValue(input), Is.True);
+        var lastDrawRotation = drawMesh.transform.rotation;
         Button(drawing, "isTracked", false);
         drawPose.position = Vector3.zero;
+        drawPose.rotation = Quaternion.Euler(90f, 45f, 0f);
         yield return null;
         yield return null;
         Assert.That(bow.IsDrawing, Is.True, "The pressed trigger retains the last good pose");
         Assert.That(bow.DrawStrength, Is.EqualTo(1f).Within(0.001f));
+        Assert.That(drawMesh.gameObject.activeSelf, Is.True);
+        Assert.That(Vector3.Distance(drawMesh.transform.position, bow.StringPosition), Is.LessThan(.001f));
+        Assert.That(Quaternion.Angle(drawMesh.transform.rotation, lastDrawRotation), Is.LessThan(.1f));
         Button(drawing, "triggerPressed", false);
         yield return null;
         Assert.That(bow.IsDrawing, Is.True, "A brief dropout can lose both pose and trigger");
@@ -332,11 +342,14 @@ public class BowTests
         yield return null;
         Assert.That(bow.IsDrawing, Is.False);
         Assert.That(shots, Is.EqualTo(1));
-        Button(drawing, "triggerPressed", false);
         bow.SetShotAllowed(true);
+        drawPose.position = bow.RestPosition;
+        yield return null;
+        yield return null;
+        Assert.That(bow.IsDrawing, Is.False, "Unlocking the turn requires a new trigger press");
+        Button(drawing, "triggerPressed", false);
         yield return null;
 
-        drawPose.position = bow.RestPosition;
         Button(drawing, "triggerPressed", true);
         yield return null;
         yield return null;

@@ -23,6 +23,7 @@ namespace BowMan
         private SkinnedMeshRenderer leftHand, rightHand;
         private float pinch;
         private Vector3 lastPullLocal;
+        private Quaternion lastDrawRotationLocal = Quaternion.identity;
         private bool focused = true;
         private bool paused;
         private bool freshTrigger = true;
@@ -163,11 +164,15 @@ namespace BowMan
                 freshTrigger = !drawAction.IsPressed() && !drawAction.WasPressedThisFrame();
                 return;
             }
-            if (!bow.IsHeld) return;
-            if (drawAction.WasPressedThisFrame() && bow.TryBeginDraw(DrawHand.position))
+            if (!bow.IsHeld)
             {
-                lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
+                if (drawAction.IsPressed()) freshTrigger = false;
+                return;
+            }
+            if (!bow.IsDrawing && drawAction.IsPressed() && bow.TryBeginDraw(DrawHand.position))
+            {
                 fullDrawPulseSent = false;
+                PulseDrawHand(.22f, .035f);
             }
             if (bow.IsDrawing && drawAction.IsPressed()) UpdateFullDrawFeedback();
             if (drawAction.WasReleasedThisFrame() && !drawAction.IsPressed()) bow.Release();
@@ -180,14 +185,20 @@ namespace BowMan
             if (strength < .95f) fullDrawPulseSent = false;
             if (fullDrawPulseSent || strength < 1f) return;
             fullDrawPulseSent = true;
+            PulseDrawHand(.45f, .08f);
+        }
+
+        // Routes tactile feedback to the active drawing controller in either XR runtime.
+        private void PulseDrawHand(float amplitude, float duration)
+        {
             if (UsesOpenXRFocus)
             {
                 var hand = bowInLeftHand ? UnityEngine.XR.XRNode.RightHand : UnityEngine.XR.XRNode.LeftHand;
-                OpenXRInput.SendHapticImpulse(UnityEngine.XR.InputDevices.GetDeviceAtXRNode(hand), .45f, 0f, .08f);
+                OpenXRInput.SendHapticImpulse(UnityEngine.XR.InputDevices.GetDeviceAtXRNode(hand), amplitude, 0f, duration);
             }
             else if (drawAction.activeControl?.device is XRControllerWithRumble controller)
             {
-                controller.SendImpulse(.45f, .08f);
+                controller.SendImpulse(amplitude, duration);
             }
         }
 
@@ -209,19 +220,22 @@ namespace BowMan
             bool usable = !InputBlocked;
             bool gripTracked = usable && Tracking(bowTracked);
             bool stringTracked = usable && Tracking(drawTracked);
-            if (bow.IsDrawing && gripTracked)
+            if (gripTracked && stringTracked)
             {
-                if (stringTracked) lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
-                bow.PullTo(bow.transform.TransformPoint(lastPullLocal));
+                lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
+                lastDrawRotationLocal = Quaternion.Inverse(bow.transform.rotation) * DrawHand.rotation;
             }
+            bool showHeldDraw = bow.IsDrawing && gripTracked;
+            if (showHeldDraw) bow.PullTo(bow.transform.TransformPoint(lastPullLocal));
             if (leftHand == null) return;
             var grip = bowInLeftHand ? leftHand : rightHand;
             var draw = bowInLeftHand ? rightHand : leftHand;
             grip.gameObject.SetActive(gripTracked);
-            draw.gameObject.SetActive(stringTracked);
+            draw.gameObject.SetActive(stringTracked || showHeldDraw);
             grip.transform.SetPositionAndRotation(bow.transform.position,
                 bow.transform.rotation * Quaternion.Euler(-90f, 0f, 0f));
-            draw.transform.SetPositionAndRotation(bow.IsDrawing ? bow.StringPosition : DrawHand.position, DrawHand.rotation);
+            draw.transform.SetPositionAndRotation(showHeldDraw ? bow.StringPosition : DrawHand.position,
+                showHeldDraw ? bow.transform.rotation * lastDrawRotationLocal : DrawHand.rotation);
             grip.SetBlendShapeWeight(0, 100f);
             grip.SetBlendShapeWeight(1, 0f);
             draw.SetBlendShapeWeight(0, 0f);
@@ -281,8 +295,10 @@ namespace BowMan
             if (bow.IsDrawing && drawPoseLostAt >= 0f) return "Draw held · Bring your controller into view";
             if (!Tracking(bowTracked) || !Tracking(drawTracked)) return "Wake both Touch controllers";
             if (bow.IsDrawing) return DrawHint("Release trigger to shoot");
-            var hand = BowInLeftHand ? "right" : "left";
-            return $"{hand[0].ToString().ToUpperInvariant() + hand.Substring(1)} hand to string · Hold trigger";
+            if (!freshTrigger && drawAction.IsPressed()) return "Release trigger to regrip";
+            if (bow.StringWithinReach(DrawHand.position)) return "Hold trigger · Pull back";
+            var hand = BowInLeftHand ? "Right" : "Left";
+            return $"Hold trigger · {hand} hand to string";
         }
 
         // Distinguishes full power from a pull just short of the cap.

@@ -90,13 +90,16 @@ namespace BowMan
             if (!IsHeld) CancelDraw();
         }
 
+        // Checks the same resting-string reach for the grab and its HUD prompt.
+        internal bool StringWithinReach(Vector3 position) => stringRest != null &&
+            IsFinite(position) && Vector3.Distance(position, stringRest.position) <= stringGrabRadius;
+
         // Nocks an arrow only when the held bow's resting string is within reach.
         public bool TryBeginDraw(Vector3 position)
         {
-            if (!ShotAllowed || !IsHeld || IsDrawing || arrowPrefab == null || stringRest == null ||
-                !IsFinite(position) || !IsFinite(stringRest.position) ||
+            if (!ShotAllowed || !IsHeld || IsDrawing || arrowPrefab == null ||
                 !IsPositiveFinite(maximumDrawDistance) || !IsPositiveFinite(maximumLaunchSpeed) ||
-                Vector3.Distance(position, stringRest.position) > stringGrabRadius)
+                !StringWithinReach(position))
                 return false;
 
             handPosition = position;

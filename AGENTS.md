@@ -265,12 +265,13 @@ Use GitHub's Assignees field to record task responsibility.
 - Shot strength increases with draw distance, reaching full strength at a
   provisional maximum draw of 0.36 m (36 cm) so the player can stop sooner.
   Use the backward distance before clamping visual string travel.
-- The bow stays attached to the selected tracked hand without holding grip;
-  the opposite trigger grabs/releases the nearby string. Its local +Y aligns
-  with controller grip +Z using a +90-degree local X rotation. Both bow hands
+- The bow stays attached to the selected tracked hand without holding grip.
+  Hold the opposite trigger and bring that hand to the string to grab it.
+  A light pulse confirms the grab. Release the trigger to shoot. The bow's local
+  +Y aligns with controller grip +Z using a +90-degree local X rotation. Both bow hands
   are supported; left is the initial default. The test panel's **Bow hand**
   button switches sides and cancels a pending tracked draw.
-- Keep the last valid pull through drawing-hand occlusion while the trigger
+- Keep the last valid pull and draw-hand pose through occlusion while the trigger
   stays held, with up to 350 ms for a simultaneous pose and trigger dropout.
   A release requires a recovered pose and a subsequent tracked trigger edge.
   A disconnect, lost bow-hand tracking, pause, lost headset focus or a
@@ -328,8 +329,8 @@ Use GitHub's Assignees field to record task responsibility.
 
 - Open `Assets/_Game/Scenes/BowInteractionTest.unity` and enter Play. For VR,
   start Quest Link first, as with the tracking scene. The bow remains in the
-  selected hand; bring the other controller within 12 cm of the resting string,
-  press and hold its trigger, pull backward, then release the trigger to shoot.
+  selected hand. Hold the other trigger and bring that controller within 12 cm
+  of the resting string, then pull backward and release to shoot.
 - Aim with the bow's orientation and the line between the two hands. Backward
   draw controls speed up to a provisional 25 m/s at 36 cm. Forward/sideways-only
   pulls and draws below 3 cm do not fire. Extra draw is capped at full strength.
