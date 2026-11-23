@@ -11,7 +11,7 @@ namespace BowMan
         [SerializeField] private Transform stringBottom;
         [SerializeField] private LineRenderer bowString;
         [SerializeField] private Transform firingArcher;
-        [SerializeField, Min(0.01f)] private float maximumDrawDistance = 0.70f;
+        [SerializeField, Min(0.01f)] private float maximumDrawDistance = 0.60f;
         [SerializeField, Min(0.001f)] private float minimumDrawDistance = 0.03f;
         [SerializeField, Min(0.01f)] private float maximumLaunchSpeed = 25f;
         [SerializeField, Min(0.01f)] private float stringGrabRadius = 0.12f;
@@ -29,8 +29,9 @@ namespace BowMan
         public float MaximumLaunchSpeed => maximumLaunchSpeed;
         public Vector3 RestPosition => stringRest.position;
         public Vector3 FullDrawTip => RestPosition + transform.forward * (arrowLength - maximumDrawDistance);
+        // Measures backward pull before clamping the rendered string travel.
         public float DrawDistance => IsDrawing
-            ? Mathf.Clamp(Vector3.Dot(stringRest.position - DrawPosition, transform.forward), 0f, maximumDrawDistance)
+            ? Mathf.Clamp(Vector3.Dot(stringRest.position - handPosition, transform.forward), 0f, maximumDrawDistance)
             : 0f;
         public float DrawStrength => DrawDistance / maximumDrawDistance;
 

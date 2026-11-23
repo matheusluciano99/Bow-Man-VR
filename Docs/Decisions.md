@@ -124,7 +124,7 @@ Both hand alignments were confirmed in the Quest 2 Editor lab review. Draw
 distance and positional offsets remain provisional until final hardware tuning.
 
 Default left bow hand, grip offsets, 12 cm string grab
-radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
+radius, 3 cm minimum draw, 60 cm maximum draw and 25 m/s full-draw speed are
 prototype settings. Validate handedness, grip alignment and comfortable draw on
 Quest 2 before treating them as final controls or calibration.
 Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
@@ -377,7 +377,7 @@ Use recorded breathing, shoulder movement and small weight shifts on both standi
 
 Sample the visible opponent’s recorded bow action from the AI turn clock in PvE and from the owner’s draw in PvP. This lets a human pause or cancel a draw and switch bow hands. A mesh represents the nocked arrow on the observing side. The existing duel authority creates the flying projectile when it accepts the release.
 
-Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Keep the last valid draw during brief drawing-hand occlusion with the trigger held. The shared 0.96-metre arrow leaves its tip visible at the maximum 0.70-metre pull.
+Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Retain the last valid draw during drawing-hand occlusion, with a 350 ms window to recover a missing trigger signal. Resume only with a tracked, held trigger. Measure power from the backward hand displacement before clamping the string visual. A Quest lab sample measured a 62 cm pull, so 60 cm is the provisional full-power setting. The shared 0.96-metre arrow keeps its tip visible at full draw.
 
 ## Duel sound
 

@@ -263,18 +263,19 @@ Use GitHub's Assignees field to record task responsibility.
 - Playable duels show the local archer’s hands on the two tracked controllers. Keep the diagnostic markers in the tracking test scene. Switching bow hands swaps grip and string poses, and losing a controller’s tracking hides its hand. Physical grip and pinch placement require Quest 2 review.
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
-  provisional maximum draw of 0.70 m (70 cm).
-- Use 70 cm as a temporary adult-arm-length placeholder; calibrate comfortable
-  draw distance when the classroom headset is available.
+  provisional maximum draw of 0.60 m (60 cm).
+- The 60 cm provisional threshold follows the lab measurement of a comfortable
+  backward pull. Use the backward distance before clamping visual string travel.
 - The bow stays attached to the selected tracked hand without holding grip;
   the opposite trigger grabs/releases the nearby string. Its local +Y aligns
   with controller grip +Z using a +90-degree local X rotation. Both bow hands
   are supported; left is the initial default. The test panel's **Bow hand**
   button switches sides and cancels a pending tracked draw.
-- While the trigger stays held, a temporary loss of the drawing hand's pose
-  holds the last valid pull relative to the bow. Losing bow-hand tracking,
-  releasing while untracked, pausing, losing focus or a shooting lock cancels.
-  The 0.96-metre arrow keeps its tip beyond the grip at full draw. The bow remains
+- Keep the last valid pull through drawing-hand occlusion while the trigger
+  stays held, with up to 350 ms for a simultaneous pose and trigger dropout.
+  A release requires a recovered pose and a subsequent tracked trigger edge.
+  A disconnect, lost bow-hand tracking, pause, lost headset focus or a
+  shooting lock cancels. The 0.96-metre arrow keeps its tip beyond the grip. The bow remains
   visually attached during a shooting lock. `Bow.SetShotAllowed` gates both
   input paths without changing tracked head/controller poses.
 
@@ -329,7 +330,7 @@ Use GitHub's Assignees field to record task responsibility.
   selected hand; bring the other controller within 12 cm of the resting string,
   press and hold its trigger, pull backward, then release the trigger to shoot.
 - Aim with the bow's orientation and the line between the two hands. Backward
-  draw controls speed up to a provisional 25 m/s at 70 cm. Forward/sideways-only
+  draw controls speed up to a provisional 25 m/s at 60 cm. Forward/sideways-only
   pulls and draws below 3 cm do not fire. Extra draw is capped at full strength.
 - Without a headset, click **Use desktop controls** in the Game view. Arrow
   keys aim; hold Space to draw and release it to shoot. The panel shows draw

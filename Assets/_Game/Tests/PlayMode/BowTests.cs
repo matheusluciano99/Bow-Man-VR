@@ -115,8 +115,8 @@ public class BowTests
     public IEnumerator DrawStrengthChangesFlightAndOverdrawIsCapped()
     {
         var bow = CreateBow();
-        var half = Shoot(bow, Vector3.back * 0.35f);
-        var full = Shoot(bow, Vector3.back * 0.70f);
+        var half = Shoot(bow, Vector3.back * (bow.MaximumDrawDistance * 0.5f));
+        var full = Shoot(bow, Vector3.back * bow.MaximumDrawDistance);
         var over = Shoot(bow, Vector3.back * 1.4f);
         var halfStart = half.transform.position;
         var fullStart = full.transform.position;
@@ -275,7 +275,8 @@ public class BowTests
         Button(holding, "gripPressed", false);
         yield return null;
         Assert.That(bow.IsDrawing, Is.True, "Grip is not an equip or release control");
-        drawPose.position = bow.RestPosition - bow.transform.forward * 0.7f;
+        drawPose.position = bow.RestPosition - bow.transform.forward * (bow.MaximumDrawDistance + .002f)
+            + bow.transform.up * .08f;
         yield return null;
         yield return new WaitForSecondsRealtime(.12f);
         Assert.That(drawMesh.GetBlendShapeWeight(1), Is.EqualTo(100f));
@@ -288,8 +289,13 @@ public class BowTests
         yield return null;
         Assert.That(bow.IsDrawing, Is.True, "The pressed trigger retains the last good pose");
         Assert.That(bow.DrawStrength, Is.EqualTo(1f).Within(0.001f));
+        Button(drawing, "triggerPressed", false);
+        yield return null;
+        Assert.That(bow.IsDrawing, Is.True, "A brief dropout can lose both pose and trigger");
+        Assert.That(shots, Is.Zero);
         drawPose.position = bow.RestPosition - bow.transform.forward * 0.8f;
         Button(drawing, "isTracked", true);
+        Button(drawing, "triggerPressed", true);
         yield return null;
         Assert.That(bow.GetComponentInChildren<ArrowFlight>(), Is.SameAs(projectile));
         Button(drawing, "triggerPressed", false);
@@ -334,8 +340,7 @@ public class BowTests
         yield return null;
         Button(drawing, "isTracked", false);
         Button(drawing, "triggerPressed", false);
-        yield return null;
-        yield return null;
+        yield return new WaitForSecondsRealtime(.45f);
         Assert.That(bow.IsHeld, Is.False);
         Assert.That(bow.IsDrawing, Is.False);
         Assert.That(shots, Is.EqualTo(1));

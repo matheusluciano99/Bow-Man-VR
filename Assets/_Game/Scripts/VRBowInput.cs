@@ -14,6 +14,7 @@ namespace BowMan
         [SerializeField] private Vector3 gripPositionOffset;
         [SerializeField] private Vector3 gripRotationOffset = new Vector3(90f, 0f, 0f);
 
+        private const float DrawDropoutGrace = .35f;
         private InputAction drawAction;
         private InputAction bowTracked;
         private InputAction drawTracked;
@@ -23,6 +24,7 @@ namespace BowMan
         private bool focused = true;
         private bool paused;
         private bool freshTrigger = true;
+        private float drawPoseLostAt = -1f;
         private System.Func<bool> headsetInputBlocked = () => HeadsetInputBlocked;
 
         private Transform BowHand => bowInLeftHand ? leftController : rightController;
@@ -76,6 +78,7 @@ namespace BowMan
         {
             focused = Application.isFocused;
             freshTrigger = true;
+            drawPoseLostAt = -1f;
             var holdingHand = bowInLeftHand ? "LeftHand" : "RightHand";
             var drawingHand = bowInLeftHand ? "RightHand" : "LeftHand";
             drawAction = Button("Draw string", drawingHand, "triggerPressed", false);
@@ -132,18 +135,26 @@ namespace BowMan
         {
             if (bow == null || BowHand == null || DrawHand == null) return;
             pinch = Mathf.MoveTowards(pinch, bow.IsDrawing ? 100f : 0f, Time.unscaledDeltaTime * 1200f);
-            bool drawTrackedNow = Tracking(drawTracked);
-            bool holdLastPose = bow.IsDrawing && drawAction.controls.Count > 0 && drawAction.IsPressed();
-            if (InputBlocked || !Tracking(bowTracked) || (!drawTrackedNow && !holdLastPose))
+            if (InputBlocked || !Tracking(bowTracked) || drawAction.controls.Count == 0)
             {
-                freshTrigger = false;
-                bow.SetHeld(false);
+                CancelTrackedDraw();
                 UpdatePose();
                 return;
             }
+            if (!Tracking(drawTracked))
+            {
+                if (drawPoseLostAt < 0f || drawAction.IsPressed()) drawPoseLostAt = Time.unscaledTime;
+                if (!bow.IsDrawing || Time.unscaledTime - drawPoseLostAt > DrawDropoutGrace) CancelTrackedDraw();
+                UpdatePose();
+                return;
+            }
+
+            bool recoveredPose = drawPoseLostAt >= 0f;
+            drawPoseLostAt = -1f;
+            if (recoveredPose && !drawAction.IsPressed() && bow.IsDrawing) CancelTrackedDraw();
             bow.SetHeld(true);
             UpdatePose();
-            if (!drawTrackedNow) return;
+            if (recoveredPose) return;
             if (!freshTrigger)
             {
                 freshTrigger = !drawAction.IsPressed() && !drawAction.WasPressedThisFrame();
@@ -153,6 +164,14 @@ namespace BowMan
             if (drawAction.WasPressedThisFrame() && bow.TryBeginDraw(DrawHand.position))
                 lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
             if (drawAction.WasReleasedThisFrame() && !drawAction.IsPressed()) bow.Release();
+        }
+
+        // Discards the pending shot and requires the trigger to cycle before another nock.
+        private void CancelTrackedDraw()
+        {
+            drawPoseLostAt = -1f;
+            freshTrigger = false;
+            bow.SetHeld(false);
         }
 
         // Keeps the bow attached to the tracked grip even while shooting is locked or a draw is cancelled.
@@ -188,22 +207,14 @@ namespace BowMan
         private void OnApplicationFocus(bool hasFocus)
         {
             focused = hasFocus;
-            if (!focused && !UsesOpenXRFocus && bow != null)
-            {
-                freshTrigger = false;
-                bow.SetHeld(false);
-            }
+            if (!focused && !UsesOpenXRFocus && bow != null) CancelTrackedDraw();
         }
 
         // Cancels a nocked shot when the XR application pauses.
         private void OnApplicationPause(bool isPaused)
         {
             paused = isPaused;
-            if (paused && bow != null)
-            {
-                freshTrigger = false;
-                bow.SetHeld(false);
-            }
+            if (paused && bow != null) CancelTrackedDraw();
         }
 
         // Reads each newly resolved tracking control even before its input action reports an edge.
@@ -242,6 +253,7 @@ namespace BowMan
             if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
             if (!HeadsetActive) return DesktopBowTest.DesktopAvailable ? "Press Tab for desktop controls" : "Enter VR to use your bow";
             if (InputBlocked) return "Return to the game in your headset";
+            if (bow.IsDrawing && drawPoseLostAt >= 0f) return "Draw held · Bring your controller into view";
             if (!Tracking(bowTracked) || !Tracking(drawTracked)) return "Wake both Touch controllers";
             if (bow.IsDrawing) return $"{Mathf.RoundToInt(bow.DrawStrength * 100f)}% draw · Release to shoot";
             var hand = BowInLeftHand ? "right" : "left";
