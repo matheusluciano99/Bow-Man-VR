@@ -263,9 +263,9 @@ Use GitHub's Assignees field to record task responsibility.
 - Playable duels show the local archer’s hands on the two tracked controllers. Keep the diagnostic markers in the tracking test scene. Switching bow hands swaps grip and string poses, and losing a controller’s tracking hides its hand. Physical grip and pinch placement require Quest 2 review.
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
-  provisional maximum draw of 0.60 m (60 cm).
-- The 60 cm provisional threshold follows the lab measurement of a comfortable
-  backward pull. Use the backward distance before clamping visual string travel.
+  provisional maximum draw of 0.50 m (50 cm).
+- The provisional 50 cm threshold lets the player reach full power earlier in
+  the pull. Use the backward distance before clamping visual string travel.
 - The bow stays attached to the selected tracked hand without holding grip;
   the opposite trigger grabs/releases the nearby string. Its local +Y aligns
   with controller grip +Z using a +90-degree local X rotation. Both bow hands
@@ -330,7 +330,7 @@ Use GitHub's Assignees field to record task responsibility.
   selected hand; bring the other controller within 12 cm of the resting string,
   press and hold its trigger, pull backward, then release the trigger to shoot.
 - Aim with the bow's orientation and the line between the two hands. Backward
-  draw controls speed up to a provisional 25 m/s at 60 cm. Forward/sideways-only
+  draw controls speed up to a provisional 25 m/s at 50 cm. Forward/sideways-only
   pulls and draws below 3 cm do not fire. Extra draw is capped at full strength.
 - Without a headset, click **Use desktop controls** in the Game view. Arrow
   keys aim; hold Space to draw and release it to shoot. The panel shows draw
