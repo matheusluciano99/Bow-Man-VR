@@ -107,3 +107,52 @@ both peers. Confirm each living recovery precedes the next turn. Test a fatal
 hit, a mutual rematch, a departure during play and a fresh connection. Record
 the two developers' results and link the completed injury review from #35
 before accepting the shared build.
+
+## Tiro ao alvo, archer choice and browser play
+
+These checks cover #133, #136, #138 and #140. Record the revision, testers,
+build (Quest Link player or browser) and outcome on each issue.
+
+| Action | Quest 2 | Desktop check |
+| --- | --- | --- |
+| Choose English Archer or Erika before a mode | Select the Archer panel with the right trigger | Click the Archer panel or press G |
+| Enter Tiro ao alvo | Select its panel | Click its panel or press 3 |
+| Cycle the course before hosting or a CPU match | Select Distance | Click 15, 30, 50, 60 or 70 m |
+| Start a solo competition | Select Play against CPU | Click Play against CPU |
+| Accept a rematch after twenty arrows | Right A | R |
+| Return to modes in the browser build | Click the left thumbstick | Esc |
+
+- [ ] Enter PvE as English Archer, then as Erika. With each bow hand, the
+  first-person hands and cuffs belong to the chosen archer and the opponent is
+  the other one. The choice survives a restart and a return to the menu.
+- [ ] In a duel, each archer's breathing, release effort, hurt and defeat
+  voices are their own and come from their head.
+- [ ] Watch both archers draw from either bow hand. The feet stay planted, the
+  bow hand closes on the grip and the drawing hand clears the face.
+- [ ] In online PvP, choose different archers on the two PCs, then the same
+  archer on both. Both seats show the same pair of archers.
+- [ ] Hold the trigger at full draw and briefly hide the drawing hand from the
+  headset. The draw keeps its last pull and shoots once tracking returns.
+  Releasing the trigger while the hand is hidden shoots nothing.
+- [ ] Against the CPU at 15 m and at 70 m, you shoot first and the CPU draws
+  and shoots from your right. After ten arrows each, both totals and the
+  result are readable, and A restarts at the same distance.
+- [ ] A full draw reaches the scoring face at every distance with Tiro ao
+  alvo's 32 m/s full-draw speed. Record where aiming stops being
+  comfortable and add the result to #15.
+- [ ] Online, host at 70 m while the joining player has 30 m selected. Both
+  seats play both matches at 70 m.
+- [ ] Each seat reads both totals, arrows left, the distance and the
+  upper-right impact mark in stereo. A miss scores zero, spends the arrow and
+  clears the mark. A cancelled draw keeps the arrow.
+- [ ] After twenty arrows, both seats show the same winner or tie. The rematch
+  starts only after both players press A. Leaving returns the other player to
+  the lobby.
+- [ ] Enter a join code with the in-headset keypad and record how easily each
+  key can be aimed at.
+
+Run the browser pass on the headset itself, without Quest Link. Open the
+uploaded itch.io build in the Quest Browser, select **Play**, then **Enter VR**,
+and record the browser version. Host on one device and join from another on a
+different network. Complete a PvE duel, an online duel and one Tiro ao alvo
+competition, then return to the menu with the left thumbstick.
