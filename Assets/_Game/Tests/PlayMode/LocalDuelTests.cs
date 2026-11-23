@@ -76,6 +76,31 @@ public class LocalDuelTests
         return arrow;
     }
 
+    // Tab, arrow keys and Space cannot take over the bow in the playable duel.
+    [UnityTest]
+    public IEnumerator KeyboardCannotEquipOrShootThePlayableBow()
+    {
+        if (DesktopBowTest.DesktopAvailable) Assert.Ignore("Dedicated desktop diagnostic run.");
+        var desktop = Find<DesktopBowTest>();
+        var vr = Find<VRBowInput>();
+        var bow = Find<Bow>();
+        var keyboard = InputSystem.AddDevice<Keyboard>();
+        int shots = 0;
+        bow.Fired += arrow => shots++;
+        try
+        {
+            desktop.UseDesktopControls(true);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Tab, Key.UpArrow, Key.Space));
+            yield return null;
+            Assert.That(vr.enabled, Is.True);
+            Assert.That(bow.IsDrawing, Is.False);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            yield return null;
+            Assert.That(shots, Is.Zero);
+        }
+        finally { InputSystem.RemoveDevice(keyboard); }
+    }
+
     // Checks both sides of the stretch threshold, a held full draw, easing off and cancellation.
     [UnityTest]
     public IEnumerator StretchStartsAboveSixtyPercentAndStopsWhenTheStringRelaxes()
@@ -353,7 +378,7 @@ public class LocalDuelTests
         Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
     }
 
-    // Plays a sided injury and an AI victory in the saved scene, then restarts through the player's keyboard binding.
+    // Plays a sided injury and an AI victory in the saved scene, then restarts through tracked controller bindings.
     [UnityTest]
     public IEnumerator AIWinsAgainstLocalArcherAndPlayerCanRestart()
     {
@@ -389,10 +414,10 @@ public class LocalDuelTests
 
         var focus = InputSystem.settings.editorInputBehaviorInPlayMode;
         var background = InputSystem.settings.backgroundBehavior;
-        var keyboard = InputSystem.GetDevice<Keyboard>();
-        var added = keyboard == null;
-        if (added) keyboard = InputSystem.AddDevice<Keyboard>();
-        var wasEnabled = keyboard.enabled;
+        var left = InputSystem.AddDevice("WebXRController");
+        var right = InputSystem.AddDevice("WebXRController");
+        InputSystem.SetDeviceUsage(left, CommonUsages.LeftHand);
+        InputSystem.SetDeviceUsage(right, CommonUsages.RightHand);
         var originalVolume = AudioListener.volume;
         var savedVolume = PlayerPrefs.GetFloat("BowMan.DuelVolume", -1f);
         try
@@ -401,16 +426,24 @@ public class LocalDuelTests
             InputSystem.settings.editorInputBehaviorInPlayMode =
                 InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
-            InputSystem.EnableDevice(keyboard);
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            InputSystem.EnableDevice(left);
+            InputSystem.EnableDevice(right);
             yield return null;
             AudioListener.volume = 1f;
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.V));
+            using (StateEvent.From(left, out var leftPress))
+            {
+                ((UnityEngine.InputSystem.Controls.ButtonControl)left["buttonA"]).WriteValueIntoEvent(1f, leftPress);
+                InputSystem.QueueEvent(leftPress);
+            }
             yield return null;
             yield return null;
             Assert.That(AudioListener.volume, Is.Zero);
             Assert.That(PlayerPrefs.GetFloat("BowMan.DuelVolume"), Is.Zero);
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.R));
+            using (StateEvent.From(right, out var rightPress))
+            {
+                ((UnityEngine.InputSystem.Controls.ButtonControl)right["buttonA"]).WriteValueIntoEvent(1f, rightPress);
+                InputSystem.QueueEvent(rightPress);
+            }
             yield return null;
             yield return null;
             Assert.That(duel.Flow.CanShoot(0), Is.True);
@@ -425,12 +458,8 @@ public class LocalDuelTests
             if (savedVolume < 0f) PlayerPrefs.DeleteKey("BowMan.DuelVolume");
             else PlayerPrefs.SetFloat("BowMan.DuelVolume", savedVolume);
             PlayerPrefs.Save();
-            if (added) InputSystem.RemoveDevice(keyboard);
-            else
-            {
-                InputSystem.ResetDevice(keyboard);
-                if (!wasEnabled) InputSystem.DisableDevice(keyboard);
-            }
+            InputSystem.RemoveDevice(left);
+            InputSystem.RemoveDevice(right);
             InputSystem.settings.backgroundBehavior = background;
             InputSystem.settings.editorInputBehaviorInPlayMode = focus;
         }

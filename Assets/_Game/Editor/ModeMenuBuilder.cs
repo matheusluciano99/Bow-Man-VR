@@ -76,7 +76,7 @@ public static class ModeMenuBuilder
 
         var choices = new GameObject("Mode choices").transform;
         Label(choices, "Bow Man VR", new Vector3(0f, 2.20f, 2.5f), 0.05f);
-        Label(choices, "Point and pull the right trigger to select  •  Desktop: click or press 1 / 2 / 3",
+        Label(choices, "Point and pull the right trigger to select",
             new Vector3(0f, 1.93f, 2.5f), 0.018f);
         var panelMaterial = MenuMaterial(PanelMaterialPath, new Color(0.16f, 0.2f, 0.28f));
         var modeSize = new Vector2(1.3f, 0.42f);

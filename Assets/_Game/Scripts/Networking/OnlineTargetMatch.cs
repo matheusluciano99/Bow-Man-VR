@@ -66,15 +66,15 @@ namespace BowMan.Networking
         private void Start()
         {
             hand = new InputAction("Bow hand", binding: "<XRController>{RightHand}/secondaryButton");
-            hand.AddBinding("<Keyboard>/h");
+            if (DesktopBowTest.DesktopAvailable) hand.AddBinding("<Keyboard>/h");
             hand.AddBinding("<WebXRController>{RightHand}/buttonB");
             hand.Enable();
             rematch = new InputAction("Rematch", binding: "<XRController>{RightHand}/primaryButton");
-            rematch.AddBinding("<Keyboard>/r");
+            if (DesktopBowTest.DesktopAvailable) rematch.AddBinding("<Keyboard>/r");
             rematch.AddBinding("<WebXRController>{RightHand}/buttonA");
             rematch.Enable();
             bow.SetMaximumLaunchSpeed(TargetLaunchSpeed);
-            desktopMode = !VRBowInput.HeadsetActive;
+            desktopMode = DesktopBowTest.DesktopAvailable && !VRBowInput.HeadsetActive;
             vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
             bow.SetShotAllowed(false);
             bow.gameObject.SetActive(false);
@@ -337,9 +337,8 @@ namespace BowMan.Networking
         private void Update()
         {
             if (!Playing) return;
-            desktop.FollowBrowserSession(ref desktopMode);
             if (rematch.WasPressedThisFrame()) RequestRematch();
-            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
+            if (DesktopBowTest.DesktopAvailable && Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
             {
                 desktopMode = !desktopMode;
                 desktop.UseDesktopControls(desktopMode);
@@ -358,7 +357,7 @@ namespace BowMan.Networking
             if (Finished)
             {
                 var result = FirstScore == SecondScore ? "Tie" : FirstScore > SecondScore ? (AgainstCpu ? "You win" : "Archer 1 wins") : second + " wins";
-                action = result + ((votes & (1 << LocalSeat)) != 0 ? "   •   Waiting for opponent" : "   •   A / R: rematch");
+                action = result + ((votes & (1 << LocalSeat)) != 0 ? "   •   Waiting for opponent" : "   •   A: rematch");
             }
             else action = flying || awaiting ? "Arrow in flight" : Completed % 2 == LocalSeat ?
                 vrInput.ShotHint(desktopMode) : AgainstCpu ? "CPU is drawing" : "Opponent's turn";

@@ -44,9 +44,9 @@ namespace BowMan
             Flow.Changed += OnFlowChanged;
             bow.Fired += OnFired;
             restart = new InputAction("Restart match", InputActionType.Button, "<XRController>{RightHand}/primaryButton");
-            restart.AddBinding("<Keyboard>/r");
+            if (DesktopBowTest.DesktopAvailable) restart.AddBinding("<Keyboard>/r");
             switchHand = new InputAction("Switch bow hand", InputActionType.Button, "<XRController>{RightHand}/secondaryButton");
-            switchHand.AddBinding("<Keyboard>/h");
+            if (DesktopBowTest.DesktopAvailable) switchHand.AddBinding("<Keyboard>/h");
             desktop = new InputAction("Desktop controls", InputActionType.Button, "<Keyboard>/tab");
             restart.AddBinding("<WebXRController>{RightHand}/buttonA");
             restart.Enable();
@@ -115,10 +115,9 @@ namespace BowMan
         private void Update()
         {
             if (Flow == null) return;
-            desktopInput.FollowBrowserSession(ref desktopMode);
             if (restart.WasPressedThisFrame() && Flow.Phase == DuelPhase.Finished) RestartMatch();
             if (switchHand.WasPressedThisFrame() && Flow.CanShoot(0)) vrInput.SetBowHand(!vrInput.BowInLeftHand);
-            if (desktop.WasPressedThisFrame())
+            if (DesktopBowTest.DesktopAvailable && desktop.WasPressedThisFrame())
             {
                 desktopMode = !desktopMode;
                 desktopInput.UseDesktopControls(desktopMode);
@@ -133,12 +132,12 @@ namespace BowMan
             var status = Flow.StatusFor(0);
             if (cutaway.IsVisible)
             {
-                feedback.text = $"{status}     A / R: restart\n{cutaway.Caption}";
+                feedback.text = $"{status}     A: restart\n{cutaway.Caption}";
                 return;
             }
             feedback.text = $"{status}     You {LocalArcher.CurrentHealth}  |  Opponent {Opponent.CurrentHealth}\n" +
                 $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}   {sounds.VolumeHint}\n" +
-                (Flow.Phase == DuelPhase.Finished ? "A / R: restart" :
+                (Flow.Phase == DuelPhase.Finished ? "A: restart" :
                 Flow.CanShoot(0) ? vrInput.ShotHint(desktopMode) : "Your bow unlocks on your turn");
         }
 

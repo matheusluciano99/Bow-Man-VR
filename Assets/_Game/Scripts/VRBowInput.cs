@@ -20,6 +20,7 @@ namespace BowMan
         private Vector3 lastPullLocal;
         private bool focused = true;
         private bool paused;
+        private System.Func<bool> headsetInputBlocked = () => HeadsetInputBlocked;
 
         private Transform BowHand => bowInLeftHand ? leftController : rightController;
         private Transform DrawHand => bowInLeftHand ? rightController : leftController;
@@ -29,6 +30,19 @@ namespace BowMan
         public static bool HeadsetActive => Application.platform == RuntimePlatform.WebGLPlayer
             ? WebXR.WebXRManager.Instance != null && WebXR.WebXRManager.Instance.XRState == WebXR.WebXRState.VR
             : UnityEngine.XR.XRSettings.isDeviceActive;
+
+        // Locks tracked gameplay when the headset is absent, removed or showing a system overlay.
+        public static bool HeadsetInputBlocked
+        {
+            get
+            {
+                if (!HeadsetActive) return true;
+                if (Application.platform == RuntimePlatform.WebGLPlayer)
+                    return WebXR.WebXRManager.Instance.visibilityState != WebXR.WebXRVisibilityState.VISIBLE;
+                var head = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.Head);
+                return head.TryGetFeatureValue(UnityEngine.XR.CommonUsages.userPresence, out bool worn) && !worn;
+            }
+        }
 
         // Replaces diagnostic markers with the two archer hands when a playable match starts.
         public void ShowArcherHands()
@@ -112,7 +126,7 @@ namespace BowMan
             pinch = Mathf.MoveTowards(pinch, bow.IsDrawing ? 100f : 0f, Time.unscaledDeltaTime * 1200f);
             bool drawTrackedNow = drawTracked.IsPressed();
             bool holdLastPose = bow.IsDrawing && drawAction.IsPressed();
-            if (!focused || paused || !bowTracked.IsPressed() || (!drawTrackedNow && !holdLastPose))
+            if (headsetInputBlocked() || !focused || paused || !bowTracked.IsPressed() || (!drawTrackedNow && !holdLastPose))
             {
                 bow.SetHeld(false);
                 UpdatePose();
@@ -192,7 +206,7 @@ namespace BowMan
         public string ShotHint(bool desktop)
         {
             if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
-            if (!HeadsetActive) return "Press Tab for desktop controls";
+            if (!HeadsetActive) return DesktopBowTest.DesktopAvailable ? "Press Tab for desktop controls" : "Enter VR to use your bow";
             if (bow.IsDrawing) return "Pull back, aim, then release the trigger";
             var hand = BowInLeftHand ? "right" : "left";
             return $"Bring your {hand} hand to the string • Hold its trigger";

@@ -7,47 +7,73 @@
   <style>
     * { box-sizing: border-box }
     html, body { width: 100%; height: 100%; margin: 0 }
-    body { display: flex; flex-direction: column; color: #f4f0df; background: #172127; font: 16px system-ui, sans-serif }
-    #unity-canvas { min-height: 0; flex: 1 1 0; width: 100%; display: block; outline: none }
-    footer { display: flex; min-height: 54px; align-items: center; justify-content: space-between; gap: 1em; padding: .5em 1em }
-    button { font: inherit; font-weight: 650; padding: .5em 1.25em; border: 0; border-radius: 4px; color: #182124; background: #f1c379; white-space: nowrap }
+    body { color: #f4f0df; background: #172127; font: 16px system-ui, sans-serif }
+    main { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; padding: 1rem; text-align: center; background: #172127 }
+    h1 { margin: 0 }
+    canvas { width: 100%; height: 100%; display: block; pointer-events: none }
+    button { font: inherit; font-weight: 650; padding: .5em 1.25em; border: 0; border-radius: 4px; color: #182124; background: #f1c379 }
     button:disabled { opacity: .5 }
   </style>
 </head>
 <body>
-  <canvas id="unity-canvas" tabindex="0" aria-label="Bow Man VR"></canvas>
-  <footer><span id="status" role="status">Loading game…</span><button id="enter-vr" disabled>Enter VR</button></footer>
+  <canvas id="unity-canvas" inert aria-hidden="true"></canvas>
+  <main>
+    <h1>Bow Man VR</h1>
+    <p id="status" role="status">Connect a VR headset to play.</p>
+    <button id="enter-vr" disabled>Enter VR</button>
+  </main>
   <script src="Build/{{{ LOADER_FILENAME }}}"></script>
   <script>
     const canvas = document.getElementById('unity-canvas');
     const status = document.getElementById('status');
     const enter = document.getElementById('enter-vr');
+    let loading = false;
     let game;
     let supported = false;
-    // Wait for both the loaded game and a browser that can enter immersive VR.
+
+    // Unity also listens on the window; physical keyboard events belong to the browser launcher.
+    for (const type of ['keydown', 'keyup', 'keypress', 'beforeinput', 'input'])
+      window.addEventListener(type, event => event.stopImmediatePropagation(), true);
+
+    // Reflect the provider's availability even when the headset connects after the page opens.
     function updateEntry() {
       enter.disabled = !(game && supported);
-      if (game) status.textContent = supported ? 'Bow Man VR' : 'Connect a headset in a WebXR-capable browser to enter VR.';
+      if (game) status.textContent = supported ? 'Put on your headset and select Enter VR.' : 'Connect a VR headset to play.';
     }
+
+    // Load the Unity player only after the browser reports immersive VR support.
+    async function prepareGame() {
+      if (loading || !navigator.xr) return;
+      loading = true;
+      try {
+        if (!await navigator.xr.isSessionSupported('immersive-vr')) return;
+        game = await createUnityInstance(canvas, {
+          dataUrl: 'Build/{{{ DATA_FILENAME }}}',
+          frameworkUrl: 'Build/{{{ FRAMEWORK_FILENAME }}}',
+          codeUrl: 'Build/{{{ CODE_FILENAME }}}',
+          streamingAssetsUrl: 'StreamingAssets',
+          companyName: '{{{ COMPANY_NAME }}}',
+          productName: '{{{ PRODUCT_NAME }}}',
+          productVersion: '{{{ PRODUCT_VERSION }}}'
+        }, progress => { status.textContent = 'Loading game… ' + Math.round(progress * 100) + '%'; });
+        updateEntry();
+      } catch (error) {
+        status.textContent = 'Could not start VR. ' + error.message;
+      } finally {
+        loading = false;
+      }
+    }
+
     document.addEventListener('onVRSupportedCheck', event => {
       supported = event.detail.supported;
       updateEntry();
     });
+    navigator.xr?.addEventListener('devicechange', () => { if (!game) prepareGame(); });
     enter.addEventListener('click', () => {
-      canvas.focus();
-      game.Module.WebXR.toggleVR();
+      const xr = game.Module.WebXR;
+      if (!xr.xrSession?.isInSession) xr.toggleVR();
     });
-    createUnityInstance(canvas, {
-      dataUrl: 'Build/{{{ DATA_FILENAME }}}',
-      frameworkUrl: 'Build/{{{ FRAMEWORK_FILENAME }}}',
-      codeUrl: 'Build/{{{ CODE_FILENAME }}}',
-      streamingAssetsUrl: 'StreamingAssets',
-      companyName: '{{{ COMPANY_NAME }}}',
-      productName: '{{{ PRODUCT_NAME }}}',
-      productVersion: '{{{ PRODUCT_VERSION }}}'
-    }, progress => { status.textContent = 'Loading game… ' + Math.round(progress * 100) + '%'; })
-    .then(instance => { game = instance; updateEntry(); })
-    .catch(error => { status.textContent = 'Game could not load. ' + error; });
+    prepareGame();
   </script>
 </body>
 </html>

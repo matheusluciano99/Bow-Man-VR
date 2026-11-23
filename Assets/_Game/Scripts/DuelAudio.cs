@@ -22,7 +22,7 @@ namespace BowMan
         private int lastShot = -1;
         private float previousDraw = -1f;
         private ArenaSetting setting;
-        public string VolumeHint => $"X / V: volume {AudioListener.volume:P0}";
+        public string VolumeHint => $"X: volume {AudioListener.volume:P0}";
 
         // Attaches the sounds and volume control to a single local or online round.
         public void Bind(DuelTurnFlow turns, Bow equipped, OpponentBowAction other, ArcherHealth local,
@@ -55,7 +55,7 @@ namespace BowMan
             creak = Emitter(transform, Clip("Draw"), 0f, true);
             AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey, 0.75f));
             volume = new InputAction("Duel volume", InputActionType.Button, "<XRController>{LeftHand}/primaryButton");
-            volume.AddBinding("<Keyboard>/v");
+            if (DesktopBowTest.DesktopAvailable) volume.AddBinding("<Keyboard>/v");
             volume.AddBinding("<WebXRController>{LeftHand}/buttonA");
             volume.Enable();
         }

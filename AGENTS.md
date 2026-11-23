@@ -42,7 +42,7 @@ Use GitHub's Assignees field to record task responsibility.
 - Use free realistic medieval human archers in the visual style of For Honor
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
-- Select English Archer or Erika Archer on the main menu with the pointer or G. Preserve each seat’s independent choice across modes and rematches. Use the selected model’s hands, captured idle and bow action, and recorded voice. The solo opponent uses the other model.
+- Select English Archer or Erika Archer on the main menu with the right controller. Preserve each seat’s independent choice across modes and rematches. Use the selected model’s hands, captured idle and bow action, and recorded voice. The solo opponent uses the other model.
 - The local headset player sees tracked hands/controllers only for now; the
   opponent appears as a full archer. During injury, the local viewpoint follows
   the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
@@ -80,7 +80,7 @@ Use GitHub's Assignees field to record task responsibility.
 - PvE: duel against an AI-controlled archer.
 - Tiro ao alvo offers a local CPU rival or two online players on separate PCs.
   Pick the distance and choose **Play against CPU** to start solo. The player
-  shoots first and can start a rematch with A or R. The CPU uses the other
+  shoots first and can start a rematch with A. The CPU uses the other
   archer model and fires a physical arrow at the target. For online play,
   host/join with a Relay code. Alternate ten arrows per
   archer at the same target. Before hosting, choose 15 (default), 30, 50, 60 or
@@ -94,7 +94,7 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Distribution and lab hardware
 
-- Deliver an HTML game on itch.io. Players select Play, then Enter VR in a WebXR-capable browser. Use **Bow Man VR > Build itch.io WebXR Game** to generate the HTML ZIP. The Windows game player is a lab test artifact.
+- Deliver an HTML game on itch.io. Players select Play, then Enter VR in a WebXR-capable browser. The four playable scenes require a headset and tracked controllers, including interactive Play mode in Unity. Keyboard and mouse simulation is reserved for diagnostic scenes and explicit unattended Editor tests. Use **Bow Man VR > Build itch.io WebXR Game** to generate the HTML ZIP. The Windows game player is a lab test artifact.
 
 - Use the classroom-provided Meta Quest 2 for development and testing.
 - Run PC VR lab checks with the Quest 2 connected to the test PC.
@@ -200,23 +200,23 @@ Use GitHub's Assignees field to record task responsibility.
 - `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Its panels offer
   **PvE — vs AI archer** (opens `LocalDuel`), **PvP — online duel** (opens
   `PvPConnectionTest`) and **Tiro ao alvo** (opens `TargetRange`). Point the right controller's ray at a panel and pull the
-  trigger; without a headset press 1 / 2 / 3 or click a panel.
-- Select the bow-hand panel or press H to choose which hand holds the bow and
+  trigger. Start Quest Link before entering Play in the Editor.
+- Select the bow-hand panel to choose which hand holds the bow and
   which hand draws. All modes start with that saved choice. While aiming, the
   duel HUD shows the next action for the current hand and input method.
-- Open **Credits** with the pointer or C. Read the contributor pages or choose
+- Open **Credits** with the pointer. Read the contributor pages or choose
   **Notices** for the source and license text shipped with the player. Choose
-  **Menu** or press Esc to return. Arrow keys also turn pages.
-- In either mode, the left controller's Menu button or Esc returns to the menu.
+  **Menu** to return. Use the page panels to turn pages.
+- In either mode, the left controller's Menu button returns to the menu.
   Leaving the PvP scene ends the online session. Health, turn and the
   VICTORY/DEFEAT result stay on the local duel's headset text (#8).
 - Run **Bow Man VR > Build Mode Menu And Game Scenes** after changing the menu,
   duel or PvP generators. It regenerates the four scenes and puts MainMenu,
   LocalDuel, PvPConnectionTest and TargetRange first in the build list (D025).
 - **Bow Man VR > Build Windows Game Player** writes `Builds/PCVRGame/BowManVR.exe`
-  with those four scenes; add `-desktop` to run it without a headset.
+  with those four headset scenes.
 - Both duel modes show health, turn and result. PvP supports rematch after both
-  seats accept with A / R. Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
+  seats accept with A. Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
   (PlayMode) before a menu PR.
 
 ## Testing PvP connectivity
@@ -230,10 +230,9 @@ Use GitHub's Assignees field to record task responsibility.
   with their `.meta` files after changing the generator.
 - Run **Bow Man VR > PvP > Build Windows Connection Player** to build
   `Builds/PCVRPvP/BowManVR-PvP.exe`. It does not change the default build scenes.
-- Host: enter Play (or start the player), click **Host** in the desktop window
+- Host: enter Play (or start the player), point at **Host** and pull the trigger
   and share the code shown on the panel and in the headset.
-- Join: on the other machine, type the code and click **Join**. Start a player
-  without a headset with `BowManVR-PvP.exe -desktop`.
+- Join: on the other machine, select **Join** and enter the code with the headset keypad.
 - Expected: the host reads "Connected as Archer 1", the joining player
   "Connected as Archer 2", each rig stands on its spawn, and each player sees
   the opponent’s equipped archer during the match. The lobby uses head and hand
@@ -241,8 +240,7 @@ Use GitHub's Assignees field to record task responsibility.
   Relay's one-opponent limit ("Connection failed: …"); "Match is full" appears
   only if Netcode approval refuses it first.
 - Cross-network acceptance for #11 needs two PCs on different networks, for
-  example one on a phone hotspot. Editor plus a `-desktop` player on one PC is a
-  quick smoke test only.
+  example one on a phone hotspot. The two-Editor automated Relay check on one PC covers local connectivity.
 - When the joiner receives the second seat, the host starts a duel. Each player
   sees the opponent's archer and their own bow. The host resolves shots, health,
   injuries, death and turn handoff. Both peers show the same wound and anatomy.
@@ -291,7 +289,7 @@ Use GitHub's Assignees field to record task responsibility.
   and contact at the confirmed impact point. A cancelled draw stays quiet on release.
 - The string starts creaking above 60% draw, grows louder toward full draw and
   quiets while held. Easing back to the threshold, cancelling or firing stops it.
-- X on the left controller or V on the keyboard cycles game volume through mute
+- X on the left controller cycles game volume through mute
   and four audible levels. Keep this preference local across modes and rematches.
 - Source recordings and edits are listed in [Duel audio credits](Assets/ThirdParty/DuelAudio/Credits.md).
   Verify spatial placement and comfort on Quest 2.
@@ -307,9 +305,7 @@ Use GitHub's Assignees field to record task responsibility.
 - The headset-visible text shows both health values, current flow, draw strength,
   handedness and restart controls. Flying arrows, opponent turns, injuries and
   defeat lock nocking/release through the shared bow gate.
-- Without a headset, focus Game view and press Tab for desktop controls; arrow
-  keys aim and Space draws/releases. H changes hands during your aiming turn;
-  R restarts a finished match. Tab returns to tracked input.
+- The Game view mirrors the headset. Tab, arrow keys and Space cannot take over the player’s bow.
 - Injuries apply animated-eye displacement/rotation to the tracking origin while
   preserving live local head/controller poses. A neutral frame adds no extra
   standing height; restart restores the floor origin without restarting XR.

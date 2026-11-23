@@ -9,7 +9,7 @@ namespace BowMan.Networking
         [SerializeField] private TextMesh headsetLabel;
 
         private static string MenuHint => Application.platform == RuntimePlatform.WebGLPlayer
-            ? "Left stick click / Esc: back to modes" : "Menu button / Esc: back to modes";
+            ? "Left stick click: back to modes" : "Menu button: back to modes";
 
         private OnlineTargetMatch range;
         private string codeInput = string.Empty;
@@ -31,7 +31,7 @@ namespace BowMan.Networking
         // Draws the status, Host, code field, Join and Leave controls in the desktop window.
         private void OnGUI()
         {
-            if (range != null && range.AgainstCpu) return;
+            if (!DesktopBowTest.DesktopAvailable || (range != null && range.AgainstCpu)) return;
             var status = controller.Status;
             GUILayout.BeginArea(new Rect(16, 16, 360, Screen.height - 32));
             GUILayout.BeginVertical(GUI.skin.box);

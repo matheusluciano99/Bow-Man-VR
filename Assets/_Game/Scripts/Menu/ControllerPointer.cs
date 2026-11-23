@@ -35,8 +35,9 @@ namespace BowMan.Menu
         // Aims from the controller (or the mouse on desktop) and confirms on trigger or left click.
         private void Update()
         {
+            if (!DesktopBowTest.DesktopAvailable && VRBowInput.HeadsetInputBlocked) return;
             var mouse = Mouse.current;
-            var useMouse = !VRBowInput.HeadsetActive && desktopCamera != null && mouse != null;
+            var useMouse = DesktopBowTest.DesktopAvailable && !VRBowInput.HeadsetActive && desktopCamera != null && mouse != null;
             var ray = useMouse
                 ? desktopCamera.ScreenPointToRay(mouse.position.ReadValue())
                 : new Ray(rayOrigin.position, rayOrigin.forward);

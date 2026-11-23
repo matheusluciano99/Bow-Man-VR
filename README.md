@@ -4,7 +4,7 @@ VR archery targeting in-browser play on itch.io. The release flow is **Play → 
 online opponent. In **Tiro ao alvo**, choose **15, 30, 50, 60 or 70 m** and select **Play against CPU** to compete solo. For an online competition, one player selects **Host** and the other enters the code and selects **Join**.
 Alternate ten arrows each. The highest total wins.
 
-For lab tests, use Meta Quest 2 through Quest Link with the Windows review player.
+For lab tests, connect the Quest 2 through Quest Link and enter Play in the Unity Editor with MainMenu open.
 Open the project with Unity **6000.3.25f1**. Game requirements, scene instructions,
 hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 
@@ -12,7 +12,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 
 Use Unity 6000.3.25f1 with Web Build Support. Switch the active build profile to **Web** and run **Bow Man VR → Build itch.io WebXR Game**. The output is `Builds/ItchIO/BowManVR-WebXR.zip`, with `index.html` at its root. Select **HTML** on the itch.io project page and upload that ZIP as playable in the browser. [itch.io HTML game instructions](https://itch.io/docs/creators/html5)
 
-On the game page, select **Play**, then **Enter VR** when the headset is available. Each online player opens the same mode on a separate device. In VR, point the right controller at **Host** or **Join** and press the trigger. The joining player selects the six characters of the host's code and presses **Join** again. Click the left thumbstick to return to the mode menu. Keyboard and mouse controls are available in the browser before entering VR.
+On the game page, select **Play**, then **Enter VR** when the headset is available. Each online player opens the same mode on a separate device. In VR, point the right controller at **Host** or **Join** and press the trigger. The joining player selects the six characters of the host's code and presses **Join** again. Click the left thumbstick to return to the mode menu. Play requires an active VR headset. The browser page provides the Enter VR button. Use tracked controllers to choose a mode and shoot.
 
 ## Repository layout
 

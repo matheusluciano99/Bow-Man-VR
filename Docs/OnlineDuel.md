@@ -4,8 +4,7 @@ Open the saved PvPConnectionTest scene on both peers. Host on one PC and enter
 its Relay join code on the other. The second seat starts the duel. Archer 1
 shoots first. Each player sees their own tracked bow and the opponent's archer.
 The opposite trigger draws and releases. Right B switches bow hands during
-your aiming turn. Tab enables desktop controls, the arrow keys aim and Space
-draws and releases. Desktop aim uses the assigned seat's facing direction.
+your aiming turn.
 
 The host accepts one release from the active, living seat for the current
 round and turn. It runs the shared projectile, health, regional animation and
@@ -29,14 +28,13 @@ Physical Quest 2 review and the two-network session use the lab checklist.
 
 ## Target competition
 
-Choose **Tiro ao alvo** (keyboard **3**), select a distance and choose **Play against CPU** for a solo competition. The computer stands on your right. Alternate ten arrows each and press A or R to play again at the same distance. Menu or Esc returns to mode selection.
+Choose **Tiro ao alvo**, select a distance and choose **Play against CPU** for a solo competition. The computer stands on your right. Alternate ten arrows each and press A to play again at the same distance. The controller menu button returns to mode selection.
 
 For online play, enter **Tiro ao alvo** on both PCs. Host on one and join with
-its code on the other. Before hosting, select **15, 30, 50, 60 or 70 m** in the desktop lobby or cycle **Distance** with the right trigger in VR. Both seats use the host’s distance for all twenty arrows and rematches. Leave the lobby and host again to change courses. Each archer sees the target from the same firing line.
-Use the usual bow controls, or aim with the arrow keys and hold/release Space
-on desktop. Tab toggles desktop input. The host shoots first. The bow unlocks
+its code on the other. Before hosting, select **15, 30, 50, 60 or 70 m** by cycling **Distance** with the right trigger. Both seats use the host’s distance for all twenty arrows and rematches. Leave the lobby and host again to change courses. Each archer sees the target from the same firing line.
+Use the tracked bow controls. The host shoots first. The bow unlocks
 for the other seat once the arrow lands or expires. The upper-right target marks the host’s confirmed scoring point on both screens. A miss clears the mark. After twenty shots, each
-player can press A or R to accept a new match. Menu or Esc leaves the session.
+player can press A to accept a new match. The controller menu button leaves the session.
 
 For a desktop spectator demo with both archers, use **Bow Man VR → Arenas → Watch target competition**. Choose a distance in the top-left panel. After the current shot, the scorecard restarts at that distance. The upper-right target view marks the last impact and its score.
 

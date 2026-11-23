@@ -31,7 +31,7 @@ namespace BowMan.Menu
             if (pointer != null) pointer.Selected += OnSelected;
             RefreshHandLabel();
             ShowArcher();
-            keyboard = Keyboard.current;
+            keyboard = DesktopBowTest.DesktopAvailable ? Keyboard.current : null;
             if (keyboard != null) keyboard.onTextInput += OnTextInput;
         }
 

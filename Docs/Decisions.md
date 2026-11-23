@@ -72,7 +72,7 @@ Use three baked scenery prefabs around the same level spawns. The host sends the
 
 ## D005 — Browser VR release and Quest 2 lab testing
 
-Players launch the HTML game on itch.io and enter immersive VR from a WebXR-capable browser.
+Playing a match requires a headset and tracked controllers, both in the interactive Unity Editor and in the released game. This keeps physical draw, aim and release integral to each mode. The itch.io page offers VR entry, and leaving immersive play cannot transfer control to the keyboard. Standalone diagnostic scenes and explicitly configured unattended tests can simulate input.
 Use WebXR Export and WebXR Interactions 0.25.0 for stereo rendering and tracked controller input. Browser multiplayer uses secure WebSockets through Relay. The online lobby accepts join codes through the controller so a headset user can join without typing on the PC. For classroom testing, use Windows PC VR
 through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
 and the Oculus Touch profile. This matches the available test hardware. Keep
