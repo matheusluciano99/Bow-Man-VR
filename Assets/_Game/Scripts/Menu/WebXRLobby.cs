@@ -60,9 +60,26 @@ namespace BowMan.Menu
             Key(keypad.transform, "Delete", 0f, -.83f, .62f);
             keypad.SetActive(false);
             pointer = rig.RightHand.gameObject.AddComponent<ControllerPointer>();
+            pointer.UseLine(PointerRay(rig.RightHand));
             pointer.Selected += Press;
             pointer.enabled = false;
             board.SetActive(false);
+        }
+
+        // Builds the thin unlit ray that shows where the right controller points, matching the mode menu's ray.
+        private static LineRenderer PointerRay(Transform hand)
+        {
+            var line = new GameObject("Lobby pointer ray").AddComponent<LineRenderer>();
+            line.transform.SetParent(hand, false);
+            line.positionCount = 2;
+            line.useWorldSpace = true;
+            line.widthMultiplier = .004f;
+            line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            line.receiveShadows = false;
+            var shader = Shader.Find("Sprites/Default");
+            if (shader != null) line.sharedMaterial = new Material(shader);
+            line.startColor = line.endColor = new Color(1f, .85f, .4f);
+            return line;
         }
 
         // Sizes a centered text mesh by its rendered line height in world units.

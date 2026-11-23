@@ -25,11 +25,19 @@ namespace BowMan.Menu
             select.Enable();
         }
 
-        // Releases the trigger action.
+        // Releases the trigger action and hides the ray so a disabled pointer leaves no frozen line.
         private void OnDisable()
         {
             select?.Dispose();
             select = null;
+            if (line != null) line.enabled = false;
+        }
+
+        // Draws the ray with a line created at runtime when the pointer was not built with one.
+        public void UseLine(LineRenderer ray)
+        {
+            line = ray;
+            if (line != null) line.enabled = false;
         }
 
         // Aims from the controller (or the mouse on desktop) and confirms on trigger or left click.
