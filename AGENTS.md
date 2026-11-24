@@ -43,7 +43,7 @@ Use GitHub's Assignees field to record task responsibility.
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
 - Select English Archer or Erika Archer on the main menu with the right controller. Preserve each seat’s independent choice across modes and rematches. Use the selected model’s hands, captured idle and bow action, and recorded voice. The solo opponent uses the other model.
-- The local headset player sees tracked hands/controllers only for now; the
+- The local headset player sees their archer’s tracked hands. The
   opponent appears as a full archer. During injury, the local viewpoint follows
   the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
   Physical viewpoint validation remains task #35.
@@ -67,9 +67,10 @@ Use GitHub's Assignees field to record task responsibility.
 - Give the shared gameplay arrow a medieval head, wooden shaft, feather
   fletching and nock. Use the same model from draw through impact and preserve
   the tip origin and embedded wound position.
-- Replace the playable rig’s controller markers with visible archer hands that
-  follow the controllers. Support the bow grip, nock, draw and release with
-  either bow hand. Keep the diagnostic markers in the tracking test.
+- Show the selected archer’s tracked hands in playable scenes. In the main menu,
+  credits and online lobbies, the right hand points along the controller’s aim
+  pose and the left rests. Support bow grip, nock, draw and release with either
+  hand. Keep the colored diagnostic markers in the tracking test.
 
 ## Game modes
 
@@ -302,8 +303,8 @@ Use GitHub's Assignees field to record task responsibility.
 ## Running the local VR duel
 
 - Open `Assets/_Game/Scenes/LocalDuel.unity` after starting Quest Link. The player
-  faces Erika across the existing 20-metre arena and sees tracked controllers
-  plus their bow; the hidden local body still receives anatomical impacts.
+  faces the opposing archer across the 20-metre arena and sees their own tracked
+  hands and bow. The hidden local body still receives anatomical impacts.
 - The bow stays equipped; the opposite trigger draws/releases. Right-controller B
   switches bow hands during the player's aiming turn. Right-controller A restarts
   after victory/defeat. Hand preference survives restart.

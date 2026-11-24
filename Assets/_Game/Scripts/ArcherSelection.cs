@@ -10,6 +10,8 @@ namespace BowMan
 
         private static ArcherModel? sessionChoice;
 
+        public static string HandResourceFolder => Preferred == ArcherModel.English ? "ArcherHands/English/" : "ArcherHands/";
+
         public static ArcherModel Preferred
         {
             get => sessionChoice ??= (PlayerPrefs.GetInt(Key) == (int)ArcherModel.Erika ? ArcherModel.Erika : ArcherModel.English);

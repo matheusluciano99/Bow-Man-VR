@@ -68,13 +68,18 @@ namespace BowMan
         // Attaches one hand to its tracked controller and hides the original marker.
         private static SkinnedMeshRenderer CreateHand(Transform controller, string side)
         {
-            var folder = ArcherSelection.Preferred == ArcherModel.English ? "ArcherHands/English/" : "ArcherHands/";
-            var prefab = Resources.Load<SkinnedMeshRenderer>(folder + side);
+            var prefab = Resources.Load<SkinnedMeshRenderer>(ArcherSelection.HandResourceFolder + side);
             var hand = Instantiate(prefab, controller, false);
             hand.gameObject.SetActive(false);
-            var marker = controller.Find("Controller Marker");
-            if (marker != null) marker.gameObject.SetActive(false);
+            HideTrackingMarker(controller);
             return hand;
+        }
+
+        // Keeps the tracking rig's diagnostic marker out of playable views.
+        public static void HideTrackingMarker(Transform controller)
+        {
+            var marker = controller != null ? controller.Find("Controller Marker") : null;
+            if (marker != null) marker.gameObject.SetActive(false);
         }
 
         // Creates handed trigger and tracking bindings for the continuously equipped bow.
@@ -107,21 +112,8 @@ namespace BowMan
         // Removes the visual hands from a surviving tracking rig when its bow input is replaced.
         private void OnDestroy()
         {
-            RemoveHand(leftHand);
-            RemoveHand(rightHand);
-        }
-
-        // Restores the controller's diagnostic marker when its gameplay hand is removed.
-        private static void RemoveHand(SkinnedMeshRenderer hand)
-        {
-            if (hand == null) return;
-            var controller = hand.transform.parent;
-            if (controller != null)
-            {
-                var marker = controller.Find("Controller Marker");
-                if (marker != null) marker.gameObject.SetActive(true);
-            }
-            Destroy(hand.gameObject);
+            if (leftHand != null) Destroy(leftHand.gameObject);
+            if (rightHand != null) Destroy(rightHand.gameObject);
         }
 
         // Switches controller roles, cancelling a tracked draw and rebuilding handed bindings.

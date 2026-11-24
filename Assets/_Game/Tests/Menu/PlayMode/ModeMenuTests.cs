@@ -313,6 +313,50 @@ public class ModeMenuTests
         Assert.IsFalse(ray.enabled);
     }
 
+    // Replaces both rig markers with the selected archer's pointing and resting hands.
+    [UnityTest]
+    public IEnumerator PlayableMenuUsesArcherHandsInsteadOfTrackingMarkers()
+    {
+        var origin = Create("Tracking origin").transform;
+        var left = Create("Left Controller").transform;
+        var right = Create("Right Controller").transform;
+        left.SetParent(origin, false);
+        right.SetParent(origin, false);
+        var leftMarker = Create("Controller Marker");
+        var rightMarker = Create("Controller Marker");
+        leftMarker.transform.SetParent(left, false);
+        rightMarker.transform.SetParent(right, false);
+        var pointer = right.gameObject.AddComponent<ControllerPointer>();
+        Assert.IsFalse(leftMarker.activeSelf);
+        Assert.IsFalse(rightMarker.activeSelf);
+
+        var present = typeof(ControllerPointer).GetMethod("PresentHands",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        var aim = new Pose(Origin + Vector3.one, Quaternion.Euler(12f, 24f, 36f));
+        var previous = ArcherSelection.Preferred;
+        try
+        {
+            foreach (var model in new[] { ArcherModel.English, ArcherModel.Erika })
+            {
+                ArcherSelection.Preferred = model;
+                present.Invoke(pointer, new object[] { aim, true, true });
+                var hand = right.Find("Right pointing hand");
+                var mesh = hand.GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(mesh, Is.SameAs(Resources.Load<Mesh>(ArcherSelection.HandResourceFolder + "Point")));
+                Assert.That(mesh.vertexCount, Is.GreaterThan(0));
+                Assert.That(hand.GetComponent<MeshRenderer>().enabled, Is.True);
+                Assert.That(Vector3.Distance(hand.position, aim.position), Is.LessThan(0.001f));
+                Assert.That(Quaternion.Angle(hand.rotation, aim.rotation), Is.LessThan(0.1f));
+                Assert.That(left.GetComponentsInChildren<SkinnedMeshRenderer>().Count(skin => skin.enabled), Is.EqualTo(1));
+            }
+            pointer.enabled = false;
+            Assert.IsFalse(right.Find("Right pointing hand").GetComponent<MeshRenderer>().enabled);
+            Assert.IsFalse(left.GetComponentsInChildren<SkinnedMeshRenderer>().Any(skin => skin.enabled));
+        }
+        finally { ArcherSelection.Preferred = previous; }
+        yield return null;
+    }
+
     // Loads the confirmed panel's scene exactly once even if the trigger is pulled again.
     [UnityTest]
     public IEnumerator ConfirmingAPanelLoadsItsSceneOnce()
