@@ -18,7 +18,11 @@ ordinary injury view. Use the same revision for the two-network test.
 | Hold bow | Automatically attached to the selected hand |
 | Grab, draw and release | Hold the opposite trigger near the string, pull back and release |
 | Aim | Move both tracked hands |
+| Choose bow hand before entering a match | Select the bow-hand panel with the right trigger |
 | Switch bow hand | Press right B during your aiming turn |
+| Cycle game volume, including mute | Press left X |
+| Read credits and source notices | Select Credits, then Notices |
+| Return from credits | Select Menu |
 | Restart a finished match | Press right A |
 
 Check that Tab, the arrow keys and Space cannot draw or shoot in the Game view. Remove the headset during a draw and check that the arrow is cancelled when the runtime reports presence lost.
@@ -32,7 +36,10 @@ also available. Bow hand preference survives match restart.
 - [ ] Grip alignment, nearby-string grab, short/half/full draw and release feel natural with each bow hand.
 - [ ] The bow stays in hand without gripping, including other turns and injury; grip release does not cancel a draw.
 - [ ] Losing tracking or app focus cancels without an accidental shot.
-- [ ] The full opposing archer is textured and correctly scaled; the local view shows controllers/bow only.
+- [ ] The fully rendered opponent is textured and correctly scaled. Check idle, nock, draw and release on the opponent and both local hand poses, including after cancelling a draw.
+- [ ] Start with a short draw, then cross 60%. Listen for stretch at the bow, the sustained full-draw sound and silence as the string relaxes. Check release, arrow flight, impact, mute and comfortable levels.
+- [ ] Across matches, inspect the castle courtyard, woodland range and village yard. Record the arena, audible ambience, floor contact and how clearly the opponent stands out.
+- [ ] Have a first-time player choose a hand and mode, nock and shoot, recognize the result and restart. Check credits and notices in both eyes, then return to the menu.
 - [ ] Both health values, turn state and draw feedback are readable in stereo.
 - [ ] One released arrow locks shooting until its outcome and any living recovery finish; misses pass the turn.
 - [ ] The AI takes one legal turn and cannot shoot during another arrow, injured hold or recovery.
@@ -98,10 +105,11 @@ Open the saved MainMenu scene in the Editor. Build both modes with **Bow Man VR
 > Build Windows Game Player**. Keep the entire resulting player folder together
 when copying it to either lab PC. Record the Git revision and use the same
 build on both PCs. Launch each mode from the menu and return with the left
-controller's Menu button or Esc.
+controller's Menu button.
 
 For the online pass, host on one network and join from a second network.
 Record the two PCs, network types, participant observations and build revision.
+Confirm that both seats see the same arena and hear the remote archer’s draw.
 Alternate shooters and repeat the region table above in both modes. For each
 hit, compare health, region and side, arrow placement, wound and anatomy on
 both peers. Confirm each living recovery precedes the next turn. Test a fatal
