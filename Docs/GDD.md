@@ -7,9 +7,9 @@
 
 | | |
 | --- | --- |
-| **Versão** | 1.0 — 24/11/2026 |
+| **Versão** | 1.1 — 24/11/2026 |
 | **Gênero** | Duelo de arco e flecha por turnos, em realidade virtual |
-| **Plataforma de entrega** | Navegador com WebXR, publicado como jogo HTML no itch.io |
+| **Plataforma de entrega** | Navegador com WebXR, publicado como jogo HTML no itch.io (exigência da disciplina) |
 | **Plataforma de laboratório** | PC com Windows + Meta Quest 2 via Quest Link |
 | **Controles** | Dois controles Touch rastreados (headset obrigatório) |
 | **Jogadores** | 1 (contra IA ou CPU) ou 2 online, em redes diferentes |
@@ -573,7 +573,7 @@ Cada linha registra uma mudança de direção: o que era antes, o que passou a
 ser e por quê. O motivo detalhado de cada escolha está em
 [Decisions.md](Decisions.md).
 
-| Data | Antes | Depois | Motivo ou efeito | Onde |
+| Data | Antes | Depois | Motivo | Onde |
 | --- | --- | --- | --- | --- |
 | 11/11 | — | Conceito: *Bow Man* em VR com PvE e PvP online, jogado num PC com o Quest 2. Puxada máxima provisória de 70 cm. | Ponto de partida, com o hardware da sala de aula. | #1, D005 |
 | 17–20/11 | O arco era equipado e mantido segurando o grip. | O arco fica preso à mão escolhida, sem segurar o grip, e alinhado ao controle. | A revisão no headset mostrou que era preciso segurar o grip o tempo todo e que o arco aparecia girado 90° em relação ao controle. | D008, #85 |
@@ -581,8 +581,8 @@ ser e por quê. O motivo detalhado de cada escolha está em
 | 15–20/11 | Reações animadas no projeto, quadro a quadro. | Captura de movimento gratuita (Mixamo, Eyes Japan, Rokoko, MotionSmith) ajustada aos dois personagens. | A revisão no Quest 2 achou os movimentos rígidos e com membros atravessando o corpo. | D015, #86 |
 | 17–20/11 | Pausa de ferimento de 3 s em todas as regiões. | Peito com 0,75 s e pés com 2 s; o PR #165 propõe 0,2 s para o peito. | Os tempos foram aprovados nas revisões (0,75 s no peito em teste; pés no Quest 2). O PR #165 encurta a recuperação do peito. | D009, #86, #164 |
 | 20/11 | Protótipo: marcadores de controle, flecha de teste e arena neutra. | Três arenas medievais, flecha medieval, mãos do arqueiro, respiração entre tiros, arco animado do oponente, áudio, primeira partida guiada e créditos. | Dar ao duelo a apresentação medieval planejada, sobre a física e os controles já testados. | #115–#123 |
-| 22/11 | Entrega como executável Windows para PC VR. | Jogo HTML WebXR no itch.io; o executável Windows vira artefato de laboratório. | O jogo abre direto no navegador, sem instalação. | D005, PR #135 |
-| 22–23/11 | Dois modos: PvE e PvP. | Novo modo **Tiro ao alvo**. Um protótipo local para dois no mesmo PC foi arquivado; ficou a versão online em PCs separados, depois as distâncias de 15 a 70 m e o modo contra a CPU. | Uma competição de precisão sem combate, que reaproveita o arco e a conexão online; a CPU permite jogar sem outra pessoa. | PRs #134, #135, #139, #141 |
+| 22/11 | Entrega como executável Windows para PC VR. | Jogo HTML WebXR no itch.io; o executável Windows vira artefato de laboratório. | Exigência da disciplina: o jogo é entregue no itch.io. A versão HTML abre direto no navegador, sem instalação. | D005, PR #135 |
+| 22–23/11 | Dois modos: PvE e PvP. | Novo modo **Tiro ao alvo**. Um protótipo local para dois no mesmo PC foi arquivado; ficou a versão online em PCs separados, depois as distâncias de 15 a 70 m e o modo contra a CPU. | A equipe achou que seria divertido ter uma competição de precisão sem combate. Ela reaproveita o arco e a conexão online, e a CPU permite jogar sem outra pessoa. | PRs #134, #135, #139, #141 |
 | 22/11 | O jogador era sempre o English Archer e o oponente a Erika. | Cada jogador escolhe o arqueiro, com mãos, voz e animações próprias. | Cada jogador escolhe a própria identidade; regras e tempos iguais mantêm as duas escolhas equivalentes. | D025, PR #137 |
 | 23/11 | Teclado e mouse funcionavam como alternativa nas cenas jogáveis. | Headset e controles rastreados são obrigatórios; a simulação fica nas cenas de diagnóstico. | Puxar, mirar e soltar fisicamente fazem parte de todos os modos. | D005, PR #147 |
 | 23/11 | Força total a 70 cm. | 50 cm, depois 42,5 cm e, por fim, 36 cm. | No Quest 2, 42,5 cm ainda chegava ao limite do rastreamento; 36 cm deixa folga. | D008, PR #155 |
@@ -682,3 +682,4 @@ requisitos do AGENTS.md valem e o GDD deve ser corrigido.
 | Versão | Data | Mudança |
 | --- | --- | --- |
 | 1.0 | 24/11/2026 | Primeira versão, com o jogo do `main` e os PRs abertos até o #165. |
+| 1.1 | 24/11/2026 | Motivos confirmados: entrega no itch.io (exigência da disciplina) e Tiro ao alvo (escolha da equipe). Cópia pública de leitura. |
