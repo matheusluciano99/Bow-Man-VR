@@ -44,9 +44,12 @@ Multiple different archer models are allowed. The retained heavy Templar Knight
 is a separate asset, not the selected player archer.
 
 The prototype visual choices are English Archer and Erika Archer. The local
-headset view shows tracked hands/controllers only for now; the opponent is a
-full archer. The current rig uses controller markers. Reference views and
-body-region/bow design constraints are in [ArcherDesign.md](Art/ArcherDesign.md).
+headset view shows tracked archer hands. The opponent is a full archer.
+The menu and credits use a pointing right hand and a relaxed left hand so the
+player can see where the fingertip is aiming. The online connection screen
+shows both hands at rest. The tracking test uses colored controller markers.
+Reference views and body-region and bow design constraints are in
+[ArcherDesign.md](Art/ArcherDesign.md).
 Both characters now have prepared Humanoid derivatives and a shared movement
 check. Rig readiness and remaining per-animation review are documented in
 [RigPreparation.md](Art/RigPreparation.md).
@@ -149,7 +152,7 @@ During local knockdown, kneeling and recovery, move the VR viewpoint with the
 character's animated eyes so the player sees the injury sequence in first
 person. Keep live headset tracking for looking around and calibrate the eye
 reference against the player's neutral pose to avoid adding standing height
-twice. The local visible-body choice remains hands/controllers for the prototype.
+twice. The local body remains hidden while the tracked hands are visible.
 
 This preserves the first-person experience through injury. Camera-height changes
 are artificial locomotion with comfort implications, as described in Meta's
@@ -375,7 +378,7 @@ Use recorded spatial cues for the two archers and their equipment. Start the str
 
 - Additional archer variants and later visual refinements remain open. The current
   prototype uses English Archer and Erika; local full-body rendering is outside
-  the agreed hands/controllers presentation.
+  the agreed first-person hand presentation.
 - Arena distance, bow draw distance and combat tuning remain provisional as
   described in AGENTS.md and the relevant task cards.
 - Per-model hitbox dimensions, damage values, organ/fracture effects and internal

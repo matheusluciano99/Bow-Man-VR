@@ -27,7 +27,8 @@ also available. Bow hand preference survives match restart.
 
 ## Match and comfort checks
 
-- [ ] Head motion and both controller markers track correctly; floor and body scale match the real room.
+- [ ] Head motion and both archer hands track correctly. The menu ray starts at the pointing index finger.
+  Floor and body scale match the real room.
 - [ ] Grip alignment, nearby-string grab, short/half/full draw and release feel natural with each bow hand.
 - [ ] The bow stays in hand without gripping, including other turns and injury; grip release does not cancel a draw.
 - [ ] Losing tracking or app focus cancels without an accidental shot.
