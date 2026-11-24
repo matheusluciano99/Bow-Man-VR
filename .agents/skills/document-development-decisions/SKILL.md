@@ -17,6 +17,9 @@ as superseded context if it explains a meaningful tradeoff.
 
 Put product requirements in AGENTS.md, folder roles in README.md, and asset
 sources/licenses in Docs/Art/CharacterAssets.md; link to those canonical details.
+Reflect each player-facing change in the Portuguese
+[game design document](../../../Docs/GDD.md): its section, status table, version
+line and, when the direction changes, a trajectory entry with the reason.
 Leave unapproved alternatives and temporary tuning under the decision log's open
 questions. Keep task ownership/status on GitHub, without copying them into skills.
 

@@ -98,6 +98,16 @@ that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
 
+## D026 — A living game design document
+
+Keep the game design document in [GDD.md](GDD.md), versioned with the code.
+The course evaluates the game partly through its GDD, so it must describe the
+current design, what is merged or still in review, and each change of direction
+with its reason. Updating it in the same PR as the change keeps it from drifting
+the way a separate snapshot would. Write it in Portuguese for the course
+evaluators and keep in-game labels in their original text. AGENTS.md remains the
+canonical requirement and this log the canonical reason; the GDD summarizes both.
+
 ## D008 — Reuse arrow flight for an independently testable bow interaction
 
 Keep draw/nock/release state in `Bow`, tracked controller bindings in `VRBowInput`,
