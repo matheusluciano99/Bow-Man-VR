@@ -34,9 +34,10 @@ namespace BowMan.Menu
             line.widthMultiplier = .003f;
             line.sharedMaterial = Resources.Load<Material>("Interface/Brass");
             line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            line.enabled = false;
         }
 
-        // Releases the trigger action.
+        // Releases the trigger action and hides the ray while the pointer is disabled.
         private void OnDisable()
         {
             select?.Dispose();

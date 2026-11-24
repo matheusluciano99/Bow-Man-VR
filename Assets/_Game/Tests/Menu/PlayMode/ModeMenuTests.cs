@@ -144,6 +144,34 @@ public class ModeMenuTests
         yield return null;
     }
 
+    // Gives the in-headset lobby pointer its own ray, shown only while the lobby board is shown in a headset.
+    [UnityTest]
+    public IEnumerator OnlineLobbyPointerShowsItsRayOnlyWithTheBoard()
+    {
+        const string path = "Assets/_Game/Scenes/TargetRange.unity";
+        Scene lobby = default;
+        AsyncOperation unload = null;
+        try
+        {
+            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+            lobby = SceneManager.GetSceneByPath(path);
+            yield return null;
+            yield return null;
+            var pointer = lobby.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<ControllerPointer>(true)).Single();
+            var ray = pointer.GetComponent<LineRenderer>();
+            Assert.That(ray, Is.Not.Null);
+            bool board = VRBowInput.HeadsetActive;
+            Assert.AreEqual(board, pointer.enabled);
+            Assert.AreEqual(board, ray.enabled);
+        }
+        finally
+        {
+            if (lobby.IsValid() && lobby.isLoaded) unload = SceneManager.UnloadSceneAsync(lobby);
+        }
+        // Waits for the unload so the next test cannot find this scene's connection controller.
+        if (unload != null) yield return unload;
+    }
+
     // Uses the authored menu panels and follows the selected hand into the playable duel.
     [UnityTest]
     public IEnumerator NewPlayerChoosesHandEntersDuelAndDraws()
@@ -264,6 +292,25 @@ public class ModeMenuTests
         pointer.Point(new Ray(Origin, Vector3.back));
         Assert.IsNull(pointer.Hovered);
         Assert.IsFalse(option.IsHighlighted);
+    }
+
+    // Draws the lobby ray to the hovered panel and hides it as soon as the pointer is disabled.
+    [UnityTest]
+    public IEnumerator RuntimeRayEndsOnThePanelAndHidesWithItsPointer()
+    {
+        Panel(GameMode.PvP, 3f);
+        var pointer = Create("Pointer").AddComponent<ControllerPointer>();
+        pointer.AddVisibleRay();
+        var ray = pointer.GetComponent<LineRenderer>();
+        Assert.IsFalse(ray.enabled);
+        yield return null;
+
+        pointer.Point(new Ray(Origin, Vector3.forward), true);
+        Assert.IsTrue(ray.enabled);
+        Assert.That(Vector3.Distance(Origin + Vector3.forward * 2.975f, ray.GetPosition(1)), Is.LessThan(0.001f));
+
+        pointer.enabled = false;
+        Assert.IsFalse(ray.enabled);
     }
 
     // Loads the confirmed panel's scene exactly once even if the trigger is pulled again.
