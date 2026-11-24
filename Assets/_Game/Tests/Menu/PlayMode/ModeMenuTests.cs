@@ -133,6 +133,14 @@ public class ModeMenuTests
             yield return null;
             var input = lobby.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<VRBowInput>(true)).Single();
             Assert.That(input.BowInLeftHand, Is.False);
+            var rig = lobby.GetRootGameObjects().Single(root => root.transform.Find("Camera Offset") != null);
+            foreach (var side in new[] { "Left", "Right" })
+            {
+                var controller = rig.transform.Find($"Camera Offset/{side} Controller");
+                Assert.That(controller.Find("Controller Marker").gameObject.activeSelf, Is.False);
+                Assert.That(controller.GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMesh,
+                    Is.SameAs(Resources.Load<SkinnedMeshRenderer>($"ArcherHands/{side}").sharedMesh));
+            }
         }
         finally
         {
@@ -222,6 +230,46 @@ public class ModeMenuTests
         pointer.Point(new Ray(Origin, Vector3.back));
         Assert.IsNull(pointer.Hovered);
         Assert.IsFalse(option.IsHighlighted);
+    }
+
+    // Replaces both rig markers with the archer's pointing and resting hands.
+    [UnityTest]
+    public IEnumerator PlayableMenuUsesArcherHandsInsteadOfTrackingMarkers()
+    {
+        var origin = Create("Tracking origin").transform;
+        var left = Create("Left Controller").transform;
+        var right = Create("Right Controller").transform;
+        left.SetParent(origin, false);
+        right.SetParent(origin, false);
+        var leftMarker = Create("Controller Marker");
+        var rightMarker = Create("Controller Marker");
+        leftMarker.transform.SetParent(left, false);
+        rightMarker.transform.SetParent(right, false);
+        var pointer = right.gameObject.AddComponent<ControllerPointer>();
+        Assert.IsFalse(leftMarker.activeSelf);
+        Assert.IsFalse(rightMarker.activeSelf);
+
+        var present = typeof(ControllerPointer).GetMethod("PresentHands",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        var aim = new Pose(Origin + Vector3.one, Quaternion.Euler(12f, 24f, 36f));
+        present.Invoke(pointer, new object[] { aim, true, true });
+        var hand = right.Find("Right pointing hand");
+        var mesh = hand.GetComponent<MeshFilter>().sharedMesh;
+        var renderer = hand.GetComponent<MeshRenderer>();
+        Assert.That(mesh, Is.SameAs(Resources.Load<Mesh>("ArcherHands/Point")));
+        Assert.That(mesh.vertexCount, Is.GreaterThan(0));
+        Assert.That(renderer.sharedMaterials.Length, Is.EqualTo(mesh.subMeshCount));
+        Assert.That(renderer.enabled, Is.True);
+        Assert.That(Vector3.Distance(hand.position, aim.position), Is.LessThan(0.001f));
+        Assert.That(Quaternion.Angle(hand.rotation, aim.rotation), Is.LessThan(0.1f));
+        var resting = left.GetComponentInChildren<SkinnedMeshRenderer>();
+        Assert.That(resting.enabled, Is.True);
+        present.Invoke(pointer, new object[] { aim, true, false });
+        Assert.That(renderer.enabled, Is.False);
+        Assert.That(resting.enabled, Is.True);
+        pointer.enabled = false;
+        Assert.That(resting.enabled, Is.False);
+        yield return null;
     }
 
     // Loads the confirmed panel's scene exactly once even if the trigger is pulled again.

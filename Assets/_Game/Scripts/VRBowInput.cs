@@ -24,7 +24,7 @@ namespace BowMan
         private Transform DrawHand => bowInLeftHand ? rightController : leftController;
         public bool BowInLeftHand => bowInLeftHand;
 
-        // Replaces diagnostic markers with the two archer hands when a playable match starts.
+        // Replaces the tracked rig's markers with first-person archer hands.
         public void ShowArcherHands()
         {
             if (leftHand != null) return;
@@ -38,9 +38,15 @@ namespace BowMan
             var prefab = Resources.Load<SkinnedMeshRenderer>("ArcherHands/" + side);
             var hand = Instantiate(prefab, controller, false);
             hand.gameObject.SetActive(false);
+            HideTrackingMarker(controller);
+            return hand;
+        }
+
+        // Hides the marker inherited by playable rigs from the tracking prefab.
+        public static void HideTrackingMarker(Transform controller)
+        {
             var marker = controller.Find("Controller Marker");
             if (marker != null) marker.gameObject.SetActive(false);
-            return hand;
         }
 
         // Creates handed trigger and tracking bindings for the continuously equipped bow.
@@ -75,17 +81,10 @@ namespace BowMan
             RemoveHand(rightHand);
         }
 
-        // Restores the controller's diagnostic marker when its gameplay hand is removed.
+        // Removes the rendered hand from its controller.
         private static void RemoveHand(SkinnedMeshRenderer hand)
         {
-            if (hand == null) return;
-            var controller = hand.transform.parent;
-            if (controller != null)
-            {
-                var marker = controller.Find("Controller Marker");
-                if (marker != null) marker.gameObject.SetActive(true);
-            }
-            Destroy(hand.gameObject);
+            if (hand != null) Destroy(hand.gameObject);
         }
 
         // Switches controller roles, cancelling a tracked draw and rebuilding handed bindings.
@@ -102,6 +101,7 @@ namespace BowMan
         private void Update()
         {
             if (bow == null || BowHand == null || DrawHand == null) return;
+            if (!bow.isActiveAndEnabled) return;
             pinch = Mathf.MoveTowards(pinch, bow.IsDrawing ? 100f : 0f, Time.unscaledDeltaTime * 1200f);
             if (!focused || paused || !bowTracked.IsPressed() || !drawTracked.IsPressed())
             {
@@ -117,26 +117,33 @@ namespace BowMan
             if (drawAction.WasReleasedThisFrame()) bow.Release();
         }
 
-        // Keeps the bow attached to the tracked grip even while shooting is locked or a draw is cancelled.
+        // Updates the tracked bow grip and uses relaxed hands while the bow is inactive.
         [BeforeRenderOrder(100)]
         private void UpdatePose()
         {
             if (bow == null || BowHand == null || DrawHand == null) return;
-            bow.transform.SetPositionAndRotation(BowHand.TransformPoint(gripPositionOffset),
-                BowHand.rotation * Quaternion.Euler(gripRotationOffset));
-            if (bow.IsDrawing) bow.PullTo(DrawHand.position);
+            var equipped = bow.isActiveAndEnabled;
+            if (equipped)
+            {
+                bow.transform.SetPositionAndRotation(BowHand.TransformPoint(gripPositionOffset),
+                    BowHand.rotation * Quaternion.Euler(gripRotationOffset));
+                if (bow.IsDrawing) bow.PullTo(DrawHand.position);
+            }
             if (leftHand == null) return;
             var grip = bowInLeftHand ? leftHand : rightHand;
             var draw = bowInLeftHand ? rightHand : leftHand;
             grip.gameObject.SetActive(focused && !paused && bowTracked.IsPressed());
             draw.gameObject.SetActive(focused && !paused && drawTracked.IsPressed());
-            grip.transform.SetPositionAndRotation(bow.transform.position,
-                bow.transform.rotation * Quaternion.Euler(-90f, 0f, 0f));
-            draw.transform.SetPositionAndRotation(bow.IsDrawing ? bow.StringPosition : DrawHand.position, DrawHand.rotation);
-            grip.SetBlendShapeWeight(0, 100f);
+            if (equipped)
+                grip.transform.SetPositionAndRotation(bow.transform.position,
+                    bow.transform.rotation * Quaternion.Euler(-90f, 0f, 0f));
+            else
+                grip.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            draw.transform.SetPositionAndRotation(equipped && bow.IsDrawing ? bow.StringPosition : DrawHand.position, DrawHand.rotation);
+            grip.SetBlendShapeWeight(0, equipped ? 100f : 0f);
             grip.SetBlendShapeWeight(1, 0f);
             draw.SetBlendShapeWeight(0, 0f);
-            draw.SetBlendShapeWeight(1, pinch);
+            draw.SetBlendShapeWeight(1, equipped ? pinch : 0f);
         }
 
         // Cancels a nocked shot when application focus is lost.

@@ -62,6 +62,7 @@ namespace BowMan.Networking
             bow.Fired += Released;
             connection.StatusChanged += ConnectionChanged;
             vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
+            vrInput.ShowArcherHands();
             desktopMode = DesktopXR.Requested(Environment.GetCommandLineArgs());
         }
 
@@ -107,7 +108,6 @@ namespace BowMan.Networking
             var eyes = local.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head).Find("EyeAnchor");
             injuryView.Bind(local.transform, eyes, local);
             bow.gameObject.SetActive(true);
-            vrInput.ShowArcherHands();
             bow.SetOwner(local.transform);
             desktop.PlaceStand(local.transform.TransformPoint(new Vector3(-0.45f, 1.3f, 0.6f)), local.transform.rotation);
             desktop.UseDesktopControls(desktopMode);

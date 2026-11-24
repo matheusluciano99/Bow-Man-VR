@@ -27,7 +27,7 @@ public static class ArcherHandBuilder
         AssetDatabase.SaveAssets();
     }
 
-    // Bakes three gestures onto the same surface vertices in controller space, including the grip offset.
+    // Bakes the playing gestures and the right menu hand from the same hand surface.
     private static void BakeHand(GameObject actor, bool left)
     {
         var side = left ? "Left" : "Right";
@@ -94,19 +94,23 @@ public static class ArcherHandBuilder
             }
         }
         var result = new Mesh { name = side + " Archer Hand" };
-        for (var gesture = 0; gesture < 3; gesture++)
+        var gestures = left ? 3 : 4;
+        for (var gesture = 0; gesture < gestures; gesture++)
         {
             var pose = neutral;
             pose.muscles = (float[])neutral.muscles.Clone();
             for (var i=0; i<pose.muscles.Length; i++)
             {
                 var name = HumanTrait.MuscleName[i];
-                if (!name.StartsWith(side+" ") || !name.Contains("Stretched")) continue;
+                if (!name.StartsWith(side+" ")) continue;
+                if (gesture == 3 && name.Contains("Spread")) pose.muscles[i] = 0f;
+                if (!name.Contains("Stretched")) continue;
                 var thumb = name.Contains("Thumb");
                 var index = name.Contains("Index");
                 pose.muscles[i] = gesture switch {
                     1 => thumb ? -.28f : -.74f,
                     2 => thumb || index ? -.4f : -.56f,
+                    3 => index ? .27f : thumb ? -.28f : -.76f,
                     _ => thumb ? .02f : .22f
                 };
             }
@@ -118,11 +122,18 @@ public static class ArcherHandBuilder
             var forward = fingers[2].position - wrist.position;
             var up = fingers[1].position - fingers[3].position;
             var toController = Quaternion.Euler(90,0,0) * Quaternion.Inverse(Quaternion.LookRotation(forward, up));
+            if (gesture == 3)
+            {
+                var pointingDirection = (indexTip.position - fingers[1].position).normalized;
+                var pointingUp = Vector3.Cross(up.normalized, pointingDirection);
+                toController = Quaternion.Inverse(Quaternion.LookRotation(pointingDirection, pointingUp));
+            }
             if (gesture == 1)
                 toController = Quaternion.AngleAxis(left ? 32f : -32f, Vector3.forward) * toController;
             var anchor = gesture switch {
                 1 => Vector3.Lerp(fingers[2].position, fingers[2].GetChild(0).position, .55f),
                 2 => (thumbTip.position+indexTip.position)*.5f,
+                3 => indexTip.position,
                 _ => Vector3.Lerp(wrist.position, fingers[2].position, .7f)
             };
             var forearm = (wrist.parent.position - wrist.position).normalized;
@@ -171,6 +182,17 @@ public static class ArcherHandBuilder
                 for (var sub=0; sub<triangles.Count; sub++) result.SetTriangles(triangles[sub],sub);
                 result.RecalculateTangents();
             }
+            else if (gesture == 3)
+            {
+                var pointing = Object.Instantiate(result);
+                pointing.name = "Right Archer Pointing Hand";
+                pointing.ClearBlendShapes();
+                pointing.vertices = vertices.Select((value, i) => value + delta[i]).ToArray();
+                pointing.normals = normals.Select((value, i) => value + normalDelta[i]).ToArray();
+                pointing.RecalculateTangents();
+                pointing.RecalculateBounds();
+                SaveMesh(pointing, $"{Output}/Point.asset");
+            }
             else
             {
                 if (gesture == 1)
@@ -185,10 +207,7 @@ public static class ArcherHandBuilder
                 result.AddBlendShapeFrame(gesture == 1 ? "Grip" : "Pinch",100,delta,normalDelta,null);
             }
         }
-        var path = $"{Output}/{side}.asset";
-        var stored = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-        if (stored == null) { AssetDatabase.CreateAsset(result,path); stored=result; }
-        else { EditorUtility.CopySerialized(result,stored); Object.DestroyImmediate(result); }
+        var stored = SaveMesh(result, $"{Output}/{side}.asset");
         var hand = new GameObject(side+" archer hand");
         try
         {
@@ -200,6 +219,20 @@ public static class ArcherHandBuilder
             PrefabUtility.SaveAsPrefabAsset(hand,$"{Output}/{side}.prefab");
         }
         finally { Object.DestroyImmediate(hand); }
+    }
+
+    // Writes the baked mesh while preserving references to an existing asset.
+    private static Mesh SaveMesh(Mesh mesh, string path)
+    {
+        var stored = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+        if (stored == null)
+        {
+            AssetDatabase.CreateAsset(mesh, path);
+            return mesh;
+        }
+        EditorUtility.CopySerialized(mesh, stored);
+        Object.DestroyImmediate(mesh);
+        return stored;
     }
 
     // Finds the tip marker at the end of a modeled finger chain.
