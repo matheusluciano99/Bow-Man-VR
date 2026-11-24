@@ -127,9 +127,9 @@ Both hand alignments were confirmed in the Quest 2 Editor lab review. Draw
 distance and positional offsets remain provisional until final hardware tuning.
 
 Default left bow hand, grip offsets, 12 cm string grab
-radius, 3 cm minimum draw, 36 cm maximum draw and 25 m/s full-draw speed are
+radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
 prototype settings. Validate handedness, grip alignment and comfortable draw on
-Quest 2 before treating them as final controls or calibration.
+the target headset before treating them as final controls or calibration.
 Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
 panel switches hands without an Inspector edit and cancels a tracked draw before
 rebinding. Final game-menu presentation remains part of menu integration.
@@ -396,7 +396,7 @@ Use recorded breathing, shoulder movement and small weight shifts on both standi
 
 Sample the visible opponent’s recorded bow action from the AI turn clock in PvE and from the owner’s draw in PvP. This lets a human pause or cancel a draw and switch bow hands. A mesh represents the nocked arrow on the observing side. The existing duel authority creates the flying projectile when it accepts the release.
 
-Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Retain the last valid draw and hand pose during drawing-hand occlusion. Give a missing trigger signal up to 750 ms to return, including when the pose recovers first. Resume with a tracked, held trigger and fire on a subsequent tracked release. Measure power from the backward hand displacement before clamping the string visual. The Quest 2 lab review found that 42.5 cm still reached the tracking limit. The provisional full-power threshold is 36 cm to leave more room. The shared 0.96-metre arrow keeps its tip visible at full draw.
+Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Retain the last valid draw and hand pose during drawing-hand occlusion. Give a missing trigger signal up to 750 ms to return, including when the pose recovers first. Resume with a tracked, held trigger and fire on a subsequent tracked release. Measure power from the backward hand displacement before clamping the string visual. The Quest Pro review uses the original 70 cm full-power threshold after the wearer reported stable tracking. The earlier Quest 2 review used 36 cm because 42.5 cm still reached its tracking limit. The shared 0.96-metre arrow keeps its tip visible at full draw.
 
 ## Duel sound
 
