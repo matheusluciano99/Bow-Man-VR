@@ -107,9 +107,10 @@ with its reason. Updating it in the same PR as the change keeps it from drifting
 the way a separate snapshot would. Write it in Portuguese for the course
 evaluators and keep in-game labels in their original text. AGENTS.md remains the
 canonical requirement and this log the canonical reason; the GDD summarizes both.
-The repository is private, so a read-only public page renders the GDD for
-readers without access. Republish it after each merge that changes the GDD; the
-repository file stays the source.
+The repository is private, so a secret gist, which anyone with its link can
+open without signing in, copies the GDD for readers without access. Republish it
+from main after each merge that changes the GDD; the repository file stays the
+source.
 
 ## D008 — Reuse arrow flight for an independently testable bow interaction
 

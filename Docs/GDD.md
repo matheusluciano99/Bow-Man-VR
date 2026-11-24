@@ -16,7 +16,7 @@
 | **Motor** | Unity 6000.3.25f1 (URP), OpenXR e WebXR |
 | **Equipe e prazo** | 2 desenvolvedores, 2 semanas (início em 11/11/2026) |
 | **Tarefas** | [Quadro Kanban no GitHub](https://github.com/users/matheusluciano99/projects/1) |
-| **Cópia pública** | [Página de leitura](https://claude.ai/artifact/QnVwUpKP5CYNaeDRvZfDSy) para quem não tem acesso ao repositório |
+| **Cópia pública** | [Gist de leitura](https://gist.github.com/joaorcmr/86433e1fcc0f4239f78b5879958c2fd0) para quem não tem acesso ao repositório; nele, os links para outros arquivos do repositório não abrem |
 
 **Sumário:**
 [1. Visão geral](#1-visão-geral) ·
@@ -674,8 +674,10 @@ O GDD é atualizado **no mesmo pull request** que muda o jogo. Ao abrir um PR:
    registre a decisão em [Decisions.md](Decisions.md).
 4. **Valor provisório?** Deixe isso claro no texto e na seção 15.
 5. **Atualize a versão** no cabeçalho e no registro abaixo.
-6. **Depois do merge,** republique a [cópia pública](https://claude.ai/artifact/QnVwUpKP5CYNaeDRvZfDSy) a partir do
-   `main`. O repositório é privado, e quem não tem acesso lê o GDD por ela.
+6. **Depois do merge,** republique a [cópia pública](https://gist.github.com/joaorcmr/86433e1fcc0f4239f78b5879958c2fd0) a partir do
+   `main`, com a conta dona do gist:
+   `gh gist edit 86433e1fcc0f4239f78b5879958c2fd0 --filename GDD.md Docs/GDD.md`.
+   O repositório é privado, e quem não tem acesso lê o GDD por ela.
 
 O GDD resume o design. Quando ele e o [AGENTS.md](../AGENTS.md) divergirem, os
 requisitos do AGENTS.md valem e o GDD deve ser corrigido.
@@ -685,4 +687,4 @@ requisitos do AGENTS.md valem e o GDD deve ser corrigido.
 | Versão | Data | Mudança |
 | --- | --- | --- |
 | 1.0 | 24/11/2026 | Primeira versão, com o jogo do `main` e os PRs abertos até o #165. |
-| 1.1 | 24/11/2026 | Motivos confirmados: entrega no itch.io (exigência da disciplina) e Tiro ao alvo (escolha da equipe). Cópia pública de leitura. |
+| 1.1 | 24/11/2026 | Motivos confirmados: entrega no itch.io (exigência da disciplina) e Tiro ao alvo (escolha da equipe). Cópia pública de leitura num gist secreto. |
