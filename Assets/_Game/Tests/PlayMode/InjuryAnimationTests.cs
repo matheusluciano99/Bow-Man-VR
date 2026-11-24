@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BowMan;
 using NUnit.Framework;
 using UnityEditor;
@@ -50,6 +51,11 @@ public class InjuryAnimationTests
         var shoulder = rig.GetBoneTransform(HumanBodyBones.LeftShoulder);
         var feet = new[] { rig.GetBoneTransform(HumanBodyBones.LeftFoot), rig.GetBoneTransform(HumanBodyBones.RightFoot) };
         var feetAtRest = feet.Select(f => f.position).ToArray();
+        var hips = rig.GetBoneTransform(HumanBodyBones.Hips);
+        var knee = rig.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
+        var pelvisStart = hips.position;
+        var kneeStart = knee.localRotation;
+        float hipTravel = 0f, kneeBend = 0f;
         var start = shoulder.position;
         var startRotation = chest.rotation;
         var displacement = 0f;
@@ -57,12 +63,16 @@ public class InjuryAnimationTests
         for (var frame = 0; frame <= 120; frame++)
         {
             clip.SampleAnimation(actor, clip.length * frame / 120f);
+            hipTravel = Mathf.Max(hipTravel, Vector3.Distance(hips.position, pelvisStart));
+            kneeBend = Mathf.Max(kneeBend, Quaternion.Angle(knee.localRotation, kneeStart));
             displacement = Mathf.Max(displacement, Vector3.Distance(shoulder.position, start));
             rotation = Mathf.Max(rotation, Quaternion.Angle(chest.rotation, startRotation));
             for (var i = 0; i < feet.Length; i++)
                 Assert.That(Vector3.Distance(feet[i].position, feetAtRest[i]), Is.LessThan(0.001f));
         }
         Debug.Log($"{model} idle shoulder travel {displacement:F4} m, chest rotation {rotation:F2} degrees");
+        Assert.That(hipTravel, Is.InRange(0.008f, 0.09f), "Visible weight shift");
+        Assert.That(kneeBend, Is.GreaterThan(2f), "Knee flexion");
         Assert.That(displacement, Is.InRange(0.004f, 0.10f));
         Assert.That(rotation, Is.InRange(0.4f, 20f));
         Assert.That(Vector3.Distance(shoulder.position, start), Is.LessThan(0.001f));
@@ -119,6 +129,61 @@ public class InjuryAnimationTests
         arrow.Launch(Vector3.back * 1000f, first.transform);
         Assert.That(flow.TryTrackShot(0, arrow), Is.True);
         return flow;
+    }
+
+    // Fires into the largest standing weight shift and checks the first sampled injury pose on both rigs.
+    [UnityTest]
+    public IEnumerator SurvivingHitCarriesStandingWeightWithoutSlidingTheBoots()
+    {
+        var originalFrameRate = Time.captureFramerate;
+        Time.captureFramerate = 120;
+        try
+        {
+            foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
+            {
+                var flow = BodyShot(out var target, out _, BodyRegion.Chest, model);
+                var actor = target.GetComponent<ArcherReactionAnimation>();
+                var animator = target.GetComponentInChildren<Animator>();
+                var pelvis = animator.GetBoneTransform(HumanBodyBones.Hips);
+                var leftBoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+                var rightBoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
+                var idle = (AnimationClip)new SerializedObject(actor).FindProperty("standingIdle").objectReferenceValue;
+                actor.Entry(BodyRegion.Chest).SampleAnimation(actor.gameObject, 0f);
+                var neutral = pelvis.position;
+                var peak = 0f;
+                var phase = 0f;
+                for (var i = 0; i < 80; i++)
+                {
+                    var sample = i * idle.length / 80f;
+                    idle.SampleAnimation(actor.gameObject, sample);
+                    var gap = Vector3.Distance(pelvis.position, neutral);
+                    if (gap <= peak) continue;
+                    peak = gap;
+                    phase = sample;
+                }
+                idle.SampleAnimation(actor.gameObject, phase);
+                typeof(ArcherReactionAnimation).GetField("idleTime", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(actor, phase);
+                Assert.That(peak, Is.GreaterThan(.02f), model);
+                var contact = (pelvis: Vector3.zero, left: Vector3.zero, right: Vector3.zero);
+                flow.ReactionRequested += (_, hit, __, ___) =>
+                {
+                    Assert.That(hit.Region, Is.EqualTo(BodyRegion.Chest));
+                    contact = (pelvis.position, leftBoot.position, rightBoot.position);
+                };
+                for (var frame = 0; frame < 30 && !actor.IsInjured; frame++) yield return null;
+                Assert.That(actor.IsInjured, Is.True, model);
+                yield return null;
+                float hipStep = Vector3.Distance(pelvis.position, contact.pelvis);
+                float bootStep = Mathf.Max(Vector3.Distance(leftBoot.position, contact.left),
+                    Vector3.Distance(rightBoot.position, contact.right));
+                Debug.Log($"{model}: first impact step {hipStep * 100f:F2} cm, largest boot step {bootStep * 100f:F2} cm");
+                Assert.That(hipStep, Is.LessThan(.018f), model + " first impact step");
+                Assert.That(bootStep, Is.LessThan(.007f), model + " planted boots");
+                yield return CleanUp();
+            }
+        }
+        finally { Time.captureFramerate = originalFrameRate; }
     }
 
     // Both rigs reach across to the struck shoulder during the recorded fatal reaction.

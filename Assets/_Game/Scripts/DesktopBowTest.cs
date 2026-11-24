@@ -60,7 +60,7 @@ namespace BowMan
             pitch = Mathf.Clamp(pitch + (keyboard.upArrowKey.ReadValue() - keyboard.downArrowKey.ReadValue()) * 30f * Time.deltaTime, -60f, 80f);
             yaw += (keyboard.rightArrowKey.ReadValue() - keyboard.leftArrowKey.ReadValue()) * 30f * Time.deltaTime;
             bow.transform.rotation = parkedRotation * Quaternion.Euler(-pitch, yaw, 0f);
-            if (keyboard.spaceKey.wasPressedThisFrame)
+            if (!bow.IsDrawing && keyboard.spaceKey.wasPressedThisFrame)
             {
                 draw = 0f;
                 bow.TryBeginDraw(bow.RestPosition);
@@ -73,10 +73,14 @@ namespace BowMan
             if (keyboard.spaceKey.wasReleasedThisFrame) bow.Release();
         }
 
+        // Only an explicitly configured unattended Editor can simulate a player in a match.
+        public static bool DesktopAvailable => Application.isEditor && Application.isBatchMode &&
+            System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-desktop") >= 0;
+
         // Switches between desktop simulation and tracked VR input without firing a pending draw.
         public void UseDesktopControls(bool enabled)
         {
-            if (bow == null) return;
+            if (bow == null || (enabled && !DesktopAvailable && !(Application.isEditor && showPanel))) return;
             bow.SetHeld(false);
             if (vrInput != null) vrInput.enabled = false;
             bow.transform.SetPositionAndRotation(parkedPosition, parkedRotation);

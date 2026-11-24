@@ -22,9 +22,22 @@ public class VRTrackingTests
             .GetFeature<OculusTouchControllerProfile>().enabled, Is.True);
     }
 
-    // Checks that the rig tracks the head and each controller through separate, correct device bindings.
+    // Checks the browser loader, immersive display and automatic tracking input used by the release.
     [Test]
-    public void RigBindingsResolveHeadAndIndependentControllerDevices()
+    public void BrowserBuildStartsWebXRWithDisplayAndInput()
+    {
+        var settings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildTargetGroup.WebGL);
+        Assert.That(settings.InitManagerOnStart, Is.True);
+        Assert.That(settings.Manager.activeLoaders.OfType<WebXR.WebXRLoader>().Count(), Is.EqualTo(1));
+        var browser = WebXR.WebXRSettings.GetSettings();
+        Assert.That(browser.AutoLoadWebXRManager && browser.AutoLoadWebXRInputSystem, Is.True);
+        Assert.That(browser.DisableXRDisplaySubsystem, Is.False);
+    }
+
+    // Checks the prefab's independent head and controller bindings with native and browser layouts.
+    [TestCase("XRController")]
+    [TestCase("WebXRController")]
+    public void RigBindingsResolveHeadAndIndependentControllerDevices(string controllerLayout)
     {
         var rig = PrefabUtility.LoadPrefabContents("Assets/_Game/Prefabs/XRPlayer.prefab");
         var devices = new InputDevice[3];
@@ -34,8 +47,8 @@ public class VRTrackingTests
             Assert.That(drivers.Length, Is.EqualTo(3));
             Assert.That(rig.GetComponent<Unity.XR.CoreUtils.XROrigin>().Camera, Is.Not.Null);
             devices[0] = InputSystem.AddDevice<XRHMD>();
-            devices[1] = InputSystem.AddDevice<XRController>();
-            devices[2] = InputSystem.AddDevice<XRController>();
+            devices[1] = InputSystem.AddDevice(controllerLayout);
+            devices[2] = InputSystem.AddDevice(controllerLayout);
             InputSystem.SetDeviceUsage(devices[1], UnityEngine.InputSystem.CommonUsages.LeftHand);
             InputSystem.SetDeviceUsage(devices[2], UnityEngine.InputSystem.CommonUsages.RightHand);
 

@@ -4,7 +4,7 @@ Start Quest Link before launching the Editor scene or Windows player. Enable
 Unknown Sources in the Meta Link desktop app and keep Meta Link as the active
 OpenXR runtime. Use a clear standing play area and both Touch controllers.
 
-Start the shared build at MainMenu and choose PvE or online PvP. To review just
+Open MainMenu in Unity and enter Play and choose PvE or online PvP. To review just
 the local scene, open `Assets/_Game/Scenes/LocalDuel.unity`. Both modes include
 the fifteen regional entries, recovery, fatal collapse, attached arrows and
 wound blood. After a confirmed fatal shot, check the region, organ and rig bone
@@ -13,14 +13,15 @@ ordinary injury view. Use the same revision for the two-network test.
 
 ## Controls
 
-| Action | Quest 2 | Desktop check |
-| --- | --- | --- |
-| Hold bow | Automatically attached to selected hand | Tab enables desktop input |
-| Grab/draw/release string | Opposite trigger near string; hold, pull, release | Hold/release Space |
-| Aim | Both tracked hand positions | Arrow keys |
-| Switch bow hand | Right B during your aiming turn | H during your aiming turn |
-| Restart finished match | Right A | R |
-| Return to VR input | — | Tab |
+| Action | Quest 2 |
+| --- | --- |
+| Hold bow | Automatically attached to the selected hand |
+| Grab, draw and release | Hold the opposite trigger near the string, pull back and release |
+| Aim | Move both tracked hands |
+| Switch bow hand | Press right B during your aiming turn |
+| Restart a finished match | Press right A |
+
+Check that Tab, the arrow keys and Space cannot draw or shoot in the Game view. Remove the headset during a draw and check that the arrow is cancelled when the runtime reports presence lost.
 
 The initial bow hand is left for a right-handed archer; right-bow/left-draw is
 also available. Bow hand preference survives match restart.

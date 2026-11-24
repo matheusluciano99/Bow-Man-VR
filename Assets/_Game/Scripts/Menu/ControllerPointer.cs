@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.XR;
 
 namespace BowMan.Menu
 {
@@ -26,18 +25,35 @@ namespace BowMan.Menu
             select.Enable();
         }
 
+        // Gives dynamically created lobbies the same pointer as the main menu.
+        public void AddVisibleRay()
+        {
+            line = gameObject.AddComponent<LineRenderer>();
+            line.positionCount = 2;
+            line.useWorldSpace = true;
+            line.widthMultiplier = .003f;
+            line.sharedMaterial = Resources.Load<Material>("Interface/Brass");
+            line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+
         // Releases the trigger action.
         private void OnDisable()
         {
             select?.Dispose();
             select = null;
+            if (line != null) line.enabled = false;
         }
 
         // Aims from the controller (or the mouse on desktop) and confirms on trigger or left click.
         private void Update()
         {
+            if (!DesktopBowTest.DesktopAvailable && VRBowInput.HeadsetInputBlocked)
+            {
+                if (line != null) line.enabled = false;
+                return;
+            }
             var mouse = Mouse.current;
-            var useMouse = !XRSettings.isDeviceActive && desktopCamera != null && mouse != null;
+            var useMouse = DesktopBowTest.DesktopAvailable && !VRBowInput.HeadsetActive && desktopCamera != null && mouse != null;
             var ray = useMouse
                 ? desktopCamera.ScreenPointToRay(mouse.position.ReadValue())
                 : new Ray(rayOrigin.position, rayOrigin.forward);

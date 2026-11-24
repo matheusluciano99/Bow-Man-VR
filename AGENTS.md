@@ -42,6 +42,7 @@ Use GitHub's Assignees field to record task responsibility.
 - Use free realistic medieval human archers in the visual style of For Honor
   and Conqueror's Blade, with light clothing or armor. Different archer models
   are allowed. English Archer and Erika Archer are the prototype visual choices.
+- Select English Archer or Erika Archer on the main menu with the right controller. Preserve each seat’s independent choice across modes and rematches. Use the selected model’s hands, captured idle and bow action, and recorded voice. The solo opponent uses the other model.
 - The local headset player sees tracked hands/controllers only for now; the
   opponent appears as a full archer. During injury, the local viewpoint follows
   the animated eyes as defined in [Docs/InjuryReactions.md](Docs/InjuryReactions.md).
@@ -77,15 +78,26 @@ Use GitHub's Assignees field to record task responsibility.
   through Unity Relay with a host-issued join code; the host is Archer 1 and the
   joining player is Archer 2 (see D024).
 - PvE: duel against an AI-controlled archer.
+- Tiro ao alvo offers a local CPU rival or two online players on separate PCs.
+  Pick the distance and choose **Play against CPU** to start solo. The player
+  shoots first and can start a rematch with A. The CPU uses the other
+  archer model and fires a physical arrow at the target. For online play,
+  host/join with a Relay code. Alternate ten arrows per
+  archer at the same target. In the lobby, choose 15 (default), 30, 50, 60 or
+  70 metres. Both seats and rematches use the host’s distance. The match HUD
+  marks the last scored contact on a copy of the target. The host scores each tip contact, and both
+  players see both totals, arrows remaining and the winner or tie.
 
 ## Project scope
 
 - A two-week project developed by two people.
 
-## Target hardware
+## Distribution and lab hardware
+
+- Deliver an HTML game on itch.io. Players select Play, then Enter VR in a WebXR-capable browser. The four playable scenes require a headset and tracked controllers, including interactive Play mode in Unity. Keyboard and mouse simulation is reserved for diagnostic scenes and explicit unattended Editor tests. Use **Bow Man VR > Build itch.io WebXR Game** to generate the HTML ZIP. The Windows game player is a lab test artifact.
 
 - Use the classroom-provided Meta Quest 2 for development and testing.
-- Run the game on a PC with the Quest 2 connected as the VR headset.
+- Run PC VR lab checks with the Quest 2 connected to the test PC.
 - Use Unity OpenXR 1.16.1 for PC VR with the Oculus Touch controller profile.
 
 ## Running the VR tracking scene
@@ -185,26 +197,28 @@ Use GitHub's Assignees field to record task responsibility.
 
 ## Starting the game
 
-- `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Two panels offer
-  **PvE — vs AI archer** (opens `LocalDuel`) and **PvP — online duel** (opens
-  `PvPConnectionTest`). Point the right controller's ray at a panel and pull the
-  trigger; without a headset press 1 / 2 or click a panel.
-- Select the bow-hand panel or press H to choose which hand holds the bow and
-  which hand draws. Both modes start with that saved choice. While aiming, the
+- Keep world-space options readable with the right-controller pointer. Keep match prompts and the impact inset clear of the center of the aiming view.
+
+- `Assets/_Game/Scenes/MainMenu.unity` is the entry scene. Its panels offer
+  **PvE — vs AI archer** (opens `LocalDuel`), **PvP — online duel** (opens
+  `PvPConnectionTest`) and **Tiro ao alvo** (opens `TargetRange`). Point the right controller's ray at a panel and pull the
+  trigger. Start Quest Link before entering Play in the Editor.
+- Select the bow-hand panel to choose which hand holds the bow and
+  which hand draws. All modes start with that saved choice. While aiming, the
   duel HUD shows the next action for the current hand and input method.
-- Open **Credits** with the pointer or C. Read the contributor pages or choose
+- Open **Credits** with the pointer. Read the contributor pages or choose
   **Notices** for the source and license text shipped with the player. Choose
-  **Menu** or press Esc to return. Arrow keys also turn pages.
-- In either mode, the left controller's Menu button or Esc returns to the menu.
+  **Menu** to return. Use the page panels to turn pages.
+- In either mode, the left controller's Menu button returns to the menu.
   Leaving the PvP scene ends the online session. Health, turn and the
   VICTORY/DEFEAT result stay on the local duel's headset text (#8).
 - Run **Bow Man VR > Build Mode Menu And Game Scenes** after changing the menu,
-  duel or PvP generators. It regenerates the three scenes and puts MainMenu,
-  LocalDuel and PvPConnectionTest first in the build list (D025).
+  duel or PvP generators. It regenerates the four scenes and puts MainMenu,
+  LocalDuel, PvPConnectionTest and TargetRange first in the build list (D025).
 - **Bow Man VR > Build Windows Game Player** writes `Builds/PCVRGame/BowManVR.exe`
-  with those three scenes; add `-desktop` to run it without a headset.
-- Both modes show health, turn and result. PvP supports rematch after both
-  seats accept with A / R. Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
+  with those four headset scenes.
+- Both duel modes show health, turn and result. PvP supports rematch after both
+  seats accept with A. Run `BowMan.Menu.EditorTests` (EditMode) and `BowMan.Menu.PlayTests`
   (PlayMode) before a menu PR.
 
 ## Testing PvP connectivity
@@ -218,10 +232,9 @@ Use GitHub's Assignees field to record task responsibility.
   with their `.meta` files after changing the generator.
 - Run **Bow Man VR > PvP > Build Windows Connection Player** to build
   `Builds/PCVRPvP/BowManVR-PvP.exe`. It does not change the default build scenes.
-- Host: enter Play (or start the player), click **Host** in the desktop window
+- Host: enter Play (or start the player), point at **Host** and pull the trigger
   and share the code shown on the panel and in the headset.
-- Join: on the other machine, type the code and click **Join**. Start a player
-  without a headset with `BowManVR-PvP.exe -desktop`.
+- Join: on the other machine, select **Join** and enter the code with the headset keypad.
 - Expected: the host reads "Connected as Archer 1", the joining player
   "Connected as Archer 2", each rig stands on its spawn, and each player sees
   the opponent’s equipped archer during the match. The lobby uses head and hand
@@ -229,8 +242,7 @@ Use GitHub's Assignees field to record task responsibility.
   Relay's one-opponent limit ("Connection failed: …"); "Match is full" appears
   only if Netcode approval refuses it first.
 - Cross-network acceptance for #11 needs two PCs on different networks, for
-  example one on a phone hotspot. Editor plus a `-desktop` player on one PC is a
-  quick smoke test only.
+  example one on a phone hotspot. The two-Editor automated Relay check on one PC covers local connectivity.
 - When the joiner receives the second seat, the host starts a duel. Each player
   sees the opponent's archer and their own bow. The host resolves shots, health,
   injuries, death and turn handoff. Both peers show the same wound and anatomy.
@@ -251,18 +263,23 @@ Use GitHub's Assignees field to record task responsibility.
 - Playable duels show the local archer’s hands on the two tracked controllers. Keep the diagnostic markers in the tracking test scene. Switching bow hands swaps grip and string poses, and losing a controller’s tracking hides its hand. Physical grip and pinch placement require Quest 2 review.
 - Hold the bow with one hand; pull and release the string with the other.
 - Shot strength increases with draw distance, reaching full strength at a
-  provisional maximum draw of 0.70 m (70 cm).
-- Use 70 cm as a temporary adult-arm-length placeholder; calibrate comfortable
-  draw distance when the classroom headset is available.
-- The bow stays attached to the selected tracked hand without holding grip;
-  the opposite trigger grabs/releases the nearby string. Its local +Y aligns
-  with controller grip +Z using a +90-degree local X rotation. Both bow hands
+  provisional maximum draw of 0.36 m (36 cm) so the player can stop sooner.
+  Use the backward distance before clamping visual string travel.
+- The bow stays attached to the selected tracked hand without holding grip.
+  Hold the opposite trigger and bring that hand to the string to grab it.
+  A light pulse confirms the grab. Release the trigger to shoot. The bow's local
+  +Y aligns with controller grip +Z using a +90-degree local X rotation. Both bow hands
   are supported; left is the initial default. The test panel's **Bow hand**
   button switches sides and cancels a pending tracked draw.
-- Losing either controller's tracking, pausing, losing application focus or a
-  shooting lock cancels the pending shot without firing. The bow remains
+- Keep the last valid pull and draw-hand pose through occlusion while the trigger
+  stays held. Allow up to 750 ms for the trigger signal to recover, including
+  when the pose comes back first. A shot requires a subsequent tracked release.
+  A disconnect, lost bow-hand tracking, pause, lost headset focus or a
+  shooting lock cancels. The 0.96-metre arrow keeps its tip beyond the grip. The bow remains
   visually attached during a shooting lock. `Bow.SetShotAllowed` gates both
   input paths without changing tracked head/controller poses.
+- At full power, the HUD shows **FULL DRAW** and the drawing controller gives
+  one short pulse. Easing below 95% or nocking a new arrow rearms the pulse.
 
 ## Reviewing the medieval environments
 
@@ -277,7 +294,7 @@ Use GitHub's Assignees field to record task responsibility.
   and contact at the confirmed impact point. A cancelled draw stays quiet on release.
 - The string starts creaking above 60% draw, grows louder toward full draw and
   quiets while held. Easing back to the threshold, cancelling or firing stops it.
-- X on the left controller or V on the keyboard cycles game volume through mute
+- X on the left controller cycles game volume through mute
   and four audible levels. Keep this preference local across modes and rematches.
 - Source recordings and edits are listed in [Duel audio credits](Assets/ThirdParty/DuelAudio/Credits.md).
   Verify spatial placement and comfort on Quest 2.
@@ -293,9 +310,7 @@ Use GitHub's Assignees field to record task responsibility.
 - The headset-visible text shows both health values, current flow, draw strength,
   handedness and restart controls. Flying arrows, opponent turns, injuries and
   defeat lock nocking/release through the shared bow gate.
-- Without a headset, focus Game view and press Tab for desktop controls; arrow
-  keys aim and Space draws/releases. H changes hands during your aiming turn;
-  R restarts a finished match. Tab returns to tracked input.
+- The Game view mirrors the headset. Tab, arrow keys and Space cannot take over the player’s bow.
 - Injuries apply animated-eye displacement/rotation to the tracking origin while
   preserving live local head/controller poses. A neutral frame adds no extra
   standing height; restart restores the floor origin without restarting XR.
@@ -314,10 +329,10 @@ Use GitHub's Assignees field to record task responsibility.
 
 - Open `Assets/_Game/Scenes/BowInteractionTest.unity` and enter Play. For VR,
   start Quest Link first, as with the tracking scene. The bow remains in the
-  selected hand; bring the other controller within 12 cm of the resting string,
-  press and hold its trigger, pull backward, then release the trigger to shoot.
+  selected hand. Hold the other trigger and bring that controller within 12 cm
+  of the resting string, then pull backward and release to shoot.
 - Aim with the bow's orientation and the line between the two hands. Backward
-  draw controls speed up to a provisional 25 m/s at 70 cm. Forward/sideways-only
+  draw controls speed up to a provisional 25 m/s at 36 cm. Forward/sideways-only
   pulls and draws below 3 cm do not fire. Extra draw is capped at full strength.
 - Without a headset, click **Use desktop controls** in the Game view. Arrow
   keys aim; hold Space to draw and release it to shoot. The panel shows draw
@@ -347,9 +362,9 @@ Use GitHub's Assignees field to record task responsibility.
 - Present internal injury only after a confirmed fatal arrow hit, as a brief
   X-ray finishing sequence inside the defeated archer. Surviving hits must not
   trigger this view; their normal blood and regional reactions still apply.
-  The local duel shows a stereo cutaway with the recorded path, contacted
-  organs and fractured rig bones. Its three-second duration and headset
-  readability remain provisional until VR review.
+  The duel replays the real arrow approaching the struck archer, cuts to its
+  recorded internal contact on a fixed-depth replay window, then returns to the
+  arena. Timing and headset readability remain provisional until VR review.
 - The shared arrow emits blood at the actual wound and follows its hit volume.
   Spilled droplets move in world space. See [wound blood](Docs/BloodEffects.md)
   for rebuild controls and provisional visual settings.
@@ -379,6 +394,8 @@ Use GitHub's Assignees field to record task responsibility.
 - Reactions must match the actual body part and side hit by the arrow. Every
   hittable body region needs its own appropriate injury sequence; one generic
   knockdown for all hits does not meet the requirement.
+- Carry the standing pelvis shift into the start of a surviving reaction.
+  Keep the recorded foot contacts and apply the impact recoil immediately.
 - Chest hit: fall backward and land with the back on the ground. After the
   hold, return to relaxed standing with both arms lowered if alive.
 - Left-leg hit: kneel on the injured left leg, place the left hand on the ground

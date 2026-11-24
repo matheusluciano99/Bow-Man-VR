@@ -1,0 +1,5 @@
+{
+  "name": "BowMan.WebXR.Editor",
+  "references": ["BowMan.Menu", "WebXR", "Unity.XR.Management", "Unity.XR.Management.Editor"],
+  "includePlatforms": ["Editor"]
+}
