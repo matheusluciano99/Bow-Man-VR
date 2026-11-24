@@ -90,7 +90,7 @@ https://opengameart.org/content/impact
 Vehicle — Fantasy Weapons and Apparel. Leather boot step used for soft ground contact.
 https://opengameart.org/content/fantasy-weapons-and-apparel-sfx-library
 
-mikeask — Breathing tired. Looped and pitched down at the archers' heads.
+mikeask — Breathing tired. Looped and pitched down for English Archer.
 https://opengameart.org/content/breathing-tired
 
 TinyWorlds — Forest Ambience. Woodland range.
@@ -98,3 +98,20 @@ https://opengameart.org/content/forest-ambience
 
 Thimras — Park ambiences. Open-field wind and birds used in the castle courtyard and village yard.
 https://opengameart.org/content/park-ambiences
+
+thebardofblasphemy — Grunts of male death and pain. English Archer's exertion and reactions.
+https://opengameart.org/content/grunts-male-death-and-pain
+
+AuraVoice / Nocturnal_Vanguard — Female hurt grunts & groans. Erika Archer's exertion and reactions.
+https://opengameart.org/content/female-hurt-grunts-groans
+
+helenavelikaja — Slow Breathing (Woman). Erika Archer's breathing loop.
+https://freesound.org/people/helenavelikaja/sounds/361923/
+
+INTERFACE TYPE
+
+Cinzel by the Cinzel Project Authors. SIL Open Font License 1.1.
+https://github.com/google/fonts/tree/main/ofl/cinzel
+
+Source Sans 3 by Adobe. SIL Open Font License 1.1.
+https://github.com/adobe-fonts/source-sans

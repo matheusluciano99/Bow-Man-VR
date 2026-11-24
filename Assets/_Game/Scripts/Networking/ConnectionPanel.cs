@@ -8,13 +8,16 @@ namespace BowMan.Networking
         [SerializeField] private PvPConnectionController controller;
         [SerializeField] private TextMesh headsetLabel;
 
-        private const string MenuHint = "Menu button / Esc: back to modes";
+        private static string MenuHint => Application.platform == RuntimePlatform.WebGLPlayer
+            ? "Left stick click: back to modes" : "Menu button: back to modes";
 
+        private OnlineTargetMatch range;
         private string codeInput = string.Empty;
 
         // Mirrors every status change onto the headset label.
         private void OnEnable()
         {
+            if (controller.IsTargetCompetition) range = FindAnyObjectByType<OnlineTargetMatch>();
             controller.StatusChanged += ShowInHeadset;
             ShowInHeadset(controller.Status);
         }
@@ -28,10 +31,11 @@ namespace BowMan.Networking
         // Draws the status, Host, code field, Join and Leave controls in the desktop window.
         private void OnGUI()
         {
+            if (!DesktopBowTest.DesktopAvailable || (range != null && range.AgainstCpu)) return;
             var status = controller.Status;
             GUILayout.BeginArea(new Rect(16, 16, 360, Screen.height - 32));
             GUILayout.BeginVertical(GUI.skin.box);
-            GUILayout.Label("PvP connection test");
+            GUILayout.Label(controller.IsTargetCompetition ? "Tiro ao alvo" : "PvP connection test");
             GUILayout.Label(status.Describe());
             GUI.enabled = status.CanStart;
             if (GUILayout.Button("Host")) _ = controller.HostAsync();
@@ -41,6 +45,20 @@ namespace BowMan.Networking
             GUILayout.EndHorizontal();
             GUI.enabled = !status.CanStart;
             if (GUILayout.Button("Leave")) controller.Leave();
+            if (range != null && status.CanStart)
+            {
+                GUI.enabled = true;
+                GUILayout.Label($"Distance: {range.HostDistance} m");
+                GUILayout.BeginHorizontal();
+                foreach (var metres in OnlineTargetMatch.Distances)
+                {
+                    GUI.enabled = metres != range.HostDistance;
+                    if (GUILayout.Button($"{metres} m")) range.ChooseHostDistance(metres);
+                }
+                GUILayout.EndHorizontal();
+                GUI.enabled = true;
+                if (GUILayout.Button("Play against CPU")) range.StartCpuMatch();
+            }
             GUI.enabled = true;
             GUILayout.Label(MenuHint);
             GUILayout.EndVertical();

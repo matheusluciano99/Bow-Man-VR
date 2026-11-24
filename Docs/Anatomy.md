@@ -42,16 +42,16 @@ sequence. `DuelTurnFlow.FatalityRequested(targetIndex, impact)` publishes the
 actual anatomy after health confirms death and before regional death motion.
 Surviving hits, misses, and unrelated later deaths cannot request that view.
 The event does not delay the match result or alter the existing death sequence.
-The local duel displays a stereoscopic close-up of the interior intersected by
-the fatal game arrow. Cyan surfaces are the contacted organ meshes. Orange
-volumes mark fractured rig bones and pale volumes show bone contact below the
-fracture threshold. The gold line reveals the actual finite path from entry to
-tip. All structures use their source frames through the fall. The HUD names
-the region, organs and fractures, including empty results.
+The duel shows a fixed-depth replay window with a separate presentation camera.
+The camera frames the game arrow moving toward a frozen copy of the struck
+archer, then cuts closer as the tip travels along the confirmed internal path.
+The shell becomes translucent and reveals contacted tissue meshes and fitted
+BodyParts3D bone meshes for the mapped contacts. Confirmed fractures receive an impact accent during the internal shot. The presentation contains the original arrow geometry and
+uses the recorded hit. Rebuild the presentation bone meshes with `SourceAssets/BodyParts3D/PrepareReplayBones.py`. It releases the snapshot, texture and stage at the end
+or when the player restarts.
 
-The cutaway lasts a provisional three seconds. Restart dismisses it immediately.
-Head and hand tracking continue throughout the presentation. Headset readability
-and comfort require the physical Quest 2 pass. Organ- and fracture-specific
+The initial replay runs for 3.65 seconds. Head and hand tracking remain live.
+Verify its readability and comfort in the headset. Organ- and fracture-specific
 health effects remain separate work.
 
 ## Sources and authoring

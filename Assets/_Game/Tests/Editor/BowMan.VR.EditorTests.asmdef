@@ -5,7 +5,8 @@
     "Unity.XR.CoreUtils",
     "Unity.XR.Management",
     "Unity.XR.Management.Editor",
-    "Unity.XR.OpenXR"
+    "Unity.XR.OpenXR",
+    "WebXR"
   ],
   "includePlatforms": ["Editor"],
   "optionalUnityReferences": ["TestAssemblies"],

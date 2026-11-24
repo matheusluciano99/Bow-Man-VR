@@ -12,6 +12,8 @@ namespace BowMan
         private Bow bow;
         private OpponentBowAction opponent;
         private int localSeat;
+        private ArcherModel firstVoice, secondVoice;
+        private readonly Transform[] voiceHeads = new Transform[2];
         private DuelTurnFlow flow;
         private AudioSource creak, passing;
         private AudioClip nock, release;
@@ -20,17 +22,29 @@ namespace BowMan
         private int lastShot = -1;
         private float previousDraw = -1f;
         private ArenaSetting setting;
-        public string VolumeHint => $"X / V: volume {AudioListener.volume:P0}";
+        public string VolumeHint => $"X: volume {AudioListener.volume:P0}";
 
         // Attaches the sounds and volume control to a single local or online round.
         public void Bind(DuelTurnFlow turns, Bow equipped, OpponentBowAction other, ArcherHealth local,
-            ArcherHealth remote, ArenaSetting arena, int localIndex)
+            ArcherHealth remote, ArenaSetting arena, int localIndex, ArcherModel first, ArcherModel second)
         {
             flow = turns;
-            bow = equipped;
             opponent = other;
-            setting = arena;
             localSeat = localIndex;
+            BindBow(equipped, arena, first, second);
+            voiceHeads[localIndex] = Breathing(local, localIndex == 0 ? first : second, 0f);
+            voiceHeads[1 - localIndex] = Breathing(remote, localIndex == 0 ? second : first, 0.43f);
+            turns.ReactionRequested += VoiceOnImpact;
+            turns.ShotAccepted += Accepted;
+        }
+
+        // Loads the common bow, impact and range sounds for the active game mode.
+        public void BindBow(Bow equipped, ArenaSetting arena, ArcherModel first, ArcherModel second)
+        {
+            firstVoice = first;
+            secondVoice = second;
+            bow = equipped;
+            setting = arena;
             nock = Clip("Nock");
             release = Clip("Release");
             foreach (ImpactSound sound in System.Enum.GetValues(typeof(ImpactSound)))
@@ -38,14 +52,12 @@ namespace BowMan
             var ambience = Emitter(transform, Clip(arena.ToString()), 0.14f, true);
             ambience.spatialBlend = 0f;
             ambience.Play();
-            Breathing(local, 0f);
-            Breathing(remote, 0.43f);
             creak = Emitter(transform, Clip("Draw"), 0f, true);
             AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey, 0.75f));
             volume = new InputAction("Duel volume", InputActionType.Button, "<XRController>{LeftHand}/primaryButton");
-            volume.AddBinding("<Keyboard>/v");
+            if (DesktopBowTest.DesktopAvailable) volume.AddBinding("<Keyboard>/v");
+            volume.AddBinding("<WebXRController>{LeftHand}/buttonA");
             volume.Enable();
-            turns.ShotAccepted += Accepted;
         }
 
         // Loads the imported recording shared by local and network presentation.
@@ -68,14 +80,22 @@ namespace BowMan
         }
 
         // Places quiet breathing at the animated head and ends it when the archer dies.
-        private static void Breathing(ArcherHealth archer, float offset)
+        private static Transform Breathing(ArcherHealth archer, ArcherModel model, float offset)
         {
             var head = archer.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
-            var voice = Emitter(head, Clip("Breath"), 0.10f, true);
-            voice.pitch = 0.78f + offset * 0.12f;
+            var voice = Emitter(head, Clip(model == ArcherModel.Erika ? "Erika/Breath" : "Breath"), 0.10f, true);
+            voice.pitch = model == ArcherModel.English ? 0.8f : 1f;
             voice.time = offset * voice.clip.length;
             voice.Play();
             archer.Defeated += voice.Stop;
+            return head;
+        }
+
+        // Plays the selected performer's reaction when the turn authority confirms an injury.
+        private void VoiceOnImpact(int target, BodyImpact hit, bool lethal, int shot)
+        {
+            var model = target == 0 ? firstVoice : secondVoice;
+            OneShot(Clip(model + (lethal ? "/Defeat" : "/Hurt")), voiceHeads[target].position, 0.6f);
         }
 
         // Captures a physical arrow after the rules accept it and resolves its first solid contact once.
@@ -90,7 +110,11 @@ namespace BowMan
         {
             if (shot <= lastShot) return;
             lastShot = shot;
-            var grip = flow.ActiveArcher == localSeat ? bow.transform.position : opponent.GripPosition;
+            var grip = flow == null ? arrow.transform.position :
+                flow.ActiveArcher == localSeat ? bow.transform.position : opponent.GripPosition;
+            int shooter = flow != null ? flow.ActiveArcher : shot % 2;
+            var model = shooter == 0 ? firstVoice : secondVoice;
+            OneShot(Clip(model + "/Effort"), voiceHeads[shooter] != null ? voiceHeads[shooter].position : grip, 0.26f);
             OneShot(release, grip, 0.95f);
             passing = Emitter(arrow.transform, Clip("Flight"), 0.36f, true);
             passing.Play();
@@ -138,9 +162,10 @@ namespace BowMan
                 PlayerPrefs.SetFloat(VolumeKey, AudioListener.volume);
                 PlayerPrefs.Save();
             }
-            var drawing = bow.IsDrawing || opponent.IsNocked;
-            var draw = bow.IsDrawing ? bow.DrawStrength : opponent.DrawStrength;
-            var position = bow.IsDrawing ? bow.StringPosition : opponent.StringPoint;
+            var remoteDraw = !bow.IsDrawing && opponent != null && opponent.IsNocked;
+            var drawing = bow.IsDrawing || remoteDraw;
+            var draw = remoteDraw ? opponent.DrawStrength : bow.DrawStrength;
+            var position = remoteDraw ? opponent.StringPoint : bow.StringPosition;
             if (drawing && previousDraw < 0f) OneShot(nock, position, 0.52f);
             creak.transform.position = position;
             UpdateStretch(drawing ? draw : 0f);
@@ -167,7 +192,11 @@ namespace BowMan
         // Disconnects from the reused local turn authority as soon as its old round is disabled.
         private void OnDisable()
         {
-            if (flow != null) flow.ShotAccepted -= Accepted;
+            if (flow != null)
+            {
+                flow.ShotAccepted -= Accepted;
+                flow.ReactionRequested -= VoiceOnImpact;
+            }
             volume?.Dispose();
             volume = null;
         }

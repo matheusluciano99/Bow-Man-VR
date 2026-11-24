@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.XR.OpenXR;
+using UnityEngine.XR.OpenXR.Input;
 
 namespace BowMan
 {
@@ -12,19 +16,48 @@ namespace BowMan
         [SerializeField] private Vector3 gripPositionOffset;
         [SerializeField] private Vector3 gripRotationOffset = new Vector3(90f, 0f, 0f);
 
+        private const float DrawDropoutGrace = .75f;
         private InputAction drawAction;
         private InputAction bowTracked;
         private InputAction drawTracked;
         private SkinnedMeshRenderer leftHand, rightHand;
         private float pinch;
+        private Vector3 lastPullLocal;
+        private Quaternion lastDrawRotationLocal = Quaternion.identity;
         private bool focused = true;
         private bool paused;
+        private bool freshTrigger = true;
+        private bool fullDrawPulseSent;
+        private float drawPoseLostAt = -1f;
+        private System.Func<bool> headsetInputBlocked = () => HeadsetInputBlocked;
 
         private Transform BowHand => bowInLeftHand ? leftController : rightController;
         private Transform DrawHand => bowInLeftHand ? rightController : leftController;
         public bool BowInLeftHand => bowInLeftHand;
+        private static bool UsesOpenXRFocus => HeadsetActive &&
+            (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer);
+        private bool InputBlocked => paused || headsetInputBlocked() || (!UsesOpenXRFocus && !focused);
 
-        // Replaces the tracked rig's markers with first-person archer hands.
+        // The browser can keep its XR loader alive between immersive sessions.
+        public static bool HeadsetActive => Application.platform == RuntimePlatform.WebGLPlayer
+            ? WebXR.WebXRManager.Instance != null && WebXR.WebXRManager.Instance.XRState == WebXR.WebXRState.VR
+            : UnityEngine.XR.XRSettings.isDeviceActive;
+
+        // Locks tracked gameplay when the headset is absent, removed or showing a system overlay.
+        public static bool HeadsetInputBlocked
+        {
+            get
+            {
+                if (!HeadsetActive) return true;
+                if (Application.platform == RuntimePlatform.WebGLPlayer)
+                    return WebXR.WebXRManager.Instance.visibilityState != WebXR.WebXRVisibilityState.VISIBLE;
+                if (UsesOpenXRFocus && !OpenXRUtility.IsSessionFocused) return true;
+                var head = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.Head);
+                return head.TryGetFeatureValue(UnityEngine.XR.CommonUsages.userPresence, out bool worn) && !worn;
+            }
+        }
+
+        // Replaces diagnostic markers with the two archer hands when a playable match starts.
         public void ShowArcherHands()
         {
             if (leftHand != null) return;
@@ -35,17 +68,17 @@ namespace BowMan
         // Attaches one hand to its tracked controller and hides the original marker.
         private static SkinnedMeshRenderer CreateHand(Transform controller, string side)
         {
-            var prefab = Resources.Load<SkinnedMeshRenderer>("ArcherHands/" + side);
+            var prefab = Resources.Load<SkinnedMeshRenderer>(ArcherSelection.HandResourceFolder + side);
             var hand = Instantiate(prefab, controller, false);
             hand.gameObject.SetActive(false);
             HideTrackingMarker(controller);
             return hand;
         }
 
-        // Hides the marker inherited by playable rigs from the tracking prefab.
+        // Keeps the tracking rig's diagnostic marker out of playable views.
         public static void HideTrackingMarker(Transform controller)
         {
-            var marker = controller.Find("Controller Marker");
+            var marker = controller != null ? controller.Find("Controller Marker") : null;
             if (marker != null) marker.gameObject.SetActive(false);
         }
 
@@ -53,6 +86,8 @@ namespace BowMan
         private void OnEnable()
         {
             focused = Application.isFocused;
+            freshTrigger = true;
+            drawPoseLostAt = -1f;
             var holdingHand = bowInLeftHand ? "LeftHand" : "RightHand";
             var drawingHand = bowInLeftHand ? "RightHand" : "LeftHand";
             drawAction = Button("Draw string", drawingHand, "triggerPressed", false);
@@ -77,14 +112,8 @@ namespace BowMan
         // Removes the visual hands from a surviving tracking rig when its bow input is replaced.
         private void OnDestroy()
         {
-            RemoveHand(leftHand);
-            RemoveHand(rightHand);
-        }
-
-        // Removes the rendered hand from its controller.
-        private static void RemoveHand(SkinnedMeshRenderer hand)
-        {
-            if (hand != null) Destroy(hand.gameObject);
+            if (leftHand != null) Destroy(leftHand.gameObject);
+            if (rightHand != null) Destroy(rightHand.gameObject);
         }
 
         // Switches controller roles, cancelling a tracked draw and rebuilding handed bindings.
@@ -101,63 +130,130 @@ namespace BowMan
         private void Update()
         {
             if (bow == null || BowHand == null || DrawHand == null) return;
-            if (!bow.isActiveAndEnabled) return;
             pinch = Mathf.MoveTowards(pinch, bow.IsDrawing ? 100f : 0f, Time.unscaledDeltaTime * 1200f);
-            if (!focused || paused || !bowTracked.IsPressed() || !drawTracked.IsPressed())
+            if (InputBlocked || !Tracking(bowTracked) || drawAction.controls.Count == 0)
             {
-                bow.SetHeld(false);
+                CancelTrackedDraw();
                 UpdatePose();
                 return;
             }
+            bool triggerHeld = drawAction.IsPressed();
+            if (!Tracking(drawTracked) || (drawPoseLostAt >= 0f && !triggerHeld))
+            {
+                if (drawPoseLostAt < 0f || triggerHeld) drawPoseLostAt = Time.unscaledTime;
+                if (!bow.IsDrawing || Time.unscaledTime - drawPoseLostAt > DrawDropoutGrace) CancelTrackedDraw();
+                UpdatePose();
+                return;
+            }
+
+            bool recoveredPose = drawPoseLostAt >= 0f;
+            drawPoseLostAt = -1f;
             bow.SetHeld(true);
             UpdatePose();
-            if (!bow.IsHeld) return;
-            if (drawAction.WasPressedThisFrame()) bow.TryBeginDraw(DrawHand.position);
-            if (bow.IsDrawing) bow.PullTo(DrawHand.position);
-            if (drawAction.WasReleasedThisFrame()) bow.Release();
+            if (recoveredPose) return;
+            if (!freshTrigger)
+            {
+                freshTrigger = !triggerHeld && !drawAction.WasPressedThisFrame();
+                return;
+            }
+            if (!bow.IsHeld)
+            {
+                if (triggerHeld) freshTrigger = false;
+                return;
+            }
+            if (!bow.IsDrawing && triggerHeld && bow.TryBeginDraw(DrawHand.position))
+            {
+                fullDrawPulseSent = false;
+                PulseDrawHand(.22f, .035f);
+            }
+            if (bow.IsDrawing && triggerHeld) UpdateFullDrawFeedback();
+            if (!triggerHeld && drawAction.WasReleasedThisFrame()) bow.Release();
         }
 
-        // Updates the tracked bow grip and uses relaxed hands while the bow is inactive.
+        // Pulses the drawing controller at full power and rearms below the jitter band.
+        private void UpdateFullDrawFeedback()
+        {
+            float strength = bow.DrawStrength;
+            if (strength < .95f) fullDrawPulseSent = false;
+            if (fullDrawPulseSent || strength < 1f) return;
+            fullDrawPulseSent = true;
+            PulseDrawHand(.45f, .08f);
+        }
+
+        // Routes tactile feedback to the active drawing controller in either XR runtime.
+        private void PulseDrawHand(float amplitude, float duration)
+        {
+            if (UsesOpenXRFocus)
+            {
+                var hand = bowInLeftHand ? UnityEngine.XR.XRNode.RightHand : UnityEngine.XR.XRNode.LeftHand;
+                OpenXRInput.SendHapticImpulse(UnityEngine.XR.InputDevices.GetDeviceAtXRNode(hand), amplitude, 0f, duration);
+            }
+            else if (drawAction.activeControl?.device is XRControllerWithRumble controller)
+            {
+                controller.SendImpulse(amplitude, duration);
+            }
+        }
+
+        // Discards the pending shot and requires the trigger to cycle before another nock.
+        private void CancelTrackedDraw()
+        {
+            drawPoseLostAt = -1f;
+            freshTrigger = false;
+            bow.SetHeld(false);
+        }
+
+        // Keeps the bow attached to the tracked grip even while shooting is locked or a draw is cancelled.
         [BeforeRenderOrder(100)]
         private void UpdatePose()
         {
             if (bow == null || BowHand == null || DrawHand == null) return;
-            var equipped = bow.isActiveAndEnabled;
-            if (equipped)
+            bow.transform.SetPositionAndRotation(BowHand.TransformPoint(gripPositionOffset),
+                BowHand.rotation * Quaternion.Euler(gripRotationOffset));
+            bool usable = !InputBlocked;
+            bool gripTracked = usable && Tracking(bowTracked);
+            bool stringTracked = usable && Tracking(drawTracked);
+            if (gripTracked && stringTracked && drawPoseLostAt < 0f)
             {
-                bow.transform.SetPositionAndRotation(BowHand.TransformPoint(gripPositionOffset),
-                    BowHand.rotation * Quaternion.Euler(gripRotationOffset));
-                if (bow.IsDrawing) bow.PullTo(DrawHand.position);
+                lastPullLocal = bow.transform.InverseTransformPoint(DrawHand.position);
+                lastDrawRotationLocal = Quaternion.Inverse(bow.transform.rotation) * DrawHand.rotation;
             }
+            bool showHeldDraw = bow.IsDrawing && gripTracked;
+            if (showHeldDraw) bow.PullTo(bow.transform.TransformPoint(lastPullLocal));
             if (leftHand == null) return;
             var grip = bowInLeftHand ? leftHand : rightHand;
             var draw = bowInLeftHand ? rightHand : leftHand;
-            grip.gameObject.SetActive(focused && !paused && bowTracked.IsPressed());
-            draw.gameObject.SetActive(focused && !paused && drawTracked.IsPressed());
-            if (equipped)
-                grip.transform.SetPositionAndRotation(bow.transform.position,
-                    bow.transform.rotation * Quaternion.Euler(-90f, 0f, 0f));
-            else
-                grip.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            draw.transform.SetPositionAndRotation(equipped && bow.IsDrawing ? bow.StringPosition : DrawHand.position, DrawHand.rotation);
-            grip.SetBlendShapeWeight(0, equipped ? 100f : 0f);
+            grip.gameObject.SetActive(gripTracked);
+            draw.gameObject.SetActive(stringTracked || showHeldDraw);
+            grip.transform.SetPositionAndRotation(bow.transform.position,
+                bow.transform.rotation * Quaternion.Euler(-90f, 0f, 0f));
+            draw.transform.SetPositionAndRotation(showHeldDraw ? bow.StringPosition : DrawHand.position,
+                showHeldDraw ? bow.transform.rotation * lastDrawRotationLocal : DrawHand.rotation);
+            grip.SetBlendShapeWeight(0, 100f);
             grip.SetBlendShapeWeight(1, 0f);
             draw.SetBlendShapeWeight(0, 0f);
-            draw.SetBlendShapeWeight(1, equipped ? pinch : 0f);
+            draw.SetBlendShapeWeight(1, pinch);
         }
 
         // Cancels a nocked shot when application focus is lost.
         private void OnApplicationFocus(bool hasFocus)
         {
             focused = hasFocus;
-            if (!focused && bow != null) bow.SetHeld(false);
+            if (!focused && !UsesOpenXRFocus && bow != null) CancelTrackedDraw();
         }
 
         // Cancels a nocked shot when the XR application pauses.
         private void OnApplicationPause(bool isPaused)
         {
             paused = isPaused;
-            if (paused && bow != null) bow.SetHeld(false);
+            if (paused && bow != null) CancelTrackedDraw();
+        }
+
+        // Reads each newly resolved tracking control even before its input action reports an edge.
+        private static bool Tracking(InputAction action)
+        {
+            foreach (var control in action.controls)
+                if (control.device.enabled && control is ButtonControl button && button.isPressed) return true;
+            return false;
         }
 
         // Creates and enables a button action scoped to one tracked controller hand.
@@ -165,6 +261,7 @@ namespace BowMan
         {
             var action = new InputAction(name, InputActionType.Button,
                 $"<XRController>{{{hand}}}/{control}");
+            if (control == "triggerPressed") action.AddBinding($"<XRController>{{{hand}}}/trigger");
             action.wantsInitialStateCheck = checkInitialState;
             action.Enable();
             return action;
@@ -184,11 +281,24 @@ namespace BowMan
         // Shows the next action for the player's input method and current string state.
         public string ShotHint(bool desktop)
         {
-            if (desktop) return bow.IsDrawing ? "Release Space to shoot" : "Arrow keys to aim • Hold Space to draw";
-            if (!UnityEngine.XR.XRSettings.isDeviceActive) return "Press Tab for desktop controls";
-            if (bow.IsDrawing) return "Pull back, aim, then release the trigger";
-            var hand = BowInLeftHand ? "right" : "left";
-            return $"Bring your {hand} hand to the string • Hold its trigger";
+            if (desktop) return bow.IsDrawing ? DrawHint("Release Space to shoot") : "Arrow keys to aim • Hold Space to draw";
+            if (!HeadsetActive) return DesktopBowTest.DesktopAvailable ? "Press Tab for desktop controls" : "Enter VR to use your bow";
+            if (InputBlocked) return "Return to the game in your headset";
+            if (bow.IsDrawing && drawPoseLostAt >= 0f) return "Draw held · Bring your controller into view";
+            if (!Tracking(bowTracked) || !Tracking(drawTracked)) return "Wake both Touch controllers";
+            if (bow.IsDrawing) return DrawHint("Release trigger to shoot");
+            if (!freshTrigger && drawAction.IsPressed()) return "Release trigger to regrip";
+            if (bow.StringWithinReach(DrawHand.position)) return "Hold trigger · Pull back";
+            var hand = BowInLeftHand ? "Right" : "Left";
+            return $"Hold trigger · {hand} hand to string";
+        }
+
+        // Distinguishes full power from a pull just short of the cap.
+        private string DrawHint(string release)
+        {
+            float strength = bow.DrawStrength;
+            var draw = strength >= 1f ? "<color=#ECC67D>FULL DRAW</color>" : $"{Mathf.FloorToInt(strength * 100f)}% draw";
+            return $"{draw} · {release}";
         }
     }
 }

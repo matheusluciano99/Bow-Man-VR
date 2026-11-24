@@ -65,7 +65,7 @@ public class LocalDuelTests
         Assert.That(ArrowBallistics.TryVelocity(start, point, 25f, out var velocity), Is.True);
         var direction = velocity.normalized;
         bow.transform.rotation = Quaternion.LookRotation(direction);
-        bow.transform.position += start - bow.RestPosition;
+        bow.transform.position += start - bow.FullDrawTip;
         bow.SetHeld(true);
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.True);
         bow.PullTo(bow.RestPosition - direction * bow.MaximumDrawDistance);
@@ -74,6 +74,31 @@ public class LocalDuelTests
         Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Flying));
         Assert.That(bow.TryBeginDraw(bow.RestPosition), Is.False);
         return arrow;
+    }
+
+    // Tab, arrow keys and Space cannot take over the bow in the playable duel.
+    [UnityTest]
+    public IEnumerator KeyboardCannotEquipOrShootThePlayableBow()
+    {
+        if (DesktopBowTest.DesktopAvailable) Assert.Ignore("Dedicated desktop diagnostic run.");
+        var desktop = Find<DesktopBowTest>();
+        var vr = Find<VRBowInput>();
+        var bow = Find<Bow>();
+        var keyboard = InputSystem.AddDevice<Keyboard>();
+        int shots = 0;
+        bow.Fired += arrow => shots++;
+        try
+        {
+            desktop.UseDesktopControls(true);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Tab, Key.UpArrow, Key.Space));
+            yield return null;
+            Assert.That(vr.enabled, Is.True);
+            Assert.That(bow.IsDrawing, Is.False);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            yield return null;
+            Assert.That(shots, Is.Zero);
+        }
+        finally { InputSystem.RemoveDevice(keyboard); }
     }
 
     // Checks both sides of the stretch threshold, a held full draw, easing off and cancellation.
@@ -220,6 +245,7 @@ public class LocalDuelTests
         var ai = duel.Opponent.GetComponent<AIArcher>();
         var action = ai.GetComponent<OpponentBowAction>();
         var rig = ai.GetComponentInChildren<Animator>();
+        var fullDrawDistance = Find<Bow>().MaximumDrawDistance;
         var settings = new UnityEditor.SerializedObject(ai);
         settings.FindProperty("thinkDelay").floatValue = 2f;
         settings.ApplyModifiedPropertiesWithoutUndo();
@@ -228,7 +254,9 @@ public class LocalDuelTests
         var sawInjury = false;
         var samples = 0;
         var largestGap = 0f;
-        var firstString = Vector3.zero;
+        var firstStringDepth = 0f;
+        var firstStrength = 0f;
+        var observedDraw = 0f;
         var travel = 0f;
         while (ai.ShotsFired == 0 && Time.time < end)
         {
@@ -239,13 +267,21 @@ public class LocalDuelTests
             var pinch = (rig.GetBoneTransform(HumanBodyBones.RightIndexDistal).position +
                 rig.GetBoneTransform(HumanBodyBones.RightThumbDistal).position) * 0.5f;
             largestGap = Mathf.Max(largestGap, Vector3.Distance(pinch, action.StringPoint));
-            var relativeString = equipment.InverseTransformPoint(action.StringPoint);
-            if (samples++ == 0) firstString = relativeString;
-            travel = Mathf.Max(travel, Vector3.Distance(firstString, relativeString));
+            var stringDepth = equipment.InverseTransformPoint(action.StringPoint).z;
+            if (samples++ == 0)
+            {
+                firstStringDepth = stringDepth;
+                firstStrength = action.DrawStrength;
+            }
+            var drawProgress = action.DrawStrength - firstStrength;
+            if (drawProgress <= observedDraw) continue;
+            observedDraw = drawProgress;
+            travel = firstStringDepth - stringDepth;
         }
         Assert.That(sawInjury, Is.True);
         Assert.That(samples, Is.GreaterThan(1));
-        Assert.That(travel, Is.GreaterThan(0.3f));
+        Assert.That(observedDraw, Is.GreaterThan(0.65f), "Observed frames span the AI's draw");
+        Assert.That(travel, Is.GreaterThan(fullDrawDistance * observedDraw * 0.75f), "The string moves backwards with the draw");
         Assert.That(largestGap, Is.LessThan(0.045f), "Drawing fingers to moving string");
         Assert.That(ai.ShotsFired, Is.EqualTo(1));
         Assert.That(action.IsNocked, Is.False);
@@ -264,7 +300,7 @@ public class LocalDuelTests
         Assert.That(duel.Flow.CanShoot(0), Is.True, $"{duel.Flow.Phase}: local health {duel.LocalArcher.CurrentHealth}");
         var bowInput = new UnityEditor.SerializedObject(Find<VRBowInput>());
         Assert.That(bowInput.FindProperty("gripRotationOffset").vector3Value, Is.EqualTo(new Vector3(90f, 0f, 0f)));
-        Assert.That(Find<TextMesh>().text, Does.Contain(UnityEngine.XR.XRSettings.isDeviceActive ? "Hold its trigger" : "Press Tab"));
+        Assert.That(Find<TextMesh>().text, Does.Contain(UnityEngine.XR.XRSettings.isDeviceActive ? "Hold trigger" : DesktopBowTest.DesktopAvailable ? "Press Tab" : "Enter VR"));
         Assert.That(Find<TextMesh>().text, Does.Not.Contain("Grip: hold bow"));
         Assert.That(duel.LocalArcher.GetComponentsInChildren<Renderer>().All(r => !r.enabled), Is.True);
         Assert.That(duel.Opponent.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r => r.enabled), Is.True);
@@ -309,14 +345,23 @@ public class LocalDuelTests
         Assert.That(cutaway.IsVisible, Is.True);
         Assert.That(cutaway.Caption, Does.Contain("Head"));
         var window = cutaway.transform.Find("Fatal cutaway");
-        Assert.That(window.Find("Arrow path"), Is.Not.Null);
-        Assert.That(window.childCount, Is.EqualTo(2 + lastFatality.Bones.Count +
-            lastFatality.Organs.Sum(h => h.Organ.Surfaces.Count)));
+        Assert.That(window.Find("Replay image"), Is.Not.Null);
+        var replayCamera = GameObject.Find("Replay camera").GetComponent<Camera>();
+        if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            Assert.That(replayCamera.enabled, Is.False);
+        else
+            Assert.That(replayCamera.targetTexture, Is.Not.Null);
+        Assert.That(replayCamera.stereoEnabled, Is.False);
+        var replay = replayCamera.transform.parent;
+        var replayArrow = replay.Find("Replay arrow");
+        Assert.That(replayArrow.GetComponentsInChildren<MeshFilter>().Length, Is.GreaterThan(0));
+        Assert.That(replayArrow.GetComponentInChildren<ArrowFlight>(), Is.Null);
+        var anatomy = replay.Find("Contact anatomy");
         foreach (var organ in lastFatality.Organs)
         {
             Assert.That(cutaway.Caption, Does.Contain(organ.Organ.DisplayName));
-            Assert.That(window.Find(organ.Organ.DisplayName).GetComponent<MeshFilter>().sharedMesh,
-                Is.SameAs(organ.Organ.Surfaces[0]));
+            var surfaces = anatomy.GetComponentsInChildren<MeshFilter>(true);
+            Assert.That(surfaces.Any(mesh => mesh.sharedMesh == organ.Organ.Surfaces[0]), Is.True);
         }
         var wounds = duel.Opponent.GetComponentsInChildren<ParticleSystem>();
         Assert.That(wounds.Length, Is.GreaterThan(0));
@@ -328,6 +373,7 @@ public class LocalDuelTests
         yield return null;
         Assert.That(old == null, Is.True);
         Assert.That(cutaway.IsVisible, Is.False);
+        Assert.That(replayCamera == null, Is.True);
         Assert.That(wounds.All(w => w == null), Is.True, "Restart must remove wounds still emitting on the old actor");
         Assert.That(duel.LocalArcher.CurrentHealth, Is.EqualTo(100));
         Assert.That(duel.Opponent.CurrentHealth, Is.EqualTo(100));
@@ -348,12 +394,13 @@ public class LocalDuelTests
         Assert.That(fatalities, Is.EqualTo(2));
         Assert.That(lastFatality.Entry.Region, Is.EqualTo(BodyRegion.Neck));
         Assert.That(cutaway.IsVisible, Is.True);
-        yield return new WaitForSecondsRealtime(3.1f);
+        float replayDeadline = Time.realtimeSinceStartup + 4f;
+        while (cutaway.IsVisible && Time.realtimeSinceStartup < replayDeadline) yield return null;
         Assert.That(cutaway.IsVisible, Is.False);
         Assert.That(duel.Flow.Phase, Is.EqualTo(DuelPhase.Finished));
     }
 
-    // Plays a sided injury and an AI victory in the saved scene, then restarts through the player's keyboard binding.
+    // Plays a sided injury and an AI victory in the saved scene, then restarts through tracked controller bindings.
     [UnityTest]
     public IEnumerator AIWinsAgainstLocalArcherAndPlayerCanRestart()
     {
@@ -389,10 +436,10 @@ public class LocalDuelTests
 
         var focus = InputSystem.settings.editorInputBehaviorInPlayMode;
         var background = InputSystem.settings.backgroundBehavior;
-        var keyboard = InputSystem.GetDevice<Keyboard>();
-        var added = keyboard == null;
-        if (added) keyboard = InputSystem.AddDevice<Keyboard>();
-        var wasEnabled = keyboard.enabled;
+        var left = InputSystem.AddDevice("WebXRController");
+        var right = InputSystem.AddDevice("WebXRController");
+        InputSystem.SetDeviceUsage(left, CommonUsages.LeftHand);
+        InputSystem.SetDeviceUsage(right, CommonUsages.RightHand);
         var originalVolume = AudioListener.volume;
         var savedVolume = PlayerPrefs.GetFloat("BowMan.DuelVolume", -1f);
         try
@@ -401,16 +448,24 @@ public class LocalDuelTests
             InputSystem.settings.editorInputBehaviorInPlayMode =
                 InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
-            InputSystem.EnableDevice(keyboard);
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            InputSystem.EnableDevice(left);
+            InputSystem.EnableDevice(right);
             yield return null;
             AudioListener.volume = 1f;
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.V));
+            using (StateEvent.From(left, out var leftPress))
+            {
+                ((UnityEngine.InputSystem.Controls.ButtonControl)left["buttonA"]).WriteValueIntoEvent(1f, leftPress);
+                InputSystem.QueueEvent(leftPress);
+            }
             yield return null;
             yield return null;
             Assert.That(AudioListener.volume, Is.Zero);
             Assert.That(PlayerPrefs.GetFloat("BowMan.DuelVolume"), Is.Zero);
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.R));
+            using (StateEvent.From(right, out var rightPress))
+            {
+                ((UnityEngine.InputSystem.Controls.ButtonControl)right["buttonA"]).WriteValueIntoEvent(1f, rightPress);
+                InputSystem.QueueEvent(rightPress);
+            }
             yield return null;
             yield return null;
             Assert.That(duel.Flow.CanShoot(0), Is.True);
@@ -425,12 +480,8 @@ public class LocalDuelTests
             if (savedVolume < 0f) PlayerPrefs.DeleteKey("BowMan.DuelVolume");
             else PlayerPrefs.SetFloat("BowMan.DuelVolume", savedVolume);
             PlayerPrefs.Save();
-            if (added) InputSystem.RemoveDevice(keyboard);
-            else
-            {
-                InputSystem.ResetDevice(keyboard);
-                if (!wasEnabled) InputSystem.DisableDevice(keyboard);
-            }
+            InputSystem.RemoveDevice(left);
+            InputSystem.RemoveDevice(right);
             InputSystem.settings.backgroundBehavior = background;
             InputSystem.settings.editorInputBehaviorInPlayMode = focus;
         }

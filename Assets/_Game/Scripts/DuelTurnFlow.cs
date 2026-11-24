@@ -79,7 +79,7 @@ namespace BowMan
         // Sets the hold from the end of the region's entry to the start of its recovery.
         internal static float InjuredHoldDuration(BodyRegion region) => region switch
         {
-            BodyRegion.Chest => 0.75f,
+            BodyRegion.Chest => 0.2f,
             BodyRegion.LeftFoot or BodyRegion.RightFoot => 2f,
             _ => 3f
         };

@@ -8,10 +8,13 @@ namespace BowMan.Networking
     {
         public const string Flag = "-desktop";
 
+        public static bool CommandLineRequested => UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WebGLPlayer &&
+            Requested(Environment.GetCommandLineArgs());
+
         // Stops XR when the command line contains -desktop; does nothing otherwise or once XR is already off.
         public static void ApplyCommandLine()
         {
-            if (!Requested(Environment.GetCommandLineArgs())) return;
+            if (!CommandLineRequested) return;
             var manager = XRGeneralSettings.Instance != null ? XRGeneralSettings.Instance.Manager : null;
             if (manager == null || !manager.isInitializationComplete) return;
             manager.StopSubsystems();

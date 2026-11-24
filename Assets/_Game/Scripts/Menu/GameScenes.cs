@@ -1,10 +1,11 @@
 namespace BowMan.Menu
 {
-    // The two ways to play a duel.
+    // Modes available from the main menu.
     public enum GameMode
     {
         PvE,
         PvP,
+        Target,
     }
 
     // Scene names, build order and panel copy for the mode menu.
@@ -14,23 +15,36 @@ namespace BowMan.Menu
         public const string LocalDuel = "LocalDuel";
         public const string PvPConnection = "PvPConnectionTest";
 
-        public static readonly string[] BuildOrder = { MainMenu, LocalDuel, PvPConnection };
+        public const string TargetRange = "TargetRange";
+
+        public static readonly string[] BuildOrder = { MainMenu, LocalDuel, PvPConnection, TargetRange };
 
         // Returns the scene that starts the chosen mode.
-        public static string For(GameMode mode) => mode == GameMode.PvP ? PvPConnection : LocalDuel;
+        public static string For(GameMode mode) => mode switch
+        {
+            GameMode.Target => TargetRange,
+            GameMode.PvP => PvPConnection,
+            _ => LocalDuel
+        };
 
-        // Maps the desktop keys 1 and 2 to PvE and PvP; any other key chooses nothing.
+        // Maps the three numbered desktop shortcuts to their modes.
         public static GameMode? ModeForKey(char key)
         {
             switch (key)
             {
                 case '1': return GameMode.PvE;
                 case '2': return GameMode.PvP;
+                case '3': return GameMode.Target;
                 default: return null;
             }
         }
 
-        // Returns the two-line title printed on a mode's panel.
-        public static string Title(GameMode mode) => mode == GameMode.PvP ? "PvP\nonline duel" : "PvE\nvs AI archer";
+        // Returns the title printed on a mode's panel.
+        public static string Title(GameMode mode) => mode switch
+        {
+            GameMode.Target => "Tiro ao alvo   •   CPU or online",
+            GameMode.PvP => "PvP\nonline duel",
+            _ => "PvE\nvs AI archer"
+        };
     }
 }

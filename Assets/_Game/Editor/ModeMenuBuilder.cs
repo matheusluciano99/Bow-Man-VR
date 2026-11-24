@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using BowMan;
 using BowMan.Menu;
 using BowMan.Networking.Editor;
 using UnityEditor;
@@ -18,20 +19,21 @@ public static class ModeMenuBuilder
     private const string XRPlayerPath = "Assets/_Game/Prefabs/XRPlayer.prefab";
     private const string PlayerPath = "Builds/PCVRGame/BowManVR.exe";
 
-    // Regenerates the local duel, PvP and menu scenes, then puts them first in the build list.
+    // Regenerates the playable scenes and puts them first in the build list.
     [MenuItem("Bow Man VR/Build Mode Menu And Game Scenes")]
     public static void BuildAll()
     {
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         LocalDuelBuilder.Build();
         PvPConnectionSceneBuilder.BuildScene();
+        TargetRangeBuilder.Build();
         BuildMenuScene();
         UseGameBuildList();
         AssetDatabase.SaveAssets();
-        Debug.Log("Mode menu, local duel and PvP scenes generated; MainMenu is the first build scene.");
+        Debug.Log("Playable scenes generated. MainMenu is the first build scene.");
     }
 
-    // Builds the menu, local duel and PvP scenes into one Windows x86_64 player.
+    // Builds all playable modes into the Windows x86_64 player.
     [MenuItem("Bow Man VR/Build Windows Game Player")]
     public static void BuildPlayer()
     {
@@ -53,7 +55,7 @@ public static class ModeMenuBuilder
         else Debug.LogError($"Game player build {report.summary.result} with {report.summary.totalErrors} errors");
     }
 
-    // Creates the menu scene: rig, floor, title, two mode panels and the controller pointer.
+    // Creates the menu scene: rig, floor, game choices and controller pointer.
     public static void BuildMenuScene()
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -68,25 +70,32 @@ public static class ModeMenuBuilder
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(XRPlayerPath));
         var camera = rig.GetComponentInChildren<Camera>();
         camera.clearFlags = CameraClearFlags.SolidColor;
-        camera.backgroundColor = new Color(0.085f, 0.12f, 0.16f);
+        camera.backgroundColor = new Color(.027f, .039f, .041f);
         PrefabUtility.RecordPrefabInstancePropertyModifications(camera);
         floor.GetComponent<Renderer>().sharedMaterial = MenuMaterial(MaterialFolder + "/MenuFloor.mat", new Color(0.10f, 0.14f, 0.14f));
         var rightHand = rig.transform.Find("Camera Offset/Right Controller");
 
         var choices = new GameObject("Mode choices").transform;
-        Label(choices, "Bow Man VR", new Vector3(0f, 2.20f, 2.5f), 0.05f);
-        Label(choices, "Point and pull the right trigger to select  •  Desktop: click or press 1 / 2",
-            new Vector3(0f, 1.93f, 2.5f), 0.018f);
-        var panelMaterial = MenuMaterial(PanelMaterialPath, new Color(0.16f, 0.2f, 0.28f));
-        var modeSize = new Vector2(1.3f, 0.72f);
-        Panel(choices, "PvE option", GameScenes.Title(GameMode.PvE), -0.8f, 1.45f, modeSize, 0.032f, panelMaterial);
-        Panel(choices, "PvP option", GameScenes.Title(GameMode.PvP), 0.8f, 1.45f, modeSize, 0.032f, panelMaterial, GameMode.PvP);
-        var handOption = Panel(choices, "Bow hand option", "Bow in left hand  •  Draw with right", -0.49f, 0.78f,
-            new Vector2(1.92f, 0.34f), 0.018f, panelMaterial);
+        var layout = new GameObject("Menu layout").transform;
+        layout.SetParent(choices, false);
+        layout.localPosition = new Vector3(0f, 1.52f, 2.65f);
+        ArcherInterface.Surface(layout, "Outer frame", new Vector3(0, 0, .055f), new Vector2(2.78f, 1.88f), ArcherInterface.Frame);
+        ArcherInterface.Surface(layout, "Menu backing", new Vector3(0, 0, .045f), new Vector2(2.755f, 1.855f), ArcherInterface.Ink);
+        ArcherInterface.Label(layout, "Bow Man VR", new Vector3(0, .679f, 0), .049f, true);
+        ArcherInterface.Surface(layout, "Title rule", new Vector3(0, .535f, 0), new Vector2(.74f, .008f), ArcherInterface.Brass);
+
+        var modeSize = new Vector2(1.19f, .35f);
+        Card(layout, "PvE option", "AI duel", "Versus the CPU", -.63f, .307f, modeSize, GameMode.PvE);
+        Card(layout, "PvP option", "Online duel", "Two players", +.63f, .307f, modeSize, GameMode.PvP);
+        Card(layout, "Target option", "Tiro ao alvo", "Ten arrows · CPU or online", 0f, -.098f,
+            new Vector2(2.45f, .35f), GameMode.Target, true);
+
+        var archerOption = Card(layout, "Archer option", "English Archer", "", -.63f, -.478f, new Vector2(1.19f, .27f));
+        var handOption = Card(layout, "Bow hand option", "Bow hand · Left", "", .63f, -.478f, new Vector2(1.19f, .27f));
         var handLabel = handOption.GetComponentInChildren<TextMesh>();
-        var creditsOption = Panel(choices, "Credits option", "Credits", 1.02f, 0.78f,
-            new Vector2(0.86f, 0.34f), 0.024f, panelMaterial);
-        Label(choices, "H: switch bow hand   •   C: credits", new Vector3(0f, 0.53f, 2.5f), 0.019f);
+        var prompt = ArcherInterface.Label(layout, "Right trigger to select", new Vector3(-.36f, -.757f, 0), .019f);
+        prompt.color = ArcherInterface.Quiet;
+        var creditsOption = Card(layout, "Credits option", "Credits", "", .87f, -.757f, new Vector2(.65f, .175f));
 
         var pointer = rightHand.gameObject.AddComponent<ControllerPointer>();
         var line = rightHand.gameObject.AddComponent<LineRenderer>();
@@ -104,8 +113,11 @@ public static class ModeMenuBuilder
 
         var menu = new GameObject("Mode menu").AddComponent<ModeMenu>();
         var credits = menu.gameObject.AddComponent<MenuCredits>();
-        BuildCredits(credits, choices.gameObject, creditsOption, panelMaterial);
+        BuildCredits(credits, choices.gameObject, creditsOption,
+            AssetDatabase.LoadAssetAtPath<Material>(PanelMaterialPath));
         var menuFields = new SerializedObject(menu);
+        menuFields.FindProperty("archerOption").objectReferenceValue = archerOption;
+        menuFields.FindProperty("archerLabel").objectReferenceValue = archerOption.GetComponentInChildren<TextMesh>();
         menuFields.FindProperty("credits").objectReferenceValue = credits;
         menuFields.FindProperty("pointer").objectReferenceValue = pointer;
         menuFields.FindProperty("handOption").objectReferenceValue = handOption;
@@ -119,7 +131,9 @@ public static class ModeMenuBuilder
     private static void BuildCredits(MenuCredits credits, GameObject choices, ModeOption entry, Material material)
     {
         var pages = new GameObject("Release credits").transform;
-        var heading = Label(pages, "Credits", new Vector3(0f, 2.20f, 2.5f), 0.035f);
+        ArcherInterface.Surface(pages, "Credits frame", new Vector3(0f, 1.48f, 2.56f), new Vector2(2.95f, 1.82f), ArcherInterface.Frame);
+        ArcherInterface.Surface(pages, "Credits backing", new Vector3(0f, 1.48f, 2.55f), new Vector2(2.925f, 1.795f), ArcherInterface.Ink);
+        var heading = ArcherInterface.Label(pages, "Credits", new Vector3(0f, 2.19f, 2.5f), .05f, true);
         heading.name = "Credit heading";
         var body = Label(pages, "", new Vector3(0f, 1.55f, 2.5f), 0.022f);
         body.name = "Credit text";
@@ -155,25 +169,30 @@ public static class ModeMenuBuilder
         return option;
     }
 
-    // Adds centered white text using the built-in font, readable from the player's side.
-    private static TextMesh Label(Transform parent, string text, Vector3 position, float characterSize)
+    // Builds a controller-sized card and keeps its supporting label subordinate to the action.
+    private static ModeOption Card(Transform layout, string name, string title, string detail,
+        float x, float y, Vector2 size, GameMode mode = GameMode.PvE, bool featured = false)
     {
-        var label = new GameObject("Label").AddComponent<TextMesh>();
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        label.font = font;
-        var renderer = label.GetComponent<MeshRenderer>();
-        renderer.sharedMaterial = font.material;
-        renderer.shadowCastingMode = ShadowCastingMode.Off;
-        label.transform.SetParent(parent, false);
-        label.transform.localPosition = position;
-        label.anchor = TextAnchor.MiddleCenter;
-        label.alignment = TextAlignment.Center;
-        label.fontSize = 64;
-        label.characterSize = characterSize;
-        label.color = Color.white;
-        label.text = text;
-        return label;
+        var root = new GameObject(name).transform;
+        root.SetParent(layout, false);
+        root.localPosition = new Vector3(x, y, 0);
+        var color = featured ? ArcherInterface.Teal : ArcherInterface.Panel;
+        var face = ArcherInterface.Surface(root, "Card face", Vector3.zero, size, color, true);
+        ArcherInterface.Surface(root, "Card edge", new Vector3(0, 0, .014f), size + Vector2.one * .012f, ArcherInterface.Frame);
+        ArcherInterface.Label(root, title, new Vector3(0, detail.Length == 0 ? 0 : .069f, -.015f), detail.Length == 0 ? .025f : .032f);
+        if (detail.Length > 0)
+        {
+            var description = ArcherInterface.Label(root, detail, new Vector3(0, -.071f, -.015f), .018f);
+            description.color = ArcherInterface.Quiet;
+        }
+        var option = root.gameObject.AddComponent<ModeOption>();
+        option.Configure(mode, face, color);
+        return option;
     }
+
+    // Creates a menu label with the shared spatial type settings.
+    private static TextMesh Label(Transform parent, string text, Vector3 position, float characterSize) =>
+        ArcherInterface.Label(parent, text, position, characterSize);
 
     // Loads or creates an unlit menu material with the given color.
     private static Material MenuMaterial(string path, Color color)
@@ -187,7 +206,7 @@ public static class ModeMenuBuilder
         return material;
     }
 
-    // Puts MainMenu, LocalDuel and PvPConnectionTest first in the build list and keeps other scenes after them.
+    // Lists each playable scene once before the project’s remaining scenes.
     private static void UseGameBuildList()
     {
         var game = GameScenes.BuildOrder.Select(name => new EditorBuildSettingsScene(ScenePath(name), true));

@@ -8,7 +8,7 @@ namespace BowMan.Menu
     // Goes back to the mode menu from a match with the left controller's Menu button or Esc.
     public sealed class ReturnToMenu : MonoBehaviour
     {
-        public const string Hint = "Menu button / Esc: back to modes";
+        public const string Hint = "Menu button: back to modes";
 
         private InputAction back;
         private bool leaving;
@@ -20,7 +20,8 @@ namespace BowMan.Menu
         private void OnEnable()
         {
             back = new InputAction("Return to menu", InputActionType.Button, "<XRController>{LeftHand}/menu");
-            back.AddBinding("<Keyboard>/escape");
+            if (DesktopBowTest.DesktopAvailable) back.AddBinding("<Keyboard>/escape");
+            back.AddBinding("<WebXRController>{LeftHand}/thumbstickPressed");
             back.Enable();
         }
 

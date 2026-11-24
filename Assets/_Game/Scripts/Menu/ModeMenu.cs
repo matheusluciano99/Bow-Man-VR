@@ -6,11 +6,13 @@ using UnityEngine.SceneManagement;
 
 namespace BowMan.Menu
 {
-    // Opens the scene for the mode chosen with the pointer or the desktop keys 1 and 2.
+    // Opens the scene for the mode chosen with the pointer or the numbered desktop shortcuts.
     public sealed class ModeMenu : MonoBehaviour
     {
         [SerializeField] private ControllerPointer pointer;
 
+        [SerializeField] private ModeOption archerOption;
+        [SerializeField] private TextMesh archerLabel;
         [SerializeField] private ModeOption handOption;
         [SerializeField] private TextMesh handLabel;
         [SerializeField] private MenuCredits credits;
@@ -28,7 +30,8 @@ namespace BowMan.Menu
         {
             if (pointer != null) pointer.Selected += OnSelected;
             RefreshHandLabel();
-            keyboard = Keyboard.current;
+            ShowArcher();
+            keyboard = DesktopBowTest.DesktopAvailable ? Keyboard.current : null;
             if (keyboard != null) keyboard.onTextInput += OnTextInput;
         }
 
@@ -61,8 +64,22 @@ namespace BowMan.Menu
         private void OnSelected(ModeOption option)
         {
             if (loading || (credits != null && credits.Select(option))) return;
-            if (option == handOption) SwitchHand();
+            if (option == archerOption) SwitchArcher();
+            else if (option == handOption) SwitchHand();
             else Choose(option.Mode);
+        }
+
+        // Saves the next archer and shows which character will enter the match.
+        private void SwitchArcher()
+        {
+            ArcherSelection.Preferred = ArcherSelection.Other(ArcherSelection.Preferred);
+            ShowArcher();
+        }
+
+        // Restores the character label when returning to the mode menu.
+        private void ShowArcher()
+        {
+            if (archerLabel != null) archerLabel.text = ArcherSelection.Name(ArcherSelection.Preferred);
         }
 
         // Switches which controller holds the bow and updates the visible menu choice.
@@ -77,8 +94,8 @@ namespace BowMan.Menu
         private void RefreshHandLabel()
         {
             if (handLabel != null) handLabel.text = VRBowInput.PreferredBowLeft
-                ? "Bow in left hand  •  Draw with right"
-                : "Bow in right hand  •  Draw with left";
+                ? "Bow hand · Left"
+                : "Bow hand · Right";
         }
 
         // Navigates credits with the keyboard while the same panels remain available to the pointer.
@@ -96,6 +113,7 @@ namespace BowMan.Menu
             if (loading || (credits != null && credits.IsOpen)) return;
             if (credits != null && (key == 'c' || key == 'C')) { credits.Show(true); return; }
             if (key == 'h' || key == 'H') SwitchHand();
+            if (key == 'g' || key == 'G') SwitchArcher();
             var mode = GameScenes.ModeForKey(key);
             if (mode.HasValue) Choose(mode.Value);
         }

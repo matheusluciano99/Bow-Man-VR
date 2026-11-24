@@ -14,3 +14,6 @@ Project modifications: native tissue meshes convert axes/units, reverse reflecte
 
 Source inventory, original hashes, URLs, FMA concepts and rebuild input: SourceAssets/BodyParts3D/Sources.json
 Preparation: SourceAssets/BodyParts3D/PrepareAnatomy.py
+
+Replay presentation bones: BodyParts3D 4.0 part-of archive, from the same database.
+PrepareReplayBones.py combines atlas pieces, centers and normalizes the resulting OBJ for rig fitting. These are game presentation meshes.

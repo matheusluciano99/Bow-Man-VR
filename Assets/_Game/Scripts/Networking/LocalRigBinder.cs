@@ -15,10 +15,12 @@ namespace BowMan.Networking
         public Transform LeftHand => leftHand;
         public Transform RightHand => rightHand;
 
-        // Turns XR off when the player was started with -desktop.
+        // Hides diagnostic markers before an online lobby takes control of the rig.
         private void Awake()
         {
             DesktopXR.ApplyCommandLine();
+            VRBowInput.HideTrackingMarker(leftHand);
+            VRBowInput.HideTrackingMarker(rightHand);
         }
 
         // Moves the rig onto the role's spawn, keeping only its facing direction.
