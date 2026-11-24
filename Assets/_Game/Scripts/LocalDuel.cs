@@ -44,11 +44,13 @@ namespace BowMan
             Flow.Changed += OnFlowChanged;
             bow.Fired += OnFired;
             restart = new InputAction("Restart match", InputActionType.Button, "<XRController>{RightHand}/primaryButton");
-            restart.AddBinding("<Keyboard>/r");
+            if (DesktopBowTest.DesktopAvailable) restart.AddBinding("<Keyboard>/r");
             switchHand = new InputAction("Switch bow hand", InputActionType.Button, "<XRController>{RightHand}/secondaryButton");
-            switchHand.AddBinding("<Keyboard>/h");
+            if (DesktopBowTest.DesktopAvailable) switchHand.AddBinding("<Keyboard>/h");
             desktop = new InputAction("Desktop controls", InputActionType.Button, "<Keyboard>/tab");
+            restart.AddBinding("<WebXRController>{RightHand}/buttonA");
             restart.Enable();
+            switchHand.AddBinding("<WebXRController>{RightHand}/buttonB");
             switchHand.Enable();
             desktop.Enable();
             RestartMatch();
@@ -69,8 +71,10 @@ namespace BowMan
             matchRoot.SetParent(transform, false);
             var setting = DuelEnvironment.Choose();
             DuelEnvironment.Place(setting, matchRoot, localSpawn, opponentSpawn);
-            LocalArcher = Spawn(localArcherPrefab, localSpawn);
-            Opponent = Spawn(opponentPrefab, opponentSpawn);
+            var model = ArcherSelection.Preferred;
+            bool english = model == ArcherModel.English;
+            LocalArcher = Spawn(english ? localArcherPrefab : opponentPrefab, localSpawn);
+            Opponent = Spawn(english ? opponentPrefab : localArcherPrefab, opponentSpawn);
             foreach (var renderer in LocalArcher.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
             Flow.Initialize(LocalArcher, Opponent);
             LocalArcher.GetComponent<ArcherReactionAnimation>().Connect(Flow, 0, LocalArcher);
@@ -81,7 +85,7 @@ namespace BowMan
             var otherBow = Opponent.gameObject.AddComponent<OpponentBowAction>();
             otherBow.Bind(bow, arrowPrefab);
             sounds = matchRoot.gameObject.AddComponent<DuelAudio>();
-            sounds.Bind(Flow, bow, otherBow, LocalArcher, Opponent, setting, 0);
+            sounds.Bind(Flow, bow, otherBow, LocalArcher, Opponent, setting, 0, model, ArcherSelection.Other(model));
             Opponent.gameObject.AddComponent<AIArcher>().Initialize(Flow, 1, Opponent, LocalArcher, arrowPrefab);
             if (desktopMode) desktopInput.UseDesktopControls(true);
             OnFlowChanged();
@@ -102,7 +106,7 @@ namespace BowMan
         }
 
         // Presents the shared anatomy report after the duel confirms a fatal arrow.
-        private void OnFatality(int target, AnatomicalImpact report) => cutaway.Show(report);
+        private void OnFatality(int target, AnatomicalImpact report) => cutaway.Show(report, arrowPrefab);
 
         // Cancels the player's nock whenever the duel leaves their legal aiming turn.
         private void OnFlowChanged() => bow.SetShotAllowed(Flow.CanShoot(0));
@@ -113,7 +117,7 @@ namespace BowMan
             if (Flow == null) return;
             if (restart.WasPressedThisFrame() && Flow.Phase == DuelPhase.Finished) RestartMatch();
             if (switchHand.WasPressedThisFrame() && Flow.CanShoot(0)) vrInput.SetBowHand(!vrInput.BowInLeftHand);
-            if (desktop.WasPressedThisFrame())
+            if (DesktopBowTest.DesktopAvailable && desktop.WasPressedThisFrame())
             {
                 desktopMode = !desktopMode;
                 desktopInput.UseDesktopControls(desktopMode);
@@ -128,12 +132,12 @@ namespace BowMan
             var status = Flow.StatusFor(0);
             if (cutaway.IsVisible)
             {
-                feedback.text = $"{status}     A / R: restart\n{cutaway.Caption}";
+                feedback.text = $"<color=#ECC67D>{status}</color>\nA: restart";
                 return;
             }
-            feedback.text = $"{status}     You {LocalArcher.CurrentHealth}  |  Opponent {Opponent.CurrentHealth}\n" +
-                $"Bow: {(vrInput.BowInLeftHand ? "left" : "right")} hand   Draw: {bow.DrawStrength:P0}   {sounds.VolumeHint}\n" +
-                (Flow.Phase == DuelPhase.Finished ? "A / R: restart" :
+            feedback.text = $"<color=#ECC67D>{status}</color>\n" +
+                $"You {LocalArcher.CurrentHealth}     ·     Opponent {Opponent.CurrentHealth}     ·     {sounds.VolumeHint}\n" +
+                (Flow.Phase == DuelPhase.Finished ? "A: restart" :
                 Flow.CanShoot(0) ? vrInput.ShotHint(desktopMode) : "Your bow unlocks on your turn");
         }
 

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Unity.Networking.Transport.Relay;
+using UnityEngine;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Relay;
@@ -10,7 +11,7 @@ namespace BowMan.Networking
     // Signs in to Unity Gaming Services and creates or joins a Unity Relay allocation.
     public sealed class RelayConnector
     {
-        private const string Protocol = "dtls";
+        private static string Protocol => Application.platform == RuntimePlatform.WebGLPlayer ? "wss" : "dtls";
         private const int RemotePlayers = 1;
 
         private static Task signIn;

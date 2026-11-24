@@ -9,7 +9,7 @@ public static class StandingIdleBuilder
 {
     private const string Source = "Assets/ThirdParty/Rokoko/Regular_Light_mixamo.fbx";
     private const float Duration = 8f;
-    // Samples a relaxed standing take with its original shoulder, head and upper-body motion.
+    // Samples a relaxed standing take with weight transfer through the pelvis and both supporting legs.
     [MenuItem("Bow Man VR/Characters/Bake standing idle")]
     public static void Bake()
     {
@@ -18,7 +18,7 @@ public static class StandingIdleBuilder
         var source = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Source));
         try
         {
-            if (take.length < Duration + 1f) throw new InvalidOperationException("Standing take is too short.");
+            if (take.length < Duration + 35f) throw new InvalidOperationException("Standing take is too short.");
             foreach (var model in new[] { "EnglishArcher", "ErikaArcher" })
                 BakeModel(model, source, take);
         }
@@ -44,7 +44,8 @@ public static class StandingIdleBuilder
             var skeleton = source.GetComponentsInChildren<Transform>();
             var recorded = names.Select(n => skeleton.Single(t => t.name == "mixamorig:" + n)).ToArray();
             var bones = ids.Select(rig.GetBoneTransform).ToArray();
-            take.SampleAnimation(source, 1f);
+            float startTime = model == "ErikaArcher" ? 35f : 1f;
+            take.SampleAnimation(source, startTime);
             var first = recorded.Select(b => b.rotation).ToArray();
             var across = recorded[5].position - recorded[8].position;
             var align = Quaternion.AngleAxis(Vector3.SignedAngle(Vector3.ProjectOnPlane(across, Vector3.up),
@@ -59,13 +60,27 @@ public static class StandingIdleBuilder
                 FitDirection(bones[upper + 1], hand, align * (recordedHand.position - recorded[upper + 1].position));
             }
             var neutral = bones.Select(b => b.rotation).ToArray();
-            var restSpine = bones[0].position;
-            var start = recorded[0].position;
-            var clip = MotionInjuryBuilder.Record(root, bones, Duration, time =>
+            var hips = rig.GetBoneTransform(HumanBodyBones.Hips);
+            var sourceHips = skeleton.Single(t => t.name == "mixamorig:Hips");
+            var hipStart = hips.position;
+            var hipRotation = hips.rotation;
+            var sourceStart = sourceHips.position;
+            var sourceRotation = sourceHips.rotation;
+            var stance = new PlantedArcherStance(rig, root.transform);
+            var baked = bones.Concat(new[] { hips }).Concat(stance.Bones).ToArray();
+            var sourceFoot = skeleton.Single(t => t.name == "mixamorig:LeftFoot");
+            var scale = (hipStart.y - stance.Bones[2].position.y) / (sourceStart.y - sourceFoot.position.y);
+            var clip = MotionInjuryBuilder.Record(root, baked, Duration, time =>
             {
-                take.SampleAnimation(source, time + 1f);
+                take.SampleAnimation(source, time + startTime);
                 var edge = Mathf.SmoothStep(0f, 1f, Mathf.Min(time, Duration - time) / 0.8f);
-                bones[0].position = restSpine + Vector3.ClampMagnitude(align * (recorded[0].position - start), 0.032f) * edge;
+                var shift = Vector3.ClampMagnitude(align * (sourceHips.position - sourceStart) * scale, 0.065f);
+                // Let the supporting knees flex as the performer settles over a boot.
+                shift.y = Mathf.Min(0f, shift.y) - Mathf.Min(0.028f, shift.magnitude * 0.7f);
+                hips.position = hipStart + shift * edge;
+                var tilt = align * sourceHips.rotation * Quaternion.Inverse(sourceRotation) * Quaternion.Inverse(align);
+                hips.rotation = Quaternion.Slerp(Quaternion.identity, tilt, edge) * hipRotation;
+                stance.Plant();
                 for (var i = 0; i < bones.Length; i++)
                 {
                     var delta = align * recorded[i].rotation * Quaternion.Inverse(first[i]) * Quaternion.Inverse(align);

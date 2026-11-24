@@ -333,7 +333,7 @@ MonoBehaviour:
   minimumDrawDistance: 0.03
   maximumLaunchSpeed: 25
   stringGrabRadius: 0.12
-  arrowLength: 0.7
+  arrowLength: 0.96
 --- !u!1 &8605939545729818877
 GameObject:
   m_ObjectHideFlags: 0

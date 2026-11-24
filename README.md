@@ -1,8 +1,18 @@
 # Bow Man VR
 
-A turn-based VR archery duel for PC, using a Meta Quest 2 through Quest Link.
+VR archery targeting in-browser play on itch.io. The release flow is **Play → Enter VR** in a WebXR-capable browser. Duel against the AI or an
+online opponent. In **Tiro ao alvo**, choose **15, 30, 50, 60 or 70 m** and select **Play against CPU** to compete solo. For an online competition, one player selects **Host** and the other enters the code and selects **Join**.
+Alternate ten arrows each. The highest total wins.
+
+For lab tests, connect the Quest 2 through Quest Link and enter Play in the Unity Editor with MainMenu open.
 Open the project with Unity **6000.3.25f1**. Game requirements, scene instructions,
 hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
+
+## Browser build
+
+Use Unity 6000.3.25f1 with Web Build Support. Switch the active build profile to **Web** and run **Bow Man VR → Build itch.io WebXR Game**. The output is `Builds/ItchIO/BowManVR-WebXR.zip`, with `index.html` at its root. Select **HTML** on the itch.io project page and upload that ZIP as playable in the browser. [itch.io HTML game instructions](https://itch.io/docs/creators/html5)
+
+On the game page, select **Play**, then **Enter VR** when the headset is available. Each online player opens the same mode on a separate device. In VR, point the right controller at **Host** or **Join** and press the trigger. The joining player selects the six characters of the host's code and presses **Join** again. Click the left thumbstick to return to the mode menu. Play requires an active VR headset. The browser page provides the Enter VR button. Use tracked controllers to choose a mode and shoot.
 
 ## Repository layout
 
@@ -22,6 +32,7 @@ hardware checks, and the contribution workflow are in [AGENTS.md](AGENTS.md).
 | `Assets/TutorialInfo/` | Unity template help content. |
 | `Packages/`, `ProjectSettings/` | Shared dependencies and Unity project settings. |
 | `Docs/Art/` | Character candidates, sources, and preparation status. |
+| `Docs/GDD.md` | Game design document (Portuguese): modes, mechanics, status and changes of direction. |
 | `Docs/Decisions.md` | Settled development choices, reasons, and open questions. |
 | `Docs/InjuryReactions.md` | Fifteen injury regions, reaction/turn rules and review cases. |
 | `.agents/`, `.claude/` | Shared development rules and decision-documentation skill entry points. |
@@ -55,7 +66,7 @@ The retained Templar Knight and the archer candidates are documented in
 player archer.
 
 Prototype character choices, front/side/back references and the first-person
-presentation are in [archer design](Docs/Art/ArcherDesign.md).
+presentation are in [archer design](Docs/Art/ArcherDesign.md). Choose **Archer** on the main menu (or press **G**) to switch between English Archer and Erika. This sets your hands, voice and character performance across modes.
 
 Prepared Humanoid models, the desktop movement check and reproducible Blender
 work are documented in [rig preparation](Docs/Art/RigPreparation.md).

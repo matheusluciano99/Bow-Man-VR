@@ -16,12 +16,25 @@ namespace BowMan.Networking
         [SerializeField] private NetworkManager networkManager;
         [SerializeField] private UnityTransport transport;
 
+        [SerializeField] private bool targetCompetition;
+        public bool IsTargetCompetition => targetCompetition;
+
         private readonly RelayConnector relay = new RelayConnector();
         private string joinCode = string.Empty;
         private ArcherRole localRole;
         private bool ignoreStopEvents;
         private int session;
         private string ownScene;
+
+        public ArcherModel FirstArcher { get; private set; }
+        public ArcherModel SecondArcher { get; private set; }
+
+        // Stores the identities confirmed by the host before the round starts.
+        public void SetArchers(ArcherModel first, ArcherModel second)
+        {
+            FirstArcher = first;
+            SecondArcher = second;
+        }
 
         public ArcherSeatAllocator Seats { get; } = new ArcherSeatAllocator();
         public ConnectionStatus Status { get; private set; } = ConnectionStatus.Offline;
@@ -32,8 +45,10 @@ namespace BowMan.Networking
         {
             if (networkManager == null) networkManager = GetComponent<NetworkManager>();
             if (transport == null) transport = GetComponent<UnityTransport>();
+            if (Application.platform == RuntimePlatform.WebGLPlayer) transport.UseWebSockets = true;
             networkManager.NetworkConfig.EnableSceneManagement = false;
             networkManager.NetworkConfig.ConnectionApproval = true;
+            if (targetCompetition) networkManager.NetworkConfig.ConnectionData = new byte[] { 1 };
             networkManager.ConnectionApprovalCallback = Approve;
         }
 
@@ -152,6 +167,14 @@ namespace BowMan.Networking
         private void Approve(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
             response.Pending = false;
+            var payload = request.Payload;
+            bool sameMode = targetCompetition ? payload is { Length: 1 } && payload[0] == 1 : payload == null || payload.Length == 0;
+            if (!sameMode)
+            {
+                response.Approved = false;
+                response.Reason = "Choose the same game mode as the host";
+                return;
+            }
             response.Approved = Seats.TryAssign(request.ClientNetworkId, out _);
             response.CreatePlayerObject = response.Approved;
             if (!response.Approved) response.Reason = ArcherSeatAllocator.FullReason;
@@ -222,8 +245,8 @@ namespace BowMan.Networking
             StatusChanged?.Invoke(Status);
         }
 
-        // Gives this process its own anonymous player so two instances on one PC can connect.
-        private static string Profile() =>
+        // Keeps a stable browser profile and independent identities for concurrently running native players.
+        private static string Profile() => Application.platform == RuntimePlatform.WebGLPlayer ? "web" :
             AuthProfile.ForProcess(System.Diagnostics.Process.GetCurrentProcess().Id, Application.isEditor ? "editor" : null);
     }
 }

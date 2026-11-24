@@ -44,12 +44,12 @@ Multiple different archer models are allowed. The retained heavy Templar Knight
 is a separate asset, not the selected player archer.
 
 The prototype visual choices are English Archer and Erika Archer. The local
-headset view shows tracked archer hands. The opponent is a full archer.
-The menu and credits use a pointing right hand and a relaxed left hand so the
-player can see where the fingertip is aiming. The online connection screen
-shows both hands at rest. The tracking test uses colored controller markers.
-Reference views and body-region and bow design constraints are in
-[ArcherDesign.md](Art/ArcherDesign.md).
+headset view shows the selected archer’s tracked hands. The opponent is a
+full archer. Menu
+and lobby navigation use a pointing right hand and a relaxed left hand so the
+player can see where the fingertip is aiming. The tracking test uses colored
+controller markers. Reference views and body-region and bow design constraints
+are in [ArcherDesign.md](Art/ArcherDesign.md).
 Both characters now have prepared Humanoid derivatives and a shared movement
 check. Rig readiness and remaining per-animation review are documented in
 [RigPreparation.md](Art/RigPreparation.md).
@@ -69,18 +69,22 @@ host shares the choice with the joiner so both players see the same scene.
 Carry the archers’ visual style into the arrow and the player’s hands. Use one
 finished arrow from nock through impact so its visible tip stays aligned with
 the hit. The bow hand grips the bow and the drawing hand follows the string,
-with roles swapped for left-handed play. Use hand and cuff surfaces from the prepared Erika Archer for both hands so skin, leather and scale match the archers. Keep the blue and orange markers in the tracking test scene.
+with roles swapped for left-handed play. Bake each character’s hand and cuff surfaces from their own prepared model so skin, clothing and scale match the chosen archer. Keep the blue and orange markers in the tracking test scene.
 
 Use three baked scenery prefabs around the same level spawns. The host sends the selected setting in the round-start message, including on rematch. Shared scenery materials and combined meshes reduce draw calls. The distant woodland uses two profiles rendered from a full-resolution fir. The [environment art inventory](../Assets/ThirdParty/PolyHaven/Attribution.md) records each source and license.
 
-## D005 — PC VR on the classroom Quest 2
+## D005 — Browser VR release and Quest 2 lab testing
 
-Target Windows PC VR through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
+Playing a match requires a headset and tracked controllers, both in the interactive Unity Editor and in the released game. This keeps physical draw, aim and release integral to each mode. The itch.io page offers VR entry, and leaving immersive play cannot transfer control to the keyboard. Standalone diagnostic scenes and explicitly configured unattended tests can simulate input.
+Use WebXR Export and WebXR Interactions 0.25.0 for stereo rendering and tracked controller input. Browser multiplayer uses secure WebSockets through Relay. The online lobby accepts join codes through the controller so a headset user can join without typing on the PC. For classroom testing, use Windows PC VR
+through Quest Link with Unity 6000.3.25f1, OpenXR 1.16.1
 and the Oculus Touch profile. This matches the available test hardware. Keep
 desktop scene checks useful when the headset is unavailable, and distinguish
 automated/editor validation from physical tracking, reach and comfort checks.
 The accepted tracking criterion is one successful Quest 2 test in both Editor
 and Windows player; a second developer's duplicate test is not required.
+
+The course requires publishing the game on itch.io.
 
 ## D006 — Small assigned tasks and explicit merge authorization
 
@@ -100,6 +104,20 @@ Maintain shared rules and skills under `.agents/`, with `.claude/` entry points
 that reference the same guidance. Record settled decisions here and update their
 canonical requirements at the same time. This prevents the two agents from
 following contradictory copies of a rule.
+
+## D026 — A living game design document
+
+Keep the game design document in [GDD.md](GDD.md), versioned with the code.
+The course evaluates the game partly through its GDD, so it must describe the
+current design, what is merged or still in review, and each change of direction
+with its reason. Updating it in the same PR as the change keeps it from drifting
+the way a separate snapshot would. Write it in Portuguese for the course
+evaluators and keep in-game labels in their original text. AGENTS.md remains the
+canonical requirement and this log the canonical reason; the GDD summarizes both.
+The repository is private, so a secret gist, which anyone with its link can
+open without signing in, copies the GDD for readers without access. Republish it
+from main after each merge that changes the GDD; the repository file stays the
+source.
 
 ## D008 — Reuse arrow flight for an independently testable bow interaction
 
@@ -127,10 +145,20 @@ distance and positional offsets remain provisional until final hardware tuning.
 Default left bow hand, grip offsets, 12 cm string grab
 radius, 3 cm minimum draw, 70 cm maximum draw and 25 m/s full-draw speed are
 prototype settings. Validate handedness, grip alignment and comfortable draw on
-Quest 2 before treating them as final controls or calibration.
+the target headset before treating them as final controls or calibration.
 Both left-bow/right-draw and right-bow/left-draw setups are supported. The test
 panel switches hands without an Inspector edit and cancels a tracked draw before
 rebinding. Final game-menu presentation remains part of menu integration.
+
+Show **FULL DRAW** at the shot's actual power cap and pulse the drawing
+controller so the player can keep looking at the target. Rearm below 95% to
+avoid repeated pulses from small tracking changes near the cap. The HUD gives
+the same confirmation when controller vibration is unavailable.
+
+Let an already-held trigger grab the string when the controller reaches it.
+Confirm the grab with a lighter pulse and keep the visible hand on the string
+when a brief tracking loss preserves the draw. A turn lock requires a fresh
+trigger press before the next grab.
 
 ## D009 — Distinct injury regions with a first-person eye viewpoint
 
@@ -142,11 +170,17 @@ the facing-archer bow duel; sword combat remains a conditional future idea.
 
 The full motions and implementation cards are in the
 [injury reaction table](InjuryReactions.md). Head and neck hits always kill.
-After landing, the chest holds for 0.75 seconds. Foot hits hold for two
-seconds and other regions for three. The injured archer receives the next
+The surviving chest fall preserves the first 1.8 seconds of the impact and
+shortens the landing settle by 0.35 seconds. A 0.2-second ground pause and a
+2.6-second get-up keep the archer moving once the impact has played. Foot hits
+hold for two seconds and other regions for three. The injured archer receives the next
 turn after recovery. This keeps turn ownership
 consistent with the visible recovery. Death ends the match immediately; misses
 resolve at scenery impact or flight expiry, with one outcome per shot.
+
+Ease the live pelvis offset out over the first 0.12 seconds of a surviving
+reaction. Hold the boots at their sampled contacts so the recorded motion can
+start from the archer's current weight shift without a jump or a slide.
 
 During local knockdown, kneeling and recovery, move the VR viewpoint with the
 character's animated eyes so the player sees the injury sequence in first
@@ -263,13 +297,15 @@ Each body region has its own entry. Surviving reactions use the actual entry, ho
 
 Use free human performance recordings with verified game-use terms. Review the full source on both rigs, then select the short movement that matches the wound. Preserve the impact recoil and measured limb lengths when fitting the hand or boot. For live wound contact, use the baked pose as a cleared starting point and limit the change against the model’s fitted colliders. This keeps the glove near the actual arrow while the archer moves. The per-region sources, timings and authoring commands are in [Injury reactions](InjuryReactions.md).
 
-## D016 — Brief in-body X-ray injury presentation
+## D016 — Cinematic replay of the finishing arrow
 
-Show the struck interior only after the match confirms a fatal arrow. A
-camera-relative stereo close-up keeps the headset wearer in control of their
-view while the injury geometry follows the defeated archer. Reveal the finite
-path through the contacted surfaces and show the matching result in the HUD.
-Three seconds, display size and colors are provisional pending Quest 2 review.
+Start the replay only after the duel confirms a lethal arrow. Open on the
+original projectile approaching a frozen pose of the struck archer, cut to its
+contact inside the body, then pull out to the duel. Use the exact shot path and
+the fitted game anatomy. The contacted bone receives an impact accent when the match marks it fractured. Play the close-up on a surface at a fixed depth in front of the
+viewer so their own head movement remains live throughout. The match result and
+regional defeat animation proceed in parallel. Timing, reading distance and
+headset comfort remain subject to Quest 2 testing.
 
 ## D017 — Bone fracture depends on shot strength
 
@@ -343,24 +379,32 @@ servers and duel synchronization are outside this choice (#12, #13).
 ## D025 — The mode menu is the game's entry scene
 
 Start the game on `MainMenu`, where a right-controller ray and trigger choose
-PvE (local duel against the AI) or PvP (online connection). Pointing at world
+PvE (local duel against the AI), PvP (online duel) or Tiro ao alvo (CPU or online target competition). Pointing at world
 panels is the expected VR menu interaction and needs no new package; XR
 Interaction Toolkit would add a dependency that touches the shared rig. The
-menu generator puts MainMenu, LocalDuel and PvPConnectionTest first in the build
+menu generator puts MainMenu, LocalDuel, PvPConnectionTest and TargetRange first in the build
 list so scenes can load each other, and other scenes stay after them. Single-scene
-test players are still built explicitly. The left Menu button or Esc returns to
+test players are still built explicitly. The left Menu button returns to
 the menu; leaving the PvP scene ends the session because the network object
 persists across scene loads.
 
+Players choose English Archer or Erika Archer on the mode menu. Save the choice independently from the bow hand. In PvE the other model plays the opponent. In online play each seat chooses freely, including matching characters. Each archer has a distinct recorded idle, bow performance, breath, exertion, injury and defeat voice. The shared injury rules and shot timing keep both choices equivalent in play.
+
 A player chooses the bow hand on the mode menu before entering either duel.
-The panel names both the bow hand and drawing hand. Save that choice locally so
+The panel names the bow hand and the match prompts name the drawing hand. Save that choice locally so
 entering the other mode or returning on another day preserves it. The duel HUD
 shows the next step when the player can shoot and a waiting prompt during the
 opponent’s turn.
 
 Keep release credits inside the mode menu so the player can read them and return
-with the same controller or mouse. Source and license notices are also packaged
+with the same controller. Source and license notices are also packaged
 as plain text in `StreamingAssets/BowMan-Credits.txt` for offline access.
+
+Use the same dark panels, brass focus accents and readable type throughout the
+spatial interface. Show choices on the main menu and a separate six-character
+join screen. In Tiro ao alvo, show every available distance as a direct choice.
+Keep score, turn prompts and the last impact off the center of the firing lane
+so the target and the drawing hand remain visible.
 
 ## Standing archers between shots
 
@@ -368,16 +412,28 @@ Use recorded breathing, shoulder movement and small weight shifts on both standi
 
 Sample the visible opponent’s recorded bow action from the AI turn clock in PvE and from the owner’s draw in PvP. This lets a human pause or cancel a draw and switch bow hands. A mesh represents the nocked arrow on the observing side. The existing duel authority creates the flying projectile when it accepts the release.
 
+Both archers use recorded pelvis motion and planted-foot leg movement while standing and drawing. The equipped hand closes around the grip and the string hand clears the face. Retain the last valid draw and hand pose during drawing-hand occlusion. Give a missing trigger signal up to 750 ms to return, including when the pose recovers first. Resume with a tracked, held trigger and fire on a subsequent tracked release. Measure power from the backward hand displacement before clamping the string visual. The Quest Pro review uses the original 70 cm full-power threshold after the wearer reported stable tracking. The earlier Quest 2 review used 36 cm because 42.5 cm still reached its tracking limit. The shared 0.96-metre arrow keeps its tip visible at full draw.
+
 ## Duel sound
 
 Use recorded spatial cues for the two archers and their equipment. Start the string creak above 60% of maximum draw. Increase pitch and volume toward full draw, with a softer sustained sound while the player holds tension. Falling back to 60% or below, cancelling or releasing stops the stretch cue. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.
 
+## Target competition
+
+Add a precision competition alongside the duels so players can compete at a
+target without combat. A player can compete locally against the other archer model without signing in or finding another player. The player shoots first. The CPU plays its recorded draw and releases one simulated arrow at the same target. Score the actual impact with the shared ring rules. In solo play the player can accept a rematch immediately.
+
+For online competition, two players connect on separate PCs using the existing Relay host and join-code flow.
+Alternate shots so both archers see each outcome and shoot at the same distance.
+Each archer releases ten arrows. The host scores the tip contact on ten concentric
+rings, awarding a dividing line to the higher ring. A miss or flight expiry earns
+zero. Cancelling a draw preserves the arrow. Both players see the same scores
+and winner or tie. Both must accept a rematch. The host chooses 15, 30, 50, 60 or 70 metres before connecting. The first two options give new players shorter courses before the three long-distance challenges. Both seats and their rematch keep the host’s selection. Target mode uses one full-draw speed (32 game metres per second) across every distance so the longest course remains reachable. Headset readability still needs a lab check.
+
 ## Open questions and provisional values
 
-- The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.
-
 - Additional archer variants and later visual refinements remain open. The current
-  prototype uses English Archer and Erika; local full-body rendering is outside
+  prototype uses English Archer and Erika. Local full-body rendering is outside
   the agreed first-person hand presentation.
 - Arena distance, bow draw distance and combat tuning remain provisional as
   described in AGENTS.md and the relevant task cards.

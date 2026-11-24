@@ -12,6 +12,10 @@
 - Put reusable task procedures in a skill. Keep the shared procedure under
   `.agents/skills/` and the Claude entry point under `.claude/skills/` pointing to it.
   Keep `.claude/rules/` aligned through references to these shared rules.
+- Keep [Docs/GDD.md](../../Docs/GDD.md) as the living game design document. When a
+  change alters what the player sees or does, or the project's scope or direction,
+  update the GDD in the same PR: the affected section, the status table and, for a
+  change of direction, a trajectory entry with its reason. AGENTS.md stays canonical.
 - Record decisions directly, without personal attribution. Use GitHub Assignees
   for ownership and issues/PRs for work status; skills and rules grant no merge
   authorization and should not contain transient session state.

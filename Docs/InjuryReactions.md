@@ -18,7 +18,7 @@ wounds, organ/bone damage and blood throughout the sequence.
 | --- | --- | --- | --- |
 | Head | Instant kill; immediate collapse with loss of posture. | None; remain dead. | [#21](https://github.com/matheusluciano99/Bow-Man-VR/issues/21) |
 | Neck | Instant kill; reach toward the actual neck wound, knees buckle, then collapse. | None; remain dead. | [#51](https://github.com/matheusluciano99/Bow-Man-VR/issues/51) |
-| Chest | Fall backward and land with the back on the ground. | Hold back-down pose for 0.75 s, then return to relaxed standing if alive. | [#22](https://github.com/matheusluciano99/Bow-Man-VR/issues/22), [#23](https://github.com/matheusluciano99/Bow-Man-VR/issues/23) |
+| Chest | Fall backward and land with the back on the ground. | Hold for 0.2 s, then return to relaxed standing over 2.6 s if alive. | [#22](https://github.com/matheusluciano99/Bow-Man-VR/issues/22), [#23](https://github.com/matheusluciano99/Bow-Man-VR/issues/23) |
 | Left shoulder | Recoil on the left, turn the torso away, cup the left shoulder with the right hand while standing. | Hold for 3 s, then release the supported pose if alive. | [#52](https://github.com/matheusluciano99/Bow-Man-VR/issues/52) |
 | Right shoulder | Recoil on the right, turn the torso away, cup the right shoulder with the left hand while standing. | Hold for 3 s, then release the supported pose if alive. | [#53](https://github.com/matheusluciano99/Bow-Man-VR/issues/53) |
 | Left arm | Recoil on the left, bend the injured arm and cradle it with the right hand while standing. | Hold for 3 s, then recover from the supported-arm pose if alive. | [#26](https://github.com/matheusluciano99/Bow-Man-VR/issues/26) |
@@ -61,8 +61,10 @@ sword combat is not an agreed game mode.
 
 ## Recovery, lethality and turn flow
 
-For a surviving hit, the timer starts at the injured pose. The chest holds
-for 0.75 seconds and most other regions hold for three seconds. A foot reaction has a 1.1-second recoil, two seconds of balance
+For a surviving hit, the timer starts at the injured pose. The chest fall
+preserves its first 1.8 seconds and settles 0.35 seconds sooner, followed by a
+0.2-second pause and a 2.6-second get-up. Most other regions hold for three
+seconds. A foot reaction has a 1.1-second recoil, two seconds of balance
 and a 0.8-second return to stance. Both foot motions passed Quest 2 review.
 
 1. A releases one arrow on their turn. Lock further shooting while that shot resolves.
@@ -163,6 +165,10 @@ and live turn flow. [Adobe Mixamo](https://www.mixamo.com/) and
 
 Both arm reactions use Azumi’s **accident-05-damage right arm** performance. The opposite palm catches the injured forearm while the archer looks down at the contact. The left-arm sequence mirrors the recording. Both boots stay planted. The captured hold plays throughout the three-second injury window, then the performer releases the arm. A lethal arm hit continues from the recoil into the recorded collapse. Attribution and the adaptation license are in [the source record](../Assets/ThirdParty/EyesJapan/Source.md).
 
+The supporting elbow stays closer to the body through the catch and drops
+as the hand releases the cradle. The fitted palm stays against the forearm
+through the hold.
+
 Use **Bow Man VR > Injuries > Rebuild Captured Arm Reactions** to bake both sides on both rigs. The injury Play Mode tests sample the fitted forearms against the head and torso, check the supporting palm and boots, and exercise the turn handoff after real arrows.
 
 ### Supported leg injuries
@@ -172,6 +178,10 @@ The weight shift in **Kneeling Down** and **Standing** times the descent and ris
 ### Standing shoulder reach
 
 A surviving shoulder hit uses the reach before the fall in **Shoulder Hit And Fall**. The injured shoulder recoils, the opposite hand cups it and both boots remain planted. The three-second hold follows the captured shoulder movement. On release the hand clears the body and the archer resumes the duel stance. A lethal shoulder hit still plays the complete recorded fall. **Bow Man VR > Injuries > Rebuild Surviving Shoulders** regenerates the standing reactions on both rigs.
+
+After recoil, the struck arm drops toward a guarded stance. The hold uses
+the early contact segment of the recorded take, before the performer raises
+the supporting elbow to start the fall.
 
 ### Captured wrist support
 

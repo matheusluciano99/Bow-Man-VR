@@ -5,7 +5,7 @@ Source and license details appear under Notices.
 
 Characters and equipment
 English Archer • count_zero on Sketchfab
-Character, bow limbs, shaft and feathers • CC BY 4.0
+Character, hands, bow limbs, shaft and feathers • CC BY 4.0
 Erika Archer • Adobe Mixamo
 Character and first-person hands • Mixamo game-use terms
 
@@ -45,8 +45,8 @@ Iwan “qubodup” Gabovitch • body, wood and stone
 Vehicle • ground contact
 OpenGameArt recordings • CC0
 
-Breathing and ambience
-mikeask • archer breathing
+Voices and ambience • CC0
+mikeask and helenavelikaja • breathing
+thebardofblasphemy and AuraVoice • archer voices
 TinyWorlds • woodland ambience
 Thimras • open-field wind and birds
-OpenGameArt recordings • CC0

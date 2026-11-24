@@ -134,13 +134,11 @@ public class ModeMenuTests
             var input = lobby.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<VRBowInput>(true)).Single();
             Assert.That(input.BowInLeftHand, Is.False);
             var rig = lobby.GetRootGameObjects().Single(root => root.transform.Find("Camera Offset") != null);
-            foreach (var side in new[] { "Left", "Right" })
-            {
-                var controller = rig.transform.Find($"Camera Offset/{side} Controller");
-                Assert.That(controller.Find("Controller Marker").gameObject.activeSelf, Is.False);
-                Assert.That(controller.GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMesh,
-                    Is.SameAs(Resources.Load<SkinnedMeshRenderer>($"ArcherHands/{side}").sharedMesh));
-            }
+            var left = rig.transform.Find("Camera Offset/Left Controller");
+            var right = rig.transform.Find("Camera Offset/Right Controller");
+            Assert.That(left.Find("Controller Marker").gameObject.activeSelf, Is.False);
+            Assert.That(right.Find("Controller Marker").gameObject.activeSelf, Is.False);
+            Assert.That(right.GetComponent<ControllerPointer>(), Is.Not.Null);
         }
         finally
         {
@@ -152,15 +150,45 @@ public class ModeMenuTests
         yield return null;
     }
 
+    // Gives the in-headset lobby pointer its own ray, shown only while the lobby board is shown in a headset.
+    [UnityTest]
+    public IEnumerator OnlineLobbyPointerShowsItsRayOnlyWithTheBoard()
+    {
+        const string path = "Assets/_Game/Scenes/TargetRange.unity";
+        Scene lobby = default;
+        AsyncOperation unload = null;
+        try
+        {
+            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+            lobby = SceneManager.GetSceneByPath(path);
+            yield return null;
+            yield return null;
+            var pointer = lobby.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<ControllerPointer>(true)).Single();
+            var ray = pointer.GetComponent<LineRenderer>();
+            Assert.That(ray, Is.Not.Null);
+            bool board = VRBowInput.HeadsetActive;
+            Assert.AreEqual(board, pointer.enabled);
+            Assert.AreEqual(board, ray.enabled);
+        }
+        finally
+        {
+            if (lobby.IsValid() && lobby.isLoaded) unload = SceneManager.UnloadSceneAsync(lobby);
+        }
+        // Waits for the unload so the next test cannot find this scene's connection controller.
+        if (unload != null) yield return unload;
+    }
+
     // Uses the authored menu panels and follows the selected hand into the playable duel.
     [UnityTest]
     public IEnumerator NewPlayerChoosesHandEntersDuelAndDraws()
     {
         var original = PlayerPrefs.GetInt("BowMan.BowLeft", -1);
+        var previousArcher = PlayerPrefs.GetInt("BowMan.Archer", -1);
         var previous = SceneManager.GetActiveScene();
         Scene menuScene = default, duelScene = default;
         try
         {
+            ArcherSelection.Preferred = ArcherModel.English;
             VRBowInput.PreferredBowLeft = true;
             const string menuPath = "Assets/_Game/Scenes/MainMenu.unity";
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode(menuPath, new LoadSceneParameters(LoadSceneMode.Additive));
@@ -170,14 +198,19 @@ public class ModeMenuTests
             var roots = menuScene.GetRootGameObjects();
             var menu = roots.SelectMany(g => g.GetComponentsInChildren<ModeMenu>()).Single();
             var pointer = roots.SelectMany(g => g.GetComponentsInChildren<ControllerPointer>()).Single();
-            var choices = roots.Single(g => g.name == "Mode choices").transform;
+            var choices = roots.Single(g => g.name == "Mode choices").transform.Find("Menu layout");
             var hand = choices.Find("Bow hand option").gameObject;
             var camera = roots.SelectMany(g => g.GetComponentsInChildren<Camera>()).Single();
             Physics.SyncTransforms();
             pointer.Point(new Ray(camera.transform.position, hand.transform.position - camera.transform.position));
             Assert.That(pointer.Hovered.gameObject, Is.EqualTo(hand));
             pointer.Confirm();
-            Assert.That(hand.GetComponentInChildren<TextMesh>().text, Does.Contain("Draw with left"));
+            Assert.That(hand.GetComponentInChildren<TextMesh>().text, Does.Contain("Bow hand · Right"));
+            var character = choices.Find("Archer option");
+            pointer.Point(new Ray(camera.transform.position, character.position - camera.transform.position));
+            Assert.That(pointer.Hovered.transform, Is.SameAs(character));
+            pointer.Confirm();
+            Assert.That(character.GetComponentInChildren<TextMesh>().text, Does.Contain("Erika Archer"));
             string chosen = null;
             menu.Loader = name => chosen = name;
             var pve = choices.Find("PvE option").gameObject;
@@ -193,6 +226,11 @@ public class ModeMenuTests
             roots = duelScene.GetRootGameObjects();
             var input = roots.SelectMany(g => g.GetComponentsInChildren<VRBowInput>(true)).Single();
             var bow = roots.SelectMany(g => g.GetComponentsInChildren<Bow>(true)).Single();
+            var duel = roots.SelectMany(g => g.GetComponentsInChildren<LocalDuel>()).Single();
+            Assert.That(duel.LocalArcher.name, Does.StartWith("ErikaArcher"));
+            Assert.That(duel.Opponent.name, Does.StartWith("EnglishArcher"));
+            var localBreath = duel.LocalArcher.GetComponentInChildren<AudioSource>(true);
+            Assert.That(localBreath.clip, Is.SameAs(Resources.Load<AudioClip>("DuelAudio/Erika/Breath")));
             Assert.That(input.BowInLeftHand, Is.False);
             Assert.That(input.ShotHint(true), Does.Contain("Hold Space"));
             bow.SetHeld(true);
@@ -204,6 +242,8 @@ public class ModeMenuTests
         }
         finally
         {
+            ArcherSelection.Preferred = previousArcher == (int)ArcherModel.Erika ? ArcherModel.Erika : ArcherModel.English;
+            if (previousArcher < 0) PlayerPrefs.DeleteKey("BowMan.Archer");
             if (original < 0) PlayerPrefs.DeleteKey("BowMan.BowLeft");
             else PlayerPrefs.SetInt("BowMan.BowLeft", original);
             PlayerPrefs.Save();
@@ -212,6 +252,34 @@ public class ModeMenuTests
             if (duelScene.IsValid() && duelScene.isLoaded) SceneManager.UnloadSceneAsync(duelScene);
         }
         yield return null;
+    }
+#endif
+
+    // Confirms the range panel on the saved main menu using the same ray as the headset.
+#if UNITY_EDITOR
+    [UnityTest]
+    public IEnumerator TargetPanelOpensTheOnlineCompetition()
+    {
+        const string path = "Assets/_Game/Scenes/MainMenu.unity";
+        yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Additive));
+        var scene = SceneManager.GetSceneByPath(path);
+        try
+        {
+            yield return null;
+            var roots = scene.GetRootGameObjects();
+            var menu = roots.SelectMany(g => g.GetComponentsInChildren<ModeMenu>()).Single();
+            var panel = roots.SelectMany(g => g.GetComponentsInChildren<ModeOption>()).Single(o => o.Mode == GameMode.Target);
+            var pointer = roots.SelectMany(g => g.GetComponentsInChildren<ControllerPointer>()).Single();
+            var camera = roots.SelectMany(g => g.GetComponentsInChildren<Camera>()).Single();
+            string route = null;
+            menu.Loader = name => route = name;
+            Physics.SyncTransforms();
+            pointer.Point(new Ray(camera.transform.position, panel.transform.position - camera.transform.position));
+            pointer.Confirm();
+            Assert.AreEqual(GameScenes.TargetRange, route);
+            Assert.IsTrue(Application.CanStreamedLevelBeLoaded(route));
+        }
+        finally { if (scene.IsValid() && scene.isLoaded) SceneManager.UnloadSceneAsync(scene); }
     }
 #endif
 
@@ -232,7 +300,26 @@ public class ModeMenuTests
         Assert.IsFalse(option.IsHighlighted);
     }
 
-    // Replaces both rig markers with the archer's pointing and resting hands.
+    // Draws the lobby ray to the hovered panel and hides it as soon as the pointer is disabled.
+    [UnityTest]
+    public IEnumerator RuntimeRayEndsOnThePanelAndHidesWithItsPointer()
+    {
+        Panel(GameMode.PvP, 3f);
+        var pointer = Create("Pointer").AddComponent<ControllerPointer>();
+        pointer.AddVisibleRay();
+        var ray = pointer.GetComponent<LineRenderer>();
+        Assert.IsFalse(ray.enabled);
+        yield return null;
+
+        pointer.Point(new Ray(Origin, Vector3.forward), true);
+        Assert.IsTrue(ray.enabled);
+        Assert.That(Vector3.Distance(Origin + Vector3.forward * 2.975f, ray.GetPosition(1)), Is.LessThan(0.001f));
+
+        pointer.enabled = false;
+        Assert.IsFalse(ray.enabled);
+    }
+
+    // Replaces both rig markers with the selected archer's pointing and resting hands.
     [UnityTest]
     public IEnumerator PlayableMenuUsesArcherHandsInsteadOfTrackingMarkers()
     {
@@ -252,23 +339,32 @@ public class ModeMenuTests
         var present = typeof(ControllerPointer).GetMethod("PresentHands",
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
         var aim = new Pose(Origin + Vector3.one, Quaternion.Euler(12f, 24f, 36f));
-        present.Invoke(pointer, new object[] { aim, true, true });
-        var hand = right.Find("Right pointing hand");
-        var mesh = hand.GetComponent<MeshFilter>().sharedMesh;
-        var renderer = hand.GetComponent<MeshRenderer>();
-        Assert.That(mesh, Is.SameAs(Resources.Load<Mesh>("ArcherHands/Point")));
-        Assert.That(mesh.vertexCount, Is.GreaterThan(0));
-        Assert.That(renderer.sharedMaterials.Length, Is.EqualTo(mesh.subMeshCount));
-        Assert.That(renderer.enabled, Is.True);
-        Assert.That(Vector3.Distance(hand.position, aim.position), Is.LessThan(0.001f));
-        Assert.That(Quaternion.Angle(hand.rotation, aim.rotation), Is.LessThan(0.1f));
-        var resting = left.GetComponentInChildren<SkinnedMeshRenderer>();
-        Assert.That(resting.enabled, Is.True);
-        present.Invoke(pointer, new object[] { aim, true, false });
-        Assert.That(renderer.enabled, Is.False);
-        Assert.That(resting.enabled, Is.True);
-        pointer.enabled = false;
-        Assert.That(resting.enabled, Is.False);
+        var previous = ArcherSelection.Preferred;
+        try
+        {
+            foreach (var model in new[] { ArcherModel.English, ArcherModel.Erika })
+            {
+                ArcherSelection.Preferred = model;
+                present.Invoke(pointer, new object[] { aim, true, true });
+                var hand = right.Find("Right pointing hand");
+                var mesh = hand.GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(mesh, Is.SameAs(Resources.Load<Mesh>(ArcherSelection.HandResourceFolder + "Point")));
+                Assert.That(mesh.vertexCount, Is.GreaterThan(0));
+                var renderer = hand.GetComponent<MeshRenderer>();
+                Assert.That(renderer.sharedMaterials.Length, Is.EqualTo(mesh.subMeshCount));
+                Assert.That(renderer.enabled, Is.True);
+                Assert.That(Vector3.Distance(hand.position, aim.position), Is.LessThan(0.001f));
+                Assert.That(Quaternion.Angle(hand.rotation, aim.rotation), Is.LessThan(0.1f));
+                Assert.That(left.GetComponentsInChildren<SkinnedMeshRenderer>().Count(skin => skin.enabled), Is.EqualTo(1));
+                present.Invoke(pointer, new object[] { aim, true, false });
+                Assert.That(renderer.enabled, Is.False);
+                Assert.That(left.GetComponentsInChildren<SkinnedMeshRenderer>().Count(skin => skin.enabled), Is.EqualTo(1));
+            }
+            pointer.enabled = false;
+            Assert.IsFalse(right.Find("Right pointing hand").GetComponent<MeshRenderer>().enabled);
+            Assert.IsFalse(left.GetComponentsInChildren<SkinnedMeshRenderer>().Any(skin => skin.enabled));
+        }
+        finally { ArcherSelection.Preferred = previous; }
         yield return null;
     }
 

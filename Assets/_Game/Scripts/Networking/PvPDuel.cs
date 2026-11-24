@@ -51,10 +51,12 @@ namespace BowMan.Networking
         private void Start()
         {
             rematch = new InputAction("Rematch", InputActionType.Button, "<XRController>{RightHand}/primaryButton");
-            rematch.AddBinding("<Keyboard>/r");
+            if (DesktopBowTest.DesktopAvailable) rematch.AddBinding("<Keyboard>/r");
+            rematch.AddBinding("<WebXRController>{RightHand}/buttonA");
             rematch.Enable();
             switchHand = new InputAction("Switch bow hand", InputActionType.Button, "<XRController>{RightHand}/secondaryButton");
-            switchHand.AddBinding("<Keyboard>/h");
+            if (DesktopBowTest.DesktopAvailable) switchHand.AddBinding("<Keyboard>/h");
+            switchHand.AddBinding("<WebXRController>{RightHand}/buttonB");
             switchHand.Enable();
             cutaway = rig.Head.gameObject.AddComponent<FatalCutaway>();
             bow.SetShotAllowed(false);
@@ -62,8 +64,7 @@ namespace BowMan.Networking
             bow.Fired += Released;
             connection.StatusChanged += ConnectionChanged;
             vrInput.SetBowHand(VRBowInput.PreferredBowLeft);
-            vrInput.ShowArcherHands();
-            desktopMode = DesktopXR.Requested(Environment.GetCommandLineArgs());
+            desktopMode = DesktopBowTest.DesktopAvailable && DesktopXR.CommandLineRequested;
         }
 
         // Starts the first round only for the admitted second player.
@@ -88,7 +89,8 @@ namespace BowMan.Networking
             for (var i = 0; i < actors.Length; i++)
             {
                 var spawn = spawns.For(i == 0 ? ArcherRole.Archer1 : ArcherRole.Archer2);
-                var go = Instantiate(i == 0 ? firstPrefab : secondPrefab, spawn.position, spawn.rotation, match);
+                var model = i == 0 ? connection.FirstArcher : connection.SecondArcher;
+                var go = Instantiate(model == ArcherModel.English ? firstPrefab : secondPrefab, spawn.position, spawn.rotation, match);
                 actors[i] = go.GetComponent<ArcherHealth>() ?? go.AddComponent<ArcherHealth>();
             }
             opponentBow = actors[1 - LocalIndex].gameObject.AddComponent<OpponentBowAction>();
@@ -101,13 +103,14 @@ namespace BowMan.Networking
             for (var i = 0; i < actors.Length; i++)
                 actors[i].GetComponent<ArcherReactionAnimation>().Connect(Flow, i, actors[i]);
             sounds = match.gameObject.AddComponent<DuelAudio>();
-            sounds.Bind(Flow, bow, opponentBow, local, actors[1 - LocalIndex], setting, LocalIndex);
+            sounds.Bind(Flow, bow, opponentBow, local, actors[1 - LocalIndex], setting, LocalIndex, connection.FirstArcher, connection.SecondArcher);
             Flow.Changed += Changed;
             Flow.ReactionRequested += React;
             Flow.FatalityRequested += Fatal;
             var eyes = local.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head).Find("EyeAnchor");
             injuryView.Bind(local.transform, eyes, local);
             bow.gameObject.SetActive(true);
+            vrInput.ShowArcherHands();
             bow.SetOwner(local.transform);
             desktop.PlaceStand(local.transform.TransformPoint(new Vector3(-0.45f, 1.3f, 0.6f)), local.transform.rotation);
             desktop.UseDesktopControls(desktopMode);
@@ -284,7 +287,7 @@ namespace BowMan.Networking
         }
 
         // Presents internal feedback exclusively for the confirmed lethal arrow.
-        private void Fatal(int target, AnatomicalImpact report) => cutaway.Show(report);
+        private void Fatal(int target, AnatomicalImpact report) => cutaway.Show(report, arrowPrefab);
 
         // Publishes authoritative transitions and updates the local bow whenever the turn changes.
         private void Changed()
@@ -332,7 +335,7 @@ namespace BowMan.Networking
             if (Flow == null) return;
             if (rematch.WasPressedThisFrame()) RequestRematch();
             var keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.tabKey.wasPressedThisFrame)
+            if (DesktopBowTest.DesktopAvailable && keyboard != null && keyboard.tabKey.wasPressedThisFrame)
             {
                 desktopMode = !desktopMode;
                 desktop.UseDesktopControls(desktopMode);
@@ -359,10 +362,9 @@ namespace BowMan.Networking
                 if (i != LocalIndex) ShowDraw(presence.Draw, i, actor.transform.position);
             }
             var status = Flow.StatusFor(LocalIndex);
-            feedback.text = $"{status}    You {actors[LocalIndex].CurrentHealth}  |  Opponent {actors[1 - LocalIndex].CurrentHealth}    {sounds.VolumeHint}\n" +
+            feedback.text = $"<color=#ECC67D>{status}</color>\nYou {actors[LocalIndex].CurrentHealth}     ·     Opponent {actors[1 - LocalIndex].CurrentHealth}     ·     {sounds.VolumeHint}\n" +
                 (Flow.Phase == DuelPhase.Finished ? (RematchRequested ? "Waiting for opponent" :
-                    votes != 0 ? "Opponent wants a rematch — A / R: accept" : "A / R: rematch") +
-                    (cutaway.IsVisible ? "\n" + cutaway.Caption : "") : Flow.CanShoot(LocalIndex) ? vrInput.ShotHint(desktopMode) :
+                    votes != 0 ? "Opponent wants a rematch — A: accept" : "A: rematch") : Flow.CanShoot(LocalIndex) ? vrInput.ShotHint(desktopMode) :
                     "Your bow unlocks on your turn");
         }
 

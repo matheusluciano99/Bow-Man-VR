@@ -15,7 +15,7 @@ namespace BowMan
         [SerializeField, Min(0.001f)] private float minimumDrawDistance = 0.03f;
         [SerializeField, Min(0.01f)] private float maximumLaunchSpeed = 25f;
         [SerializeField, Min(0.01f)] private float stringGrabRadius = 0.12f;
-        [SerializeField, Min(0.01f)] private float arrowLength = 0.70f;
+        [SerializeField, Min(0.01f)] private float arrowLength = 0.96f;
 
         private ArrowFlight nockedArrow;
         private Vector3 handPosition;
@@ -28,8 +28,10 @@ namespace BowMan
         public float MaximumDrawDistance => maximumDrawDistance;
         public float MaximumLaunchSpeed => maximumLaunchSpeed;
         public Vector3 RestPosition => stringRest.position;
+        public Vector3 FullDrawTip => RestPosition + transform.forward * (arrowLength - maximumDrawDistance);
+        // Measures backward pull before clamping the rendered string travel.
         public float DrawDistance => IsDrawing
-            ? Mathf.Clamp(Vector3.Dot(stringRest.position - DrawPosition, transform.forward), 0f, maximumDrawDistance)
+            ? Mathf.Clamp(Vector3.Dot(stringRest.position - handPosition, transform.forward), 0f, maximumDrawDistance)
             : 0f;
         public float DrawStrength => DrawDistance / maximumDrawDistance;
 
@@ -37,6 +39,12 @@ namespace BowMan
             Vector3.ClampMagnitude(handPosition - stringRest.position, maximumDrawDistance);
 
         public event Action<ArrowFlight> Fired;
+
+        // Sets this bow instance's full-draw speed for its game mode.
+        public void SetMaximumLaunchSpeed(float speed)
+        {
+            if (IsPositiveFinite(speed)) maximumLaunchSpeed = speed;
+        }
 
         // Assigns the living local actor whose colliders this bow's arrows ignore.
         public void SetOwner(Transform owner) => firingArcher = owner;
@@ -82,13 +90,16 @@ namespace BowMan
             if (!IsHeld) CancelDraw();
         }
 
+        // Checks the same resting-string reach for the grab and its HUD prompt.
+        internal bool StringWithinReach(Vector3 position) => stringRest != null &&
+            IsFinite(position) && Vector3.Distance(position, stringRest.position) <= stringGrabRadius;
+
         // Nocks an arrow only when the held bow's resting string is within reach.
         public bool TryBeginDraw(Vector3 position)
         {
-            if (!ShotAllowed || !IsHeld || IsDrawing || arrowPrefab == null || stringRest == null ||
-                !IsFinite(position) || !IsFinite(stringRest.position) ||
+            if (!ShotAllowed || !IsHeld || IsDrawing || arrowPrefab == null ||
                 !IsPositiveFinite(maximumDrawDistance) || !IsPositiveFinite(maximumLaunchSpeed) ||
-                Vector3.Distance(position, stringRest.position) > stringGrabRadius)
+                !StringWithinReach(position))
                 return false;
 
             handPosition = position;
