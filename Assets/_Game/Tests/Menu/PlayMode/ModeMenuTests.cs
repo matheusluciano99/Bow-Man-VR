@@ -133,6 +133,12 @@ public class ModeMenuTests
             yield return null;
             var input = lobby.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<VRBowInput>(true)).Single();
             Assert.That(input.BowInLeftHand, Is.False);
+            var rig = lobby.GetRootGameObjects().Single(root => root.transform.Find("Camera Offset") != null);
+            var left = rig.transform.Find("Camera Offset/Left Controller");
+            var right = rig.transform.Find("Camera Offset/Right Controller");
+            Assert.That(left.Find("Controller Marker").gameObject.activeSelf, Is.False);
+            Assert.That(right.Find("Controller Marker").gameObject.activeSelf, Is.False);
+            Assert.That(right.GetComponent<ControllerPointer>(), Is.Not.Null);
         }
         finally
         {
@@ -344,9 +350,14 @@ public class ModeMenuTests
                 var mesh = hand.GetComponent<MeshFilter>().sharedMesh;
                 Assert.That(mesh, Is.SameAs(Resources.Load<Mesh>(ArcherSelection.HandResourceFolder + "Point")));
                 Assert.That(mesh.vertexCount, Is.GreaterThan(0));
-                Assert.That(hand.GetComponent<MeshRenderer>().enabled, Is.True);
+                var renderer = hand.GetComponent<MeshRenderer>();
+                Assert.That(renderer.sharedMaterials.Length, Is.EqualTo(mesh.subMeshCount));
+                Assert.That(renderer.enabled, Is.True);
                 Assert.That(Vector3.Distance(hand.position, aim.position), Is.LessThan(0.001f));
                 Assert.That(Quaternion.Angle(hand.rotation, aim.rotation), Is.LessThan(0.1f));
+                Assert.That(left.GetComponentsInChildren<SkinnedMeshRenderer>().Count(skin => skin.enabled), Is.EqualTo(1));
+                present.Invoke(pointer, new object[] { aim, true, false });
+                Assert.That(renderer.enabled, Is.False);
                 Assert.That(left.GetComponentsInChildren<SkinnedMeshRenderer>().Count(skin => skin.enabled), Is.EqualTo(1));
             }
             pointer.enabled = false;

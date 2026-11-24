@@ -215,7 +215,7 @@ A regra de pontuação está na seção 4.8.
   12 cm da corda em repouso. Uma vibração leve confirma.
 - **Força:** proporcional à distância puxada **para trás**. Puxadas abaixo de
   3 cm, ou só para frente ou para o lado, não disparam. A força máxima chega a
-  36 cm; puxar além disso não aumenta a força.
+  70 cm; puxar além disso não aumenta a força.
 - **Mira:** orientação do arco e linha entre a corda puxada e o ponto de encaixe
   da flecha.
 - **Disparo:** soltar o gatilho. A força total lança a flecha a 25 m/s no duelo.
@@ -230,7 +230,7 @@ A regra de pontuação está na seção 4.8.
 | Parâmetro | Valor | Situação |
 | --- | --- | --- |
 | Puxada mínima para disparar | 3 cm | Protótipo |
-| Puxada para força total | 36 cm | Provisório, ajustado no Quest 2 |
+| Puxada para força total | 70 cm | Provisório para revisão no Quest Pro |
 | Raio para pegar a corda | 12 cm | Protótipo |
 | Velocidade com força total (duelo) | 25 m/s | Protótipo |
 | Velocidade com força total (Tiro ao alvo) | 32 m/s | Definido para alcançar 70 m |
@@ -280,9 +280,8 @@ real, nos dois personagens.
 | Perna (E/D) | Ajoelha sobre a perna ferida e apoia a mão do mesmo lado no chão. | 3 s e levanta. |
 | Pé (E/D) | Levanta o pé ferido e se equilibra na outra perna. | 2 s, apoia o pé e volta à postura. |
 
-- **Nota do peito:** no `main`, a pausa no chão é de 0,75 s e o levantar leva
-  3,6 s. O PR #165 propõe 0,2 s de pausa e 2,6 s para levantar, para o arqueiro
-  não ficar parado no chão por tanto tempo.
+- **Nota do peito:** depois da queda, o arqueiro fica 0,2 s no chão e leva
+  2,6 s para se levantar.
 - **Acerto fatal fora da cabeça e do pescoço:** a reação da região começa e
   termina numa queda completa, sem recuperação. Morrer durante uma recuperação
   interrompe o levantar e termina a queda a partir da pose atual.
@@ -521,14 +520,15 @@ A arquitetura de pastas e as instruções de cada cena estão em
 
 ## 13. Estado do desenvolvimento
 
-Situação em **24/11/2026**. A maior parte dos PRs abertos está empilhada (cada
-um parte do anterior), por isso eles entram no `main` em ordem.
+Situação em **24/11/2026**, após a integração dos PRs da versão de teste.
+A marca de integração indica que o recurso está no código. As checagens no
+headset e em redes diferentes seguem o [plano de laboratório](LabTestPlan.md).
 
 | Legenda | Significado |
 | --- | --- |
 | ✅ | Integrado ao `main` |
 | 🔄 | Implementado, com pull request aberto em revisão |
-| 🥽 | Ainda falta a validação física no Quest 2 |
+| 🥽 | Ainda falta validação física no headset |
 
 | Recurso | Estado | Referência |
 | --- | --- | --- |
@@ -546,21 +546,22 @@ um parte do anterior), por isso eles entram no `main` em ordem.
 | Três arenas, flecha medieval, mãos rastreadas, espera, arco do oponente | ✅ 🥽 | #115–#120 |
 | Áudio espacial e volume | ✅ 🥽 | #121 |
 | Primeira partida guiada e créditos | ✅ 🥽 | #122, #123 |
-| Tiro ao alvo online e entrega WebXR no itch.io | 🔄 | PR #135 |
-| Escolha de arqueiro (mãos, voz, animação) | 🔄 | PR #137 |
-| Distâncias do Tiro ao alvo (15–70 m) | 🔄 | PR #139 |
-| Tiro ao alvo contra a CPU | 🔄 | PR #141 |
-| Raio do controle no lobby online | 🔄 | PR #143 |
-| Headset obrigatório nas cenas jogáveis | 🔄 | PR #147 |
-| Polimento de menus, HUD e mãos do English Archer | 🔄 | PR #149 |
-| Retomar o arco depois do standby dos controles | 🔄 | PR #152 |
-| Replay cinematográfico do tiro fatal | 🔄 | PR #153 |
-| Força total a 36 cm e puxada estável em falhas de rastreamento | 🔄 | PR #155 |
-| Sinal de força total no HUD e no controle | 🔄 | PR #157 |
-| Pegar a corda com o gatilho já pressionado | 🔄 | PR #159 |
-| Transição suave para as reações de ferimento | 🔄 | PR #161 |
-| Reações de ombro e braço refinadas | 🔄 | PR #163 |
-| Recuperação mais curta do acerto no peito | 🔄 | PR #165 |
+| Tiro ao alvo online e entrega WebXR no itch.io | ✅ 🥽 | PR #135 |
+| Escolha de arqueiro (mãos, voz, animação) | ✅ 🥽 | PR #137 |
+| Distâncias do Tiro ao alvo (15–70 m) | ✅ 🥽 | PR #139 |
+| Tiro ao alvo contra a CPU | ✅ 🥽 | PR #141 |
+| Raio do controle no lobby online | ✅ 🥽 | PR #143 |
+| Headset obrigatório nas cenas jogáveis | ✅ 🥽 | PR #147 |
+| Polimento de menus, HUD e mãos do English Archer | ✅ 🥽 | PR #149 |
+| Retomar o arco depois do standby dos controles | ✅ 🥽 | PR #152 |
+| Replay cinematográfico do tiro fatal | ✅ 🥽 | PR #153 |
+| Força total a 70 cm e puxada estável em falhas de rastreamento | ✅ 🥽 | PR #155 |
+| Sinal de força total no HUD e no controle | ✅ 🥽 | PR #157 |
+| Pegar a corda com o gatilho já pressionado | ✅ 🥽 | PR #159 |
+| Transição suave para as reações de ferimento | ✅ 🥽 | PR #161 |
+| Reações de ombro e braço refinadas | ✅ 🥽 | PR #163 |
+| Recuperação mais curta do acerto no peito | ✅ 🥽 | PR #165 |
+| Mãos do arqueiro e mira pelo indicador nos menus e lobbies | ✅ 🥽 | #168, PR #169 |
 | Conforto do arco e ajuste do tiro no headset | 🥽 | #15 |
 | Teste dos modos em dois PCs e build compartilhado | 🥽 | #16, PR #132 |
 | Ferimentos e visão em primeira pessoa no headset | 🥽 | #35 |
@@ -580,13 +581,14 @@ ser e por quê. O motivo detalhado de cada escolha está em
 | 17–20/11 | O arco era equipado e mantido segurando o grip. | O arco fica preso à mão escolhida, sem segurar o grip, e alinhado ao controle. | A revisão no headset mostrou que era preciso segurar o grip o tempo todo e que o arco aparecia girado 90° em relação ao controle. | D008, #85 |
 | 14/11 | 8 regiões: cabeça, peito, abdômen, costas, braços e pernas. | 15 regiões frontais: entram pescoço, ombros, mãos, pelve e pés; saem as costas. | Os arqueiros sempre se enfrentam; separar extremidades evita que um tiro no pé use a animação da perna. | D009, #17, #29 |
 | 15–20/11 | Reações animadas no projeto, quadro a quadro. | Captura de movimento gratuita (Mixamo, Eyes Japan, Rokoko, MotionSmith) ajustada aos dois personagens. | A revisão no Quest 2 achou os movimentos rígidos e com membros atravessando o corpo. | D015, #86 |
-| 17–20/11 | Pausa de ferimento de 3 s em todas as regiões. | Peito com 0,75 s e pés com 2 s; o PR #165 propõe 0,2 s para o peito. | Os tempos foram aprovados nas revisões (0,75 s no peito em teste; pés no Quest 2). O PR #165 encurta a recuperação do peito. | D009, #86, #164 |
+| 17–20/11 | Pausa de ferimento de 3 s em todas as regiões. | Pés com 2 s de pausa e peito com 0,2 s após a queda. | A revisão do peito aprovou a recuperação mais rápida após preservar o impacto inicial. | D009, #86, #164 |
 | 20/11 | Protótipo: marcadores de controle, flecha de teste e arena neutra. | Três arenas medievais, flecha medieval, mãos do arqueiro, respiração entre tiros, arco animado do oponente, áudio, primeira partida guiada e créditos. | Dar ao duelo a apresentação medieval planejada, sobre a física e os controles já testados. | #115–#123 |
 | 22/11 | Entrega como executável Windows para PC VR. | Jogo HTML WebXR no itch.io; o executável Windows vira artefato de laboratório. | Exigência da disciplina: o jogo é entregue no itch.io. A versão HTML abre direto no navegador, sem instalação. | D005, PR #135 |
 | 22–23/11 | Dois modos: PvE e PvP. | Novo modo **Tiro ao alvo**. Um protótipo local para dois no mesmo PC foi arquivado; ficou a versão online em PCs separados, depois as distâncias de 15 a 70 m e o modo contra a CPU. | A equipe achou que seria divertido ter uma competição de precisão sem combate. Ela reaproveita o arco e a conexão online, e a CPU permite jogar sem outra pessoa. | PRs #134, #135, #139, #141 |
 | 22/11 | O jogador era sempre o English Archer e o oponente a Erika. | Cada jogador escolhe o arqueiro, com mãos, voz e animações próprias. | Cada jogador escolhe a própria identidade; regras e tempos iguais mantêm as duas escolhas equivalentes. | D025, PR #137 |
 | 23/11 | Teclado e mouse funcionavam como alternativa nas cenas jogáveis. | Headset e controles rastreados são obrigatórios; a simulação fica nas cenas de diagnóstico. | Puxar, mirar e soltar fisicamente fazem parte de todos os modos. | D005, PR #147 |
 | 23/11 | Força total a 70 cm. | 50 cm, depois 42,5 cm e, por fim, 36 cm. | No Quest 2, 42,5 cm ainda chegava ao limite do rastreamento; 36 cm deixa folga. | D008, PR #155 |
+| 24/11 | Força total a 36 cm no Quest 2. | Puxada original de 70 cm para a revisão no Quest Pro. | O jogador relatou rastreamento estável no Quest Pro. | D008 |
 | 23/11 | Para pegar a corda, encostar a mão e só depois apertar o gatilho. | O gatilho já pressionado pega a corda ao encostar, com vibração; **FULL DRAW** e pulso na força total. | Facilitar ver e segurar a corda, e confirmar a força sem tirar os olhos do alvo. | D008, PRs #157, #159 |
 | 23/11 | Corte de raio-X estéreo de 3 s no tiro fatal. | Replay cinematográfico de 3,65 s: aproximação da flecha, contato interno e retorno ao duelo. | Mostrar a chegada da flecha e o dano interno como uma finalização, mantendo o rastreamento da cabeça do jogador. | D016, #150, PR #153 |
 | 24/11 | Sem GDD. | Este GDD, mantido junto com o código. | Explicar o jogo para quem avalia e registrar as mudanças de direção. | D026 |
@@ -598,7 +600,7 @@ ser e por quê. O motivo detalhado de cada escolha está em
 - **Balanceamento:** dano por acerto (25), vida (100) e se órgãos ou fraturas
   devem afetar a vida, a recuperação ou o tiro.
 - **Hitboxes:** dimensões finais de cada região em cada modelo.
-- **Distâncias e velocidades:** 20 m entre os duelistas, 36 cm de puxada
+- **Distâncias e velocidades:** 20 m entre os duelistas, 70 cm de puxada
   máxima, 25 m/s no duelo e o limite de 75% para fratura.
 - **Dificuldade:** erro de mira e tempo de espera da IA e da CPU.
 - **Replay fatal:** duração, distância de leitura e conforto no headset.

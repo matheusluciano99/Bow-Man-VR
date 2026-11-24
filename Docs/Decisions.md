@@ -84,6 +84,8 @@ automated/editor validation from physical tracking, reach and comfort checks.
 The accepted tracking criterion is one successful Quest 2 test in both Editor
 and Windows player; a second developer's duplicate test is not required.
 
+The course requires publishing the game on itch.io.
+
 ## D006 — Small assigned tasks and explicit merge authorization
 
 Use a dedicated branch from current origin/main, an assigned issue and a PR into
@@ -418,7 +420,8 @@ Use recorded spatial cues for the two archers and their equipment. Start the str
 
 ## Target competition
 
-A player can compete locally against the other archer model without signing in or finding another player. The player shoots first. The CPU plays its recorded draw and releases one simulated arrow at the same target. Score the actual impact with the shared ring rules. In solo play the player can accept a rematch immediately.
+Add a precision competition alongside the duels so players can compete at a
+target without combat. A player can compete locally against the other archer model without signing in or finding another player. The player shoots first. The CPU plays its recorded draw and releases one simulated arrow at the same target. Score the actual impact with the shared ring rules. In solo play the player can accept a rematch immediately.
 
 For online competition, two players connect on separate PCs using the existing Relay host and join-code flow.
 Alternate shots so both archers see each outcome and shoot at the same distance.
