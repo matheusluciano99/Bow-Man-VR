@@ -695,13 +695,14 @@ public class InjuryAnimationTests
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
         var player = target.GetComponent<ArcherReactionAnimation>();
         player.SetSequence(BodyRegion.Chest, player.Entry(BodyRegion.Chest), null);
+        var landed = false;
+        flow.Changed += () => landed |= flow.Phase == DuelPhase.Holding;
         yield return new WaitForSeconds(0.4f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Reacting));
         Assert.That(flow.CanShoot(1), Is.False);
         yield return new WaitForSeconds(2.5f);
-        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
+        Assert.That(landed, Is.True);
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
-        yield return new WaitForSeconds(0.95f);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         Assert.That(flow.CanShoot(1), Is.False);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
@@ -803,17 +804,25 @@ public class InjuryAnimationTests
     public IEnumerator ChestRecoveryFinishesBeforeGrantingTheNextTurn()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
-        yield return new WaitForSeconds(3f);
-        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
-        yield return new WaitForSeconds(0.15f);
-        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Holding));
-        yield return new WaitForSeconds(0.7f);
-        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
-        Assert.That(flow.CanShoot(1), Is.False);
-        yield return new WaitForSeconds(3f);
-        Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
-        Assert.That(flow.CanShoot(1), Is.False);
-        yield return new WaitForSeconds(0.55f);
+        var deadline = Time.time + 8f;
+        var hit = -1f;
+        var landed = -1f;
+        var rising = -1f;
+        var ready = -1f;
+        var locked = true;
+        flow.Changed += () =>
+        {
+            if (flow.Phase == DuelPhase.Reacting) hit = Time.time;
+            if (flow.Phase == DuelPhase.Holding) landed = Time.time;
+            if (flow.Phase == DuelPhase.Recovering) rising = Time.time;
+            if (flow.Phase == DuelPhase.Aiming) ready = Time.time;
+            else locked &= !flow.CanShoot(0) && !flow.CanShoot(1);
+        };
+        yield return new WaitUntil(() => ready >= 0f || Time.time >= deadline);
+        Assert.That(landed - hit, Is.EqualTo(2.35f).Within(0.08f));
+        Assert.That(rising - landed, Is.EqualTo(0.2f).Within(0.08f));
+        Assert.That(ready - rising, Is.EqualTo(2.6f).Within(0.08f));
+        Assert.That(locked, Is.True);
         Assert.That(flow.CanShoot(1), Is.True);
         Assert.That(target.CurrentHealth, Is.EqualTo(75));
         Assert.That(arrow.transform.parent.GetComponent<BodyHitRegion>().Region, Is.EqualTo(BodyRegion.Chest));
@@ -824,7 +833,8 @@ public class InjuryAnimationTests
     public IEnumerator DeathDuringChestRecoveryStopsTheGetUp()
     {
         var flow = BodyShot(out var target, out var arrow, BodyRegion.Chest);
-        yield return new WaitForSeconds(3.85f);
+        var deadline = Time.time + 4f;
+        yield return new WaitUntil(() => flow.Phase == DuelPhase.Recovering || Time.time >= deadline);
         Assert.That(flow.Phase, Is.EqualTo(DuelPhase.Recovering));
         target.TakeDamage(100);
         var head = target.GetComponentInChildren<Animator>().GetBoneTransform(HumanBodyBones.Head);
@@ -1691,7 +1701,7 @@ public class InjuryAnimationTests
                 Assert.That(landed, Is.GreaterThan(0f));
                 var holdDuration = region switch
                 {
-                    BodyRegion.Chest => 0.75f,
+                    BodyRegion.Chest => 0.2f,
                     BodyRegion.LeftFoot or BodyRegion.RightFoot => 2f,
                     _ => 3f
                 };

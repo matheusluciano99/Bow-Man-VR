@@ -7,7 +7,9 @@ namespace BowMan
     public sealed class ArcherReactionAnimation : MonoBehaviour
     {
         private const float FootRecoveryDuration = 0.8f;
-        private const float ChestRecoveryDuration = 3.6f;
+        private const float ChestFallBeforeSettle = 1.8f;
+        private const float ChestSettleReduction = 0.35f / 0.9f;
+        private const float ChestRecoveryDuration = 2.6f;
         private const float PelvisEntryBlendDuration = 0.12f;
 
         [SerializeField] private AnimationClip standingIdle;
@@ -205,14 +207,20 @@ namespace BowMan
                 BodyRegion.LeftFoot or BodyRegion.RightFoot => playing.length / FootRecoveryDuration,
                 _ => 1f
             } : 1f;
-            elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
+            var settleTrim = region == BodyRegion.Chest && !recovering && !fatalPlayback
+                ? Mathf.Max(0f, playing.length - ChestFallBeforeSettle) * ChestSettleReduction
+                : 0f;
+            var duration = playing.length - settleTrim;
+            elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, duration);
             if (measureEntryOffset)
             {
                 playing.SampleAnimation(gameObject, 0f);
                 entryPelvisOffset -= pelvis.localPosition;
                 measureEntryOffset = false;
             }
-            playing.SampleAnimation(gameObject, elapsed);
+            var settleProgress = Mathf.InverseLerp(ChestFallBeforeSettle, duration, elapsed);
+            var sampleTime = elapsed + Mathf.SmoothStep(0f, settleTrim, settleProgress);
+            playing.SampleAnimation(gameObject, sampleTime);
             if (!recovering && !finishingDeath && elapsed < PelvisEntryBlendDuration && entryPelvisOffset.sqrMagnitude > 0.000001f)
             {
                 var weight = Mathf.SmoothStep(1f, 0f, elapsed / PelvisEntryBlendDuration);
@@ -246,7 +254,7 @@ namespace BowMan
                 for (var i = 0; i < idleArms.Length; i++)
                     idleArms[i].localRotation = Quaternion.Slerp(idleArms[i].localRotation, restingArms[i], weight);
             }
-            if (elapsed < playing.length) return;
+            if (elapsed < duration) return;
             playing = null;
             if (fatalPlayback)
             {

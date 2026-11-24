@@ -151,8 +151,10 @@ the facing-archer bow duel; sword combat remains a conditional future idea.
 
 The full motions and implementation cards are in the
 [injury reaction table](InjuryReactions.md). Head and neck hits always kill.
-After landing, the chest holds for 0.75 seconds. Foot hits hold for two
-seconds and other regions for three. The injured archer receives the next
+The surviving chest fall preserves the first 1.8 seconds of the impact and
+shortens the landing settle by 0.35 seconds. A 0.2-second ground pause and a
+2.6-second get-up keep the archer moving once the impact has played. Foot hits
+hold for two seconds and other regions for three. The injured archer receives the next
 turn after recovery. This keeps turn ownership
 consistent with the visible recovery. Death ends the match immediately; misses
 resolve at scenery impact or flight expiry, with one outcome per shot.
@@ -409,8 +411,6 @@ zero. Cancelling a draw preserves the arrow. Both players see the same scores
 and winner or tie. Both must accept a rematch. The host chooses 15, 30, 50, 60 or 70 metres before connecting. The first two options give new players shorter courses before the three long-distance challenges. Both seats and their rematch keep the host’s selection. Target mode uses one full-draw speed (32 game metres per second) across every distance so the longest course remains reachable. Headset readability still needs a lab check.
 
 ## Open questions and provisional values
-
-- The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.
 
 - Additional archer variants and later visual refinements remain open. The current
   prototype uses English Archer and Erika; local full-body rendering is outside
