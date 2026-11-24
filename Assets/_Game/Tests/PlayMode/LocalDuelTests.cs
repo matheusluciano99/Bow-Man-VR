@@ -245,6 +245,7 @@ public class LocalDuelTests
         var ai = duel.Opponent.GetComponent<AIArcher>();
         var action = ai.GetComponent<OpponentBowAction>();
         var rig = ai.GetComponentInChildren<Animator>();
+        var fullDrawDistance = Find<Bow>().MaximumDrawDistance;
         var settings = new UnityEditor.SerializedObject(ai);
         settings.FindProperty("thinkDelay").floatValue = 2f;
         settings.ApplyModifiedPropertiesWithoutUndo();
@@ -253,7 +254,9 @@ public class LocalDuelTests
         var sawInjury = false;
         var samples = 0;
         var largestGap = 0f;
-        var firstString = Vector3.zero;
+        var firstStringDepth = 0f;
+        var firstStrength = 0f;
+        var observedDraw = 0f;
         var travel = 0f;
         while (ai.ShotsFired == 0 && Time.time < end)
         {
@@ -264,13 +267,21 @@ public class LocalDuelTests
             var pinch = (rig.GetBoneTransform(HumanBodyBones.RightIndexDistal).position +
                 rig.GetBoneTransform(HumanBodyBones.RightThumbDistal).position) * 0.5f;
             largestGap = Mathf.Max(largestGap, Vector3.Distance(pinch, action.StringPoint));
-            var relativeString = equipment.InverseTransformPoint(action.StringPoint);
-            if (samples++ == 0) firstString = relativeString;
-            travel = Mathf.Max(travel, Vector3.Distance(firstString, relativeString));
+            var stringDepth = equipment.InverseTransformPoint(action.StringPoint).z;
+            if (samples++ == 0)
+            {
+                firstStringDepth = stringDepth;
+                firstStrength = action.DrawStrength;
+            }
+            var drawProgress = action.DrawStrength - firstStrength;
+            if (drawProgress <= observedDraw) continue;
+            observedDraw = drawProgress;
+            travel = firstStringDepth - stringDepth;
         }
         Assert.That(sawInjury, Is.True);
         Assert.That(samples, Is.GreaterThan(1));
-        Assert.That(travel, Is.GreaterThan(0.3f));
+        Assert.That(observedDraw, Is.GreaterThan(0.65f), "Observed frames span the AI's draw");
+        Assert.That(travel, Is.GreaterThan(fullDrawDistance * observedDraw * 0.75f), "The string moves backwards with the draw");
         Assert.That(largestGap, Is.LessThan(0.045f), "Drawing fingers to moving string");
         Assert.That(ai.ShotsFired, Is.EqualTo(1));
         Assert.That(action.IsNocked, Is.False);
