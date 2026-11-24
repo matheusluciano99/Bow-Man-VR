@@ -139,8 +139,10 @@ the facing-archer bow duel; sword combat remains a conditional future idea.
 
 The full motions and implementation cards are in the
 [injury reaction table](InjuryReactions.md). Head and neck hits always kill.
-After landing, the chest holds for 0.75 seconds. Foot hits hold for two
-seconds and other regions for three. The injured archer receives the next
+The surviving chest fall preserves the first 1.8 seconds of the impact and
+shortens the landing settle by 0.35 seconds. A 0.2-second ground pause and a
+2.6-second get-up keep the archer moving once the impact has played. Foot hits
+hold for two seconds and other regions for three. The injured archer receives the next
 turn after recovery. This keeps turn ownership
 consistent with the visible recovery. Death ends the match immediately; misses
 resolve at scenery impact or flight expiry, with one outcome per shot.
@@ -370,8 +372,6 @@ Sample the visible opponent’s recorded bow action from the AI turn clock in Pv
 Use recorded spatial cues for the two archers and their equipment. Start the string creak above 60% of maximum draw. Increase pitch and volume toward full draw, with a softer sustained sound while the player holds tension. Falling back to 60% or below, cancelling or releasing stops the stretch cue. Launch and impact sounds follow the shot the duel accepts. The observing client uses the host’s surface and contact to preserve the sound of each shot across both seats. Each round plays its selected arena’s field recording. The local volume control persists across rematches. Sound levels and falloff remain provisional until Quest 2 listening tests.
 
 ## Open questions and provisional values
-
-- The 0.75-second chest hold and 3.6-second get-up remain provisional for visual review.
 
 - Additional archer variants and later visual refinements remain open. The current
   prototype uses English Archer and Erika; local full-body rendering is outside

@@ -7,7 +7,9 @@ namespace BowMan
     public sealed class ArcherReactionAnimation : MonoBehaviour
     {
         private const float FootRecoveryDuration = 0.8f;
-        private const float ChestRecoveryDuration = 3.6f;
+        private const float ChestFallBeforeSettle = 1.8f;
+        private const float ChestSettleReduction = 0.35f / 0.9f;
+        private const float ChestRecoveryDuration = 2.6f;
 
         [SerializeField] private AnimationClip standingIdle;
         [SerializeField] private AnimationClip bowInLeftHand;
@@ -192,8 +194,14 @@ namespace BowMan
                 BodyRegion.LeftFoot or BodyRegion.RightFoot => playing.length / FootRecoveryDuration,
                 _ => 1f
             } : 1f;
-            elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, playing.length);
-            playing.SampleAnimation(gameObject, elapsed);
+            var settleTrim = region == BodyRegion.Chest && !recovering && !fatalPlayback
+                ? Mathf.Max(0f, playing.length - ChestFallBeforeSettle) * ChestSettleReduction
+                : 0f;
+            var duration = playing.length - settleTrim;
+            elapsed = Mathf.Min(elapsed + Time.deltaTime * recoverySpeed, duration);
+            var settleProgress = Mathf.InverseLerp(ChestFallBeforeSettle, duration, elapsed);
+            var sampleTime = elapsed + Mathf.SmoothStep(0f, settleTrim, settleProgress);
+            playing.SampleAnimation(gameObject, sampleTime);
             if (finishingDeath && elapsed < 0.15f)
             {
                 var blend = Mathf.SmoothStep(0f, 1f, elapsed / 0.15f);
@@ -222,7 +230,7 @@ namespace BowMan
                 for (var i = 0; i < idleArms.Length; i++)
                     idleArms[i].localRotation = Quaternion.Slerp(idleArms[i].localRotation, restingArms[i], weight);
             }
-            if (elapsed < playing.length) return;
+            if (elapsed < duration) return;
             playing = null;
             if (fatalPlayback)
             {

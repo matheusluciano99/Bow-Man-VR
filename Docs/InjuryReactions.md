@@ -18,7 +18,7 @@ wounds, organ/bone damage and blood throughout the sequence.
 | --- | --- | --- | --- |
 | Head | Instant kill; immediate collapse with loss of posture. | None; remain dead. | [#21](https://github.com/matheusluciano99/Bow-Man-VR/issues/21) |
 | Neck | Instant kill; reach toward the actual neck wound, knees buckle, then collapse. | None; remain dead. | [#51](https://github.com/matheusluciano99/Bow-Man-VR/issues/51) |
-| Chest | Fall backward and land with the back on the ground. | Hold back-down pose for 0.75 s, then return to relaxed standing if alive. | [#22](https://github.com/matheusluciano99/Bow-Man-VR/issues/22), [#23](https://github.com/matheusluciano99/Bow-Man-VR/issues/23) |
+| Chest | Fall backward and land with the back on the ground. | Hold for 0.2 s, then return to relaxed standing over 2.6 s if alive. | [#22](https://github.com/matheusluciano99/Bow-Man-VR/issues/22), [#23](https://github.com/matheusluciano99/Bow-Man-VR/issues/23) |
 | Left shoulder | Recoil on the left, turn the torso away, cup the left shoulder with the right hand while standing. | Hold for 3 s, then release the supported pose if alive. | [#52](https://github.com/matheusluciano99/Bow-Man-VR/issues/52) |
 | Right shoulder | Recoil on the right, turn the torso away, cup the right shoulder with the left hand while standing. | Hold for 3 s, then release the supported pose if alive. | [#53](https://github.com/matheusluciano99/Bow-Man-VR/issues/53) |
 | Left arm | Recoil on the left, bend the injured arm and cradle it with the right hand while standing. | Hold for 3 s, then recover from the supported-arm pose if alive. | [#26](https://github.com/matheusluciano99/Bow-Man-VR/issues/26) |
@@ -61,8 +61,10 @@ sword combat is not an agreed game mode.
 
 ## Recovery, lethality and turn flow
 
-For a surviving hit, the timer starts at the injured pose. The chest holds
-for 0.75 seconds and most other regions hold for three seconds. A foot reaction has a 1.1-second recoil, two seconds of balance
+For a surviving hit, the timer starts at the injured pose. The chest fall
+preserves its first 1.8 seconds and settles 0.35 seconds sooner, followed by a
+0.2-second pause and a 2.6-second get-up. Most other regions hold for three
+seconds. A foot reaction has a 1.1-second recoil, two seconds of balance
 and a 0.8-second return to stance. Both foot motions passed Quest 2 review.
 
 1. A releases one arrow on their turn. Lock further shooting while that shot resolves.

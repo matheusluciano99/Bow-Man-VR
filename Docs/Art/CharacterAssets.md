@@ -163,8 +163,9 @@ The source is retargeted using the original Erika T-pose in metres; the prepared
 
 Chest recovery uses Mixamo **Getting Up**, the first catalog variant described as “Getting Up From Back”, downloaded on Erika Archer with the same export settings. Unchanged source: `Assets/ThirdParty/MixamoAnimations/Motions/Getting Up.fbx` (999,888 bytes; SHA-256 `2413541e9b26256399ab8793f33630d783462b04d205e4a29ebf73e4bd43a21a`). The same Mixamo game-use terms apply.
 
-The fall lasts 2.7 seconds. A surviving archer stays down for 0.75 seconds,
-then gets up with arms lowering to relaxed standing over 3.6 seconds. The
+The source fall lasts 2.7 seconds. Surviving playback preserves the first 1.8
+seconds and shortens the settle by 0.35 seconds. The archer stays down for 0.2
+seconds, then gets up with arms lowering to relaxed standing over 2.6 seconds. The
 get-up bake guides the supporting limbs around the pelvis and head while
 keeping the original rig lengths and grounding the posed skin. A fatal
 chest hit ends the match at impact and plays its grounded collapse without
