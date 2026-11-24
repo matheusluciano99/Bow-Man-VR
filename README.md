@@ -32,6 +32,7 @@ On the game page, select **Play**, then **Enter VR** when the headset is availab
 | `Assets/TutorialInfo/` | Unity template help content. |
 | `Packages/`, `ProjectSettings/` | Shared dependencies and Unity project settings. |
 | `Docs/Art/` | Character candidates, sources, and preparation status. |
+| `Docs/GDD.md` | Game design document (Portuguese): modes, mechanics, status and changes of direction. |
 | `Docs/Decisions.md` | Settled development choices, reasons, and open questions. |
 | `Docs/InjuryReactions.md` | Fifteen injury regions, reaction/turn rules and review cases. |
 | `.agents/`, `.claude/` | Shared development rules and decision-documentation skill entry points. |

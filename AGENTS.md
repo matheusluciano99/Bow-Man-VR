@@ -12,6 +12,10 @@ Use GitHub's Assignees field to record task responsibility.
   and update the affected project requirements. Keep provisional choices explicit.
 - Use the shared [decision-documentation skill](.agents/skills/document-development-decisions/SKILL.md)
   for decision updates. The `.claude/` rules and skill reference the same guidance.
+- Keep the game design document [Docs/GDD.md](Docs/GDD.md) current (D026). In the
+  same PR that changes modes, rules, controls, balance values, content, interface,
+  audio, scope or distribution, update the affected GDD section and its status
+  table. Log each change of direction, with its reason, in the GDD's trajectory table.
 - Put a short purpose comment above each function, describing current behavior
   in one or two lines. Keep change history in Git and pull requests.
 
